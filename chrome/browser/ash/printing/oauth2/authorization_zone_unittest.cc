@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -35,6 +37,41 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
         server_.GetURLLoaderFactory(), auth_server_uri, client_id);
   }
 
+  // Simulates the authorization process in the internet browser. Returns the
+  // URL that the browser is redirected to at the end of the authorization
+  // process.
+  std::string SimulateAuthorization(const std::string& authorization_url,
+                                    const std::string& auth_code,
+                                    const std::string& scope) {
+    auto question_mark = authorization_url.find('?');
+    EXPECT_LT(question_mark, authorization_url.size());
+    const std::string auth_host_path =
+        authorization_url.substr(0, question_mark);
+    base::flat_map<std::string, std::string> params;
+    EXPECT_TRUE(ParseURLParameters(authorization_url.substr(question_mark + 1),
+                                   params));
+    EXPECT_EQ(params["scope"], scope);
+    return base::StrCat(
+        {printing::oauth2::kRedirectURI,
+         "?code=", base::EscapeUrlEncodedData(auth_code, true),
+         "&state=", base::EscapeUrlEncodedData(params["state"], true)});
+  }
+
+  std::string SimulateAuthorizationError(const std::string& authorization_url,
+                                         const std::string& error) {
+    auto question_mark = authorization_url.find('?');
+    EXPECT_LT(question_mark, authorization_url.size());
+    const std::string auth_host_path =
+        authorization_url.substr(0, question_mark);
+    base::flat_map<std::string, std::string> params;
+    EXPECT_TRUE(ParseURLParameters(authorization_url.substr(question_mark + 1),
+                                   params));
+    return base::StrCat(
+        {printing::oauth2::kRedirectURI,
+         "?error=", base::EscapeUrlEncodedData(error, true),
+         "&state=", base::EscapeUrlEncodedData(params["state"], true)});
+  }
+
   // Simulates Metadata Request described in rfc8414, section 3.
   void ProcessMetadataRequest() {
     EXPECT_EQ("", server_.ReceiveGET(metadata_uri_));
@@ -49,6 +86,33 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     EXPECT_EQ("", server_.ReceivePOSTWithJSON(registration_uri_, fields));
     fields.Set("client_id", client_id);
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_CREATED, fields);
+  }
+
+  // Simulates First Token Request described in rfc6749, sections 4.1.3-4 and 5.
+  void ProcessFirstTokenRequest(const std::string& auth_code,
+                                const std::string& access_token,
+                                const std::string& refresh_token) {
+    base::flat_map<std::string, std::string> params;
+    EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
+    EXPECT_EQ(params["code"], auth_code);
+    base::Value::Dict fields;
+    fields.Set("access_token", access_token);
+    fields.Set("token_type", "bearer");
+    if (!refresh_token.empty()) {
+      fields.Set("refresh_token", refresh_token);
+    }
+    server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
+  }
+
+  // The same as ProcessFirstTokenRequest(...) but with an error response.
+  void ProcessFirstTokenRequestError(const std::string& auth_code,
+                                     const std::string& error) {
+    base::flat_map<std::string, std::string> params;
+    EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
+    EXPECT_EQ(params["code"], auth_code);
+    base::Value::Dict fields;
+    fields.Set("error", error);
+    server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
   }
 
  protected:
@@ -71,15 +135,15 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, InitializationOfRegisteredClient) {
                                          BindResult(cr));
   ProcessMetadataRequest();
   ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
-  const std::string authorization_URL = cr.data;
+  const std::string authorization_url = cr.data;
 
   // Parse and verify the returned URL.
-  auto question_mark = authorization_URL.find('?');
-  ASSERT_LT(question_mark, authorization_URL.size());
-  const std::string auth_host_path = authorization_URL.substr(0, question_mark);
+  auto question_mark = authorization_url.find('?');
+  ASSERT_LT(question_mark, authorization_url.size());
+  const std::string auth_host_path = authorization_url.substr(0, question_mark);
   base::flat_map<std::string, std::string> params;
   ASSERT_TRUE(
-      ParseURLParameters(authorization_URL.substr(question_mark + 1), params));
+      ParseURLParameters(authorization_url.substr(question_mark + 1), params));
   EXPECT_EQ(auth_host_path, authorization_uri_);
   EXPECT_EQ(params["response_type"], "code");
   EXPECT_EQ(params["response_mode"], "query");
@@ -100,17 +164,93 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest,
   ProcessMetadataRequest();
   ProcessRegistrationRequest("clientID_!@#$");
   EXPECT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
-  const std::string authorization_URL = cr.data;
+  const std::string authorization_url = cr.data;
 
   // Parse and verify the returned URL.
-  auto question_mark = authorization_URL.find('?');
-  ASSERT_LT(question_mark, authorization_URL.size());
-  const std::string auth_host_path = authorization_URL.substr(0, question_mark);
+  auto question_mark = authorization_url.find('?');
+  ASSERT_LT(question_mark, authorization_url.size());
+  const std::string auth_host_path = authorization_url.substr(0, question_mark);
   base::flat_map<std::string, std::string> params;
   ASSERT_TRUE(
-      ParseURLParameters(authorization_URL.substr(question_mark + 1), params));
+      ParseURLParameters(authorization_url.substr(question_mark + 1), params));
   EXPECT_EQ(params["client_id"], "clientID_!@#$");
   EXPECT_EQ(params.count("scope"), 0);
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, FirstAccessToken) {
+  CallbackResult cr;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  auto resultant_url = SimulateAuthorization(cr.data, "auth_code_123", "");
+  authorization_zone_->FinishAuthorization(GURL(resultant_url), BindResult(cr));
+  ProcessFirstTokenRequest("auth_code_123", "access_TOKEN", "refresh_TOKEN");
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  EXPECT_TRUE(cr.data.empty());
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, AuthorizationFail) {
+  CallbackResult cr;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  auto resultant_url = SimulateAuthorizationError(cr.data, "weird_problem");
+  authorization_zone_->FinishAuthorization(GURL(resultant_url), BindResult(cr));
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kAccessDenied);
+  // The error message contains "weird_problem".
+  EXPECT_NE(cr.data.find("weird_problem"), std::string::npos);
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest,
+       AuthorizationInvalidResponseEmptyCode) {
+  CallbackResult cr;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  // The URL the browser was redirected to has empty "code" param.
+  auto resultant_url = SimulateAuthorization(cr.data, "", "");
+  authorization_zone_->FinishAuthorization(GURL(resultant_url), BindResult(cr));
+  EXPECT_EQ(cr.status, printing::oauth2::StatusCode::kInvalidResponse);
+  // The error message contains "code".
+  EXPECT_NE(cr.data.find("code"), std::string::npos);
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest,
+       AuthorizationInvalidResponseNoState) {
+  CallbackResult cr;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  // The URL the browser was redirected to has missing "state" param.
+  std::string resultant_url = printing::oauth2::kRedirectURI;
+  resultant_url += "?code=authCode123";
+  authorization_zone_->FinishAuthorization(GURL(resultant_url), BindResult(cr));
+  EXPECT_EQ(cr.status, printing::oauth2::StatusCode::kInvalidResponse);
+  // The error message contains "state".
+  EXPECT_NE(cr.data.find("state"), std::string::npos);
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, FirstAccessTokenFail) {
+  CallbackResult cr;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  auto resultant_url = SimulateAuthorization(cr.data, "auth_code_123", "");
+  authorization_zone_->FinishAuthorization(GURL(resultant_url), BindResult(cr));
+  ProcessFirstTokenRequestError("auth_code_123", "my unknown error");
+  EXPECT_EQ(cr.status, printing::oauth2::StatusCode::kAccessDenied);
+  // The error message contains "my unknown error".
+  EXPECT_NE(cr.data.find("my unknown error"), std::string::npos);
 }
 
 TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelInitializations) {
@@ -124,6 +264,40 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelInitializations) {
   EXPECT_EQ(crs[0].status, printing::oauth2::StatusCode::kTooManySessions);
   ProcessMetadataRequest();
   for (size_t i = 1; i < crs.size(); ++i) {
+    EXPECT_EQ(crs[i].status, printing::oauth2::StatusCode::kOK);
+  }
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelAuthorizations) {
+  CreateAuthorizationZone("clientID");
+  std::vector<CallbackResult> crs(kMaxNumberOfSessions + 1);
+
+  // Call the first InitAuthorization(...) to go through initialization.
+  authorization_zone_->InitAuthorization("", BindResult(crs[0]));
+  ProcessMetadataRequest();
+  ASSERT_EQ(crs[0].status, printing::oauth2::StatusCode::kOK);
+  // Call InitAuthorization(...) kMaxNumberOfSessions times.
+  for (size_t i = 1; i < crs.size(); ++i) {
+    authorization_zone_->InitAuthorization("", BindResult(crs[i]));
+    ASSERT_EQ(crs[i].status, printing::oauth2::StatusCode::kOK);
+  }
+
+  // Call all corresponding FinishAuthorization(...).
+  for (size_t i = 0; i < crs.size(); ++i) {
+    auto auth_url = SimulateAuthorization(
+        crs[i].data, "auth_code_" + base::NumberToString(i), "");
+    authorization_zone_->FinishAuthorization(GURL(auth_url),
+                                             BindResult(crs[i]));
+  }
+
+  // The first call to FinishAuthorization(...) failed because the pending
+  // authorization is missing (was removed as the oldest one). Other calls
+  // succeeded.
+  EXPECT_EQ(crs[0].status, printing::oauth2::StatusCode::kNoMatchingSession);
+  for (size_t i = 1; i < crs.size(); ++i) {
+    const std::string si = base::NumberToString(i);
+    ProcessFirstTokenRequest("auth_code_" + si, "acc_token_" + si,
+                             "ref_token_" + si);
     EXPECT_EQ(crs[i].status, printing::oauth2::StatusCode::kOK);
   }
 }

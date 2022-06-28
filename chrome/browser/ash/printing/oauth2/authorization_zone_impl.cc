@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/printing/oauth2/authorization_zone_impl.h"
 
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -12,9 +14,12 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_server_session.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
 #include "chromeos/printing/uri.h"
 #include "crypto/random.h"
@@ -79,6 +84,36 @@ std::string GetAuthorizationURL(const AuthorizationServerData& server_data,
   return uri.GetNormalized(false);
 }
 
+// Tries to extract the parameter `name` from `query`. Returns the value of
+// extracted parameter or an error message. `query` cannot contain empty
+// vectors, but the vectors may contain empty strings.
+base::expected<std::string, std::string> ExtractParameter(
+    const base::flat_map<std::string, std::vector<std::string>>& query,
+    const std::string& name) {
+  auto it = query.find(name);
+  if (it == query.end()) {
+    return base::unexpected(
+        base::StrCat({"parameter '", name, "' is missing"}));
+  }
+  if (it->second.size() != 1) {
+    return base::unexpected(
+        base::StrCat({"parameter '", name, "' is duplicated"}));
+  }
+  std::string value = it->second.front();
+  if (value.empty()) {
+    return base::unexpected(base::StrCat({"parameter '", name, "' is empty"}));
+  }
+  return value;
+}
+
+// Calls `callback` with `status` and `data` as parameters. When `status` equals
+// StatusCode::kOK, ignores `data` and passes an empty string instead.
+void NoDataForOK(StatusCallback callback,
+                 StatusCode status,
+                 const std::string& data) {
+  std::move(callback).Run(status, (status == StatusCode::kOK) ? "" : data);
+}
+
 // Calls `callback`. Adds a prefix with `context` to an error sent in `data`.
 void PrefixForError(StatusCallback callback,
                     const std::string& context,
@@ -109,7 +144,8 @@ AuthorizationZoneImpl::AuthorizationZoneImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& authorization_server_uri,
     const std::string& client_id)
-    : server_data_(url_loader_factory, authorization_server_uri, client_id) {}
+    : server_data_(url_loader_factory, authorization_server_uri, client_id),
+      url_loader_factory_(url_loader_factory) {}
 
 AuthorizationZoneImpl::~AuthorizationZoneImpl() = default;
 
@@ -136,8 +172,8 @@ void AuthorizationZoneImpl::InitAuthorization(const std::string& scope,
       AuthorizationProcedure();
     } else {
       // The server must be initialized (it is the very first call to
-      // InitAuthorization(...)). AuthorizationProcedure() will be called inside
-      // OnInitializeCallback(...).
+      // InitAuthorization()). AuthorizationProcedure() will be called inside
+      // OnInitializeCallback().
       server_data_.Initialize(
           base::BindOnce(&AuthorizationZoneImpl::OnInitializeCallback,
                          base::Unretained(this)));
@@ -148,10 +184,96 @@ void AuthorizationZoneImpl::InitAuthorization(const std::string& scope,
 void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
                                                 StatusCallback callback) {
   AddContextToErrorMessage(callback);
-  // TODO(pawliczek)
-  // This method is supposed to parse `redirect_url`, then match
-  // PendingAuthorization structure using the `state` field and finalize
-  // the authorization on the server side by obtaining the first access token.
+
+  // Parse the URL and retrieve the query segment.
+  chromeos::Uri uri(redirect_url.spec());
+  if (uri.GetLastParsingError().status !=
+      chromeos::Uri::ParserStatus::kNoErrors) {
+    std::move(callback).Run(StatusCode::kInvalidResponse,
+                            "Authorization Request: cannot parse obtained URL");
+    return;
+  }
+  const auto query = uri.GetQueryAsMap();
+
+  // Extract the parameter "state".
+  base::expected<std::string, std::string> val_or_err =
+      ExtractParameter(query, "state");
+  if (!val_or_err.has_value()) {
+    std::move(callback).Run(
+        StatusCode::kInvalidResponse,
+        base::StrCat({"Authorization Request: ", val_or_err.error()}));
+    return;
+  }
+  const std::string state = std::move(val_or_err.value());
+
+  // Use `state` to match pending authorization.
+  base::flat_set<std::string> scopes;
+  std::string code_verifier;
+  if (!FindAndRemovePendingAuthorization(state, scopes, code_verifier)) {
+    std::move(callback).Run(StatusCode::kNoMatchingSession,
+                            "Authorization Request");
+    return;
+  }
+
+  // Check if the parameter "error" is present. If yes, try to extract the error
+  // message.
+  if (query.contains("error")) {
+    val_or_err = ExtractParameter(query, "error");
+    if (!val_or_err.has_value()) {
+      std::move(callback).Run(
+          StatusCode::kInvalidResponse,
+          base::StrCat({"Authorization Request: ", val_or_err.error()}));
+      return;
+    }
+    const std::string error = std::move(val_or_err.value());
+
+    StatusCode status;
+    if (error == "server_error") {
+      status = StatusCode::kServerError;
+    } else if (error == "temporarily_unavailable") {
+      status = StatusCode::kServerTemporarilyUnavailable;
+    } else {
+      status = StatusCode::kAccessDenied;
+    }
+    std::move(callback).Run(
+        status, base::StrCat({"Authorization Request: error=", error}));
+    return;
+  }
+
+  // Extract the parameter "code".
+  val_or_err = ExtractParameter(query, "code");
+  if (!val_or_err.has_value()) {
+    std::move(callback).Run(
+        StatusCode::kInvalidResponse,
+        base::StrCat({"Authorization Request: ", val_or_err.error()}));
+    return;
+  }
+  const std::string code = std::move(val_or_err.value());
+
+  // Create and add a new session.
+  if (sessions_.size() == kMaxNumberOfSessions) {
+    // There are too many sessions. Remove the oldest one.
+    auto callbacks = sessions_.front()->TakeWaitingList();
+    sessions_.pop_front();
+    for (auto& callback : callbacks) {
+      std::move(callback).Run(StatusCode::kTooManySessions,
+                              "The oldest session was closed");
+    }
+    // TODO(b:228876367) - revoke the token in AuthorizationServerSession
+  }
+  sessions_.push_back(std::make_unique<AuthorizationServerSession>(
+      url_loader_factory_, server_data_.TokenEndpointURI(), std::move(scopes)));
+  AuthorizationServerSession* session = sessions_.back().get();
+  session->AddToWaitingList(base::BindOnce(&NoDataForOK, std::move(callback)));
+  // We can use base::Unretained() here because:
+  // * Construction of AuthorizationServerSession (and HttpExchange) guarantees
+  //   that no calls will be returned after deletion of the object `session`.
+  // * `this` owns `session`; it is guaranteed that deletion of `session` is
+  //   performed before deletion of `this`.
+  session->SendFirstTokenRequest(
+      server_data_.ClientId(), code, code_verifier,
+      base::BindOnce(&AuthorizationZoneImpl::OnSendTokenRequestCallback,
+                     base::Unretained(this), base::Unretained(session)));
 }
 
 void AuthorizationZoneImpl::GetEndpointAccessToken(
@@ -208,8 +330,51 @@ void AuthorizationZoneImpl::OnInitializeCallback(StatusCode status,
   waiting_authorizations_.clear();
 }
 
+void AuthorizationZoneImpl::OnSendTokenRequestCallback(
+    AuthorizationServerSession* session,
+    StatusCode status,
+    const std::string& data) {
+  // Find the session for which the request was completed.
+  auto it_session = std::find_if(
+      sessions_.begin(), sessions_.end(),
+      [&session](const std::unique_ptr<AuthorizationServerSession>& as) {
+        return as.get() == session;
+      });
+  DCHECK(it_session != sessions_.end());
+
+  // Get the list of callbacks to run and copy the data.
+  std::vector<StatusCallback> callbacks = session->TakeWaitingList();
+  // We have to make a copy of `data` here because it may be an error message
+  // owned by the session object deleted in the next if block.
+  const std::string data2 = data;
+  // Erase the session if the request failed.
+  if (status != StatusCode::kOK) {
+    sessions_.erase(it_session);
+  }
+  // Run the callbacks.
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(status, data2);
+  }
+}
+
+bool AuthorizationZoneImpl::FindAndRemovePendingAuthorization(
+    const std::string& state,
+    base::flat_set<std::string>& scopes,
+    std::string& code_verifier) {
+  std::list<PendingAuthorization>::iterator it = std::find_if(
+      pending_authorizations_.begin(), pending_authorizations_.end(),
+      [&state](const PendingAuthorization& pa) { return pa.state == state; });
+  if (it == pending_authorizations_.end()) {
+    return false;
+  }
+  scopes = std::move(it->scopes);
+  code_verifier = std::move(it->code_verifier);
+  pending_authorizations_.erase(it);
+  return true;
+}
+
 void AuthorizationZoneImpl::AddContextToErrorMessage(StatusCallback& callback) {
-  // Wrap the `callback` with the function PrefixForError(...) defined above.
+  // Wrap the `callback` with the function PrefixForError() defined above.
   const std::string prefix = server_data_.AuthorizationServerURI().spec();
   auto new_call = base::BindOnce(&PrefixForError, std::move(callback), prefix);
   callback = std::move(new_call);
