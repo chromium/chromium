@@ -156,6 +156,11 @@ const base::Feature kAutofillEnforceDelaysInStrikeDatabase{
 const base::Feature kAutofillFillMerchantPromoCodeFields{
     "AutofillFillMerchantPromoCodeFields", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Autofill will attempt to find International Bank Account Number
+// (IBAN) fields when parsing forms.
+const base::Feature kAutofillParseIbanFields{"AutofillParseIbanFields",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will attempt to find merchant promo/coupon/gift code
 // fields when parsing forms.
 const base::Feature kAutofillParseMerchantPromoCodeFields{

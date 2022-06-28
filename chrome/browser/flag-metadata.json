@@ -513,6 +513,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "autofill-parse-iban-fields",
+    "owners": [ "nakulvaidya@google.com", "jsaul@google.com", "vishwasuppoor@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "autofill-parse-merchant-promo-code-fields",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 105

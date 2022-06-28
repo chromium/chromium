@@ -978,6 +978,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"trending-queries-module", flag_descriptions::kTrendingQueriesModuleName,
      flag_descriptions::kTrendingQueriesModuleDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTrendingQueriesModule)},
+    {"autofill-parse-iban-fields",
+     flag_descriptions::kAutofillParseIbanFieldsName,
+     flag_descriptions::kAutofillParseIbanFieldsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillParseIbanFields)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
