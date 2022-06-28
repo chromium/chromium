@@ -7,13 +7,10 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -40,8 +37,6 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
@@ -54,9 +49,6 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
   return new PrivacySandboxService(
       PrivacySandboxSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs(),
-      profile->GetProfilePolicyConnector()->policy_service(),
-      SyncServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       profile_metrics::GetBrowserProfileType(profile),
       (!profile->IsGuestSession() || profile->IsOffTheRecord())

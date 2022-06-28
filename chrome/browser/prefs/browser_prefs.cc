@@ -757,6 +757,10 @@ const char kImprovedShortcutsNotificationShownCount[] =
     "ash.improved_shortcuts_notification_shown_count";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 06/2022.
+const char kPrivacySandboxPreferencesReconciled[] =
+    "privacy_sandbox.preferences_reconciled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -989,6 +993,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  registry->RegisterBooleanPref(kPrivacySandboxPreferencesReconciled, false);
 }
 
 }  // namespace
@@ -1950,6 +1956,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(extensions::pref_names::kU2fSecurityKeyApiEnabled);
 #endif
   profile_prefs->ClearPref(prefs::kCloudPrintSubmitEnabled);
+
+  // Added 06/2022.
+  profile_prefs->ClearPref(kPrivacySandboxPreferencesReconciled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
