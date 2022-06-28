@@ -17,6 +17,8 @@ PopupAnimationFinishedEventListener::PopupAnimationFinishedEventListener(
     Member<Element> popup_element,
     HeapHashSet<Member<EventTarget>>&& animations)
     : popup_element_(popup_element), animations_(std::move(animations)) {
+  DCHECK(popup_element->HasValidPopupAttribute());
+  DCHECK(!animations_.IsEmpty());
   for (auto animation : animations_) {
     animation->addEventListener(event_type_names::kFinish, this,
                                 /*use_capture*/ false);
@@ -58,8 +60,7 @@ void PopupAnimationFinishedEventListener::Invoke(ExecutionContext*,
 
   // Finish hiding the popup once all animations complete.
   if (animations_.IsEmpty()) {
-    popup_element_->FinishPopupHideIfNeeded(
-        HidePopupForcingLevel::kHideAfterAnimations);
+    popup_element_->PopupHideFinishIfNeeded();
   }
 }
 

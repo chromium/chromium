@@ -5,27 +5,11 @@
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/popup-utils.js"></script>
 
 <div popup>Popup</div>
 
 <script>
-function waitUntilChange(fn) {
-  return new Promise((resolve, reject) => {
-    const original = fn();
-    function tick() {
-      if (original != fn()) {
-        resolve();
-      } else {
-        requestAnimationFrame(tick.bind(this));
-      }
-    }
-    tick();
-  });
-}
-function requestAnimationFramePromise() {
-  return new Promise((resolve) => window.requestAnimationFrame(resolve));
-}
-
 promise_test(async t => {
   const popup = document.querySelector('[popup]');
   let showCount = 0;
@@ -38,17 +22,15 @@ promise_test(async t => {
   assert_equals(0,hideCount);
   popup.showPopUp();
   assert_true(popup.matches(':top-layer'));
-  await waitUntilChange(() => showCount);
   assert_equals(1,showCount);
   assert_equals(0,hideCount);
-  await requestAnimationFramePromise();
+  await waitForRender();
   assert_true(popup.matches(':top-layer'));
   popup.hidePopUp();
   assert_false(popup.matches(':top-layer'));
-  await waitUntilChange(() => hideCount);
   assert_equals(1,showCount);
   assert_equals(1,hideCount);
-  await requestAnimationFramePromise();
+  await waitForRender();
   // No additional events after animation frame
   assert_false(popup.matches(':top-layer'));
   assert_equals(1,showCount);

@@ -25,7 +25,7 @@
     const isVisible = isElementVisible(popUp);
     if (isVisible) {
       assert_not_equals(window.getComputedStyle(popUp).display,'none');
-      assert_equals(isPopUp,popUp.matches(':top-layer'));
+      assert_equals(popUp.matches(':top-layer'),isPopUp);
     } else {
       assert_equals(window.getComputedStyle(popUp).display,'none');
       assert_false(popUp.matches(':top-layer'));

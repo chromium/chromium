@@ -386,7 +386,7 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
           event.type() == event_type_names::kDOMActivate &&
           (!Form() || !IsSuccessfulSubmitButton())) {
         if (can_hide) {
-          popup.element->hidePopUpInternal(
+          popup.element->HidePopUpInternal(
               HidePopupFocusBehavior::kFocusPreviousElement,
               HidePopupForcingLevel::kHideAfterAnimations);
         } else if (can_show) {

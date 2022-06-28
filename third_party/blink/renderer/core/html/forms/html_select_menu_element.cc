@@ -354,7 +354,7 @@ void HTMLSelectMenuElement::CloseListbox() {
   if (listbox_part_ && open()) {
     if (listbox_part_->HasValidPopupAttribute()) {
       // We will handle focus directly.
-      listbox_part_->hidePopUpInternal(
+      listbox_part_->HidePopUpInternal(
           HidePopupFocusBehavior::kNone,
           HidePopupForcingLevel::kHideAfterAnimations);
     }
