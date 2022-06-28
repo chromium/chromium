@@ -81,7 +81,7 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
   }
 
   void MatchEventList(RenderFrameHostImpl* rfh,
-                      base::ListValue list,
+                      base::Value list,
                       base::Location location = base::Location::Current()) {
     EXPECT_EQ(list, EvalJs(rfh, "window.testObservedEvents"))
         << location.ToString();

@@ -1539,7 +1539,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
 
   struct info {
     std::string suggested_name;
-    base::ListValue accepted_extensions;
+    base::Value accepted_extensions;
     bool exclude_accept_all_option = true;
     std::string expected_result;
     bool expected_exclude_accept_all_option = false;

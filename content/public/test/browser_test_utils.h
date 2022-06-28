@@ -599,20 +599,20 @@ struct JsLiteralHelper<url::Origin> {
 };
 
 // Helper for variadic ListValueOf() -- zero-argument base case.
-inline void ConvertToBaseValueList(base::Value::ListStorage* list) {}
+inline void ConvertToBaseValueList(base::Value::List& list) {}
 
-// Helper for variadic ListValueOf() -- case with at least one argument.
+// Helper for variadic ValueListOf() -- case with at least one argument.
 //
 // |first| can be any type explicitly convertible to base::Value
 // (including int/string/StringPiece/char*/double/bool), or any type that
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
 // string literals.
 template <typename T, typename... Args>
-void ConvertToBaseValueList(base::Value::ListStorage* list,
+void ConvertToBaseValueList(base::Value::List& list,
                             T&& first,
                             Args&&... rest) {
   using ValueType = base::remove_cvref_t<T>;
-  list->push_back(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
+  list.Append(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
   ConvertToBaseValueList(list, std::forward<Args>(rest)...);
 }
 
@@ -623,10 +623,10 @@ void ConvertToBaseValueList(base::Value::ListStorage* list,
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
 // string literals. |args| can be a mix of different types.
 template <typename... Args>
-base::ListValue ListValueOf(Args&&... args) {
-  base::Value::ListStorage values;
-  ConvertToBaseValueList(&values, std::forward<Args>(args)...);
-  return base::ListValue(std::move(values));
+base::Value ListValueOf(Args&&... args) {
+  base::Value::List values;
+  ConvertToBaseValueList(values, std::forward<Args>(args)...);
+  return base::Value(std::move(values));
 }
 
 // Replaces $1, $2, $3, etc in |script_template| with JS literal values
@@ -659,8 +659,8 @@ base::ListValue ListValueOf(Args&&... args) {
 // supported by base::Value. Numbers, lists, and dicts also work.
 template <typename... Args>
 std::string JsReplace(base::StringPiece script_template, Args&&... args) {
-  base::Value::ListStorage values;
-  ConvertToBaseValueList(&values, std::forward<Args>(args)...);
+  base::Value::List values;
+  ConvertToBaseValueList(values, std::forward<Args>(args)...);
   std::vector<std::string> replacements(values.size());
   for (size_t i = 0; i < values.size(); ++i) {
     CHECK(base::JSONWriter::Write(values[i], &replacements[i]));

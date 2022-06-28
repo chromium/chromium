@@ -147,7 +147,7 @@ class BackForwardCacheBrowserTest
   void StartRecordingEvents(RenderFrameHostImpl* rfh);
 
   void MatchEventList(RenderFrameHostImpl* rfh,
-                      base::ListValue list,
+                      base::Value list,
                       base::Location location = base::Location::Current());
 
   // Creates a minimal HTTPS server, accessible through https_server().

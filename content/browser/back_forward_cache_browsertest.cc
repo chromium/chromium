@@ -412,7 +412,7 @@ void BackForwardCacheBrowserTest::StartRecordingEvents(
 }
 
 void BackForwardCacheBrowserTest::MatchEventList(RenderFrameHostImpl* rfh,
-                                                 base::ListValue list,
+                                                 base::Value list,
                                                  base::Location location) {
   EXPECT_EQ(list, EvalJs(rfh, "window.testObservedEvents"))
       << location.ToString();
