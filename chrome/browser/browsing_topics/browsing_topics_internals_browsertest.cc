@@ -59,10 +59,13 @@ class FixedBrowsingTopicsService
     return {};
   }
 
-  mojom::WebUIGetBrowsingTopicsStateResultPtr GetBrowsingTopicsStateForWebUi()
-      const override {
+  void GetBrowsingTopicsStateForWebUi(
+      bool calculate_now,
+      browsing_topics::mojom::PageHandler::GetBrowsingTopicsStateCallback
+          callback) override {
     DCHECK(result_override_);
-    return result_override_->Clone();
+
+    std::move(callback).Run(result_override_->Clone());
   }
 
   std::vector<privacy_sandbox::CanonicalTopic> GetTopicsForSiteForDisplay(
@@ -531,6 +534,94 @@ Model version: 2204011803
 Taxonomy version: 123
 4|Concerts & Music Festivals|Real||
 5|Concerts & Music Festivals|Random|555;|
+)");
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
+                       TopicsState_CalculateNow) {
+  auto state = browsing_topics::mojom::WebUIBrowsingTopicsState::New();
+
+  state->next_scheduled_calculation_time = base::Time::Now();
+
+  {
+    auto webui_epoch = mojom::WebUIEpoch::New();
+    webui_epoch->calculation_time = base::Time::Now() - base::Days(7);
+    webui_epoch->model_version = "2204011803";
+    webui_epoch->taxonomy_version = "123";
+    {
+      auto webui_topic = mojom::WebUITopic::New();
+      webui_topic->topic_id = 2;
+      webui_topic->topic_name = u"Acting & Theater";
+      webui_topic->is_real_topic = true;
+      webui_topic->observed_by_domains = {"111", "222", "333"};
+      webui_epoch->topics.push_back(std::move(webui_topic));
+    }
+    state->epochs.push_back(std::move(webui_epoch));
+  }
+
+  fixed_browsing_topics_service()->SetWebUIGetBrowsingTopicsStateResultOverride(
+      browsing_topics::mojom::WebUIGetBrowsingTopicsStateResult::
+          NewBrowsingTopicsState(std::move(state)));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(kBrowsingTopicsInternalsUrl)));
+
+  EXPECT_EQ(GetTopicsStateTabContent(),
+            R"(Next scheduled calculation time: {{TIMESTAMP_TO_IGNORE}}
+===== epoch =====
+Calculation time: {{TIMESTAMP_TO_IGNORE}}
+Model version: 2204011803
+Taxonomy version: 123
+2|Acting & Theater|Real|111;222;333;|
+)");
+
+  auto new_state = browsing_topics::mojom::WebUIBrowsingTopicsState::New();
+
+  new_state->next_scheduled_calculation_time = base::Time::Now();
+
+  {
+    auto webui_epoch = mojom::WebUIEpoch::New();
+    webui_epoch->calculation_time = base::Time::Now() - base::Days(7);
+    webui_epoch->model_version = "2204011803";
+    webui_epoch->taxonomy_version = "123";
+    {
+      auto webui_topic = mojom::WebUITopic::New();
+      webui_topic->topic_id = 4;
+      webui_topic->topic_name = u"Concerts & Music Festivals";
+      webui_topic->is_real_topic = true;
+      webui_topic->observed_by_domains = {};
+      webui_epoch->topics.push_back(std::move(webui_topic));
+    }
+
+    new_state->epochs.push_back(std::move(webui_epoch));
+  }
+
+  fixed_browsing_topics_service()->SetWebUIGetBrowsingTopicsStateResultOverride(
+      browsing_topics::mojom::WebUIGetBrowsingTopicsStateResult::
+          NewBrowsingTopicsState(std::move(new_state)));
+
+  constexpr char calculate_now_script[] = R"(
+    document.querySelector('#calculate-now-button').click();
+
+    // Assert that buttons are disabled during a Calculate Now request.
+    if (!document.querySelector('#refresh-topics-state-button').disabled ||
+        !document.querySelector('#calculate-now-button').disabled) {
+      throw "Buttons should be disabled";
+    }
+  )";
+
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     calculate_now_script,
+                     content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                     /*world_id=*/1));
+
+  EXPECT_EQ(GetTopicsStateTabContent(),
+            R"(Next scheduled calculation time: {{TIMESTAMP_TO_IGNORE}}
+===== epoch =====
+Calculation time: {{TIMESTAMP_TO_IGNORE}}
+Model version: 2204011803
+Taxonomy version: 123
+4|Concerts & Music Festivals|Real||
 )");
 }
 

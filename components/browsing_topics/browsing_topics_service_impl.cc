@@ -7,6 +7,7 @@
 #include <random>
 
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
@@ -355,75 +356,36 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
   return result_topics;
 }
 
-mojom::WebUIGetBrowsingTopicsStateResultPtr
-BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi() const {
+void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
+    bool calculate_now,
+    mojom::PageHandler::GetBrowsingTopicsStateCallback callback) {
   if (!browsing_topics_state_loaded_) {
-    return mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
-        "State loading hasn't finished. Please retry shortly.");
+    std::move(callback).Run(
+        mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
+            "State loading hasn't finished. Please retry shortly."));
+    return;
   }
 
-  if (browsing_topics_state_.next_scheduled_calculation_time().is_null()) {
-    DCHECK(topics_calculator_ && browsing_topics_state_.epochs().empty());
-
-    return mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
-        "Initial calculation hasn't finished. Please retry shortly.");
+  // If a calculation is already in progress, get the webui topics state after
+  // the calculation is done. Do this regardless of whether `calculate_now` is
+  // true, i.e. if `calculate_now` is true, this request is effectively merged
+  // with the in progress calculation.
+  if (topics_calculator_) {
+    get_state_for_webui_callbacks_.push_back(std::move(callback));
+    return;
   }
 
-  auto webui_state = mojom::WebUIBrowsingTopicsState::New();
+  DCHECK(schedule_calculate_timer_.IsRunning());
 
-  webui_state->next_scheduled_calculation_time =
-      browsing_topics_state_.next_scheduled_calculation_time();
+  if (calculate_now) {
+    get_state_for_webui_callbacks_.push_back(std::move(callback));
 
-  for (const EpochTopics& epoch : browsing_topics_state_.epochs()) {
-    DCHECK_LE(epoch.padded_top_topics_start_index(),
-              epoch.top_topics_and_observing_domains().size());
-
-    // Note: for a failed epoch calculation, the default zero-initialized values
-    // will be displayed in the Web UI.
-    auto webui_epoch = mojom::WebUIEpoch::New();
-    webui_epoch->calculation_time = epoch.calculation_time();
-    webui_epoch->model_version = base::NumberToString(epoch.model_version());
-    webui_epoch->taxonomy_version =
-        base::NumberToString(epoch.taxonomy_version());
-
-    for (size_t i = 0; i < epoch.top_topics_and_observing_domains().size();
-         ++i) {
-      const TopicAndDomains& topic_and_domains =
-          epoch.top_topics_and_observing_domains()[i];
-
-      privacy_sandbox::CanonicalTopic canonical_topic =
-          privacy_sandbox::CanonicalTopic(topic_and_domains.topic(),
-                                          epoch.taxonomy_version());
-
-      std::vector<std::string> webui_observed_by_domains;
-      webui_observed_by_domains.reserve(
-          topic_and_domains.hashed_domains().size());
-      for (const auto& domain : topic_and_domains.hashed_domains()) {
-        webui_observed_by_domains.push_back(
-            base::NumberToString(domain.value()));
-      }
-
-      // Note: if the topic is invalid (i.e. cleared), the output `topic_id`
-      // will be 0; if the topic is invalid, or if the taxonomy version isn't
-      // recognized by this Chrome binary, the output `topic_name` will be
-      // "Unknown".
-      auto webui_topic = mojom::WebUITopic::New();
-      webui_topic->topic_id = topic_and_domains.topic().value();
-      webui_topic->topic_name = canonical_topic.GetLocalizedRepresentation();
-      webui_topic->is_real_topic = (i < epoch.padded_top_topics_start_index());
-      webui_topic->observed_by_domains = std::move(webui_observed_by_domains);
-
-      webui_epoch->topics.push_back(std::move(webui_topic));
-    }
-
-    webui_state->epochs.push_back(std::move(webui_epoch));
+    schedule_calculate_timer_.AbandonAndStop();
+    CalculateBrowsingTopics();
+    return;
   }
 
-  // Reorder the epochs from latest to oldest.
-  std::reverse(webui_state->epochs.begin(), webui_state->epochs.end());
-
-  return mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(
-      std::move(webui_state));
+  std::move(callback).Run(GetBrowsingTopicsStateForWebUiHelper());
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>
@@ -530,10 +492,11 @@ BrowsingTopicsServiceImpl::CreateCalculator(
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
     optimization_guide::PageContentAnnotationsService* annotations_service,
+    const base::circular_deque<EpochTopics>& epochs,
     BrowsingTopicsCalculator::CalculateCompletedCallback callback) {
   return std::make_unique<BrowsingTopicsCalculator>(
       privacy_sandbox_settings, history_service, site_data_manager,
-      annotations_service, std::move(callback));
+      annotations_service, epochs, std::move(callback));
 }
 
 const BrowsingTopicsState& BrowsingTopicsServiceImpl::browsing_topics_state() {
@@ -561,7 +524,7 @@ void BrowsingTopicsServiceImpl::CalculateBrowsingTopics() {
   // the callback once it's destroyed.
   topics_calculator_ = CreateCalculator(
       privacy_sandbox_settings_, history_service_, site_data_manager_,
-      annotations_service_,
+      annotations_service_, browsing_topics_state_.epochs(),
       base::BindOnce(
           &BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted,
           base::Unretained(this)));
@@ -579,6 +542,17 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
 
   ScheduleBrowsingTopicsCalculation(
       blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
+
+  if (!get_state_for_webui_callbacks_.empty()) {
+    mojom::WebUIGetBrowsingTopicsStateResultPtr webui_state =
+        GetBrowsingTopicsStateForWebUiHelper();
+
+    for (auto& callback : get_state_for_webui_callbacks_) {
+      std::move(callback).Run(webui_state->Clone());
+    }
+
+    get_state_for_webui_callbacks_.clear();
+  }
 }
 
 void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
@@ -643,10 +617,16 @@ void BrowsingTopicsServiceImpl::OnURLsDeleted(
     if (epoch_topics.empty())
       continue;
 
+    // The typical case is assumed here. We cannot always derive the original
+    // history start time, as the necessary data (e.g. its previous epoch's
+    // calculation time) may have been gone.
+    base::Time history_data_start_time =
+        epoch_topics.calculation_time() -
+        blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+
     bool time_range_overlap =
         epoch_topics.calculation_time() >= deletion_info.time_range().begin() &&
-        DeriveHistoryDataStartTime(epoch_topics.calculation_time()) <=
-            deletion_info.time_range().end();
+        history_data_start_time <= deletion_info.time_range().end();
 
     if (time_range_overlap)
       browsing_topics_state_.ClearOneEpoch(i);
@@ -659,6 +639,68 @@ void BrowsingTopicsServiceImpl::OnURLsDeleted(
     topics_calculator_.reset();
     CalculateBrowsingTopics();
   }
+}
+
+mojom::WebUIGetBrowsingTopicsStateResultPtr
+BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper() {
+  DCHECK(browsing_topics_state_loaded_);
+  DCHECK(!topics_calculator_);
+
+  auto webui_state = mojom::WebUIBrowsingTopicsState::New();
+
+  webui_state->next_scheduled_calculation_time =
+      browsing_topics_state_.next_scheduled_calculation_time();
+
+  for (const EpochTopics& epoch : browsing_topics_state_.epochs()) {
+    DCHECK_LE(epoch.padded_top_topics_start_index(),
+              epoch.top_topics_and_observing_domains().size());
+
+    // Note: for a failed epoch calculation, the default zero-initialized values
+    // will be displayed in the Web UI.
+    auto webui_epoch = mojom::WebUIEpoch::New();
+    webui_epoch->calculation_time = epoch.calculation_time();
+    webui_epoch->model_version = base::NumberToString(epoch.model_version());
+    webui_epoch->taxonomy_version =
+        base::NumberToString(epoch.taxonomy_version());
+
+    for (size_t i = 0; i < epoch.top_topics_and_observing_domains().size();
+         ++i) {
+      const TopicAndDomains& topic_and_domains =
+          epoch.top_topics_and_observing_domains()[i];
+
+      privacy_sandbox::CanonicalTopic canonical_topic =
+          privacy_sandbox::CanonicalTopic(topic_and_domains.topic(),
+                                          epoch.taxonomy_version());
+
+      std::vector<std::string> webui_observed_by_domains;
+      webui_observed_by_domains.reserve(
+          topic_and_domains.hashed_domains().size());
+      for (const auto& domain : topic_and_domains.hashed_domains()) {
+        webui_observed_by_domains.push_back(
+            base::NumberToString(domain.value()));
+      }
+
+      // Note: if the topic is invalid (i.e. cleared), the output `topic_id`
+      // will be 0; if the topic is invalid, or if the taxonomy version isn't
+      // recognized by this Chrome binary, the output `topic_name` will be
+      // "Unknown".
+      auto webui_topic = mojom::WebUITopic::New();
+      webui_topic->topic_id = topic_and_domains.topic().value();
+      webui_topic->topic_name = canonical_topic.GetLocalizedRepresentation();
+      webui_topic->is_real_topic = (i < epoch.padded_top_topics_start_index());
+      webui_topic->observed_by_domains = std::move(webui_observed_by_domains);
+
+      webui_epoch->topics.push_back(std::move(webui_topic));
+    }
+
+    webui_state->epochs.push_back(std::move(webui_epoch));
+  }
+
+  // Reorder the epochs from latest to oldest.
+  base::ranges::reverse(webui_state->epochs);
+
+  return mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(
+      std::move(webui_state));
 }
 
 }  // namespace browsing_topics

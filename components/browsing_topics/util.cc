@@ -130,25 +130,6 @@ HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host) {
   return HashedHost(result);
 }
 
-base::Time DeriveHistoryDataStartTime(base::Time calculation_time,
-                                      base::Time data_accessible_since) {
-  return std::max(data_accessible_since,
-                  calculation_time -
-                      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
-}
-
-base::Time DeriveApiUsageContextDataStartTime(
-    base::Time calculation_time,
-    base::Time data_accessible_since) {
-  return std::max(
-      data_accessible_since,
-      calculation_time -
-          blink::features::
-                  kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering
-                      .Get() *
-              blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
-}
-
 void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key) {
   std::copy(hmac_key.begin(), hmac_key.end(),
             g_hmac_key_override_for_testing.Get().begin());

@@ -35,6 +35,7 @@ class BrowsingTopicsInternalsPageHandler
       browsing_topics::mojom::PageHandler::
           GetBrowsingTopicsConfigurationCallback callback) override;
   void GetBrowsingTopicsState(
+      bool calculate_now,
       browsing_topics::mojom::PageHandler::GetBrowsingTopicsStateCallback
           callback) override;
   void GetModelInfo(browsing_topics::mojom::PageHandler::GetModelInfoCallback

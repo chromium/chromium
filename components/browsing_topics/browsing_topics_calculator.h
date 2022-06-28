@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -66,6 +67,7 @@ class BrowsingTopicsCalculator {
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       optimization_guide::PageContentAnnotationsService* annotations_service,
+      const base::circular_deque<EpochTopics>& epochs,
       CalculateCompletedCallback callback);
 
   BrowsingTopicsCalculator(const BrowsingTopicsCalculator&) = delete;
@@ -106,7 +108,7 @@ class BrowsingTopicsCalculator {
       const std::vector<optimization_guide::BatchAnnotationResult>& results);
 
   void OnCalculateCompleted(CalculatorResultStatus status,
-                            EpochTopics epoch_topics = EpochTopics());
+                            EpochTopics epoch_topics);
 
   // Those pointers are safe to hold and use throughout the lifetime of
   // `BrowsingTopicsService`, which owns this object.
@@ -120,6 +122,9 @@ class BrowsingTopicsCalculator {
 
   // The calculation start time.
   base::Time calculation_time_;
+
+  base::Time history_data_start_time_;
+  base::Time api_usage_context_data_start_time_;
 
   // The history hosts over
   // `kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering` epochs,

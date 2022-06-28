@@ -32,7 +32,8 @@ bool ShouldUseRandomTopic(uint64_t random_or_top_topic_decision_hash) {
 
 }  // namespace
 
-EpochTopics::EpochTopics() = default;
+EpochTopics::EpochTopics(base::Time calculation_time)
+    : calculation_time_(calculation_time) {}
 
 EpochTopics::EpochTopics(
     std::vector<TopicAndDomains> top_topics_and_observing_domains,
@@ -64,30 +65,38 @@ EpochTopics::~EpochTopics() = default;
 
 // static
 EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
+  const base::Value* calculation_time_value =
+      dict_value.Find(kCalculationTimeNameKey);
+  if (!calculation_time_value)
+    return EpochTopics(base::Time());
+
+  base::Time calculation_time =
+      base::ValueToTime(calculation_time_value).value();
+
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
   const base::Value::List* top_topics_and_observing_domains_value =
       dict_value.FindList(kTopTopicsAndObservingDomainsNameKey);
   if (!top_topics_and_observing_domains_value)
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   for (const base::Value& topic_and_observing_domains_value :
        *top_topics_and_observing_domains_value) {
     const base::Value::Dict* topic_and_observing_domains_dict_value =
         topic_and_observing_domains_value.GetIfDict();
     if (!topic_and_observing_domains_dict_value)
-      return EpochTopics();
+      return EpochTopics(calculation_time);
 
     top_topics_and_observing_domains.push_back(TopicAndDomains::FromDictValue(
         *topic_and_observing_domains_dict_value));
   }
 
   if (top_topics_and_observing_domains.empty())
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   absl::optional<int> padded_top_topics_start_index_value =
       dict_value.FindInt(kPaddedTopTopicsStartIndexNameKey);
   if (!padded_top_topics_start_index_value)
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   size_t padded_top_topics_start_index =
       static_cast<size_t>(*padded_top_topics_start_index_value);
@@ -95,36 +104,28 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   absl::optional<int> taxonomy_size_value =
       dict_value.FindInt(kTaxonomySizeNameKey);
   if (!taxonomy_size_value)
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   size_t taxonomy_size = static_cast<size_t>(*taxonomy_size_value);
 
   absl::optional<int> taxonomy_version_value =
       dict_value.FindInt(kTaxonomyVersionNameKey);
   if (!taxonomy_version_value)
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   int taxonomy_version = *taxonomy_version_value;
 
   const base::Value* model_version_value =
       dict_value.Find(kModelVersionNameKey);
   if (!model_version_value)
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   absl::optional<int64_t> model_version_int64_value =
       base::ValueToInt64(model_version_value);
   if (!model_version_int64_value)
-    return EpochTopics();
+    return EpochTopics(calculation_time);
 
   int64_t model_version = *model_version_int64_value;
-
-  const base::Value* calculation_time_value =
-      dict_value.Find(kCalculationTimeNameKey);
-  if (!calculation_time_value)
-    return EpochTopics();
-
-  base::Time calculation_time =
-      base::ValueToTime(calculation_time_value).value();
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
                      padded_top_topics_start_index, taxonomy_size,

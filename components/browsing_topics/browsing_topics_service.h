@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_H_
 
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom-forward.h"
+#include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,9 +27,12 @@ class BrowsingTopicsService : public KeyedService {
       const url::Origin& context_origin,
       content::RenderFrameHost* main_frame) = 0;
 
-  // Get the topics state to show in the chrome://topics-internals page.
-  virtual mojom::WebUIGetBrowsingTopicsStateResultPtr
-  GetBrowsingTopicsStateForWebUi() const = 0;
+  // Get the topics state to show in the chrome://topics-internals page. If
+  // `calculate_now` is true, this will first trigger a calculation before
+  // invoking `callback` with the topics state.
+  virtual void GetBrowsingTopicsStateForWebUi(
+      bool calculate_now,
+      mojom::PageHandler::GetBrowsingTopicsStateCallback callback) = 0;
 
   // Return the topics (i.e. one topic from each epoch) that can be potentially
   // exposed to a given site. Up to `kBrowsingTopicsNumberOfEpochsToExpose`

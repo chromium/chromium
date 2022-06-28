@@ -141,8 +141,10 @@ interface PageHandler {
   // Get the features and configuration parameters related to the topics API.
   GetBrowsingTopicsConfiguration() => (WebUIBrowsingTopicsConfiguration config);
 
-  // Get the topics state.
-  GetBrowsingTopicsState() => (WebUIGetBrowsingTopicsStateResult result);
+  // Get the topics state. If `calculate_now` is true, this will first trigger a
+  // calculation before returning the topics state.
+  GetBrowsingTopicsState(bool calculate_now)
+    => (WebUIGetBrowsingTopicsStateResult result);
 
   // Get the model metadata.
   GetModelInfo() => (WebUIGetModelInfoResult result);

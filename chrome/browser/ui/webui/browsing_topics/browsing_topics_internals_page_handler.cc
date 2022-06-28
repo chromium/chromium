@@ -55,6 +55,7 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
 }
 
 void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsState(
+    bool calculate_now,
     browsing_topics::mojom::PageHandler::GetBrowsingTopicsStateCallback
         callback) {
   browsing_topics::BrowsingTopicsService* browsing_topics_service =
@@ -69,8 +70,8 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsState(
     return;
   }
 
-  std::move(callback).Run(
-      browsing_topics_service->GetBrowsingTopicsStateForWebUi());
+  browsing_topics_service->GetBrowsingTopicsStateForWebUi(calculate_now,
+                                                          std::move(callback));
 }
 
 void BrowsingTopicsInternalsPageHandler::GetModelInfo(

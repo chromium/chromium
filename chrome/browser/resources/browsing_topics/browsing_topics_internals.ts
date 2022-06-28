@@ -18,6 +18,11 @@ function setElementVisible(id: string, visible: boolean) {
   element!.style.display = visible ? 'block' : 'none';
 }
 
+function setButtonEnabled(id: string, enabled: boolean) {
+  const element = document.querySelector<HTMLButtonElement>('#' + id);
+  element!.disabled = !enabled;
+}
+
 function decodeString16(arr: String16) {
   return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
@@ -155,8 +160,22 @@ async function asyncGetBrowsingTopicsConfiguration() {
   });
 }
 
-async function asyncGetBrowsingTopicsState() {
-  const response = await pageHandler.getBrowsingTopicsState();
+async function asyncGetBrowsingTopicsState(calculateNow: boolean) {
+  // Clear and hide existing content.
+  document.querySelector('#epoch-div-list-wrapper')!.innerHTML = '';
+  setElementVisible('topics-state-override-status-message-div', false);
+  setElementVisible('topics-state-div', false);
+
+  // Disable the buttons to make sure only one request (either Refresh or
+  // Calculate Now) can be made at a time.
+  setButtonEnabled('refresh-topics-state-button', false);
+  setButtonEnabled('calculate-now-button', false);
+
+  const response = await pageHandler.getBrowsingTopicsState(calculateNow);
+
+  setButtonEnabled('refresh-topics-state-button', true);
+  setButtonEnabled('calculate-now-button', true);
+
   const result = response.result;
 
   if (result.overrideStatusMessage) {
@@ -169,7 +188,8 @@ async function asyncGetBrowsingTopicsState() {
 
   setElementVisible('topics-state-div', true);
 
-  document.querySelector('#next-scheduled-calculation-time-div')!.textContent +=
+  document.querySelector('#next-scheduled-calculation-time-div')!.textContent =
+      'Next scheduled calculation time: ' +
       formatMojoTime(result.browsingTopicsState!.nextScheduledCalculationTime);
 
   result.browsingTopicsState!.epochs.forEach((epoch) => {
@@ -345,6 +365,17 @@ document.addEventListener('DOMContentLoaded', function() {
   setElementVisible('hosts-classification-result-table-wrapper', false);
 
   asyncGetBrowsingTopicsConfiguration();
-  asyncGetBrowsingTopicsState();
   asyncGetModelInfo();
+
+  document.querySelector('#refresh-topics-state-button')!.addEventListener(
+      'click', () => {
+        asyncGetBrowsingTopicsState(/*calculateNow=*/ false);
+      });
+
+  document.querySelector('#calculate-now-button')!.addEventListener(
+      'click', () => {
+        asyncGetBrowsingTopicsState(/*calculateNow=*/ true);
+      });
+
+  asyncGetBrowsingTopicsState(/*calculateNow=*/ false);
 });

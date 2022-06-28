@@ -34,13 +34,19 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       optimization_guide::PageContentAnnotationsService* annotations_service,
+      const base::circular_deque<EpochTopics>& epochs,
       CalculateCompletedCallback callback,
       base::queue<uint64_t> rand_uint64_queue);
 
   // Initialize a mock `BrowsingTopicsCalculator` (with mock result and delay).
-  TesterBrowsingTopicsCalculator(CalculateCompletedCallback callback,
-                                 EpochTopics mock_result,
-                                 base::TimeDelta mock_result_delay);
+  TesterBrowsingTopicsCalculator(
+      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+      history::HistoryService* history_service,
+      content::BrowsingTopicsSiteDataManager* site_data_manager,
+      optimization_guide::PageContentAnnotationsService* annotations_service,
+      CalculateCompletedCallback callback,
+      EpochTopics mock_result,
+      base::TimeDelta mock_result_delay);
 
   ~TesterBrowsingTopicsCalculator() override;
 
@@ -67,7 +73,7 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
   base::queue<uint64_t> rand_uint64_queue_;
 
   bool use_mock_result_ = false;
-  EpochTopics mock_result_;
+  EpochTopics mock_result_{base::Time()};
   base::TimeDelta mock_result_delay_;
   CalculateCompletedCallback finish_callback_;
 
@@ -83,10 +89,10 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
               GetBrowsingTopicsForJsApi,
               (const url::Origin&, content::RenderFrameHost*),
               (override));
-  MOCK_METHOD(mojom::WebUIGetBrowsingTopicsStateResultPtr,
+  MOCK_METHOD(void,
               GetBrowsingTopicsStateForWebUi,
-              (),
-              (const override));
+              (bool, mojom::PageHandler::GetBrowsingTopicsStateCallback),
+              (override));
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetTopicsForSiteForDisplay,
               (const url::Origin&),

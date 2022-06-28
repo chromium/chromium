@@ -24,12 +24,15 @@
   <div slot="tab">Classifier</div>
   <div slot="tab">Features and Parameters</div>
   <div id="topics-state-slot" slot="panel" class="panel">
+    <div class="refresh-state-buttons-div">
+      <button type="button" id="refresh-topics-state-button" class="refresh-state-button">Refresh</button>
+      <button type="button" id="calculate-now-button" class="refresh-state-button">Calculate Now</button>
+    </div>
     <div id="topics-state-override-status-message-div" class="topics-state-div"></div>
     <div id="topics-state-div" class="topics-state-div">
       <div id="next-scheduled-calculation-time-div">Next scheduled calculation time: </div>
-      <div id="epoch-div-list-wrapper">
-        <h3 class="epochs-header">Epochs (latest -> oldest)</h3>
-      </div>
+      <h3 class="epochs-header">Epochs (latest -> oldest)</h3>
+      <div id="epoch-div-list-wrapper"></div>
     </div>
   </div>
   <div id="classifier-slot" slot="panel" class="panel">
