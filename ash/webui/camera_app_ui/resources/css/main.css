@@ -378,14 +378,18 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   background-image: url(/images/camera_shutter_photo_start.svg);
 }
 
-#start-takephoto:hover,
+body:not(.taking) #start-takephoto:hover,
 #video-snapshot:hover {
   background-image: url(/images/camera_shutter_photo_start_hover.svg);
 }
 
-#start-takephoto:active,
+body:not(.taking) #start-takephoto:active,
 #video-snapshot:active {
   background-image: url(/images/camera_shutter_photo_start_active.svg);
+}
+
+body.taking #start-takephoto:active {
+  transform: unset;
 }
 
 #stop-takephoto {
