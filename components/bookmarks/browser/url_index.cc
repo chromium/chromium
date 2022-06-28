@@ -144,9 +144,12 @@ UrlLoadStats UrlIndex::ComputeStats() const {
       bookmarks_with_same_url.clear();
     }
 
+    stats.avg_num_days_since_added +=
+        (base::Time::Now() - (*i)->date_added()).InDays();
     bookmarks_with_same_url.push_back(*i);
   }
 
+  stats.avg_num_days_since_added /= nodes_ordered_by_url_set_.size();
   AddStatsForBookmarksWithSameUrl(&bookmarks_with_same_url, &stats);
   return stats;
 }

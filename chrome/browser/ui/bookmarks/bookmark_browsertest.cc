@@ -480,6 +480,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
   EXPECT_THAT(histogram_tester()->GetAllSamples(
                   "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitleAndParent"),
               testing::ElementsAre(base::Bucket(/*min=*/6, /*count=*/1)));
+  EXPECT_THAT(histogram_tester()->GetAllSamples(
+                  "Bookmarks.Times.OnProfileLoad.TimeSinceAdded"),
+              testing::ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

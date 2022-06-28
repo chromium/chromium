@@ -700,6 +700,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Times.OnProfileLoad.TimeSinceAdded" units="days"
+    expires_after="2023-06-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the average number of days since each bookmark was added. Recorded
+    on profile load.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.UsageCountPerProfileType" enum="BrowserProfileType"
     expires_after="2022-12-18">
   <owner>rhalavati@chromium.org</owner>

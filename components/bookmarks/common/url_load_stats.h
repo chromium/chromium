@@ -23,6 +23,8 @@ struct UrlLoadStats {
   // parent> that is used by at least one other bookmark, excluding one
   // bookmark per unique URL (i.e. all except one are considered duplicates).
   size_t duplicate_url_and_title_and_parent_bookmark_count = 0;
+  // Average number of days since each bookmark was added.
+  size_t avg_num_days_since_added = 0;
 };
 
 }  // namespace bookmarks

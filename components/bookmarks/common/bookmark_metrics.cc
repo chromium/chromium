@@ -72,6 +72,9 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
       base::saturated_cast<int>(
           stats.total_url_bookmark_count -
           stats.duplicate_url_and_title_and_parent_bookmark_count));
+  base::UmaHistogramCounts1000(
+      "Bookmarks.Times.OnProfileLoad.TimeSinceAdded",
+      base::saturated_cast<int>(stats.avg_num_days_since_added));
 }
 
 }  // namespace bookmarks::metrics
