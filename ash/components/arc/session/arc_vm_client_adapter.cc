@@ -1101,10 +1101,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     VLOG(1) << "Starting upstart jobs for UpgradeArc()";
     std::vector<std::string> environment{
         "CHROMEOS_USER=" +
-            cryptohome::CreateAccountIdentifierFromIdentification(
-                cryptohome_id_)
-                .account_id(),
-        "CHROMEOS_USER_ID_HASH=" + user_id_hash_};
+        cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_)
+            .account_id()};
     std::deque<JobDesc> jobs{
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_START,
                 std::move(environment)},
