@@ -6,7 +6,7 @@
  * @fileoverview Recent date bucket definition and util functions.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {util} from './util.js';
 
 /**
  * Given a date and now date, return the date bucket it belongs to.
@@ -30,7 +30,7 @@ export function getRecentDateBucket(date, now) {
     return chrome.fileManagerPrivate.RecentDateBucket.YESTERDAY;
   }
   const startOfThisWeek = new Date(startOfToday);
-  const localeBasedWeekStart = loadTimeData.getInteger('WEEK_START_FROM') || 0;
+  const localeBasedWeekStart = util.getLocaleBasedWeekStart();
   const daysDiff = (startOfToday.getDay() - localeBasedWeekStart + 7) % 7;
   startOfThisWeek.setDate(startOfToday.getDate() - daysDiff);
   if (date >= startOfThisWeek) {
@@ -45,4 +45,39 @@ export function getRecentDateBucket(date, now) {
     return chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_YEAR;
   }
   return chrome.fileManagerPrivate.RecentDateBucket.OLDER;
+}
+
+/**
+ * @param {!chrome.fileManagerPrivate.RecentDateBucket} dateBucket
+ * @return {!string}
+ */
+export function getTranslationKeyForDateBucket(dateBucket) {
+  /** @type {Map<chrome.fileManagerPrivate.RecentDateBucket, string>} */
+  const DATE_BUCKET_TO_TRANSLATION_KEY_MAP = new Map([
+    [
+      chrome.fileManagerPrivate.RecentDateBucket.TODAY,
+      'RECENT_TIME_HEADING_TODAY'
+    ],
+    [
+      chrome.fileManagerPrivate.RecentDateBucket.YESTERDAY,
+      'RECENT_TIME_HEADING_YESTERDAY'
+    ],
+    [
+      chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_WEEK,
+      'RECENT_TIME_HEADING_THIS_WEEK'
+    ],
+    [
+      chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_MONTH,
+      'RECENT_TIME_HEADING_THIS_MONTH'
+    ],
+    [
+      chrome.fileManagerPrivate.RecentDateBucket.EARLIER_THIS_YEAR,
+      'RECENT_TIME_HEADING_THIS_YEAR'
+    ],
+    [
+      chrome.fileManagerPrivate.RecentDateBucket.OLDER,
+      'RECENT_TIME_HEADING_OLDER'
+    ],
+  ]);
+  return DATE_BUCKET_TO_TRANSLATION_KEY_MAP.get(dateBucket);
 }

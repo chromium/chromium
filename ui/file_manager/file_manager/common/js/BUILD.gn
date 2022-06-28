@@ -304,8 +304,8 @@ js_library("power") {
 
 js_library("recent_date_bucket") {
   deps = [
+    ":util",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

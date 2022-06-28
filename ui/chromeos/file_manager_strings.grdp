@@ -98,6 +98,24 @@
   <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_RESET" desc="Message read by Chromevox/screenreader when the filter in Recent is reset to All.">
     Filter is reset.
   </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_TODAY" desc="Time period heading label for Today in Recent view.">
+    Today
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_YESTERDAY" desc="Time period heading label for Yesterday in Recent view.">
+    Yesterday
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_THIS_WEEK" desc="Time period heading label for This Week in Recent view.">
+    Earlier this week
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_THIS_MONTH" desc="Time period heading label for This Month in Recent view.">
+    Earlier this month
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_THIS_YEAR" desc="Time period heading label for This Year in Recent view.">
+    Earlier this year
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_OLDER" desc="Time period heading label for Older in Recent view.">
+    Older
+  </message>
   <message name="IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL" desc="Parallels local directory label.">
     Windows files
   </message>

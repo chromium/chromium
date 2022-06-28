@@ -576,7 +576,10 @@ export class FileTable extends Table {
       return;
     }
     const fieldName = cm.getId(index);
-    const sortStatus = this.dataModel.sortStatus;
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const sortStatus = fileListModel.sortStatus;
+    const isGroupHeadingShownBeforeSort =
+        fileListModel.shouldShowGroupHeading();
 
     let sortDirection = cm.getDefaultOrder(index);
     if (sortStatus.field === fieldName) {
@@ -592,6 +595,15 @@ export class FileTable extends Table {
     // Delegate to parent to sort.
     super.sort(index);
     this.a11y.speakA11yMessage(msg);
+
+    // Sort doesn't trigger redraw sometimes, e.g. if we sort by Name for now,
+    // then we sort by time, if the list order doesn't change, no permuted event
+    // is triggered, thus no redraw is triggered. In this scenario, we need to
+    // manually trigger a redraw to remove/add the group heading.
+    const isGroupHeadingShownAfterSort = fileListModel.shouldShowGroupHeading();
+    if (isGroupHeadingShownBeforeSort !== isGroupHeadingShownAfterSort) {
+      this.list.redraw();
+    }
   }
 
   /**

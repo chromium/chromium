@@ -13,6 +13,7 @@ import {FileType} from '../../../common/js/file_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
@@ -24,6 +25,9 @@ import {TableList} from './table/table_list.js';
  * Namespace for utility functions.
  */
 const filelist = {};
+
+// Group Heading height, align with CSS #list-container li[group-heading].
+const GROUP_HEADING_HEIGHT = 56;
 
 /**
  * File table list.
@@ -41,6 +45,14 @@ export class FileTableList extends TableList {
   }
 
   /**
+   * Returns the height of group heading.
+   * @return {number} The height of group heading.
+   */
+  getGroupHeadingHeight_() {
+    return GROUP_HEADING_HEIGHT;
+  }
+
+  /**
    * @param {function(number, number)} onMergeItems callback called from
    *     |mergeItems| with the parameters |beginIndex| and |endIndex|.
    */
@@ -53,6 +65,13 @@ export class FileTableList extends TableList {
   mergeItems(beginIndex, endIndex) {
     super.mergeItems(beginIndex, endIndex);
 
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot =
+        fileListModel ? fileListModel.getGroupBySnapshot() : [];
+    const startIndexToGroupLabel = new Map(groupBySnapshot.map(group => {
+      return [group.startIndex, group];
+    }));
+
     // Make sure that list item's selected attribute is updated just after the
     // mergeItems operation is done. This prevents checkmarks on selected items
     // from being animated unintentionally by redraw.
@@ -64,6 +83,12 @@ export class FileTableList extends TableList {
       const isSelected = this.selectionModel.getIndexSelected(i);
       if (item.selected !== isSelected) {
         item.selected = isSelected;
+      }
+      // Check if index i is the start of a new group.
+      if (startIndexToGroupLabel.has(i)) {
+        item.setAttribute('group-heading', startIndexToGroupLabel.get(i).label);
+      } else {
+        item.removeAttribute('group-heading');
       }
     }
 
@@ -88,6 +113,117 @@ export class FileTableList extends TableList {
    */
   getItemLabel(index) {
     return this.table.getItemLabel(index);
+  }
+
+  /**
+   * Given a index, return how many group headings are there before this index.
+   * Note: not include index itself.
+   * @param {number} index
+   * @return {number}
+   * @private
+   */
+  getGroupHeadingCountBeforeIndex_(index) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    let count = 0;
+    for (const group of groupBySnapshot) {
+      // index - 1 because we don't want to include index itself.
+      if (group.startIndex <= index - 1) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Given a index, return how many group headings are there after this index.
+   * Note: not include index itself.
+   * @param {number} index
+   * @return {number}
+   * @private
+   */
+  getGroupHeadingCountAfterIndex_(index) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    if (groupBySnapshot.length > 0) {
+      const countBeforeIndex = this.getGroupHeadingCountBeforeIndex_(index + 1);
+      return groupBySnapshot.length - countBeforeIndex;
+    }
+    return 0;
+  }
+
+  /**
+   * Given a offset (e.g. scrollTop), return how many items can be included
+   * within this height. Override here because previously we just need to use
+   * the total height (offset) to divide the item height, now we also need to
+   * consider the potential group headings included in these items.
+   * @override
+   */
+  getIndexForListOffset_(offset) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    const itemHeight = this.getDefaultItemHeight_();
+
+    // Without heading the original logic suffices.
+    if (groupBySnapshot.length === 0 || !itemHeight) {
+      return super.getIndexForListOffset_(offset);
+    }
+
+    // Loop through all the groups, calculate the accumulated height for all
+    // items (item height + group heading height), until the total height
+    // reaches "offset", then we know how many items can be included in this
+    // offset.
+    let currentHeight = 0;
+    for (const group of groupBySnapshot) {
+      const groupHeight = this.getGroupHeadingHeight_() +
+          (group.endIndex - group.startIndex + 1) * itemHeight;
+
+      if (currentHeight + groupHeight > offset) {
+        // Current offset falls into the current group. Calculates how many
+        // items in the offset within the group.
+        const remainingOffsetInGroup =
+            Math.max(0, offset - this.getGroupHeadingHeight_() - currentHeight);
+        return group.startIndex +
+            Math.floor(remainingOffsetInGroup / itemHeight);
+      }
+      currentHeight += groupHeight;
+    }
+    return fileListModel.length - 1;
+  }
+
+  /**
+   * Given an index, return the height (top) of all items before this index.
+   * Override here because previously we just need to use the index to multiply
+   * the item height, now we also need to add up the potential group heading
+   * heights included in these items.
+   * @override
+   */
+  getItemTop(index) {
+    const itemHeight = this.getDefaultItemHeight_();
+    const countOfGroupHeadings = this.getGroupHeadingCountBeforeIndex_(index);
+    return index * itemHeight +
+        countOfGroupHeadings * this.getGroupHeadingHeight_();
+  }
+
+  /**
+   * Given an index, return the height of all items after this index.
+   * Override here because previously we just need to use the remaining index
+   * to multiply the item height, now we also need to add up the potential
+   * group heading heights included in these items.
+   * @override
+   */
+  getAfterFillerHeight(lastIndex) {
+    if (lastIndex === 0) {
+      // A special case handled in the parent class, delegate it back to parent.
+      return super.getAfterFillerHeight(lastIndex);
+    }
+    const itemHeight = this.getDefaultItemHeight_();
+    const countOfGroupHeadings =
+        this.getGroupHeadingCountAfterIndex_(lastIndex);
+    return (this.dataModel.length - lastIndex) * itemHeight +
+        countOfGroupHeadings * this.getGroupHeadingHeight_();
   }
 }
 

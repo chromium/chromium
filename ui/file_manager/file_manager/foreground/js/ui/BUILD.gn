@@ -426,6 +426,7 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -451,6 +452,7 @@ js_unittest("file_table_list_unittest") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

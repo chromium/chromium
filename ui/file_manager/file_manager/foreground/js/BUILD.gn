@@ -522,6 +522,7 @@ js_library("file_list_model") {
   deps = [
     "metadata:metadata_model",
     "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:recent_date_bucket",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -979,6 +980,7 @@ js_unittest("list_thumbnail_loader_unittest") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }

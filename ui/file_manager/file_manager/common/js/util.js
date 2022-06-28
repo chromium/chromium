@@ -1306,7 +1306,8 @@ util.isRecentsFilterEnabled = () => {
  * @return {boolean}
  */
 util.isRecentsFilterV2Enabled = () => {
-  return loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
+  return loadTimeData.valueExists('FILTERS_IN_RECENTS_V2_ENABLED') &&
+      loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
 };
 
 /**
@@ -1705,6 +1706,16 @@ util.makeTaskID = function({appId, taskType, actionId}) {
 util.isInGuestMode = async () => {
   const profiles = await promisify(chrome.fileManagerPrivate.getProfiles);
   return profiles.length > 0 && profiles[0].profileId === '$guest';
+};
+
+/**
+ * Get the locale based week start from the load time data.
+ * @returns {number}
+ */
+util.getLocaleBasedWeekStart = () => {
+  return loadTimeData.valueExists('WEEK_START_FROM') ?
+      loadTimeData.getInteger('WEEK_START_FROM') :
+      0;
 };
 
 /**

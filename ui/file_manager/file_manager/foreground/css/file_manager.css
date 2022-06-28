@@ -1754,6 +1754,26 @@ body.files-ng #list-container li {
   border: 1px solid transparent;
 }
 
+/* Modify GROUP_HEADING_HEIGHT in file_table_list.js if this height changes. */
+#list-container li[group-heading] {
+  margin-top: 56px;
+}
+
+#list-container li[group-heading]::before {
+  border-bottom: 1px solid var(--cros-separator-color);
+  color: var(--cros-text-color-secondary);
+  content: attr(group-heading);
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  left: 0;
+  padding: 20px 20px 16px 16px;
+  pointer-events: none;
+  position: absolute;
+  top: -56px;
+  width: 100%;
+}
+
 /*
  * selector "li[lead]" is for the row just being operated on,
  * e.g. with mouse: click/select/unselect

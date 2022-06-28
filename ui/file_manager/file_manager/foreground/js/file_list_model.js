@@ -5,11 +5,42 @@
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
 import {FileExtensionType, FileType} from '../../common/js/file_type.js';
+import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {MetadataModel} from './metadata/metadata_model.js';
+
+const FIELDS_SUPPORT_GROUP_BY = new Set([
+  'modificationTime',
+]);
+
+/**
+ * This represents a group header.
+ *  * startIndex: the start index of this group.
+ *  * endIndex: the end index of this group.
+ *  * label: the group label.
+ *
+ * @typedef {{
+ *   startIndex: number,
+ *   endIndex: number,
+ *   label: string,
+ * }}
+ */
+export let GroupHeader;
+
+/**
+ * This represents the snapshot of a groupBy result.
+ *  * sortDirection: when groupBy is calculated, what the sort order is.
+ *  * groups: the groupBy results, each item is a `GroupHeader` type.
+ *
+ * @typedef {{
+ *   sortDirection: string,
+ *   groups: !Array<!GroupHeader>,
+ * }}
+ */
+let GroupBySnapshot;
 
 /**
  * File list.
@@ -78,6 +109,26 @@ export class FileListModel extends ArrayDataModel {
      *     by label.
      */
     this.locationInfo_ = null;
+
+    /**
+     * @private {boolean}
+     */
+    this.enableGroupHeading_ = false;
+
+    /**
+     * The key is the filed name which is used by groupBy. The value is a
+     * object with type GroupBySnapshot.
+     *
+     * @private {!Object<string, !GroupBySnapshot>}
+     */
+    this.groupBySnapshot_ =
+        Array.from(FIELDS_SUPPORT_GROUP_BY).reduce((acc, field) => {
+          acc[field] = {
+            sortDirection: 'asc',
+            groups: [],
+          };
+          return acc;
+        }, {});
   }
 
   /**
@@ -256,6 +307,8 @@ export class FileListModel extends ArrayDataModel {
     spliceEvent.added = Array.prototype.slice.call(arguments, 2);
     spliceEvent.index = spliceIndex;
     this.dispatchEvent(spliceEvent);
+
+    this.updateGroupBySnapshot_();
 
     return deletedItems;
   }
@@ -480,5 +533,93 @@ export class FileListModel extends ArrayDataModel {
     this.setCompareFunction(
         'name',
         /** @type {function(*, *): number} */ (this.compareLabel_.bind(this)));
+  }
+
+  /**
+   * @param {boolean} value enable or disable group heading.
+   */
+  toggleGroupHeading(value) {
+    this.enableGroupHeading_ = value;
+  }
+
+  /**
+   * Should the current list model show group heading or not.
+   * @return {boolean}
+   */
+  shouldShowGroupHeading() {
+    return util.isRecentsFilterV2Enabled() && this.enableGroupHeading_ &&
+        FIELDS_SUPPORT_GROUP_BY.has(this.sortStatus.field);
+  }
+
+  /**
+   * Update the GroupBy snapshot by the existing sort field.
+   * @private
+   */
+  updateGroupBySnapshot_() {
+    if (!this.shouldShowGroupHeading()) {
+      return;
+    }
+    if (this.sortStatus.field === 'modificationTime') {
+      /** @type {!GroupBySnapshot} */
+      const snapshot = this.groupBySnapshot_.modificationTime;
+      snapshot.sortDirection = this.sortStatus.direction;
+      snapshot.groups = [];
+
+      const now = Date.now();
+      let prevDateBucket = null;
+      for (let i = 0; i < this.length; i++) {
+        const item = this.item(i);
+        const properties = this.metadataModel_.getCache(
+            [item], ['modificationTime', 'modificationByMeTime']);
+        const dateBucket = getRecentDateBucket(
+            new Date(this.getMtime_(properties[0])), new Date(now));
+        if (prevDateBucket !== dateBucket) {
+          if (i > 1) {
+            snapshot.groups[snapshot.groups.length - 1].endIndex = i - 1;
+          }
+          snapshot.groups.push({
+            startIndex: i,
+            endIndex: -1,
+            label: str(getTranslationKeyForDateBucket(dateBucket)),
+          });
+        }
+        prevDateBucket = dateBucket;
+      }
+      if (snapshot.groups.length > 0) {
+        // The last element is always the end of the last group.
+        snapshot.groups[snapshot.groups.length - 1].endIndex = this.length - 1;
+      }
+    }
+  }
+
+  /**
+   * Return the groupBy snapshot.
+   * @return {!Array<!GroupHeader>}
+   */
+  getGroupBySnapshot() {
+    if (!this.shouldShowGroupHeading()) {
+      return [];
+    }
+    if (this.sortStatus.field === 'modificationTime') {
+      /** @type {GroupBySnapshot} */
+      const snapshot = this.groupBySnapshot_.modificationTime;
+      if (this.sortStatus.direction == snapshot.sortDirection) {
+        return snapshot.groups;
+      }
+      // Why are we calculating reverse order data in the snapshot instead
+      // of calculating it inside sort() function? It's because redraw can
+      // happen before sort() finishes, if we generate reverse order data
+      // at the end of sort(), that might be too late for redraw.
+      const reversedGroups = Array.from(snapshot.groups);
+      reversedGroups.reverse();
+      return reversedGroups.map(group => {
+        return {
+          startIndex: this.length - 1 - group.endIndex,
+          endIndex: this.length - 1 - group.startIndex,
+          label: group.label,
+        };
+      });
+    }
+    return [];
   }
 }

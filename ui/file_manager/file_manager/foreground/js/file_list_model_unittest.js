@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {FileListModel} from './file_list_model.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
+
+import {FileListModel, GroupHeader} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 const TEST_METADATA = {
@@ -24,6 +27,45 @@ const TEST_METADATA = {
     modificationTime: new Date(2016, 1, 1, 0, 0, 0),
   },
 };
+
+let originalNow;
+
+export function setUp() {
+  loadTimeData.resetForTesting({
+    'WEEK_START_FROM': 0,
+    'FILTERS_IN_RECENTS_V2_ENABLED': true,
+    'RECENT_TIME_HEADING_TODAY': 'today',
+    'RECENT_TIME_HEADING_YESTERDAY': 'yesterday',
+    'RECENT_TIME_HEADING_THIS_WEEK': 'earlier_this_week',
+    'RECENT_TIME_HEADING_THIS_MONTH': 'earlier_this_month',
+    'RECENT_TIME_HEADING_THIS_YEAR': 'earlier_this_year',
+    'RECENT_TIME_HEADING_OLDER': 'older',
+  });
+
+  // Set up mock of chrome.fileManagerPrivate APIs.
+  const mockChrome = {
+    fileManagerPrivate: {
+      RecentDateBucket: {
+        TODAY: 'today',
+        YESTERDAY: 'yesterday',
+        EARLIER_THIS_WEEK: 'earlier_this_week',
+        EARLIER_THIS_MONTH: 'earlier_this_month',
+        EARLIER_THIS_YEAR: 'earlier_this_year',
+        OLDER: 'older',
+      },
+    },
+  };
+  installMockChrome(mockChrome);
+
+  // Mock Date.now() to: Jun 8 2022, 12:00:00 local time.
+  originalNow = window.Date.now;
+  window.Date.now = () => new Date(2022, 5, 8, 12, 0, 0).getTime();
+}
+
+export function tearDown() {
+  // Restore Date.now().
+  window.Date.now = originalNow;
+}
 
 function assertFileListModelElementNames(fileListModel, names) {
   assertEquals(fileListModel.length, names.length);
@@ -213,4 +255,125 @@ export function testSpliceWithoutDeletingItems() {
       2, 0, {name: 'p', isDirectory: false}, {name: 'b', isDirectory: false});
   assertFileListModelElementNames(
       fileListModel, ['a', 'b', 'd', 'n', 'p', 'x']);
+}
+
+export function testShouldShowGroupHeading() {
+  const fileListModel = makeSimpleFileListModel([]);
+  assertFalse(fileListModel.shouldShowGroupHeading());
+  fileListModel.sort('modificationTime', 'asc');
+  assertFalse(fileListModel.shouldShowGroupHeading());
+  fileListModel.toggleGroupHeading(true);
+  assertTrue(fileListModel.shouldShowGroupHeading());
+}
+
+export function testGetGroupBySnapshot() {
+  /**
+   * @type {!Array<{
+   *  metadataMap: !Object<string, {modificationTime: Date}>,
+   *  expectedGroups: !Array<!GroupHeader>,
+   *  expectedReversedGroups: !Array<!GroupHeader>,
+   * }>}
+   */
+  const testData = [
+    // Empty list.
+    {
+      metadataMap: {},
+      expectedGroups: [],
+      expectedReversedGroups: [],
+    },
+    // Only one item.
+    {
+      metadataMap: {
+        'a.txt': {
+          // Today.
+          modificationTime: new Date(2022, 5, 8, 8, 0, 2),
+        },
+      },
+      expectedGroups: [{startIndex: 0, endIndex: 0, label: 'today'}],
+      expectedReversedGroups: [{startIndex: 0, endIndex: 0, label: 'today'}],
+    },
+    // All items are in the same group.
+    {
+      metadataMap: {
+        'a.txt': {
+          // Today.
+          modificationTime: new Date(2022, 5, 8, 10, 0, 2),
+        },
+        'b.txt': {
+          // Today.
+          modificationTime: new Date(2022, 5, 8, 8, 0, 2),
+        },
+        'c.txt': {
+          // Today.
+          modificationTime: new Date(2022, 5, 8, 6, 0, 2),
+        },
+      },
+      expectedGroups: [{startIndex: 0, endIndex: 2, label: 'today'}],
+      expectedReversedGroups: [{startIndex: 0, endIndex: 2, label: 'today'}],
+    },
+    // Items belong to different groups.
+    {
+      metadataMap: {
+        'a.txt': {
+          // Today.
+          modificationTime: new Date(2022, 5, 8, 8, 0, 2),
+        },
+        'b.txt': {
+          // Today.
+          modificationTime: new Date(2022, 5, 8, 6, 0, 2),
+        },
+        'c.txt': {
+          // Yesterday.
+          modificationTime: new Date(2022, 5, 7, 10, 0, 2),
+        },
+        'd.txt': {
+          // This week.
+          modificationTime: new Date(2022, 5, 6, 10, 0, 2),
+        },
+        'e.txt': {
+          // This week.
+          modificationTime: new Date(2022, 5, 5, 10, 0, 2),
+        },
+        'f.txt': {
+          // This month.
+          modificationTime: new Date(2022, 5, 1, 10, 0, 2),
+        },
+        'g.txt': {
+          // This year.
+          modificationTime: new Date(2022, 4, 5, 10, 0, 2),
+        },
+      },
+      expectedGroups: [
+        {startIndex: 0, endIndex: 1, label: 'today'},
+        {startIndex: 2, endIndex: 2, label: 'yesterday'},
+        {startIndex: 3, endIndex: 4, label: 'earlier_this_week'},
+        {startIndex: 5, endIndex: 5, label: 'earlier_this_month'},
+        {startIndex: 6, endIndex: 6, label: 'earlier_this_year'},
+      ],
+      expectedReversedGroups: [
+        {startIndex: 0, endIndex: 0, label: 'earlier_this_year'},
+        {startIndex: 1, endIndex: 1, label: 'earlier_this_month'},
+        {startIndex: 2, endIndex: 3, label: 'earlier_this_week'},
+        {startIndex: 4, endIndex: 4, label: 'yesterday'},
+        {startIndex: 5, endIndex: 6, label: 'today'},
+      ],
+    },
+  ];
+
+  for (const test of testData) {
+    const fileListModel =
+        new FileListModel(createFakeMetadataModel(test.metadataMap));
+    fileListModel.toggleGroupHeading(true);
+    fileListModel.sort('modificationTime', 'desc');
+    const files = Object.keys(test.metadataMap).map(fileName => {
+      return {name: fileName, isDirectory: false};
+    });
+    fileListModel.push(...files);
+    const snapshot = fileListModel.getGroupBySnapshot();
+    assertArrayEquals(snapshot, test.expectedGroups);
+    // Reverse order.
+    fileListModel.sort('modificationTime', 'asc');
+    const snapshotReverse = fileListModel.getGroupBySnapshot();
+    assertArrayEquals(snapshotReverse, test.expectedReversedGroups);
+  }
 }
