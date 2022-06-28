@@ -1320,8 +1320,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ChunkCount2" units="chunks"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     The number of chunks parsed while loading a page. Each chunk represents a
@@ -1333,8 +1333,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.InputCharacterCount" units="characters"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     The number of characters processed while parsing a document during page
@@ -1347,8 +1347,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMax2" units="microseconds"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the maximum time used to parse a single chunk before
@@ -1360,8 +1360,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMin2" units="microseconds"
-    expires_after="2022-11-13">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the minimum time used to parse a single chunk before
@@ -1373,8 +1373,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeTotal2" units="microseconds"
-    expires_after="2022-11-13">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the total amount of time spent in the
@@ -1386,8 +1386,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedAverage2" units="tokens"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the average number of tokens parsed across all chunks.
@@ -1398,8 +1398,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMax2" units="tokens"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the maximum number of tokens parsed as a chunk.
@@ -1410,8 +1410,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMin2" units="tokens"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the minimum number of tokens parsed as a chunk.
@@ -1422,8 +1422,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedTotal2" units="tokens"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the total number of tokens parsed across all chunks.
@@ -1434,8 +1434,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeAverage2" units="microseconds"
-    expires_after="2022-11-06">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the average time between parsing of two chunks, in
@@ -1447,8 +1447,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMax2" units="microseconds"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the maximum time between parsing of two chunks, in
@@ -1461,8 +1461,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMin2" units="microseconds"
-    expires_after="2022-06-30">
-  <owner>schenney@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the minimum time between parsing of two chunks, in
