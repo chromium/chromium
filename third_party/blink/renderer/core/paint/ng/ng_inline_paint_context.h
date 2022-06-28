@@ -19,7 +19,7 @@ class CORE_EXPORT NGInlinePaintContext {
   STACK_ALLOCATED();
 
  public:
-  using DecoratingBoxList = Vector<NGDecoratingBox, 1>;
+  using DecoratingBoxList = Vector<NGDecoratingBox, 4>;
   const DecoratingBoxList& DecoratingBoxes() const { return decorating_boxes_; }
 
   NGInlineCursor CursorForDescendantsOfLine() const {
