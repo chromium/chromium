@@ -1330,6 +1330,13 @@
         null,
         {}
        ]
+      ],
+      "contain-nested-crash-002.html": [
+       "42dc06b9938a2cd832fee79e5063ee694fedc307",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -427499,7 +427506,7 @@
        ]
       ],
       "request-headers.any.js": [
-       "c48e24e5bc63f64c7053152149eee6e17234ef78",
+       "cb34e5a790a6370259b45a00c477466da78ceab2",
        [
         "fetch/api/request/request-headers.any.html",
         {
@@ -474892,14 +474899,14 @@
        ]
       ],
       "popup-animation-corner-cases.tentative.html": [
-       "5707e604d90e3383a584d321f3b2d3c60e5dff62",
+       "e85d1f72f2f4920c1b09110c320882f1f3e287bc",
        [
         null,
         {}
        ]
       ],
       "popup-attribute-basic.tentative.html": [
-       "e7c2c316881b33c5925494e94501a5dd305b45ae",
+       "145651173cf597d6d64f2c29fb0ec53792b0b4d5",
        [
         null,
         {}
@@ -474927,14 +474934,14 @@
        ]
       ],
       "popup-events.tentative.html": [
-       "fb8d9c1e424fc8c6bf6dfaedf39702c089206b94",
+       "b82e1c7c483e753871cfde02da602083f87be3bc",
        [
         null,
         {}
        ]
       ],
       "popup-focus.tentative.html": [
-       "c9a696e82067adeadf791d7e379ca7e96423cba4",
+       "f4fea330b65aa14c6576e2563bf86d25de21bad8",
        [
         null,
         {
@@ -474994,7 +475001,7 @@
        ]
       ],
       "popup-shadow-dom.tentative.html": [
-       "95fd3db07d51bab8500c2ec1350867cf81c0ff2f",
+       "f2cb31a389cef0de615915830a09e055c2afa866",
        [
         null,
         {}
