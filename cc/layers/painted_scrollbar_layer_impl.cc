@@ -130,7 +130,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
     quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
                  scaled_visible_thumb_quad_rect, needs_blending,
                  thumb_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped,
+                 uv_bottom_right, SkColors::kTransparent, opacity, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
     ValidateQuadResources(quad);
@@ -150,7 +150,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
     quad->SetNew(shared_quad_state, scaled_track_quad_rect,
                  scaled_visible_track_quad_rect, needs_blending,
                  track_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped,
+                 uv_bottom_right, SkColors::kTransparent, opacity, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
     ValidateQuadResources(quad);

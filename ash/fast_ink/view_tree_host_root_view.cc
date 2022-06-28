@@ -490,7 +490,7 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
       quad_state, quad_rect, quad_rect,
       /*needs_blending=*/true, transferable_resource.id,
       /*premultiplied_alpha=*/true, uv_crop.origin(), uv_crop.bottom_right(),
-      SK_ColorTRANSPARENT, vertex_opacity,
+      SkColors::kTransparent, vertex_opacity,
       /*y_flipped=*/false,
       /*nearest_neighbor=*/false,
       /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);

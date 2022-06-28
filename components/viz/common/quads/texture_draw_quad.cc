@@ -38,7 +38,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              bool premultiplied,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
-                             SkColor background,
+                             SkColor4f background,
                              const float opacity[4],
                              bool flipped,
                              bool nearest,
@@ -53,7 +53,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
-  background_color = SkColor4f::FromColor(background);
+  background_color = background;
   vertex_opacity[0] = opacity[0];
   vertex_opacity[1] = opacity[1];
   vertex_opacity[2] = opacity[2];
@@ -73,7 +73,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              bool premultiplied,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
-                             SkColor background,
+                             SkColor4f background,
                              const float opacity[4],
                              bool flipped,
                              bool nearest,
@@ -87,7 +87,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
-  background_color = SkColor4f::FromColor(background);
+  background_color = background;
   vertex_opacity[0] = opacity[0];
   vertex_opacity[1] = opacity[1];
   vertex_opacity[2] = opacity[2];

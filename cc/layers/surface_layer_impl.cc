@@ -182,9 +182,8 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   if (surface_range_.IsValid()) {
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                 surface_range_, background_color().toSkColor(),
+                 surface_range_, background_color(),
                  stretch_content_to_fill_bounds_);
     quad->is_reflection = is_reflection_;
     // Add the primary surface ID as a dependency.
@@ -200,10 +199,8 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   } else {
     auto* quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                 background_color().toSkColor(),
-                 false /* force_anti_aliasing_off */);
+                 background_color(), false /* force_anti_aliasing_off */);
   }
 
   // Unless the client explicitly specifies otherwise, don't block on
@@ -236,10 +233,10 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       render_pass->CreateAndAppendSharedQuadState();
   PopulateSharedQuadState(shared_quad_state, contents_opaque());
 
-  SkColor4f color;
   float border_width;
-  GetDebugBorderProperties(&color, &border_width);
+  GetDebugBorderProperties(nullptr, &border_width);
 
+  // TODO(crbug.com/1308932) Make these SkColor4fs
   SkColor colors[] = {
       0x80ff0000,  // Red.
       0x80ffa500,  // Orange.
@@ -274,14 +271,16 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       bool force_anti_aliasing_off = false;
       auto* top_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      top_quad->SetNew(shared_quad_state, top, top, colors[i % kNumColors],
+      top_quad->SetNew(shared_quad_state, top, top,
+                       SkColor4f::FromColor(colors[i % kNumColors]),
                        force_anti_aliasing_off);
 
       auto* bottom_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      bottom_quad->SetNew(shared_quad_state, bottom, bottom,
-                          colors[kNumColors - 1 - (i % kNumColors)],
-                          force_anti_aliasing_off);
+      bottom_quad->SetNew(
+          shared_quad_state, bottom, bottom,
+          SkColor4f::FromColor(colors[kNumColors - 1 - (i % kNumColors)]),
+          force_anti_aliasing_off);
 
       if (contents_opaque()) {
         // Draws a stripe filling the layer vertically with the same color and
@@ -295,7 +294,8 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
             static_cast<uint8_t>(SkColorGetA(colors[i % kNumColors]) *
                                  kFillOpacity));
         gfx::Rect fill_rect(x, 0, width, bounds().height());
-        solid_quad->SetNew(shared_quad_state, fill_rect, fill_rect, fill_color,
+        solid_quad->SetNew(shared_quad_state, fill_rect, fill_rect,
+                           SkColor4f::FromColor(fill_color),
                            force_anti_aliasing_off);
       }
     }
@@ -303,14 +303,16 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       bool force_anti_aliasing_off = false;
       auto* left_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      left_quad->SetNew(shared_quad_state, left, left,
-                        colors[kNumColors - 1 - (i % kNumColors)],
-                        force_anti_aliasing_off);
+      left_quad->SetNew(
+          shared_quad_state, left, left,
+          SkColor4f::FromColor(colors[kNumColors - 1 - (i % kNumColors)]),
+          force_anti_aliasing_off);
 
       auto* right_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
       right_quad->SetNew(shared_quad_state, right, right,
-                         colors[i % kNumColors], force_anti_aliasing_off);
+                         SkColor4f::FromColor(colors[i % kNumColors]),
+                         force_anti_aliasing_off);
     }
   }
 }

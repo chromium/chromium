@@ -46,7 +46,8 @@ void AppendSurfaceDrawQuad(viz::CompositorRenderPass& render_pass,
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
                        viz::SurfaceRange(absl::nullopt, child_id),
-                       SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
+                       SkColors::kWhite,
+                       /*stretch_content_to_fill_bounds=*/false);
 }
 
 void AppendSolidColorDrawQuad(viz::CompositorRenderPass& render_pass) {
@@ -63,7 +64,7 @@ void AppendSolidColorDrawQuad(viz::CompositorRenderPass& render_pass) {
       render_pass.CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   solid_color_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                            gfx::Rect(quad_state->quad_layer_rect),
-                           SK_ColorWHITE, /*force_anti_aliasing_off=*/false);
+                           SkColors::kWhite, /*force_anti_aliasing_off=*/false);
 }
 
 class VizClient : public viz::mojom::CompositorFrameSinkClient {

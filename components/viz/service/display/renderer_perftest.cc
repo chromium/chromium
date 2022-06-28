@@ -200,9 +200,12 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   const bool nearest_neighbor = false;
   const float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+
+  // TODO(crbug.com/1308932): Input SkColor4f to this function
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, vertex_opacity, flipped, nearest_neighbor,
+               SkColor4f::FromColor(background_color), vertex_opacity, flipped,
+               nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 }
 

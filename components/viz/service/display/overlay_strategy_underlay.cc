@@ -185,10 +185,10 @@ void OverlayStrategyUnderlay::CommitCandidate(
   // need to switch out the video quad with an underlay hole quad.
   if (proposed_candidate.candidate.has_mask_filter) {
     render_pass->ReplaceExistingQuadWithSolidColor(
-        proposed_candidate.quad_iter, SK_ColorBLACK, SkBlendMode::kDstOut);
+        proposed_candidate.quad_iter, SkColors::kBlack, SkBlendMode::kDstOut);
   } else {
     render_pass->ReplaceExistingQuadWithSolidColor(proposed_candidate.quad_iter,
-                                                   SK_ColorTRANSPARENT,
+                                                   SkColors::kTransparent,
                                                    SkBlendMode::kSrcOver);
   }
 }

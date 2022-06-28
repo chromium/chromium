@@ -104,7 +104,7 @@ class SurfaceSavedFrameTest : public testing::Test {
         render_pass.CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     solid_color_quad->SetAll(render_pass.shared_quad_state_list.front(),
                              kQuadLayerRect, kVisibleLayerRect, true,
-                             SK_ColorBLACK, true);
+                             SkColors::kBlack, true);
     return solid_color_quad;
   }
 

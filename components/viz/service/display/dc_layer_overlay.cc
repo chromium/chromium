@@ -605,7 +605,7 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
 
   // Add debug borders for the root damage rect after overlay promotion.
   {
-    SkColor border_color = SK_ColorGREEN;
+    SkColor4f border_color = SkColors::kGreen;
     auto it =
         quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
             quad_list.begin(), 1u);
@@ -625,7 +625,8 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
       overlay_rect.Intersect(gfx::RectF(*dc_layer.clip_rect));
 
     // Overlay:red, Underlay:blue.
-    SkColor border_color = dc_layer.z_order > 0 ? SK_ColorRED : SK_ColorBLUE;
+    SkColor4f border_color =
+        dc_layer.z_order > 0 ? SkColors::kRed : SkColors::kBlue;
     auto it =
         quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
             quad_list.begin(), 1u);
@@ -1073,13 +1074,13 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
 
   if (it->ShouldDrawWithBlending() &&
       it->shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
-    render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorBLACK,
+    render_pass->ReplaceExistingQuadWithSolidColor(it, SkColors::kBlack,
                                                    SkBlendMode::kDstOut);
   } else {
     // When the opacity == 1.0, drawing with transparent will be done without
     // blending and will have the proper effect of completely clearing the
     // layer.
-    render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
+    render_pass->ReplaceExistingQuadWithSolidColor(it, SkColors::kTransparent,
                                                    SkBlendMode::kSrcOver);
     is_opaque = true;
   }

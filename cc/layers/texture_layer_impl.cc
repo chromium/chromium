@@ -147,11 +147,10 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     return;
 
   float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color.toSkColor(), vertex_opacity, flipped_,
+               uv_bottom_right_, bg_color, vertex_opacity, flipped_,
                nearest_neighbor_, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);

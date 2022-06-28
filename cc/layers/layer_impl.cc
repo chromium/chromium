@@ -273,15 +273,14 @@ void LayerImpl::AppendDebugBorderQuad(
   gfx::Rect visible_quad_rect(quad_rect);
   auto* debug_border_quad =
       render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   debug_border_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                            color.toSkColor(), width);
+                            color, width);
   if (contents_opaque()) {
     // When opaque, draw a second inner border that is thicker than the outer
     // border, but more transparent.
     static const float kFillOpacity = 0.3f;
     SkColor4f fill_color = color;
-    color.fA *= kFillOpacity;
+    fill_color.fA *= kFillOpacity;
     float fill_width = width * 3;
     gfx::Rect fill_rect = quad_rect;
     fill_rect.Inset(fill_width / 2.f);
@@ -289,11 +288,10 @@ void LayerImpl::AppendDebugBorderQuad(
       return;
     gfx::Rect visible_fill_rect =
         gfx::IntersectRects(visible_quad_rect, fill_rect);
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     auto* fill_quad =
         render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
     fill_quad->SetNew(shared_quad_state, fill_rect, visible_fill_rect,
-                      fill_color.toSkColor(), fill_width);
+                      fill_color, fill_width);
   }
 }
 

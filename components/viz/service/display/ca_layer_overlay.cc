@@ -639,7 +639,7 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
     return true;
 
   ca_layer.protected_video_type = protected_video_type;
-  render_pass->ReplaceExistingQuadWithSolidColor(at, SK_ColorTRANSPARENT,
+  render_pass->ReplaceExistingQuadWithSolidColor(at, SkColors::kTransparent,
                                                  SkBlendMode::kSrcOver);
   ca_layer_overlays->push_back(ca_layer);
   return true;

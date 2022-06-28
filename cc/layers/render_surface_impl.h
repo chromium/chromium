@@ -90,7 +90,7 @@ class CC_EXPORT RenderSurfaceImpl {
     return nearest_occlusion_immune_ancestor_;
   }
 
-  SkColor GetDebugBorderColor() const;
+  SkColor4f GetDebugBorderColor() const;
   float GetDebugBorderWidth() const;
 
   void SetDrawTransform(const gfx::Transform& draw_transform) {

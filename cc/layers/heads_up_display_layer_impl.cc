@@ -223,7 +223,7 @@ void HeadsUpDisplayLayerImpl::AppendQuads(
   // layers.
   gfx::Rect quad_rect(internal_content_bounds_);
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, quad_rect, quad_rect, SK_ColorTRANSPARENT,
+  quad->SetNew(shared_quad_state, quad_rect, quad_rect, SkColors::kTransparent,
                false);
   ValidateQuadResources(quad);
   current_quad_ = quad;
@@ -491,7 +491,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                    resource_id, /*premultiplied_alpha=*/true,
                    /*uv_top_left=*/gfx::PointF(),
                    /*uv_bottom_right=*/uv_bottom_right,
-                   /*background_color=*/SK_ColorTRANSPARENT, vertex_opacity,
+                   /*background_color=*/SkColors::kTransparent, vertex_opacity,
                    /*flipped=*/false,
                    /*nearest_neighbor=*/false, /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);

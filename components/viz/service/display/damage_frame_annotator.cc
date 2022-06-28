@@ -58,8 +58,10 @@ void DamageFrameAnnotator::AnnotateRootRenderPass(
 
     DebugBorderDrawQuad* new_quad =
         static_cast<DebugBorderDrawQuad*>(*quad_iter);
+    // TODO(crbug.com/1308932) SkColor4f for annotation highlights
     new_quad->SetNew(new_sqs, annotation.rect, annotation.rect,
-                     annotation.highlight.color, annotation.highlight.width);
+                     SkColor4f::FromColor(annotation.highlight.color),
+                     annotation.highlight.width);
 
     ++quad_iter;
   }

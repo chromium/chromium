@@ -233,6 +233,7 @@ CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
   return data_.frame.render_pass_list.back()->id;
 }
 
+// TODO(crbug.com/1308932): Move proto::DrawQuad to SkColor4f
 void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
     CompositorRenderPass* pass,
     const gfx::Rect& rect,
@@ -242,7 +243,7 @@ void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
   ConfigureSharedQuadState(shared_quad_state, quad_spec);
   auto* quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   quad->SetNew(shared_quad_state, rect, visible_rect,
-               quad_spec.solid_color_quad().color(),
+               SkColor4f::FromColor(quad_spec.solid_color_quad().color()),
                quad_spec.solid_color_quad().force_anti_aliasing_off());
 }
 

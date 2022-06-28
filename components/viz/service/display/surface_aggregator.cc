@@ -939,12 +939,11 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
 
   auto* solid_color_quad =
       dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
   solid_color_quad->SetNew(shared_quad_state, surface_quad->rect,
-                           surface_quad->visible_rect,
-                           background_color.toSkColor(), false);
+                           surface_quad->visible_rect, background_color, false);
 }
 
+// TODO(crbug.com/1308932): background_color to SkColor4f
 void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& primary_rect,
     const gfx::Rect& fallback_rect,
@@ -976,7 +975,8 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     auto* right_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     right_gutter->SetNew(shared_quad_state, right_gutter_rect,
-                         right_gutter_rect, background_color, false);
+                         right_gutter_rect,
+                         SkColor4f::FromColor(background_color), false);
   }
 
   if (fallback_rect.height() < primary_rect.height()) {
@@ -993,7 +993,8 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     auto* bottom_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     bottom_gutter->SetNew(shared_quad_state, bottom_gutter_rect,
-                          bottom_gutter_rect, background_color, false);
+                          bottom_gutter_rect,
+                          SkColor4f::FromColor(background_color), false);
   }
 }
 
@@ -1347,7 +1348,7 @@ void SurfaceAggregator::CopyQuadsToPass(
               dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
           solid_color_quad->SetNew(dest_pass->shared_quad_state_list.back(),
                                    quad->rect, quad->visible_rect,
-                                   SK_ColorBLACK, false);
+                                   SkColors::kBlack, false);
           dest_quad = solid_color_quad;
         } else {
           dest_quad = dest_pass->CopyFromAndAppendDrawQuad(quad);

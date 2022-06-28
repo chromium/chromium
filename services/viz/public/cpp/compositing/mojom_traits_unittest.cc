@@ -499,7 +499,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
 
   // DebugBorderDrawQuad.
   const gfx::Rect rect1(1234, 4321, 1357, 7531);
-  const SkColor color1 = SK_ColorRED;
+  const SkColor4f color1 = SkColors::kRed;
   const int32_t width1 = 1337;
   DebugBorderDrawQuad* debug_quad =
       render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
@@ -507,7 +507,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
 
   // SolidColorDrawQuad.
   const gfx::Rect rect2(2468, 8642, 4321, 1234);
-  const uint32_t color2 = 0xffffffff;
+  const SkColor4f color2 = SkColors::kWhite;
   const bool force_anti_aliasing_off = true;
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -580,15 +580,14 @@ TEST_F(StructTraitsTest, CompositorFrame) {
           out_render_pass->quad_list.ElementAt(0));
   EXPECT_EQ(rect1, out_debug_border_draw_quad->rect);
   EXPECT_EQ(rect1, out_debug_border_draw_quad->visible_rect);
-  EXPECT_EQ(SkColor4f::FromColor(color1), out_debug_border_draw_quad->color);
+  EXPECT_EQ(color1, out_debug_border_draw_quad->color);
   EXPECT_EQ(width1, out_debug_border_draw_quad->width);
 
   const SolidColorDrawQuad* out_solid_color_draw_quad =
       SolidColorDrawQuad::MaterialCast(out_render_pass->quad_list.ElementAt(1));
   EXPECT_EQ(rect2, out_solid_color_draw_quad->rect);
   EXPECT_EQ(rect2, out_solid_color_draw_quad->visible_rect);
-  // TODO(crbug.com/1308932) Make color2 an SkColor4f
-  EXPECT_EQ(SkColor4f::FromColor(color2), out_solid_color_draw_quad->color);
+  EXPECT_EQ(color2, out_solid_color_draw_quad->color);
   EXPECT_EQ(force_anti_aliasing_off,
             out_solid_color_draw_quad->force_anti_aliasing_off);
 }
@@ -801,13 +800,13 @@ TEST_F(StructTraitsTest, RenderPass) {
       input->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
   const gfx::Rect debug_quad_rect(12, 56, 89, 10);
   debug_quad->SetNew(shared_state_1, debug_quad_rect, debug_quad_rect,
-                     SK_ColorBLUE, 1337);
+                     SkColors::kBlue, 1337);
 
   SolidColorDrawQuad* color_quad =
       input->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   const gfx::Rect color_quad_rect(123, 456, 789, 101);
   color_quad->SetNew(shared_state_2, color_quad_rect, color_quad_rect,
-                     SK_ColorRED, true);
+                     SkColors::kRed, true);
 
   SurfaceDrawQuad* surface_quad =
       input->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
@@ -818,7 +817,7 @@ TEST_F(StructTraitsTest, RenderPass) {
           absl::nullopt,
           SurfaceId(FrameSinkId(1337, 1234),
                     LocalSurfaceId(1234, base::UnguessableToken::Create()))),
-      SK_ColorYELLOW, false);
+      SkColors::kYellow, false);
   // Test non-default values.
   surface_quad->is_reflection = !surface_quad->is_reflection;
   surface_quad->allow_merge = !surface_quad->allow_merge;
@@ -951,14 +950,14 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
 
   const gfx::Rect rect1(1234, 4321, 1357, 7531);
-  const SkColor color1 = SK_ColorRED;
+  const SkColor4f color1 = SkColors::kRed;
   const int32_t width1 = 1337;
   DebugBorderDrawQuad* debug_quad =
       render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
   debug_quad->SetNew(sqs, rect1, rect1, color1, width1);
 
   const gfx::Rect rect2(2468, 8642, 4321, 1234);
-  const uint32_t color2 = 0xffffffff;
+  const SkColor4f color2 = SkColors::kWhite;
   const bool force_anti_aliasing_off = true;
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -975,7 +974,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
       render_pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   primary_surface_quad->SetNew(
       sqs, rect3, rect3, SurfaceRange(fallback_surface_id, primary_surface_id),
-      SK_ColorBLUE, false);
+      SkColors::kBlue, false);
 
   const gfx::Rect rect4(1234, 5678, 91012, 13141);
   const bool needs_blending = true;
@@ -1003,7 +1002,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const bool premultiplied_alpha = true;
   const gfx::PointF uv_top_left(12.1f, 34.2f);
   const gfx::PointF uv_bottom_right(56.3f, 78.4f);
-  const SkColor background_color = SK_ColorGREEN;
+  const SkColor4f background_color = SkColors::kGreen;
   const bool y_flipped = true;
   const bool nearest_neighbor = true;
   const bool secure_output_only = true;
@@ -1039,7 +1038,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect1, out_debug_border_draw_quad->rect);
   EXPECT_EQ(rect1, out_debug_border_draw_quad->visible_rect);
   EXPECT_FALSE(out_debug_border_draw_quad->needs_blending);
-  EXPECT_EQ(SkColor4f::FromColor(color1), out_debug_border_draw_quad->color);
+  EXPECT_EQ(color1, out_debug_border_draw_quad->color);
   EXPECT_EQ(width1, out_debug_border_draw_quad->width);
 
   const SolidColorDrawQuad* out_solid_color_draw_quad =
@@ -1047,8 +1046,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect2, out_solid_color_draw_quad->rect);
   EXPECT_EQ(rect2, out_solid_color_draw_quad->visible_rect);
   EXPECT_FALSE(out_solid_color_draw_quad->needs_blending);
-  // TODO(crbug.com/1308932) Make color2 an SkColor4f
-  EXPECT_EQ(SkColor4f::FromColor(color2), out_solid_color_draw_quad->color);
+  EXPECT_EQ(color2, out_solid_color_draw_quad->color);
   EXPECT_EQ(force_anti_aliasing_off,
             out_solid_color_draw_quad->force_anti_aliasing_off);
 
@@ -1094,9 +1092,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(premultiplied_alpha, out_texture_draw_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
-  // TODO(crbug.com/1308932) Make background_color an SkColor4f
-  EXPECT_EQ(SkColor4f::FromColor(background_color),
-            out_texture_draw_quad->background_color);
+  EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
   EXPECT_EQ(vertex_opacity[0], out_texture_draw_quad->vertex_opacity[0]);
   EXPECT_EQ(vertex_opacity[1], out_texture_draw_quad->vertex_opacity[1]);
   EXPECT_EQ(vertex_opacity[2], out_texture_draw_quad->vertex_opacity[2]);

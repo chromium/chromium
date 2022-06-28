@@ -1421,11 +1421,12 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       buffer_transform_.TransformRectReverse(&uv_crop);
     }
 
-    SkColor background_color = SK_ColorTRANSPARENT;
+    SkColor4f background_color = SkColors::kTransparent;
     if (state_.basic_state.background_color.has_value())
-      background_color = state_.basic_state.background_color.value();
+      background_color =
+          SkColor4f::FromColor(state_.basic_state.background_color.value());
     else if (current_resource_has_alpha_ && are_contents_opaque)
-      background_color = SK_ColorBLACK;  // Avoid writing alpha < 1
+      background_color = SkColors::kBlack;  // Avoid writing alpha < 1
 
     // If this surface is being replaced by a SurfaceId emit a SurfaceDrawQuad.
     if (get_current_surface_id_) {
@@ -1528,7 +1529,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                         : SK_ColorBLACK;
     viz::SolidColorDrawQuad* solid_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    solid_quad->SetNew(quad_state, quad_rect, quad_rect, color,
+    solid_quad->SetNew(quad_state, quad_rect, quad_rect,
+                       SkColor4f::FromColor(color),
                        false /* force_anti_aliasing_off */);
   }
 

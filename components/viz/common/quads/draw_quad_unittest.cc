@@ -172,19 +172,19 @@ void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
 
 TEST(DrawQuadTest, CopyDebugBorderDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  SkColor color = 0xfabb0011;
+  SkColor4f color = {0.7, 0.0, 0.1, 0.9};
   int width = 99;
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(DebugBorderDrawQuad, visible_rect, color, width);
   EXPECT_EQ(DrawQuad::Material::kDebugBorder, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
-  EXPECT_EQ(SkColor4f::FromColor(color), copy_quad->color);
+  EXPECT_EQ(color, copy_quad->color);
   EXPECT_EQ(width, copy_quad->width);
 
   CREATE_QUAD_ALL(DebugBorderDrawQuad, color, width);
   EXPECT_EQ(DrawQuad::Material::kDebugBorder, copy_quad->material);
-  EXPECT_EQ(SkColor4f::FromColor(color), copy_quad->color);
+  EXPECT_EQ(color, copy_quad->color);
   EXPECT_EQ(width, copy_quad->width);
 }
 
@@ -226,8 +226,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
 
 TEST(DrawQuadTest, CopySolidColorDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  // TODO(crbug.com/1308932): Use SkColor4f here
-  SkColor color = 0x49494949;
+  SkColor4f color = {0.28, 0.28, 0.28, 0.28};
   bool force_anti_aliasing_off = false;
   CREATE_SHARED_STATE();
 
@@ -235,12 +234,12 @@ TEST(DrawQuadTest, CopySolidColorDrawQuad) {
                   force_anti_aliasing_off);
   EXPECT_EQ(DrawQuad::Material::kSolidColor, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
-  EXPECT_EQ(SkColor4f::FromColor(color), copy_quad->color);
+  EXPECT_EQ(color, copy_quad->color);
   EXPECT_EQ(force_anti_aliasing_off, copy_quad->force_anti_aliasing_off);
 
   CREATE_QUAD_ALL(SolidColorDrawQuad, color, force_anti_aliasing_off);
   EXPECT_EQ(DrawQuad::Material::kSolidColor, copy_quad->material);
-  EXPECT_EQ(SkColor4f::FromColor(color), copy_quad->color);
+  EXPECT_EQ(color, copy_quad->color);
   EXPECT_EQ(force_anti_aliasing_off, copy_quad->force_anti_aliasing_off);
 }
 
@@ -284,7 +283,7 @@ TEST(DrawQuadTest, CopySurfaceDrawQuad) {
 
   CREATE_QUAD_NEW(SurfaceDrawQuad, visible_rect,
                   SurfaceRange(fallback_surface_id, primary_surface_id),
-                  SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/true);
+                  SkColors::kWhite, /*stretch_content_to_fill_bounds=*/true);
   EXPECT_EQ(DrawQuad::Material::kSurfaceContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(primary_surface_id, copy_quad->surface_range.end());
@@ -293,7 +292,7 @@ TEST(DrawQuadTest, CopySurfaceDrawQuad) {
 
   CREATE_QUAD_ALL(SurfaceDrawQuad,
                   SurfaceRange(fallback_surface_id, primary_surface_id),
-                  SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false,
+                  SkColors::kWhite, /*stretch_content_to_fill_bounds=*/false,
                   /*is_reflection=*/false, /*allow_merge=*/true);
   EXPECT_EQ(DrawQuad::Material::kSurfaceContent, copy_quad->material);
   EXPECT_EQ(primary_surface_id, copy_quad->surface_range.end());
@@ -320,7 +319,7 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, blending, resource_id,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SK_ColorTRANSPARENT, vertex_opacity, y_flipped,
+                  SkColors::kTransparent, vertex_opacity, y_flipped,
                   nearest_neighbor, secure_output_only, protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
@@ -337,7 +336,7 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 
   CREATE_QUAD_ALL(TextureDrawQuad, resource_id, resource_size_in_pixels,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SK_ColorTRANSPARENT, vertex_opacity, y_flipped,
+                  SkColors::kTransparent, vertex_opacity, y_flipped,
                   nearest_neighbor, secure_output_only, protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id());
@@ -523,7 +522,7 @@ class DrawQuadIteratorTest : public testing::Test {
 
 TEST_F(DrawQuadIteratorTest, DebugBorderDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  SkColor color = 0xfabb0011;
+  SkColor4f color = {0.7, 0.0, 0.1, 0.9};
   int width = 99;
 
   CREATE_SHARED_STATE();
@@ -566,7 +565,7 @@ TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
 
 TEST_F(DrawQuadIteratorTest, SolidColorDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  SkColor color = 0x49494949;
+  SkColor4f color = {0.28, 0.28, 0.28, 0.28};
   bool force_anti_aliasing_off = false;
 
   CREATE_SHARED_STATE();
@@ -599,7 +598,7 @@ TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(SurfaceDrawQuad, visible_rect,
-                  SurfaceRange(absl::nullopt, surface_id), SK_ColorWHITE,
+                  SurfaceRange(absl::nullopt, surface_id), SkColors::kWhite,
                   /*stretch_content_to_fill_bounds=*/false);
   EXPECT_EQ(0, IterateAndCount(quad_new));
 }
@@ -620,7 +619,7 @@ TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, needs_blending, resource_id,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SK_ColorTRANSPARENT, vertex_opacity, y_flipped,
+                  SkColors::kTransparent, vertex_opacity, y_flipped,
                   nearest_neighbor, secure_output_only, protected_video_type);
   EXPECT_EQ(resource_id, quad_new->resource_id());
   EXPECT_EQ(1, IterateAndCount(quad_new));

@@ -11099,7 +11099,7 @@ class FakeLayerWithQuads : public LayerImpl {
         render_pass->CreateAndAppendSharedQuadState();
     PopulateSharedQuadState(shared_quad_state, contents_opaque());
 
-    SkColor gray = SkColorSetRGB(100, 100, 100);
+    SkColor4f gray = SkColors::kGray;
     gfx::Rect quad_rect(bounds());
     gfx::Rect visible_quad_rect(quad_rect);
     auto* my_quad =

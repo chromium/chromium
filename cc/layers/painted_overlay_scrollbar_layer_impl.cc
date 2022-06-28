@@ -162,11 +162,12 @@ void PaintedOverlayScrollbarLayerImpl::AppendTrackQuads(
   float opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   viz::TextureDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  quad->SetNew(
-      shared_quad_state, scaled_track_quad_rect, scaled_visible_track_quad_rect,
-      needs_blending, track_resource_id, premultipled_alpha, uv_top_left,
-      uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped, nearest_neighbor,
-      /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+  quad->SetNew(shared_quad_state, scaled_track_quad_rect,
+               scaled_visible_track_quad_rect, needs_blending,
+               track_resource_id, premultipled_alpha, uv_top_left,
+               uv_bottom_right, SkColors::kTransparent, opacity, flipped,
+               nearest_neighbor,
+               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
 }
 

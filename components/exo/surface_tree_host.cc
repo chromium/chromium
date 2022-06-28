@@ -330,7 +330,7 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
 
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  solid_quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorBLACK,
+  solid_quad->SetNew(quad_state, quad_rect, quad_rect, SkColors::kBlack,
                      /*force_anti_aliasing_off=*/false);
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
 }

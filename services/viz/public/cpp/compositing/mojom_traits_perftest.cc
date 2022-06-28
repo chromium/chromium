@@ -186,7 +186,8 @@ class VizSerializationPerfTest : public testing::Test {
     int arbitrary_context_id1 = 12;
     int arbitrary_context_id2 = 57;
     int arbitrary_context_id3 = -503;
-    SkColor arbitrary_color = SkColorSetARGB(25, 36, 47, 58);
+    SkColor4f arbitrary_color =
+        SkColor4f::FromColor(SkColorSetARGB(25, 36, 47, 58));
     SkBlendMode arbitrary_blend_mode1 = SkBlendMode::kScreen;
     SkBlendMode arbitrary_blend_mode2 = SkBlendMode::kLighten;
     SkBlendMode arbitrary_blend_mode3 = SkBlendMode::kOverlay;
@@ -316,7 +317,7 @@ class VizSerializationPerfTest : public testing::Test {
         const bool kForceAntiAliasingOff = true;
         auto* quad = render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
         quad->SetNew(render_pass->shared_quad_state_list.back(), bounds, bounds,
-                     SK_ColorRED, kForceAntiAliasingOff);
+                     SkColors::kRed, kForceAntiAliasingOff);
       }
       frame.render_pass_list.push_back(std::move(render_pass));
     }

@@ -7066,6 +7066,18 @@ crbug.com/1338420 [ Linux ] external/wpt/event-timing/interactionid-tap.html [ S
 # Flaky on multiple platforms
 crbug.com/1338536 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
 
+# Tests that compare a float color to an integer color can suffer off-by-one errors
+# There is no mechanism for fuzzing reference tests outside of WPT and tests that require internals cannot be in WPT
+# When the scrollbarOverlay is moved to float color these can be re-enabled
+crbug.com/1308932 compositing/overflow/reparented-overlay-scrollbars-should-respect-ancestor-clip.html [ Failure ]
+crbug.com/1308932 compositing/overflow/reparented-unclipped-overlay-scrollbars-with-offset-from-renderer.html [ Failure ]
+crbug.com/1308932 compositing/squashing/squashing-inside-perspective-with-reparented-scrolling.html [ Failure ]
+crbug.com/1308932 fast/scrolling/overlay-scrollbars.html [ Failure ]
+crbug.com/1308932 scrollbars/overlay-scrollbar-over-child-layer-nested-4.html [ Failure ]
+crbug.com/1308932 compositing/overflow/non-reparented-overlay-scrollbars.html [ Failure ]
+crbug.com/1308932 scrollbars/auto-scrollbar-fades-out.html [ Failure ]
+crbug.com/1308932 scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Failure ]
+
 # Sheriff 2022-06-24
 crbug.com/1339211 [ Mac ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
 crbug.com/1339214 [ Mac ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]

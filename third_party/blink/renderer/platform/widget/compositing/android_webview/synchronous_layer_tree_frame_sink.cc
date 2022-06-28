@@ -363,7 +363,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
         viz::SurfaceRange(
             absl::nullopt,
             viz::SurfaceId(kChildFrameSinkId, child_local_surface_id_)),
-        SK_ColorWHITE, false /* stretch_content_to_fill_bounds */);
+        SkColors::kWhite, false /* stretch_content_to_fill_bounds */);
 
     child_support_->SubmitCompositorFrame(child_local_surface_id_,
                                           std::move(frame));

@@ -190,17 +190,19 @@ bool SkColor4fFromDict(const base::Value& dict, SkColor4f* color) {
 // SkColors (which are ints). For backward compatibility's sake, read either.
 bool ColorFromDict(const base::Value& dict,
                    base::StringPiece key,
-                   SkColor& output_color) {
+                   SkColor4f* output_color) {
   const base::Value* color_key = dict.FindDictKey(key);
   SkColor4f color_4f;
   if (!color_key || !SkColor4fFromDict(*color_key, &color_4f)) {
     absl::optional<int> color_int = dict.FindIntKey(key);
     if (!color_int)
       return false;
-    output_color = static_cast<SkColor>(color_int.value());
-    return true;
+    color_4f = SkColor4f::FromColor(static_cast<SkColor>(color_int.value()));
   }
-  output_color = color_4f.toSkColor();
+  output_color->fR = color_4f.fR;
+  output_color->fG = color_4f.fG;
+  output_color->fB = color_4f.fB;
+  output_color->fA = color_4f.fA;
   return true;
 }
 
@@ -1406,8 +1408,8 @@ bool SolidColorDrawQuadFromDict(const base::Value& dict,
   if (!force_anti_aliasing_off)
     return false;
 
-  SkColor t_color;
-  if (!ColorFromDict(dict, "color", t_color))
+  SkColor4f t_color;
+  if (!ColorFromDict(dict, "color", &t_color))
     return false;
 
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
@@ -1469,9 +1471,9 @@ bool SurfaceDrawQuadFromDict(const base::Value& dict,
   if (!surface_range || !stretch_content || !is_reflection || !allow_merge)
     return false;
 
-  SkColor t_default_background_color;
+  SkColor4f t_default_background_color;
   if (!ColorFromDict(dict, "default_background_color",
-                     t_default_background_color))
+                     &t_default_background_color))
     return false;
 
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
@@ -1517,11 +1519,11 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
     return false;
   gfx::PointF t_uv_top_left, t_uv_bottom_right;
   gfx::Size t_resource_size_in_pixels;
-  SkColor t_background_color;
+  SkColor4f t_background_color;
   if (!PointFFromDict(*uv_top_left, &t_uv_top_left) ||
       !PointFFromDict(*uv_bottom_right, &t_uv_bottom_right) ||
       !SizeFromDict(*resource_size_in_pixels, &t_resource_size_in_pixels) ||
-      !ColorFromDict(dict, "background_color", t_background_color)) {
+      !ColorFromDict(dict, "background_color", &t_background_color)) {
     return false;
   }
   float t_vertex_opacity[4];

@@ -24,7 +24,7 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               const SurfaceRange& range,
-              SkColor background_color,
+              SkColor4f background_color,
               bool stretch_content);
 
   void SetAll(const SharedQuadState* shared_quad_state,
@@ -32,7 +32,7 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               const SurfaceRange& range,
-              SkColor background_color,
+              SkColor4f background_color,
               bool stretch_content,
               bool reflection,
               bool merge);

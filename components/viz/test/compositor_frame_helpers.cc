@@ -116,7 +116,7 @@ RenderPassBuilder& RenderPassBuilder::AddStubCopyOutputRequest(
 
 RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
     const gfx::Rect& rect,
-    SkColor color,
+    SkColor4f color,
     SolidColorQuadParms params) {
   return AddSolidColorQuad(rect, rect, color, params);
 }
@@ -124,7 +124,7 @@ RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
 RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
-    SkColor color,
+    SkColor4f color,
     SolidColorQuadParms params) {
   auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -147,6 +147,7 @@ RenderPassBuilder& RenderPassBuilder::AddSurfaceQuad(
     const SurfaceQuadParams& params) {
   auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+  // TODO (crbug.com/1308932) Change SurfaceQuadParams to use SKColor4f
   quad->SetNew(sqs, rect, visible_rect, surface_range,
                params.default_background_color,
                params.stretch_content_to_fill_bounds);

@@ -66,7 +66,8 @@ void DemoClient::Resize(const gfx::Size& size,
 }
 
 viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
-  constexpr SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorYELLOW};
+  constexpr SkColor4f colors[] = {SkColors::kRed, SkColors::kGreen,
+                                  SkColors::kYellow};
   viz::CompositorFrame frame;
 
   frame.metadata.begin_frame_ack = viz::BeginFrameAck(args, true);
@@ -115,7 +116,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
     embed->SetNew(quad_state,
                   /*rect=*/gfx::Rect(child_bounds.size()),
                   /*visible_rect=*/gfx::Rect(child_bounds.size()),
-                  viz::SurfaceRange(surface_id), SK_ColorGRAY,
+                  viz::SurfaceRange(surface_id), SkColors::kGray,
                   /*stretch_content_to_fill_bounds=*/false);
   }
 

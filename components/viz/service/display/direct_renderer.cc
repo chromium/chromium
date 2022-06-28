@@ -669,7 +669,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
       // We cannot composite this quad properly, replace it with solid black.
       SolidColorDrawQuad solid_black;
       solid_black.SetAll(quad.shared_quad_state, quad.rect, quad.rect,
-                         /*needs_blending=*/false, SK_ColorBLACK,
+                         /*needs_blending=*/false, SkColors::kBlack,
                          /*force_anti_aliasing_off=*/true);
       DoDrawQuad(&solid_black, nullptr);
       continue;

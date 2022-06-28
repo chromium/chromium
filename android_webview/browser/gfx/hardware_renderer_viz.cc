@@ -227,7 +227,8 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
                        viz::SurfaceRange(absl::nullopt, child_id),
-                       SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
+                       SkColors::kWhite,
+                       /*stretch_content_to_fill_bounds=*/false);
 
   viz::CompositorFrame frame;
   // We draw synchronously, so acknowledge a manual BeginFrame.

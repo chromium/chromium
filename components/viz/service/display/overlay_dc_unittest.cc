@@ -133,6 +133,7 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
   return resource_map[list[0].id];
 }
 
+// TODO(crbug.com/1308932): Make this function us SkColor4f
 SolidColorDrawQuad* CreateSolidColorQuadAt(
     const SharedQuadState* shared_quad_state,
     SkColor color,
@@ -140,10 +141,12 @@ SolidColorDrawQuad* CreateSolidColorQuadAt(
     const gfx::Rect& rect) {
   SolidColorDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, rect, rect, color, false);
+  quad->SetNew(shared_quad_state, rect, rect, SkColor4f::FromColor(color),
+               false);
   return quad;
 }
 
+// TODO(crbug.com/1308932): Make this function us SkColor4f
 void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         const SharedQuadState* shared_quad_state,
                         AggregatedRenderPass* render_pass,
@@ -151,7 +154,8 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         SkColor color) {
   DCHECK_EQ(255u, SkColorGetA(color));
   auto* color_quad = render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(shared_quad_state, rect, rect, color, false);
+  color_quad->SetNew(shared_quad_state, rect, rect, SkColor4f::FromColor(color),
+                     false);
 }
 
 YUVVideoDrawQuad* CreateFullscreenCandidateYUVVideoQuad(
@@ -876,7 +880,7 @@ TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     auto* quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     quad->SetNew(pass->CreateAndAppendSharedQuadState(), damage_rect_,
-                 damage_rect_, SK_ColorRED, false);
+                 damage_rect_, SkColors::kRed, false);
 
     DCLayerOverlayList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;

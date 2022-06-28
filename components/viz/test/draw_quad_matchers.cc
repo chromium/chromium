@@ -64,13 +64,11 @@ testing::Matcher<const DrawQuad*> IsSolidColorQuad() {
   return IsQuadType(DrawQuad::Material::kSolidColor);
 }
 
-testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor expected_color) {
-  // TODO(crbug.com/1308932) Input SkColor4f to this function
+testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor4f expected_color) {
   return testing::AllOf(
       IsSolidColorQuad(),
       testing::Truly([expected_color](const DrawQuad* quad) {
-        return SolidColorDrawQuad::MaterialCast(quad)->color ==
-               SkColor4f::FromColor(expected_color);
+        return SolidColorDrawQuad::MaterialCast(quad)->color == expected_color;
       }));
 }
 

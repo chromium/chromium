@@ -110,9 +110,8 @@ SkBlendMode RenderSurfaceImpl::BlendMode() const {
   return OwningEffectNode()->blend_mode;
 }
 
-SkColor RenderSurfaceImpl::GetDebugBorderColor() const {
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  return DebugColors::SurfaceBorderColor().toSkColor();
+SkColor4f RenderSurfaceImpl::GetDebugBorderColor() const {
+  return DebugColors::SurfaceBorderColor();
 }
 
 float RenderSurfaceImpl::GetDebugBorderWidth() const {

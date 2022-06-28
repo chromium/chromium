@@ -361,7 +361,7 @@ void NinePatchGenerator::AppendQuads(LayerImpl* layer_impl,
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       quad->SetNew(shared_quad_state, output_rect, visible_rect, needs_blending,
                    resource, premultiplied_alpha, image_rect.origin(),
-                   image_rect.bottom_right(), SK_ColorTRANSPARENT,
+                   image_rect.bottom_right(), SkColors::kTransparent,
                    vertex_opacity, flipped, nearest_neighbor_,
                    /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);

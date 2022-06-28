@@ -1145,8 +1145,10 @@ static void AppendQuadsToFillScreen(
     // occlusion checks.
     auto* quad =
         target_render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    // TODO(crbug.com/1308932): Call this function with SkColor4f
     quad->SetNew(shared_quad_state, screen_space_rect,
-                 visible_screen_space_rect, screen_background_color, false);
+                 visible_screen_space_rect,
+                 SkColor4f::FromColor(screen_background_color), false);
   }
 }
 

@@ -28,7 +28,7 @@ constexpr gfx::Rect kOutputRect(100, 100);
 CompositorFrame MakeSimpleFrame(const gfx::Rect& damage_rect = kOutputRect) {
   return CompositorFrameBuilder()
       .AddRenderPass(RenderPassBuilder(kOutputRect)
-                         .AddSolidColorQuad(kOutputRect, SK_ColorRED)
+                         .AddSolidColorQuad(kOutputRect, SkColors::kRed)
                          .SetDamageRect(kOutputRect))
       .Build();
 }
@@ -188,7 +188,7 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
       CompositorFrameBuilder()
           .AddRenderPass(RenderPassBuilder(kOutputRect)
                              .SetDamageRect(pass_damage_rect)
-                             .AddSolidColorQuad(kOutputRect, SK_ColorRED)
+                             .AddSolidColorQuad(kOutputRect, SkColors::kRed)
                              .AddTextureQuad(kOutputRect, resource_id)
                              .SetQuadDamageRect(quad_damage_rect))
           .PopulateResources()

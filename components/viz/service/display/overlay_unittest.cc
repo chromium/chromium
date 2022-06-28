@@ -469,6 +469,7 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                         RGBA_8888);
 }
 
+// TODO(crbug.com/1308932): Make this function use SkColor4f
 SolidColorDrawQuad* CreateSolidColorQuadAt(
     const SharedQuadState* shared_quad_state,
     SkColor color,
@@ -476,7 +477,8 @@ SolidColorDrawQuad* CreateSolidColorQuadAt(
     const gfx::Rect& rect) {
   SolidColorDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, rect, rect, color, false);
+  quad->SetNew(shared_quad_state, rect, rect, SkColor4f::FromColor(color),
+               false);
   return quad;
 }
 
@@ -505,7 +507,7 @@ TextureDrawQuad* CreateCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SK_ColorTRANSPARENT, vertex_opacity,
+                       kUVBottomRight, SkColors::kTransparent, vertex_opacity,
                        flipped, nearest_neighbor, /*secure_output_only=*/false,
                        protected_video_type);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
@@ -593,7 +595,7 @@ TextureDrawQuad* CreateTransparentCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SK_ColorTRANSPARENT, vertex_opacity,
+                       kUVBottomRight, SkColors::kTransparent, vertex_opacity,
                        flipped, nearest_neighbor, /*secure_output_only=*/false,
                        gfx::ProtectedVideoType::kClear);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
@@ -617,9 +619,10 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         AggregatedRenderPass* render_pass,
                         const gfx::Rect& rect) {
   auto* color_quad = render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(shared_quad_state, rect, rect, SK_ColorBLACK, false);
+  color_quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlack, false);
 }
 
+// TODO(crbug.com/1308932): Make this function use SkColor4f
 void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         const SharedQuadState* shared_quad_state,
                         AggregatedRenderPass* render_pass,
@@ -627,7 +630,8 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         SkColor color) {
   DCHECK_EQ(255u, SkColorGetA(color));
   auto* color_quad = render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(shared_quad_state, rect, rect, color, false);
+  color_quad->SetNew(shared_quad_state, rect, rect, SkColor4f::FromColor(color),
+                     false);
 }
 
 void CreateFullscreenOpaqueQuad(DisplayResourceProvider* resource_provider,
@@ -1246,7 +1250,7 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     quad_small->SetNew(
         shared_quad_state_a, kCandidateRectA, kCandidateRectA,
         false /*needs_blending*/, resource_id_a, false /*premultiplied_alpha*/,
-        kUVTopLeft, kUVBottomRight, SK_ColorTRANSPARENT, vertex_opacity,
+        kUVTopLeft, kUVBottomRight, SkColors::kTransparent, vertex_opacity,
         false /*flipped*/, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
     quad_small->set_resource_size_in_pixels(kCandidateRectA.size());
@@ -1261,7 +1265,7 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     quad_big->SetNew(shared_quad_state_b, kCandidateRectB, kCandidateRectB,
                      false /*needs_blending*/, resource_id_b,
                      false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                     SK_ColorTRANSPARENT, vertex_opacity, false /*flipped*/,
+                     SkColors::kTransparent, vertex_opacity, false /*flipped*/,
                      false /*nearest_neighbor*/, false /*secure_output_only*/,
                      gfx::ProtectedVideoType::kClear);
     quad_big->set_resource_size_in_pixels(kCandidateRectB.size());
@@ -2548,7 +2552,7 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
         pass->shared_quad_state_list.back(), pass->output_rect,
         pass->output_rect, false /*needs_blending*/, resource_id,
         false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-        SK_ColorTRANSPARENT, vertex_opacity, false /*flipped*/,
+        SkColors::kTransparent, vertex_opacity, false /*flipped*/,
         false /*nearest_neighbor*/, false /*secure_output_only*/,
         gfx::ProtectedVideoType::kClear);
     original_quad->set_resource_size_in_pixels(pass->output_rect.size());
@@ -4170,7 +4174,7 @@ void AddQuad(gfx::Rect quad_rect,
 
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  solid_quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorBLACK,
+  solid_quad->SetNew(quad_state, quad_rect, quad_rect, SkColors::kBlack,
                      false /* force_anti_aliasing_off */);
 }
 

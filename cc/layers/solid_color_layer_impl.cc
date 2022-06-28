@@ -57,9 +57,8 @@ void SolidColorLayerImpl::AppendSolidQuads(
     return;
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  quad->SetNew(shared_quad_state, visible_layer_rect, visible_quad_rect,
-               color.toSkColor(), force_anti_aliasing_off);
+  quad->SetNew(shared_quad_state, visible_layer_rect, visible_quad_rect, color,
+               force_anti_aliasing_off);
 }
 
 void SolidColorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
