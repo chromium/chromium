@@ -78,7 +78,7 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  std::vector<float> input(13, 0);
+  std::vector<float> input(11, 0);
 
   absl::optional<float> result = ExpectExecutionWithInput(input);
   ASSERT_TRUE(result);
@@ -87,8 +87,8 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
       FeedUserSegment::GetSubsegmentName(metadata_utils::ConvertToDiscreteScore(
           "feed_user_segment_subsegment", *result, *fetched_metadata_)));
 
-  input[4] = 3;
-  input[5] = 2;
+  input[1] = 3;
+  input[2] = 2;
   result = ExpectExecutionWithInput(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(
@@ -96,7 +96,7 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
       FeedUserSegment::GetSubsegmentName(metadata_utils::ConvertToDiscreteScore(
           "feed_user_segment_subsegment", *result, *fetched_metadata_)));
 
-  input[3] = 3;
+  input[0] = 3;
   result = ExpectExecutionWithInput(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(
@@ -104,7 +104,7 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
       FeedUserSegment::GetSubsegmentName(metadata_utils::ConvertToDiscreteScore(
           "feed_user_segment_subsegment", *result, *fetched_metadata_)));
 
-  input[10] = 3;
+  input[8] = 3;
   result = ExpectExecutionWithInput(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(

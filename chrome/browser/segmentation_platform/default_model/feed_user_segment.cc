@@ -65,18 +65,10 @@ constexpr std::array<int32_t, 1> kFeedEngagementSimple{1};
 constexpr std::array<int32_t, 1> kFeedEngagementInteracted{2};
 constexpr std::array<int32_t, 1> kFeedEngagementScrolled{4};
 
-constexpr std::array<MetadataWriter::UMAFeature, 13> kFeedUserUMAFeatures = {
-    MetadataWriter::UMAFeature::FromUserAction(
-        "ContentSuggestions.Feed.CardAction.Open",
-        14),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab",
-        14),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "ContentSuggestions.Feed.CardAction.OpenInNewTab",
-        14),
+constexpr std::array<MetadataWriter::UMAFeature, 11> kFeedUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 14),
     MetadataWriter::UMAFeature::FromUserAction("MobileNewTabOpened", 14),
+    MetadataWriter::UMAFeature::FromUserAction("MobileNewTabShown", 14),
     MetadataWriter::UMAFeature::FromUserAction("Home", 14),
     MetadataWriter::UMAFeature::FromUserAction("MobileMenuRecentTabs", 14),
     MetadataWriter::UMAFeature::FromUserAction("MobileMenuHistory", 14),
@@ -84,22 +76,22 @@ constexpr std::array<MetadataWriter::UMAFeature, 13> kFeedUserUMAFeatures = {
                                                14),
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "ContentSuggestions.Feed.EngagementType",
-        14,
+        28,
         kFeedEngagementEngaged.data(),
         kFeedEngagementEngaged.size()),
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "ContentSuggestions.Feed.EngagementType",
-        14,
+        28,
         kFeedEngagementSimple.data(),
         kFeedEngagementSimple.size()),
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "ContentSuggestions.Feed.EngagementType",
-        14,
+        28,
         kFeedEngagementInteracted.data(),
         kFeedEngagementInteracted.size()),
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "ContentSuggestions.Feed.EngagementType",
-        14,
+        28,
         kFeedEngagementScrolled.data(),
         kFeedEngagementScrolled.size()),
 };
@@ -208,15 +200,15 @@ void FeedUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
 
   FeedUserSubsegment segment = FeedUserSubsegment::kNoNTPOrHomeOpened;
 
-  const bool feed_engaged = inputs[9] >= 2;
-  const bool feed_engaged_simple = inputs[10] >= 2;
-  const bool feed_interacted = inputs[11] >= 2;
-  const bool feed_scrolled = inputs[12] >= 2;
+  const bool feed_engaged = inputs[7] >= 2;
+  const bool feed_engaged_simple = inputs[8] >= 2;
+  const bool feed_interacted = inputs[9] >= 2;
+  const bool feed_scrolled = inputs[10] >= 2;
 
-  const bool mv_tiles_used = inputs[3] >= 2;
-  const bool return_to_tab_used = inputs[8] >= 2;
+  const bool mv_tiles_used = inputs[0] >= 2;
+  const bool return_to_tab_used = inputs[6] >= 2;
   const bool ntp_used = mv_tiles_used || return_to_tab_used;
-  const bool home_or_ntp_opened = (inputs[4] + inputs[5]) >= 4;
+  const bool home_or_ntp_opened = (inputs[1] + inputs[2] + inputs[3]) >= 2;
 
   if (feed_engaged) {
     segment = ntp_used ? FeedUserSubsegment::kNtpAndFeedEngaged
