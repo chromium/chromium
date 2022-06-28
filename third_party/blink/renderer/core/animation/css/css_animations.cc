@@ -1255,7 +1255,9 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     TransitionUpdateState& state,
     const PropertyHandle& property,
     size_t transition_index) {
-  state.listed_properties.insert(property);
+  if (state.listed_properties) {
+    state.listed_properties->insert(property);
+  }
 
   if (!CanCalculateTransitionUpdateForProperty(state, property))
     return;
@@ -1528,6 +1530,9 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
 
   if (!animation_style_recalc && style.Display() != EDisplay::kNone &&
       old_style && !old_style->IsEnsuredInDisplayNone()) {
+    // Don't bother updating listed_properties unless we need it below.
+    HashSet<PropertyHandle>* listed_properties_maybe =
+        active_transitions ? &listed_properties : nullptr;
     TransitionUpdateState state = {update,
                                    animating_element,
                                    *old_style,
@@ -1535,7 +1540,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
                                    /*before_change_style=*/nullptr,
                                    /*cloned_style=*/nullptr,
                                    active_transitions,
-                                   listed_properties,
+                                   listed_properties_maybe,
                                    transition_data};
 
     if (transition_data) {
@@ -1553,9 +1558,9 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
     } else if (active_transitions && active_transitions->size()) {
       // !transition_data implies transition: all 0s
       any_transition_had_transition_all = true;
-        CSSTransitionData::TransitionProperty default_property(
-            CSSPropertyID::kAll);
-        CalculateTransitionUpdateForProperty(state, default_property, 0, style);
+      CSSTransitionData::TransitionProperty default_property(
+          CSSPropertyID::kAll);
+      CalculateTransitionUpdateForProperty(state, default_property, 0, style);
     }
   }
 
@@ -1605,7 +1610,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
       if (!current_time_numberish)
         continue;
 
-        // CSSNumericValue is not yet supported, verify that it is not used
+      // CSSNumericValue is not yet supported, verify that it is not used
       DCHECK(!current_time_numberish->IsCSSNumericValue());
 
       absl::optional<AnimationTimeDelta> current_time =
