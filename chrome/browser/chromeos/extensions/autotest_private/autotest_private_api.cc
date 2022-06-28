@@ -14,6 +14,8 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/mojom/system_ui.mojom-shared.h"
+#include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/app_types.h"
@@ -712,6 +714,26 @@ api::autotest_private::Location ToLocationDictionary(const gfx::Point& point) {
   result.x = point.x();
   result.y = point.y();
   return result;
+}
+
+arc::mojom::ThemeStyleType ToThemeStyleType(
+    const api::autotest_private::ThemeStyle& theme) {
+  switch (theme) {
+    case api::autotest_private::ThemeStyle::THEME_STYLE_TONALSPOT:
+      return arc::mojom::ThemeStyleType::TONAL_SPOT;
+    case api::autotest_private::ThemeStyle::THEME_STYLE_VIBRANT:
+      return arc::mojom::ThemeStyleType::VIBRANT;
+    case api::autotest_private::ThemeStyle::THEME_STYLE_EXPRESSIVE:
+      return arc::mojom::ThemeStyleType::EXPRESSIVE;
+    case api::autotest_private::ThemeStyle::THEME_STYLE_SPRITZ:
+      return arc::mojom::ThemeStyleType::SPRITZ;
+    case api::autotest_private::ThemeStyle::THEME_STYLE_RAINBOW:
+      return arc::mojom::ThemeStyleType::RAINBOW;
+    case api::autotest_private::ThemeStyle::THEME_STYLE_FRUITSALAD:
+      return arc::mojom::ThemeStyleType::FRUIT_SALAD;
+    default:
+      return arc::mojom::ThemeStyleType::TONAL_SPOT;
+  }
 }
 
 aura::Window* FindAppWindowById(const int64_t id) {
@@ -3847,6 +3869,28 @@ void AutotestPrivateWaitForOverviewStateFunction::Done(bool success) {
     return;
   }
   Respond(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateSendArcOverlayColorFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateSendArcOverlayColorFunction::
+    ~AutotestPrivateSendArcOverlayColorFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateSendArcOverlayColorFunction::Run() {
+  DVLOG(1) << "AutotestPrivateSendArcOverlayColorFunction";
+  std::unique_ptr<api::autotest_private::SendArcOverlayColor::Params> params(
+      api::autotest_private::SendArcOverlayColor::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  arc::ArcSystemUIBridge* const system_ui =
+      arc::ArcSystemUIBridge::GetForBrowserContext(browser_context());
+  if (!system_ui)
+    return RespondNow(Error("No ARC System UI Bridge is available."));
+  const bool result = system_ui->SendOverlayColor(
+      params->color, ToThemeStyleType(params->theme));
+  return RespondNow(OneArgument(base::Value(result)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

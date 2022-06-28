@@ -335,6 +335,17 @@ namespace autotestPrivate {
 
   callback SetOverviewModeStateCallback = void(boolean finished);
 
+  enum ThemeStyle {
+    TonalSpot,
+    Vibrant,
+    Expressive,
+    Spritz,
+    Rainbow,
+    FruitSalad
+  };
+
+  callback SendArcOverlayColorCallback = void (boolean result);
+
   callback ArcAppTracingCallback = void(ArcAppTracingInfo info);
 
   callback WaitForDisplayRotationCallback = void (boolean success);
@@ -1102,6 +1113,13 @@ namespace autotestPrivate {
 
     // Show virtual keyboard of the current input method if it's available.
     static void showVirtualKeyboardIfEnabled();
+
+    // Sends the overlay color and theme to Android and changes the Android system color and theme to these values.
+    // |color|: the int color of the system ui.
+    // |theme|: the theme of the system ui.
+    // |callback|: callback to deliver sendArcOverlayColor result.
+    [supportsPromises] static void sendArcOverlayColor(
+      long color, ThemeStyle theme, SendArcOverlayColorCallback callback);
 
     // Start ARC performance tracing for the active ARC app window.
     // |callback|: Called when the operation has completed.

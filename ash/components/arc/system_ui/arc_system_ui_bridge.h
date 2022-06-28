@@ -48,14 +48,14 @@ class ArcSystemUIBridge : public KeyedService,
   // ash::ColorModeObserver override:
   void OnColorModeChanged(bool dark_theme_status) override;
 
+  // Sends the device overlay color and the {@link mojom::ThemeStyleType}.
+  bool SendOverlayColor(uint32_t source_color,
+                        mojom::ThemeStyleType theme_style);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcSystemUIBridgeTest, SendOverlayColor);
   // Sends the device dark theme state to Android.
   bool SendDeviceDarkThemeState(bool dark_theme_status);
-
-  // Sends the device overlay color and the {@link mojom::ThemeStyleType}.
-  bool SendOverlayColor(uint32_t source_color,
-                        mojom::ThemeStyleType theme_style);
 
   THREAD_CHECKER(thread_checker_);
 

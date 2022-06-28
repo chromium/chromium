@@ -1006,6 +1006,17 @@ class AutotestPrivateGetDefaultPinnedAppIdsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Sends the overlay color of the system.
+class AutotestPrivateSendArcOverlayColorFunction : public ExtensionFunction {
+ public:
+  // AutotestPrivateSendArcOverlayColorFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.sendArcOverlayColor",
+                             AUTOTESTPRIVATE_SENDARCOVERLAYCOLOR)
+ private:
+  ~AutotestPrivateSendArcOverlayColorFunction() override;
+  ResponseAction Run() override;
+};
+
 // Returns the overview mode state.
 class AutotestPrivateSetOverviewModeStateFunction : public ExtensionFunction {
  public:
