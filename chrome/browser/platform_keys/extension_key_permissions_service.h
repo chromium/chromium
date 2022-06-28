@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
@@ -211,10 +212,10 @@ class ExtensionKeyPermissionsService {
       bool can_user_grant_permission);
 
   const std::string extension_id_;
-  extensions::StateStore* extensions_state_store_ = nullptr;
+  raw_ptr<extensions::StateStore> extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
-  policy::PolicyService* const profile_policies_;
-  crosapi::mojom::KeystoreService* const keystore_service_ = nullptr;
+  const raw_ptr<policy::PolicyService> profile_policies_;
+  const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 

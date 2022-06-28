@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
@@ -245,16 +246,16 @@ class BrowserNonClientFrameViewChromeOS
   aura::Window* GetFrameWindow();
 
   // View which contains the window controls.
-  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
+  raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
       nullptr;
 
-  TabSearchBubbleHost* tab_search_bubble_host_ = nullptr;
+  raw_ptr<TabSearchBubbleHost> tab_search_bubble_host_ = nullptr;
 
   // For popups, the window icon.
   TabIconView* window_icon_ = nullptr;
 
   // This is used for teleported windows (in multi-profile mode).
-  ProfileIndicatorIcon* profile_indicator_icon_ = nullptr;
+  raw_ptr<ProfileIndicatorIcon> profile_indicator_icon_ = nullptr;
 
   // Helper class for painting the header.
   std::unique_ptr<chromeos::FrameHeader> frame_header_;

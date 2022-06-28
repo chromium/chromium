@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
@@ -106,10 +107,10 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
                                   const GoogleServiceAuthError& error);
 
   // Non-owning pointers.
-  SigninClient* const signin_client_;
-  AccountTrackerService* const account_tracker_service_;
-  network::NetworkConnectionTracker* const network_connection_tracker_;
-  account_manager::AccountManagerFacade* const account_manager_facade_;
+  const raw_ptr<SigninClient> signin_client_;
+  const raw_ptr<AccountTrackerService> account_tracker_service_;
+  const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 
   // When the delegate receives an account from either `GetAccounts` or
   // `OnAccountUpserted`, this account is first added to pending accounts, until

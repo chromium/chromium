@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_controller_lacros.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
@@ -117,8 +118,9 @@ class ImageWriterControllerLacros::ImageWriterClientLacros
   // to be valid for the lifetime of this class, as destruction of either
   // BrowserContext or ImageWriterControllerLacros will result in synchronous
   // destruction of this class.
-  content::BrowserContext* const browser_context_;
-  extensions::image_writer::ImageWriterControllerLacros* const controller_;
+  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<extensions::image_writer::ImageWriterControllerLacros>
+      controller_;
 
   mojo::Receiver<crosapi::mojom::ImageWriterClient> receiver_{this};
 };

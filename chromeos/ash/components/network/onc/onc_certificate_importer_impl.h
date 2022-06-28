@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
@@ -102,7 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   // The certificate database to which certificates are imported.
-  net::NSSCertDatabase* target_nssdb_;
+  raw_ptr<net::NSSCertDatabase> target_nssdb_;
 
   base::WeakPtrFactory<CertificateImporterImpl> weak_factory_{this};
 };

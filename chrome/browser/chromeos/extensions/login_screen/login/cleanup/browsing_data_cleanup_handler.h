@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_BROWSING_DATA_CLEANUP_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_BROWSING_DATA_CLEANUP_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "content/public/browser/browsing_data_remover.h"
 
@@ -27,7 +28,7 @@ class BrowsingDataCleanupHandler
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
  private:
-  content::BrowsingDataRemover* remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_;
   CleanupHandlerCallback callback_;
 };
 

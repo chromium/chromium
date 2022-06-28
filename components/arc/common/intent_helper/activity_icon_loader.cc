@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "components/arc/common/intent_helper/adaptive_icon_delegate.h"
@@ -118,7 +119,7 @@ class Adapter {
   }
 
  private:
-  crosapi::mojom::Arc* instance_;
+  raw_ptr<crosapi::mojom::Arc> instance_;
 };
 
 // Lacros requests icons to ash-chrome via crosapi.

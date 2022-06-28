@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -35,10 +36,10 @@ class ClipboardBubbleView : public views::View {
   // This function should get called if the view got updated e.g. AddChildView.
   void UpdateBorderSize(const gfx::Size& size);
 
-  views::StyledLabel* label_ = nullptr;
-  views::ImageView* managed_icon_ = nullptr;
-  views::ImageView* border_ = nullptr;
-  views::Link* link_ = nullptr;
+  raw_ptr<views::StyledLabel> label_ = nullptr;
+  raw_ptr<views::ImageView> managed_icon_ = nullptr;
+  raw_ptr<views::ImageView> border_ = nullptr;
+  raw_ptr<views::Link> link_ = nullptr;
 };
 
 class ClipboardBlockBubble : public ClipboardBubbleView {
@@ -54,7 +55,7 @@ class ClipboardBlockBubble : public ClipboardBubbleView {
   void SetDismissCallback(base::RepeatingCallback<void()> cb);
 
  private:
-  views::LabelButton* button_ = nullptr;
+  raw_ptr<views::LabelButton> button_ = nullptr;
 };
 
 class ClipboardWarnBubble : public ClipboardBubbleView {
@@ -72,8 +73,8 @@ class ClipboardWarnBubble : public ClipboardBubbleView {
   void SetProceedCallback(base::RepeatingCallback<void()> cb);
 
  private:
-  views::LabelButton* cancel_button_ = nullptr;
-  views::LabelButton* paste_button_ = nullptr;
+  raw_ptr<views::LabelButton> cancel_button_ = nullptr;
+  raw_ptr<views::LabelButton> paste_button_ = nullptr;
 };
 
 }  // namespace policy

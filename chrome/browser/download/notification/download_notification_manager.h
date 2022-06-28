@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_ui_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/notification/download_item_notification.h"
@@ -37,7 +38,7 @@ class DownloadNotificationManager : public DownloadUIController::Delegate,
  private:
   friend class test::DownloadItemNotificationTest;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::map<ContentId, std::unique_ptr<DownloadItemNotification>> items_;
 };
 

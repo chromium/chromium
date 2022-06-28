@@ -6,6 +6,7 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_VIEWS_LAYER_DIMMER_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace ui {
@@ -43,8 +44,8 @@ class LayerDimmer : public aura::WindowObserver {
 
   std::unique_ptr<ui::Layer> layer_;
 
-  aura::Window* parent_;
-  aura::Window* dialog_;
+  raw_ptr<aura::Window> parent_;
+  raw_ptr<aura::Window> dialog_;
 };
 
 }  // namespace javascript_dialogs

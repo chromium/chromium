@@ -447,7 +447,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   apps::AppNotifications app_notifications_;
 
-  badging::BadgeManager* badge_manager_ = nullptr;
+  raw_ptr<badging::BadgeManager> badge_manager_ = nullptr;
 
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>

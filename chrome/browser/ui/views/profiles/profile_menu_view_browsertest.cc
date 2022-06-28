@@ -143,7 +143,7 @@ class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
   explicit FakeAccountManagerUITestObserver(
       FakeAccountManagerUI* account_manager_ui)
       : account_manager_ui_(account_manager_ui) {
-    scoped_observation_.Observe(account_manager_ui_);
+    scoped_observation_.Observe(account_manager_ui_.get());
   }
   ~FakeAccountManagerUITestObserver() override = default;
 
@@ -153,7 +153,7 @@ class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
   void OnReauthAccountDialogShown() override { reauth_run_loop_.Quit(); }
 
  private:
-  FakeAccountManagerUI* account_manager_ui_;
+  raw_ptr<FakeAccountManagerUI> account_manager_ui_;
   base::RunLoop reauth_run_loop_;
   base::ScopedObservation<FakeAccountManagerUI, FakeAccountManagerUI::Observer>
       scoped_observation_{this};

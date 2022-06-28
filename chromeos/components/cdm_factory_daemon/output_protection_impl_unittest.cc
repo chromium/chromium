@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -132,7 +133,7 @@ class OutputProtectionImplTest : public testing::Test {
   }
 
   mojo::Remote<OutputProtection> output_protection_mojo_;
-  MockDisplaySystemDelegate* delegate_;  // Not owned.
+  raw_ptr<MockDisplaySystemDelegate> delegate_;  // Not owned.
   std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
   std::vector<display::DisplaySnapshot*> cached_displays_;
 

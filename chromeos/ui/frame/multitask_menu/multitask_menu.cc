@@ -44,7 +44,7 @@ void MultitaskMenu::ShowBubble() {
   DCHECK(this->parent_window());
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(this);
   bubble_widget_->Show();
-  bubble_widget_observer_.Observe(bubble_widget_);
+  bubble_widget_observer_.Observe(bubble_widget_.get());
   bubble_widget_->Activate();
 }
 

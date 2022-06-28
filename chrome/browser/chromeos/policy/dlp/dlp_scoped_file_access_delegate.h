@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access.h"
 #include "url/gurl.h"
@@ -55,7 +56,7 @@ class DlpScopedFileAccessDelegate {
       const ::dlp::RequestFileAccessResponse response,
       base::ScopedFD fd);
 
-  chromeos::DlpClient* client_;
+  raw_ptr<chromeos::DlpClient> client_;
 };
 
 }  // namespace policy

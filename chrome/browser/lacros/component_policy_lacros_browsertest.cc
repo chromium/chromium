@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -90,7 +91,7 @@ class TestPolicyServiceObserver : public policy::PolicyService::Observer {
 
   void WaitForUpdate() { run_loop_.Run(); }
 
-  policy::PolicyService* const policy_service_;
+  const raw_ptr<policy::PolicyService> policy_service_;
   const policy::PolicyDomain policy_domain_;
 
   base::RunLoop run_loop_;

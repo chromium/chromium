@@ -5,6 +5,7 @@
 #include "chromeos/ui/wm/desks/desks_helper.h"
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/platform_window/extensions/desk_extension.h"
@@ -60,7 +61,7 @@ class DesksHelperLacros : public chromeos::DesksHelper {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 };
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DesksHelperLacros,

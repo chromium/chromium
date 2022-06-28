@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -201,7 +202,7 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
   base::queue<std::unique_ptr<FetchContext>> fetch_queue_;
 
   // Dispenses Time objects to mark time of fetch on Entry instances.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Dispenses fresh URLLoaderFactory instances; see header comment
   // on Create().

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -126,7 +127,8 @@ class ConsistencyCookieManagerTest : public testing::Test {
 
  private:
   TestSigninClient signin_client_{/*prefs=*/nullptr};
-  MockCookieManager* cookie_manager_ = nullptr;  // Owned by `signin_client_`.
+  raw_ptr<MockCookieManager> cookie_manager_ =
+      nullptr;  // Owned by `signin_client_`.
   std::unique_ptr<AccountReconcilor> reconcilor_;
 };
 

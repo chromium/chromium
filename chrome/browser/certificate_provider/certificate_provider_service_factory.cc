@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/values.h"
@@ -76,9 +77,9 @@ class DefaultDelegate : public CertificateProviderService::Delegate,
   base::flat_set<std::string> GetSubscribedExtensions(
       const std::string& event_name);
 
-  CertificateProviderService* const service_;
-  extensions::ExtensionRegistry* const registry_;
-  extensions::EventRouter* const event_router_;
+  const raw_ptr<CertificateProviderService> service_;
+  const raw_ptr<extensions::ExtensionRegistry> registry_;
+  const raw_ptr<extensions::EventRouter> event_router_;
 };
 
 // Constructs the "onCertificatesUpdateRequested" event.

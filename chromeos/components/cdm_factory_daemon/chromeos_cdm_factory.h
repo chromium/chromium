@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -110,7 +111,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
   void OnFactoryMojoConnectionError();
   void OnVerificationMojoConnectionError();
 
-  media::mojom::FrameInterfaceFactory* frame_interfaces_;
+  raw_ptr<media::mojom::FrameInterfaceFactory> frame_interfaces_;
   mojo::Remote<cdm::mojom::CdmFactory> remote_factory_;
   mojo::Remote<media::mojom::CdmDocumentService> cdm_document_service_;
 

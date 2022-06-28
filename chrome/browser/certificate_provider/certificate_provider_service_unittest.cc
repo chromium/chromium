@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -249,7 +250,7 @@ class CertificateProviderServiceTest : public testing::Test {
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
-  TestDelegate* test_delegate_ = nullptr;
+  raw_ptr<TestDelegate> test_delegate_ = nullptr;
   testing::StrictMock<MockObserver> observer_;
   std::unique_ptr<CertificateProvider> certificate_provider_;
   std::unique_ptr<CertificateProviderService> service_;

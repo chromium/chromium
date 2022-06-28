@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -180,8 +181,8 @@ class MissiveClientImpl : public MissiveClient {
     }
 
     const char* const dbus_method_;
-    dbus::Response* response_;
-    MissiveClientImpl* const owner_;
+    raw_ptr<dbus::Response> response_;
+    const raw_ptr<MissiveClientImpl> owner_;
     base::OnceCallback<void(reporting::Status)> completion_callback_;
 
     // Weak pointer factory - must be last member of the class.

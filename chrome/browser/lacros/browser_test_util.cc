@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/browser_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -39,7 +40,7 @@ class AuraObserver : public aura::WindowEventDispatcherObserver {
 
  private:
   // Must outlive the observer.
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   bool mouse_down_seen_ = false;
   bool mouse_up_seen_ = false;
 };

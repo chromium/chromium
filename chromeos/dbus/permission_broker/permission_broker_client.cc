@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "dbus/bus.h"
@@ -334,7 +335,7 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     std::move(callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Note: This should remain the last member so that it will be destroyed
   // first, invalidating its weak pointers, before the other members are

@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -242,7 +243,7 @@ class TopControlsSlideTabObserver
     owner_->UpdateBrowserControlsStateShown(web_contents(), animate);
   }
 
-  TopControlsSlideControllerChromeOS* const owner_;
+  const raw_ptr<TopControlsSlideControllerChromeOS> owner_;
 
   // Tracks the current shown ratio of this tab as synchronized with its
   // renderer. This is needed because when switching tabs, we must restore the

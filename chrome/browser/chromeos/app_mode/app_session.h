@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
@@ -116,7 +117,7 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   std::unique_ptr<AppSessionBrowserWindowHandler> browser_window_handler_;
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::OnceClosure attempt_user_exit_;
   const std::unique_ptr<AppSessionMetricsService> metrics_service_;

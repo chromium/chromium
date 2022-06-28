@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +35,7 @@ class FakeForceInstalledTrackerLacros : public ForceInstalledTrackerLacros {
 
  private:
   bool is_ready_ = false;
-  ForceInstalledTracker* tracker_;
+  raw_ptr<ForceInstalledTracker> tracker_;
 };
 
 class ForceInstalledTrackerLacrosTest

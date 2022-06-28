@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -57,7 +58,7 @@ class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
   // Paints the frame image.
   void PaintFrameImages(gfx::Canvas* canvas);
 
-  AppearanceProvider* appearance_provider_ = nullptr;
+  raw_ptr<AppearanceProvider> appearance_provider_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -115,7 +116,7 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   // The key is the raw pointer to the ExtensionAppsEnableFlow.
   std::map<void*, std::unique_ptr<apps::ExtensionAppsEnableFlow>> enable_flows_;
 
-  LacrosExtensionAppsPublisher* publisher_ = nullptr;  // Not owned.
+  raw_ptr<LacrosExtensionAppsPublisher> publisher_ = nullptr;  // Not owned.
 
   // Mojo endpoint that's responsible for receiving messages from Ash.
   mojo::Receiver<crosapi::mojom::AppController> controller_;

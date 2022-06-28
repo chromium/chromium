@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
@@ -204,7 +205,8 @@ class SigninHelperLacrosTest : public testing::Test {
   TestAccountReconcilor reconcilor_{identity_test_env_.identity_manager(),
                                     &signin_client_};
 
-  MockCookieManager* cookie_manager_ = nullptr;  // Owned by `signin_client_`.
+  raw_ptr<MockCookieManager> cookie_manager_ =
+      nullptr;  // Owned by `signin_client_`.
 };
 
 // Checks that creating a deleting the helper updates the cookie and that the

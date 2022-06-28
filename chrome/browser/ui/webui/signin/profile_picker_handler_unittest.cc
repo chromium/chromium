@@ -579,7 +579,7 @@ class ProfilePickerHandlerInUserProfileTest : public ProfilePickerHandlerTest {
     return *data.arg3();
   }
 
-  Profile* secondary_profile_ = nullptr;
+  raw_ptr<Profile> secondary_profile_ = nullptr;
 };
 
 // Tests that accounts available as secondary are returned.

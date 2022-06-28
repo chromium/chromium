@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chromeos/components/quick_answers/result_loader.h"
@@ -125,7 +126,7 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
   base::TimeDelta GetImpressionDuration() const;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  QuickAnswersDelegate* delegate_ = nullptr;
+  raw_ptr<QuickAnswersDelegate> delegate_ = nullptr;
   std::unique_ptr<SpellChecker> spell_checker_;
   std::unique_ptr<ResultLoader> result_loader_;
   std::unique_ptr<IntentGenerator> intent_generator_;

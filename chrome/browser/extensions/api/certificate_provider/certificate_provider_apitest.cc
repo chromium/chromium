@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -297,7 +298,8 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-  chromeos::CertificateProviderService* cert_provider_service_ = nullptr;
+  raw_ptr<chromeos::CertificateProviderService> cert_provider_service_ =
+      nullptr;
   policy::PolicyMap policy_map_;
 
  private:
@@ -505,8 +507,8 @@ class CertificateProviderApiMockedExtensionTest
     return certificate_data;
   }
 
-  content::WebContents* extension_contents_ = nullptr;
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<content::WebContents> extension_contents_ = nullptr;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
   base::FilePath extension_path_;
 };
 
@@ -612,7 +614,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
     extension_ = LoadExtension(extension_path);
   }
 
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
   std::unique_ptr<ExtensionTestMessageListener> command_request_listener_;
 };
 

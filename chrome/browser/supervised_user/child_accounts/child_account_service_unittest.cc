@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
@@ -73,7 +74,7 @@ class ChildAccountServiceTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  ChildAccountService* child_account_service_ = nullptr;
+  raw_ptr<ChildAccountService> child_account_service_ = nullptr;
 };
 
 TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {

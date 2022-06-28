@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -113,7 +114,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
       bool capture_audio,
       bool is_dlp_allowed);
 
-  aura::Window* primary_root_window_for_testing_ = nullptr;
+  raw_ptr<aura::Window> primary_root_window_for_testing_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater.h"
@@ -113,10 +114,11 @@ class UserNetworkConfigurationUpdaterAsh
       std::unique_ptr<chromeos::onc::CertificateImporter> certificate_importer);
 
   // The user for whom the user policy will be applied.
-  const user_manager::User* const user_;
+  const raw_ptr<const user_manager::User> user_;
 
   // Pointer to the global singleton or a test instance.
-  chromeos::ManagedNetworkConfigurationHandler* const network_config_handler_;
+  const raw_ptr<chromeos::ManagedNetworkConfigurationHandler>
+      network_config_handler_;
 
   // Certificate importer to be used for importing policy defined client
   // certificates. Set by |SetClientCertificateImporter|.

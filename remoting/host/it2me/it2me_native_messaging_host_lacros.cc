@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -101,7 +102,7 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  Client* client_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<Client> client_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   int connect_response_id_ = kInvalidMessageId;

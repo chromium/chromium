@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -151,7 +152,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   bool InZoomMode() const override { return false; }
 
  private:
-  views::Widget* frame_;
+  raw_ptr<views::Widget> frame_;
 };
 
 }  // namespace
@@ -192,7 +193,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
                           base::Unretained(this)),
       views::CAPTION_BUTTON_ICON_MENU, HTMENU);
   menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MENU));
-  AddChildView(menu_button_);
+  AddChildView(menu_button_.get());
 
   minimize_button_ = new views::FrameCaptionButton(
       base::BindRepeating(
@@ -201,7 +202,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   minimize_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
-  AddChildView(minimize_button_);
+  AddChildView(minimize_button_.get());
 
   size_button_ = new FrameSizeButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,
@@ -209,7 +210,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       this);
   size_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
-  AddChildView(size_button_);
+  AddChildView(size_button_.get());
 
   close_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::CloseButtonPressed,
@@ -217,7 +218,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_CLOSE, HTCLOSE);
   close_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-  AddChildView(close_button_);
+  AddChildView(close_button_.get());
 
   UpdateCaptionButtonState(false /* animate */);
 }

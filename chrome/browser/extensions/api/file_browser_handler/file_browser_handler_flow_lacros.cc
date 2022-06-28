@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
@@ -76,7 +77,7 @@ class FileBrowserHandlerExecutorFlow {
 
   FileBrowserHandlerFlowFinishedCallback done_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<const Extension> extension_;
 
   // Inputs owned by the class.

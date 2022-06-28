@@ -40,8 +40,9 @@ AccountProfileMapper::AccountProfileMapper(
   // unnecessary profile deletion.
   MigrateOldProfiles();
 
-  account_manager_facade_observation_.Observe(account_manager_facade_);
-  profile_attributes_storage_observation_.Observe(profile_attributes_storage_);
+  account_manager_facade_observation_.Observe(account_manager_facade_.get());
+  profile_attributes_storage_observation_.Observe(
+      profile_attributes_storage_.get());
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));

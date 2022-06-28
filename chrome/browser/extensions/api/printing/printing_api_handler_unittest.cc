@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -92,7 +93,7 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
 
  private:
   // Event router this class should observe.
-  TestEventRouter* const event_router_;
+  const raw_ptr<TestEventRouter> event_router_;
 
   // The name of the observed event.
   const std::string event_name_;
@@ -430,10 +431,10 @@ class PrintingAPIHandlerUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* testing_profile_;
-  TestEventRouter* event_router_ = nullptr;
-  FakePrintJobController* print_job_controller_;
-  chromeos::TestCupsWrapper* cups_wrapper_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<TestEventRouter> event_router_ = nullptr;
+  raw_ptr<FakePrintJobController> print_job_controller_;
+  raw_ptr<chromeos::TestCupsWrapper> cups_wrapper_;
   std::unique_ptr<PrintingAPIHandler> printing_api_handler_;
   scoped_refptr<const Extension> extension_;
   absl::optional<api::printing::SubmitJobStatus> submit_job_status_;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
@@ -51,7 +52,7 @@ class DlpRulesPolicyTest : public InProcessBrowserTest {
     return new_rules_manager;
   }
 
-  DlpRulesManager* rules_manager_;
+  raw_ptr<DlpRulesManager> rules_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {

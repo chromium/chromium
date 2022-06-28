@@ -93,6 +93,6 @@ void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
 }
 
 void ProfilePickerLacrosSignInProvider::OnProfileSignedIn() {
-  std::move(callback_).Run(profile_);
+  std::move(callback_).Run(profile_.get());
   // The object gets deleted now.
 }

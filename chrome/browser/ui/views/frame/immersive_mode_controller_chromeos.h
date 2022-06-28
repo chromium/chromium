@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
@@ -72,7 +73,7 @@ class ImmersiveModeControllerChromeos
 
   chromeos::ImmersiveFullscreenController controller_;
 
-  BrowserView* browser_view_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
 
   // The current visible bounds of the find bar, in screen coordinates. This is
   // an empty rect if the find bar is not visible.

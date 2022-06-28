@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -92,7 +93,7 @@ class ResultLoader {
  private:
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
-  ResultLoaderDelegate* const delegate_;
+  const raw_ptr<ResultLoaderDelegate> delegate_;
 
   void OnBuildRequestComplete(
       const PreprocessedOutput& preprocessed_output,

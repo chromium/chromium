@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -39,7 +40,7 @@ class MetricsServiceProxyImpl
   }
 
  private:
-  metrics::MetricsService* metrics_service_;
+  raw_ptr<metrics::MetricsService> metrics_service_;
 };
 
 std::unique_ptr<MetricsReportingObserver>

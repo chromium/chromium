@@ -186,7 +186,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
   // Owned by |platform_provider_|.
-  PolicyLoaderLacros* device_account_policy_loader_ = nullptr;
+  raw_ptr<PolicyLoaderLacros> device_account_policy_loader_ = nullptr;
 #endif
 
   // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that

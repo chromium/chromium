@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -77,7 +78,7 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
 
  private:
   // Keep only one |WebContents| at a time.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;
   std::unique_ptr<ArcIconCacheDelegateProvider> delegate_provider_;
 };

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "extensions/browser/extension_function.h"
@@ -49,7 +50,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
   // Null if the interface is unavailable.
   // The pointer is constant - if Ash crashes and the mojo connection is lost,
   // Lacros will automatically be restarted.
-  crosapi::mojom::DocumentScan* document_scan_ = nullptr;
+  raw_ptr<crosapi::mojom::DocumentScan> document_scan_ = nullptr;
 };
 
 }  // namespace api

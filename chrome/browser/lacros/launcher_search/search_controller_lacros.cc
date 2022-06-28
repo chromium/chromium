@@ -28,7 +28,7 @@ SearchControllerLacros::SearchControllerLacros()
     return;
   }
 
-  profile_observation_.Observe(profile_);
+  profile_observation_.Observe(profile_.get());
 
   autocomplete_controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile_),
@@ -52,7 +52,7 @@ SearchControllerLacros::~SearchControllerLacros() = default;
 
 void SearchControllerLacros::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile, profile_);
-  DCHECK(profile_observation_.IsObservingSource(profile_));
+  DCHECK(profile_observation_.IsObservingSource(profile_.get()));
 
   // SearchControllerLacros must shut down before the Profile is destroyed,
   // otherwise there will be a use-after-free.

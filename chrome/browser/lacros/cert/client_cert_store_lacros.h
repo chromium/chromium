@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LACROS_CERT_CLIENT_CERT_STORE_LACROS_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/ssl/client_cert_store.h"
@@ -62,7 +63,7 @@ class ClientCertStoreLacros final : public net::ClientCertStore {
   std::unique_ptr<chromeos::CertificateProvider> cert_provider_;
 
   bool are_certs_loaded_ = false;
-  CertDbInitializer* cert_db_initializer_ = nullptr;
+  raw_ptr<CertDbInitializer> cert_db_initializer_ = nullptr;
   base::CallbackListSubscription wait_subscription_;
   RequestQueue pending_requests_;
 

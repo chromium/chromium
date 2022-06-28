@@ -12,6 +12,7 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -295,7 +296,7 @@ class AppSessionMetricsService {
     prefs_->CommitPendingWrite(base::DoNothing(), base::DoNothing());
   }
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   // Initialized once the kiosk session is started or during recording of the
   // previously crashed kiosk session metrics.
   // Cleared once the session's duration metric is recorded:
@@ -340,8 +341,8 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
     window_registry_->RemoveObserver(this);
   }
 
-  AppSession* const app_session_;
-  AppWindowRegistry* window_registry_ = nullptr;
+  const raw_ptr<AppSession> app_session_;
+  raw_ptr<AppWindowRegistry> window_registry_ = nullptr;
   std::string app_id_;
   bool app_window_created_ = false;
 };

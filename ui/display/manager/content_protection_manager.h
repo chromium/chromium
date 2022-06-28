@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -172,8 +173,9 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   void QueueContentProtectionTask(ApplyContentProtectionCallback callback,
                                   ClientId client_id);
 
-  DisplayLayoutManager* const layout_manager_;                // Not owned.
-  NativeDisplayDelegate* native_display_delegate_ = nullptr;  // Not owned.
+  const raw_ptr<DisplayLayoutManager> layout_manager_;  // Not owned.
+  raw_ptr<NativeDisplayDelegate> native_display_delegate_ =
+      nullptr;  // Not owned.
 
   const ConfigurationDisabledCallback config_disabled_callback_;
 

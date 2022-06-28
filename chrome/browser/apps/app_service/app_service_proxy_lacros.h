@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -299,9 +300,9 @@ class AppServiceProxyLacros : public KeyedService,
 
     // |host_| owns |this|, as the InnerIconLoader is an AppServiceProxyLacros
     // field.
-    AppServiceProxyLacros* host_;
+    raw_ptr<AppServiceProxyLacros> host_;
 
-    apps::IconLoader* overriding_icon_loader_for_testing_ = nullptr;
+    raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_ = nullptr;
   };
 
   bool IsValidProfile();
@@ -332,7 +333,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   apps::PreferredAppsList preferred_apps_list_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
   // to AppServiceProxyLacros when publishers(ExtensionApps and WebApps) can run
@@ -350,7 +351,8 @@ class AppServiceProxyLacros : public KeyedService,
 
   std::unique_ptr<web_app::LacrosWebAppsController> lacros_web_apps_controller_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
-  crosapi::mojom::AppServiceProxy* remote_crosapi_app_service_proxy_ = nullptr;
+  raw_ptr<crosapi::mojom::AppServiceProxy> remote_crosapi_app_service_proxy_ =
+      nullptr;
   int crosapi_app_service_proxy_version_ = 0;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};

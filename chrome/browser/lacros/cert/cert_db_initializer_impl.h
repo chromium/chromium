@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_IMPL_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_io_impl.h"
@@ -101,7 +102,7 @@ class CertDbInitializerImpl : public CertDbInitializer,
 
   // This class is a `KeyedService` based on the `Profile`. An instance is
   // created together with a new profile and never outlives it.`
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   bool is_ready_ = false;
   base::OnceClosureList callbacks_;
 

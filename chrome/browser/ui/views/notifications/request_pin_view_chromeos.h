@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chromeos/components/security_token_pin/constants.h"
@@ -104,10 +105,10 @@ class RequestPinView final : public views::DialogDelegateView,
   bool locked_ = false;
 
   std::u16string window_title_;
-  views::Label* header_label_ = nullptr;
+  raw_ptr<views::Label> header_label_ = nullptr;
   std::u16string code_type_;
-  views::Textfield* textfield_ = nullptr;
-  views::Label* error_label_ = nullptr;
+  raw_ptr<views::Textfield> textfield_ = nullptr;
+  raw_ptr<views::Label> error_label_ = nullptr;
 
   base::WeakPtrFactory<RequestPinView> weak_ptr_factory_{this};
 };

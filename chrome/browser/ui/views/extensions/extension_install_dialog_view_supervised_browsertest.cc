@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/extensions/extension_install_dialog_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -55,8 +56,8 @@ class ExtensionInstallDialogViewTestSupervised
   }
 
  private:
-  const Extension* extension_;
-  content::WebContents* web_contents_;
+  raw_ptr<const Extension> extension_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<SupervisedUserExtensionsMetricsRecorder>
       supervised_user_extensions_metrics_recorder_;
 };

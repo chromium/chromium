@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
@@ -145,7 +146,7 @@ NavigateParams::PathBehavior ConvertPathBehavior(
 
 // A struct to keep the pending OpenUrl task.
 struct BrowserServiceLacros::PendingOpenUrl {
-  Profile* profile;
+  raw_ptr<Profile> profile;
   GURL url;
   crosapi::mojom::OpenUrlParamsPtr params;
   OpenUrlCallback callback;

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -67,7 +68,7 @@ class VpnServiceForExtension
   void DispatchEvent(std::unique_ptr<extensions::Event>) const;
 
   const std::string extension_id_;
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   mojo::Remote<crosapi::mojom::VpnServiceForExtension> vpn_service_;
   mojo::Receiver<crosapi::mojom::EventObserverForExtension> receiver_{this};

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -153,7 +154,7 @@ class TestOAuth2TokenServiceObserver
   std::vector<std::vector<CoreAccountId>> batch_change_records_;
 
   // Non-owning pointer.
-  ProfileOAuth2TokenServiceDelegate* const delegate_;
+  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 };
 
 class MockProfileOAuth2TokenServiceObserver
@@ -182,7 +183,7 @@ class MockProfileOAuth2TokenServiceObserver
   MOCK_METHOD(void, OnRefreshTokenRevoked, (const CoreAccountId&), (override));
 
  private:
-  ProfileOAuth2TokenServiceDelegate* const delegate_;
+  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 };
 
 }  // namespace

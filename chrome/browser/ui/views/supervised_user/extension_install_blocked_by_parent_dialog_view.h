@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
@@ -50,7 +51,7 @@ class ExtensionInstallBlockedByParentDialogView
   void CreateContents();
   std::u16string GetExtensionTypeString() const;
 
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
   chrome::ExtensionInstalledBlockedByParentDialogAction action_;
   base::OnceClosure done_callback_;
 };

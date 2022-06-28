@@ -83,7 +83,7 @@ void SigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
 
   // Wait for account to be in tokens.
   account_added_to_mapping_ = gaia_id;
-  identity_manager_observervation_.Observe(identity_manager_);
+  identity_manager_observervation_.Observe(identity_manager_.get());
 }
 
 void SigninHelperLacros::Finalize(const CoreAccountId& account_id) {

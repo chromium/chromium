@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -166,7 +167,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   std::unique_ptr<TestLocalPrinter> local_printer_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
-  PrintPreviewHandlerChromeOS* handler_;
+  raw_ptr<PrintPreviewHandlerChromeOS> handler_;
 };
 
 TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServersNoAsh) {

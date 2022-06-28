@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_TEST_HELPER_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
@@ -63,9 +64,9 @@ class DlpContentManagerTestHelper {
   DlpReportingManager* GetReportingManager() const;
 
  private:
-  DlpContentManager* manager_;
-  DlpReportingManager* reporting_manager_;
-  ScopedDlpContentObserverForTesting* scoped_dlp_content_observer_;
+  raw_ptr<DlpContentManager> manager_;
+  raw_ptr<DlpReportingManager> reporting_manager_;
+  raw_ptr<ScopedDlpContentObserverForTesting> scoped_dlp_content_observer_;
 };
 
 }  // namespace policy

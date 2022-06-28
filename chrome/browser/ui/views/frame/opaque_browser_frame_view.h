@@ -220,7 +220,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   raw_ptr<views::Button> close_button_;
 
   // The window icon and title.
-  TabIconView* window_icon_;
+  raw_ptr<TabIconView> window_icon_;
   raw_ptr<views::Label> window_title_;
 
   // Background painter for the window frame.

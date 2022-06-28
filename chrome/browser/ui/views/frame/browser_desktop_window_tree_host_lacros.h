@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
@@ -58,8 +59,8 @@ class BrowserDesktopWindowTreeHostLacros
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
 
-  BrowserView* const browser_view_;
-  views::DesktopNativeWidgetAura* desktop_native_widget_aura_ = nullptr;
+  const raw_ptr<BrowserView> browser_view_;
+  raw_ptr<views::DesktopNativeWidgetAura> desktop_native_widget_aura_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_

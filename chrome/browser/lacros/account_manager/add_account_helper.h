@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,8 +90,8 @@ class AddAccountHelper {
   void MaybeCompleteAddAccount();
 
   IsAccountInCacheCallback is_account_in_cache_callback_;
-  account_manager::AccountManagerFacade* const account_manager_facade_;
-  ProfileAttributesStorage* const profile_attributes_storage_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
+  const raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   AccountProfileMapper::AddAccountCallback callback_;
 
   absl::optional<account_manager::Account> account_;

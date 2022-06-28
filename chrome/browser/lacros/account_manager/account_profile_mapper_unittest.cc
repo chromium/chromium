@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -84,7 +85,7 @@ class ProfileAttributesStorageTestObserver
     if (!entry)
       return;
 
-    storage_observation_.Observe(storage_);
+    storage_observation_.Observe(storage_.get());
     profile_path_ = profile_path;
     run_loop_.Run();
   }
@@ -99,7 +100,7 @@ class ProfileAttributesStorageTestObserver
   }
 
  private:
-  ProfileAttributesStorage* storage_;
+  raw_ptr<ProfileAttributesStorage> storage_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       storage_observation_{this};

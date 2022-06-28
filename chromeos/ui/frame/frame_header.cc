@@ -464,7 +464,8 @@ void FrameHeader::LayoutHeaderInternal() {
 }
 
 gfx::Rect FrameHeader::GetTitleBounds() const {
-  views::View* left_view = left_header_view_ ? left_header_view_ : back_button_;
+  views::View* left_view =
+      left_header_view_ ? left_header_view_.get() : back_button_.get();
   return GetAvailableTitleBounds(left_view, caption_button_container_,
                                  GetHeaderHeight());
 }

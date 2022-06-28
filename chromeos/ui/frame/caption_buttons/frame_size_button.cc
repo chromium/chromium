@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -124,8 +125,8 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
-  FrameSizeButton* size_button_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<FrameSizeButton> size_button_;
 };
 
 FrameSizeButton::FrameSizeButton(PressedCallback callback,

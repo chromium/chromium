@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -183,10 +184,10 @@ class RequestManager {
   // and user.
   bool IsInteractingWithUser() const;
 
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   std::string provider_id_;
   std::map<int, std::unique_ptr<Request>> requests_;
-  NotificationManagerInterface* notification_manager_;  // Not owned.
+  raw_ptr<NotificationManagerInterface> notification_manager_;  // Not owned.
   int next_id_;
   base::TimeDelta timeout_;
   base::ObserverList<Observer>::Unchecked observers_;

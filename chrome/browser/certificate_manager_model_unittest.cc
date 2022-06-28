@@ -4,6 +4,7 @@
 
 #include "chrome/browser/certificate_manager_model.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,11 +298,11 @@ class FakeExtensionCertificateProvider : public chromeos::CertificateProvider {
   }
 
  private:
-  const net::CertificateList* extension_client_certificates_;
+  raw_ptr<const net::CertificateList> extension_client_certificates_;
 
   // If *|extensions_hang| is true, the |FakeExtensionCertificateProvider| hangs
   // - it never calls the callbacks passed to |GetCertificates|.
-  const bool* extensions_hang_;
+  raw_ptr<const bool> extensions_hang_;
 };
 
 // Looks up a |CertInfo| in |org_grouping_map| corresponding to |cert|. Returns

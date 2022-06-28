@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/download/download_commands.h"
@@ -123,10 +124,10 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
       const;
 
   // The profile associated with this notification.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Observer of this notification.
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   // Flag to show the notification on next update. If true, the notification
   // goes visible. The initial value is true so it gets shown on initial update.

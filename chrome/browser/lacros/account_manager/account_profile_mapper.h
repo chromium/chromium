@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -233,8 +234,8 @@ class AccountProfileMapper
 
   std::vector<std::unique_ptr<AddAccountHelper>> add_account_helpers_;
 
-  account_manager::AccountManagerFacade* const account_manager_facade_;
-  ProfileAttributesStorage* const profile_attributes_storage_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
+  const raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   base::ObserverList<Observer> observers_;
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -535,8 +536,8 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
   }
 
  private:
-  download::DownloadItem* download_item_ = nullptr;
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<download::DownloadItem> download_item_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
   std::string notification_id_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
@@ -96,7 +97,7 @@ class QuickAnswersUiController {
   }
 
  private:
-  QuickAnswersControllerImpl* controller_ = nullptr;
+  raw_ptr<QuickAnswersControllerImpl> controller_ = nullptr;
 
   // Trackers for quick answers and user consent view.
   views::ViewTracker quick_answers_view_tracker_;

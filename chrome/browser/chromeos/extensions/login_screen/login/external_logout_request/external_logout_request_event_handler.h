@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_EXTERNAL_LOGOUT_REQUEST_EXTERNAL_LOGOUT_REQUEST_EVENT_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_EXTERNAL_LOGOUT_REQUEST_EXTERNAL_LOGOUT_REQUEST_EVENT_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/event_router.h"
@@ -38,7 +39,7 @@ class ExternalLogoutRequestEventHandler
   void SetEventRouterForTesting(EventRouter* event_router);
 
  private:
-  EventRouter* event_router_;
+  raw_ptr<EventRouter> event_router_;
   mojo::Receiver<crosapi::mojom::ExternalLogoutRequestObserver> receiver_{this};
 };
 

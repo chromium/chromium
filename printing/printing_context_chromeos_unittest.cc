@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -136,7 +137,7 @@ class PrintingContextTest : public testing::Test,
   std::string GetAppLocale() override { return std::string(); }
 
   std::unique_ptr<PrintingContextChromeos> printing_context_;
-  MockCupsPrinter* printer_;
+  raw_ptr<MockCupsPrinter> printer_;
 };
 
 TEST_F(PrintingContextTest, SettingsToCupsOptions_Color) {

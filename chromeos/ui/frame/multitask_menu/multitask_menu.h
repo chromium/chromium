@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_H_
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -35,7 +36,7 @@ class MultitaskMenu : public views::BubbleDialogDelegateView,
   void HideBubble();
 
  private:
-  views::Widget* bubble_widget_;
+  raw_ptr<views::Widget> bubble_widget_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observer_{this};
 };

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/browser_app_instance_update.h"
@@ -61,7 +62,7 @@ struct BrowserAppInstance {
   // Mutable attributes.
   // Window may change for an app tab when a window gets dragged, but stays the
   // same for an app window.
-  aura::Window* window;
+  raw_ptr<aura::Window> window;
   std::string title;
   bool is_browser_active;
   // If a tab is active in the browser's tab strip. Only applicable to instances
@@ -94,7 +95,7 @@ struct BrowserWindowInstance {
 
   // Immutable attributes.
   const base::UnguessableToken id;
-  aura::Window* const window;
+  const raw_ptr<aura::Window> window;
   uint32_t browser_session_id;
   uint32_t restored_browser_session_id;
 

@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -48,7 +49,7 @@ class KioskSessionPluginHandler {
                                  bool is_hung) override;
     void WebContentsDestroyed() override;
 
-    KioskSessionPluginHandler* const owner_;
+    const raw_ptr<KioskSessionPluginHandler> owner_;
     std::set<int> hung_plugins_;
     base::OneShotTimer hung_wait_timer_;
   };
@@ -69,7 +70,7 @@ class KioskSessionPluginHandler {
   void OnPluginHung(const std::set<int>& hung_plugins);
   void OnWebContentsDestroyed(Observer* observer);
 
-  KioskSessionPluginHandlerDelegate* const delegate_;
+  const raw_ptr<KioskSessionPluginHandlerDelegate> delegate_;
   std::vector<std::unique_ptr<Observer>> watchers_;
 };
 

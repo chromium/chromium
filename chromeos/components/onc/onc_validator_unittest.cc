@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
@@ -100,7 +101,7 @@ struct OncParams {
         onc_source(onc_source) {}
 
   std::string location;
-  const OncValueSignature* signature;
+  raw_ptr<const OncValueSignature> signature;
   bool is_managed;
   ::onc::ONCSource onc_source;
 };

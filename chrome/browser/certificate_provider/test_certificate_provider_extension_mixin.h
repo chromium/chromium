@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 class ExtensionForceInstallMixin;
@@ -55,7 +56,7 @@ class TestCertificateProviderExtensionMixin final
   }
 
  private:
-  ExtensionForceInstallMixin* const extension_force_install_mixin_;
+  const raw_ptr<ExtensionForceInstallMixin> extension_force_install_mixin_;
   std::unique_ptr<TestCertificateProviderExtension>
       certificate_provider_extension_;
 };

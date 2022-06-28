@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -129,8 +130,8 @@ class FakeDlpController : public DataTransferDlpController,
     return false;
   }
 
-  views::Widget* widget_ = nullptr;
-  FakeClipboardNotifier* helper_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<FakeClipboardNotifier> helper_ = nullptr;
   absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();
   bool force_paste_on_warn_ = false;
@@ -239,14 +240,14 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
         widget_->GetNativeWindow()->GetRootWindow());
   }
 
-  MockDlpRulesManager* rules_manager_;
+  raw_ptr<MockDlpRulesManager> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<views::Widget> widget_;
-  views::Textfield* textfield_ = nullptr;
+  raw_ptr<views::Textfield> textfield_ = nullptr;
 };
 
 // Flaky on MSan bots: http://crbug.com/1178328

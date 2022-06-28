@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
@@ -99,7 +100,7 @@ class PepperVpnProviderMessageFilter
   std::string configuration_id_;
   std::string configuration_name_;
 
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   std::unique_ptr<VpnServiceProxy> vpn_service_proxy_;
 
   bool bound_;

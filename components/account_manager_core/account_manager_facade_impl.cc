@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -239,7 +240,7 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
         GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected"));
   }
 
-  AccountManagerFacadeImpl* const account_manager_facade_impl_;
+  const raw_ptr<AccountManagerFacadeImpl> account_manager_facade_impl_;
   const account_manager::AccountKey account_key_;
   const std::string oauth_consumer_name_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/view.h"
 
@@ -52,7 +53,7 @@ class QuickAnswersPreTargetHandler : public ui::EventHandler {
   bool DoDispatchEvent(views::View* view, ui::LocatedEvent* event);
 
   // Associated view handled by this class.
-  views::View* const view_;
+  const raw_ptr<views::View> view_;
 
   // Whether any active menus, |view_| is a companion Quick-Answers related view
   // of which, should be dismissed when it is deleted.

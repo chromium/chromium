@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_BROWSER_WINDOW_HANDLER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,14 +49,14 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  Profile* const profile_;
-  Browser* const browser_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<Browser> browser_;
   base::RepeatingClosure on_browser_window_added_callback_;
   base::RepeatingClosure on_last_browser_window_closed_callback_;
 
   // Browser in which settings are shown, restricted by
   // KioskSettingsNavigationThrottle.
-  Browser* settings_browser_ = nullptr;
+  raw_ptr<Browser> settings_browser_ = nullptr;
 
   base::WeakPtrFactory<AppSessionBrowserWindowHandler> weak_ptr_factory_{this};
 };

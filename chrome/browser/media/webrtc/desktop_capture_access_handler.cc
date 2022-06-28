@@ -290,7 +290,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       content::DesktopMediaID::RegisterNativeWindow(
           content::DesktopMediaID::TYPE_SCREEN,
           primary_root_window_for_testing_
-              ? primary_root_window_for_testing_
+              ? primary_root_window_for_testing_.get()
               : ash::Shell::Get()->GetPrimaryRootWindow());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   const content::DesktopMediaID screen_id = content::DesktopMediaID(

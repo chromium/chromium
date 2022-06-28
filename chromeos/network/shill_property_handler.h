@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -247,10 +248,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   void SetProhibitedTechnologiesEnforced(bool enforced);
 
   // Pointer to containing class (owns this)
-  Listener* listener_;
+  raw_ptr<Listener> listener_;
 
   // Convenience pointer for ShillManagerClient
-  ShillManagerClient* shill_manager_;
+  raw_ptr<ShillManagerClient> shill_manager_;
 
   // Pending update list for each managed state type
   TypeRequestMap pending_updates_;

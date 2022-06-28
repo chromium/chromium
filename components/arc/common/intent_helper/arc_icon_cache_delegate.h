@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/arc/common/intent_helper/activity_icon_loader.h"
 
 namespace arc {
@@ -47,7 +48,7 @@ class ArcIconCacheDelegateProvider {
   ArcIconCacheDelegate* GetInstance();
 
  private:
-  ArcIconCacheDelegate* delegate_;
+  raw_ptr<ArcIconCacheDelegate> delegate_;
 };
 
 }  // namespace arc

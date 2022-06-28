@@ -126,7 +126,8 @@ class CertificateManagerModel {
   struct Params {
 #if BUILDFLAG(IS_CHROMEOS)
     // May be nullptr.
-    chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
+    raw_ptr<chromeos::PolicyCertificateProvider> policy_certs_provider =
+        nullptr;
     // May be nullptr.
     std::unique_ptr<chromeos::CertificateProvider>
         extension_certificate_provider;

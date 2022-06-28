@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -103,7 +104,7 @@ class RemoteAppsProxyLacros
   mojo::Receiver<remote_apps::mojom::RemoteAppLaunchObserver>
       ash_observer_receiver_{this};
 
-  extensions::EventRouter* event_router_ = nullptr;
+  raw_ptr<extensions::EventRouter> event_router_ = nullptr;
   std::map<std::string, mojo::RemoteSetElementId> source_id_to_remote_id_map_;
 };
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
@@ -198,8 +199,9 @@ class RemoteAppsProxyLacrosUnittest : public testing::Test {
 
  protected:
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* testing_profile_ = nullptr;
-  extensions::TestEventRouter* event_router_ = nullptr;  // Created in SetUp().
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
+  raw_ptr<extensions::TestEventRouter> event_router_ =
+      nullptr;  // Created in SetUp().
   testing::StrictMock<TestRemoteAppsLacrosBridge> remote_apps_bridge_;
   mojo::Receiver<RemoteAppsLacrosBridge> bridge_receiver_{&remote_apps_bridge_};
   mojo::Remote<RemoteAppsLacrosBridge> bridge_remote_;

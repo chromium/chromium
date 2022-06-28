@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
 namespace base {
@@ -52,7 +53,7 @@ class NativeMessageEchoHost : public NativeMessageHost {
   int message_number_ = 0;
 
   // |client_| must outlive this test instance.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 };
 
 }  // namespace extensions

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
@@ -48,10 +49,11 @@ class NotificationPlatformBridgeLacros : public NotificationPlatformBridge {
   // Cleans up after a remote notification is closed.
   void OnRemoteNotificationClosed(const std::string& id);
 
-  NotificationPlatformBridgeDelegate* const bridge_delegate_;
+  const raw_ptr<NotificationPlatformBridgeDelegate> bridge_delegate_;
 
   // May be nullptr if the message center is unavailable.
-  mojo::Remote<crosapi::mojom::MessageCenter>* const message_center_remote_;
+  const raw_ptr<mojo::Remote<crosapi::mojom::MessageCenter>>
+      message_center_remote_;
 
   // Map key is notification ID.
   std::map<std::string, std::unique_ptr<RemoteNotificationDelegate>>

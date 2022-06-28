@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -69,7 +70,7 @@ class NssService : public KeyedService {
   // destroyed exclusively on the IO thread.
   std::unique_ptr<NSSCertDatabaseChromeOSManager> nss_cert_database_manager_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 #endif
 };
 

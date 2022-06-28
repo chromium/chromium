@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
@@ -56,7 +57,7 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ScopedDlpContentObserverForTesting>
       scoped_dlp_content_observer_;
   TabActivitySimulator tab_activity_simulator_;
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<Browser> browser_;
 };
 

@@ -740,7 +740,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
   // temporarily children of the TopContainerView while they're all painting to
   // their layers.
   auto* container = browser_view()->top_container();
-  container->AddChildViewAt(caption_button_container_, 0);
+  container->AddChildViewAt(caption_button_container_.get(), 0);
   if (web_app_frame_toolbar())
     container->AddChildViewAt(web_app_frame_toolbar(), 0);
 
@@ -760,7 +760,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
   ResetWindowControls();
-  AddChildViewAt(caption_button_container_, 0);
+  AddChildViewAt(caption_button_container_.get(), 0);
 
   if (web_app_frame_toolbar()) {
     views::ClientView* client_view =
@@ -929,7 +929,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
     bool needs_layout = !profile_indicator_icon_;
     if (!profile_indicator_icon_) {
       profile_indicator_icon_ = new ProfileIndicatorIcon();
-      AddChildView(profile_indicator_icon_);
+      AddChildView(profile_indicator_icon_.get());
     }
 
     gfx::Image image(

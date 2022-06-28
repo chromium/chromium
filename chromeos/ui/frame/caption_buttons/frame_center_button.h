@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_CENTER_BUTTON_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/render_text.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCenterButton
 
   // The image id and image used to paint the sub icon if set.
   absl::optional<gfx::ImageSkia> sub_icon_image_;
-  const gfx::VectorIcon* sub_icon_definition_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> sub_icon_definition_ = nullptr;
 
   // Used to update the color of the optional contents when the background
   // color is updated.

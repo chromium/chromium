@@ -386,7 +386,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
     SetCertInfos(std::move(cert_infos));
   }
 
-  chromeos::PolicyCertificateProvider* policy_certs_provider_;
+  raw_ptr<chromeos::PolicyCertificateProvider> policy_certs_provider_;
   Mode mode_;
 };
 

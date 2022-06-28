@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -488,7 +489,7 @@ class CrosapiAsh : public mojom::Crosapi {
 
   // Only set in the test ash chrome binary. In production ash this is always
   // nullptr.
-  TestControllerReceiver* test_controller_ = nullptr;
+  raw_ptr<TestControllerReceiver> test_controller_ = nullptr;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
   std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 
@@ -56,9 +57,9 @@ class SecurityTokenPinDialogHostPopupImpl final
   SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback_;
 
   // Owned by |active_window_|.
-  RequestPinView* active_pin_dialog_ = nullptr;
+  raw_ptr<RequestPinView> active_pin_dialog_ = nullptr;
   // Owned by the UI code (NativeWidget).
-  views::Widget* active_window_ = nullptr;
+  raw_ptr<views::Widget> active_window_ = nullptr;
 
   base::WeakPtrFactory<SecurityTokenPinDialogHostPopupImpl> weak_ptr_factory_{
       this};

@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -233,7 +234,7 @@ class DlpClientImpl : public DlpClient {
   }
 
   // D-Bus proxy for the Dlp daemon, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Indicates whether the daemon was started and DLP Files rules are enforced.
   bool is_alive_ = false;

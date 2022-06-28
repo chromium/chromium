@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -58,7 +59,7 @@ class TestRunner {
 
  protected:
   std::string id_;
-  const base::Process* process_;
+  raw_ptr<const base::Process> process_;
 
   base::OnceClosure done_read_closure_;
 };
@@ -258,9 +259,9 @@ class ProcessProxyTest : public testing::Test {
   // Destroys ProcessProxyRegistry LazyInstance after each test.
   base::ShadowingAtExitManager shadowing_at_exit_manager_;
 
-  ProcessProxyRegistry* registry_;
+  raw_ptr<ProcessProxyRegistry> registry_;
   std::string id_;
-  const base::Process* process_ = nullptr;
+  raw_ptr<const base::Process> process_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
 };

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/extend.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -332,10 +333,10 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   }
 
   // This pointer is guaranteed to be valid and to outlive this object.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // This pointer is guaranteed to be valid and to outlive this object.
-  LacrosExtensionAppsPublisher* const publisher_;
+  const raw_ptr<LacrosExtensionAppsPublisher> publisher_;
 
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.

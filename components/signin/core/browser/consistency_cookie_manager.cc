@@ -73,7 +73,7 @@ ConsistencyCookieManager::ConsistencyCookieManager(
       account_reconcilor_state_(account_reconcilor_->GetState()) {
   DCHECK(signin_client_);
   DCHECK(account_reconcilor_);
-  account_reconcilor_observation_.Observe(account_reconcilor_);
+  account_reconcilor_observation_.Observe(account_reconcilor_.get());
   UpdateCookieIfNeeded(/*force_creation=*/false);
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
@@ -85,7 +86,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   void SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate animate);
 
   // Not owned.
-  FrameSizeButtonDelegate* delegate_;
+  raw_ptr<FrameSizeButtonDelegate> delegate_;
 
   // The window observer to observe the to-be-snapped window.
   std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;

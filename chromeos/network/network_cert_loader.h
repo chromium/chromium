@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -265,8 +266,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // True if |StoreCertsFromCache()| was called before.
   bool certs_from_cache_loaded_ = false;
 
-  PolicyCertificateProvider* device_policy_certificate_provider_ = nullptr;
-  PolicyCertificateProvider* user_policy_certificate_provider_ = nullptr;
+  raw_ptr<PolicyCertificateProvider> device_policy_certificate_provider_ =
+      nullptr;
+  raw_ptr<PolicyCertificateProvider> user_policy_certificate_provider_ =
+      nullptr;
 
   THREAD_CHECKER(thread_checker_);
 

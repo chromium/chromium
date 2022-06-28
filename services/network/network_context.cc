@@ -2293,7 +2293,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::move(params_->initial_additional_certificates));
     cert_verifier_with_trust_anchors_->InitializeOnIOThread(
         std::move(cert_verifier));
-    cert_verifier = base::WrapUnique(cert_verifier_with_trust_anchors_);
+    cert_verifier = base::WrapUnique(cert_verifier_with_trust_anchors_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 

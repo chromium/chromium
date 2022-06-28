@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
@@ -153,7 +154,7 @@ class NotificationPlatformBridgeLacros::RemoteNotificationDelegate
 
  private:
   const std::string notification_id_;
-  NotificationPlatformBridgeDelegate* const bridge_delegate_;
+  const raw_ptr<NotificationPlatformBridgeDelegate> bridge_delegate_;
   base::WeakPtr<NotificationPlatformBridgeLacros> owner_;
   mojo::Receiver<crosapi::mojom::NotificationDelegate> receiver_{this};
 };

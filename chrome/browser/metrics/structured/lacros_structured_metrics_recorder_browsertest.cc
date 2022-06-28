@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -94,7 +95,7 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
   LacrosStructuredMetricsRecorder* recorder() { return recorder_; }
 
  private:
-  LacrosStructuredMetricsRecorder* recorder_;
+  raw_ptr<LacrosStructuredMetricsRecorder> recorder_;
   std::unique_ptr<TestObserver> observer_;
 
   base::test::ScopedFeatureList feature_list_;
