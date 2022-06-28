@@ -37,10 +37,10 @@ using ::testing::Return;
 
 namespace {
 
-base::Value::ListStorage GetTrustedUrls() {
-  base::Value::ListStorage trusted_urls;
-  trusted_urls.push_back(base::Value("https://www.example.com"));
-  trusted_urls.push_back(base::Value("example2.example.com"));
+base::Value::List GetTrustedUrls() {
+  base::Value::List trusted_urls;
+  trusted_urls.Append("https://www.example.com");
+  trusted_urls.Append("example2.example.com");
   return trusted_urls;
 }
 
@@ -62,7 +62,7 @@ namespace enterprise_connectors {
 
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  public:
-  DeviceTrustNavigationThrottleTest() : trusted_urls_(GetTrustedUrls()) {}
+  DeviceTrustNavigationThrottleTest() = default;
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorEnabled);
@@ -73,8 +73,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
         profile_.GetTestingPrefService());
     fake_connector_->Initialize();
 
-    fake_connector_->update_policy(
-        std::make_unique<base::ListValue>(GetTrustedUrls()));
+    fake_connector_->update_policy(GetTrustedUrls());
 
     EXPECT_CALL(mock_device_trust_service_, Watches(_))
         .WillRepeatedly(Invoke(
@@ -103,7 +102,6 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   test::MockDeviceTrustService mock_device_trust_service_;
   std::unique_ptr<FakeDeviceTrustConnectorService> fake_connector_;
-  base::ListValue trusted_urls_;
 };
 
 TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {

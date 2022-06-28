@@ -165,14 +165,14 @@ bool FileSystemServiceSettings::AddUrlsDisabledByServiceProvider(
     URLMatchingID* id) {
   base::Value disable_value(base::Value::Type::DICTIONARY);
 
-  std::vector<base::Value> urls;
+  base::Value::List urls;
   for (const std::string& url : file_system_config_->disable)
-    urls.emplace_back(url);
-  disable_value.SetKey(kKeyUrlList, base::Value(urls));
+    urls.Append(url);
+  disable_value.SetKey(kKeyUrlList, base::Value(std::move(urls)));
 
-  std::vector<base::Value> mime_types;
-  mime_types.emplace_back(kWildcardMimeType);
-  disable_value.SetKey(kKeyMimeTypes, base::Value(mime_types));
+  base::Value::List mime_types;
+  mime_types.Append(kWildcardMimeType);
+  disable_value.SetKey(kKeyMimeTypes, base::Value(std::move(mime_types)));
 
   bool validated =
       AddUrlPatternSettings(disable_value, /* enabled = */ false, id);
