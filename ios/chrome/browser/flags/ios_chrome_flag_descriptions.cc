@@ -575,6 +575,11 @@ const char kSmartSortingNewOverflowMenuName[] =
 const char kSmartSortingNewOverflowMenuDescription[] =
     "Enables smart sorting the new overflow menu carousel by frecency.";
 
+const char kNewOverflowMenuShareChromeActionName[] =
+    "Share Chrome App action in the new overflow menu";
+const char kNewOverflowMenuShareChromeActionDescription[] =
+    "Enables the Share Chrome App action in the new overflow menu.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

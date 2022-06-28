@@ -25,6 +25,9 @@ const base::Feature kNewOverflowMenuSimpleDestinationIcons{
 const base::Feature kSmartSortingNewOverflowMenu{
     "kSmartSortingNewOverflowMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNewOverflowMenuShareChromeAction{
+    "kNewOverflowMenuShareChromeAction", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsNewOverflowMenuEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kNewOverflowMenu);
@@ -61,4 +64,9 @@ bool IsPasswordManagerBrandingUpdateEnabled() {
 bool IsSmartSortingNewOverflowMenuEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kSmartSortingNewOverflowMenu);
+}
+
+bool IsNewOverflowMenuShareChromeActionEnabled() {
+  return IsNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kNewOverflowMenuShareChromeAction);
 }

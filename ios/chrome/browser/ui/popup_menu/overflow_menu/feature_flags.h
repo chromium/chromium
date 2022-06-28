@@ -22,6 +22,9 @@ extern const base::Feature kNewOverflowMenuSimpleDestinationIcons;
 // Feature to enable smart sorting the new overflow menu.
 extern const base::Feature kSmartSortingNewOverflowMenu;
 
+// Feature to add a "Share Chrome App" action to the overflow menu
+extern const base::Feature kNewOverflowMenuShareChromeAction;
+
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 
@@ -42,5 +45,8 @@ bool IsPasswordManagerBrandingUpdateEnabled();
 
 // Whether smart sorting the new overflow menu is enabled.
 bool IsSmartSortingNewOverflowMenuEnabled();
+
+// Whether or not the NewOverflowMenuShareChromeAction is enabled.
+bool IsNewOverflowMenuShareChromeActionEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_FEATURE_FLAGS_H_
