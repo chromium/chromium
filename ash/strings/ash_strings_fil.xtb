@@ -536,6 +536,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">Para i-unlock ang iyong Chromebook, tiyaking naka-on ang Bluetooth ng iyong telepono</translation>
+<translation id="4125970834901680537">Hindi maka-stream ng mga app sa tablet mode. Subukan ulit sa laptop mode.</translation>
 <translation id="4129129681837227511">Para makakita ng mga notification sa iyong screen ng lock, i-unlock para baguhin ang setting</translation>
 <translation id="4136724716305260864">Naka-on hanggang pagsikat ng araw</translation>
 <translation id="4146833061457621061">Mag-play ng musika</translation>
@@ -553,6 +554,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4215497585250573029">Mga setting ng VPN</translation>
 <translation id="4217571870635786043">Pagdidikta</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Naka-install na App, Naka-pause</translation>
+<translation id="423685346499232137">Hindi makopya o ma-paste ang content sa ngayon</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -1231,7 +1233,6 @@ Kaka-install lang</translation>
 <translation id="826107067893790409">Pindutin ang Enter para ma-unlock ang <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang oras}one{Ibalik sa nakaraang bersyon ang device sa loob ng # oras}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na oras}}</translation>
-<translation id="8271580342040932214">Pansamantalang nasa 80% ang iyong baterya kapag nakasaksak ito para patagalin ang baterya. Ganap na magcha-charge ang iyong baterya bago ang <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Mag-swipe pakaliwa gamit ang apat na daliri para lumipat sa nakaraang desk</translation>
 <translation id="828708037801473432">Naka-off</translation>
 <translation id="8297006494302853456">Mahina</translation>

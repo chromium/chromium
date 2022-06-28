@@ -1231,7 +1231,6 @@ Yeni yüklenmiş</translation>
 <translation id="826107067893790409">Enter tuşuna basarak <ph name="USER_EMAIL_ADDRESS" /> için kilidi açın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
-<translation id="8271580342040932214">Pil ömrünü uzatmak için piliniz fişe takılıyken geçici olarak %80 dolu kalır. Piliniz saat <ph name="FULLY_CHARGE_TIME" /> olana kadar tamamen şarj olur.</translation>
 <translation id="8284362522226889623">Önceki masaya geçmek için dört parmakla sola kaydırın</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>

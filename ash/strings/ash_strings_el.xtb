@@ -610,6 +610,7 @@
 <translation id="4513946894732546136">Σχόλια</translation>
 <translation id="4518404433291145981">Για να ξεκλειδώσετε το Chromebook, ξεκλειδώστε πρώτα το τηλέφωνό σας</translation>
 <translation id="4527045527269911712">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης.</translation>
+<translation id="4533343294786968049">Επέκταση της διάρκειας ζωής της μπαταρίας. Η μπαταρία θα φορτιστεί πλήρως έως τις <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> για να ολοκληρωθεί η φόρτιση</translation>
 <translation id="4538824937723742295">Λήψη στιγμιότυπου ολόκληρης της οθόνης</translation>
 <translation id="4544483149666270818">Επιλέξτε ένα παράθυρο για εγγραφή</translation>
@@ -1231,7 +1232,6 @@
 <translation id="826107067893790409">Πατήστε το Enter για να ξεκλειδώσετε το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8270450402312105425">{0,plural, =1{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός μίας ώρας}other{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός # ωρών}}</translation>
-<translation id="8271580342040932214">Η μπαταρία είναι προσωρινά στο 80% κατά τη σύνδεση σε παροχή ρεύματος για παράταση της διάρκειας ζωής της μπαταρίας. Η μπαταρία θα φορτιστεί πλήρως έως τις <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Σύρετε προς τα αριστερά με τέσσερα δάχτυλα για μετάβαση στο προηγούμενο γραφείο</translation>
 <translation id="828708037801473432">Ανενεργό</translation>
 <translation id="8297006494302853456">Αδύναμο</translation>

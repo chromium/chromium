@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2177831236093724629">Nakahanap ng <ph name="LINK_BEGIN" />mga hindi kwalipikadong bahagi<ph name="LINK_END" />. Para tiyaking natutukoy ang lahat ng kwalipikadong bahagi, i-update ang iyong Chrome OS sa pinakabagong bersyon.</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
+<translation id="2182088270354640012">Salamat sa feedback. Tumutulong ang iyong feedback na pahusayin ang Chrome OS at susuriin ito ng Chrome OS team. Dahil sa dami ng ulat na isinumite, hindi ka makakatanggap ng direktang pagsagot.</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Nagre-restart...</translation>
 <translation id="2533048460510040082">Iminumungkahing content ng tulong</translation>
 <translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
+<translation id="256360469103926202">Tumutulong ang iyong feedback na pahusayin ang ChromeOS at susuriin ito ng aming team. Dahil sa napakaraming ulat, hindi kami makakapagpadala ng sagot.</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
 <translation id="2619761439309613843">Araw-araw na Pag-refresh</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
+<translation id="3275729367986477355">Larawan ng avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{I-edit ang file}one{I-edit ang mga file}other{I-edit ang mga file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">Direksyon ng key</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Para sa higit pang tulong, pumunta sa <ph name="BEGIN_LINK" />Help Center<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm ng pag-compress</translation>
 <translation id="4794140124556169553">Posibleng makaapekto sa performance ng iyong system ang pagpapatakbo ng pagsusuri sa CPU</translation>
+<translation id="4800589996161293643">Komunidad ng Chromebook</translation>
 <translation id="4804818685124855865">I-disconnect</translation>
 <translation id="4808449224298348341">Kinansela ang pag-print ng <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Maliwanag na tema</translation>
@@ -488,6 +492,7 @@
 Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
+<translation id="522307662484862935">Huwag isama ang email address</translation>
 <translation id="5227902338748591677">Iskedyul ng madilim na tema</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5252456968953390977">Nagro-roam</translation>
@@ -614,6 +619,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6284632978374966585">I-on ang madilim na tema</translation>
 <translation id="6295178529664209245">Ipagpatuloy ang pag-aayos?</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
+<translation id="631063167932043783">Explore app</translation>
 <translation id="6319207335391420837">I-update ang firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">I-on ang screen saver</translation>
 <translation id="6325525973963619867">Nabigo</translation>
@@ -720,6 +726,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7297226631177386107">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTPS na website</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Magtanong sa mga eksperto sa forum ng tulong ng Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
@@ -762,6 +769,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="773153675489693198">Bilang ng cycke</translation>
 <translation id="7747039790905080783">Preshared key</translation>
 <translation id="7762130827864645708">Matagumpay ang iyong pagpapalit ng password. Pakigamit ang bagong password mula ngayon.</translation>
+<translation id="7762839321248874531">Ipadala ang <ph name="BEGIN_LINK1" />impormasyon ng system at app<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga sukatan<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Pagtugma sa domain suffix</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">Walang naka-set up na DNS server</translation>
@@ -831,6 +839,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8382302752385457774">White-label</translation>
 <translation id="8395584934117017006">Pinapamahalaan ng enterprise ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8398927464629426868">Ang rate ng kasalukuyang pag-charge o pag-discharge ng device</translation>
+<translation id="8420955526972171689">Magpatakbo ng mga pagsusuri at pag-troubleshoot para sa mga isyu sa hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Internal na keyboard</translation>
 <translation id="8431300646573772016">Ano'ng bago sa ChromeOS</translation>

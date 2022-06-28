@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Укључите тамни режим</translation>
 <translation id="2177831236093724629">Пронађене су <ph name="LINK_BEGIN" />неквалификоване компоненте<ph name="LINK_END" />. Да бисте се уверили да су све квалификоване компоненте идентификоване, ажурирајте Chrome ОС на најновију верзију.</translation>
 <translation id="2180197493692062006">Дошло је до грешке. Пробајте да поново отворите апликацију.</translation>
+<translation id="2182088270354640012">Хвала вам на утисцима. Повратне информације нам помажу да побољшамо Chrome ОС и прегледаће их Chrome ОС тим. Због броја послатих извештаја нећете добити директан одговор.</translation>
 <translation id="2209788852729124853">Ресетуј бројаче саобраћаја</translation>
 <translation id="2212733584906323460">Разрешавање имена</translation>
 <translation id="2217935453350629363">Тренутна брзина</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Рестартује се...</translation>
 <translation id="2533048460510040082">Предложени садржај помоћи</translation>
 <translation id="2536159006530886390">Повезивање на интернет није успело.</translation>
+<translation id="256360469103926202">Повратне информације нам помажу да побољшамо Chrome ОС и прегледаће их наш тим. Због великог броја извештаја не можемо да шаљемо одговоре.</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="3268178239013324452">Није успело – врата су отворена</translation>
+<translation id="3275729367986477355">Слика аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени фајл}one{Измени фајлове}few{Измени фајлове}other{Измени фајлове}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Смер кључа</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Додатну помоћ потражите у <ph name="BEGIN_LINK" />центру за помоћ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритам компримовања</translation>
 <translation id="4794140124556169553">Покретање теста процесора може да утиче на учинак система</translation>
+<translation id="4800589996161293643">Chromebook заједница</translation>
 <translation id="4804818685124855865">Прекини везу</translation>
 <translation id="4808449224298348341">Отказан је задатак штампања <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Светла тема</translation>
@@ -488,6 +492,7 @@
 Пробајте да додирнете микрофон да бисте ме питали нешто.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
+<translation id="522307662484862935">Не наводите имејл адресу</translation>
 <translation id="5227902338748591677">Распоред тамне теме</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="5252456968953390977">Роминг</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">Укључите тамну тему</translation>
 <translation id="6295178529664209245">Желите да наставите поправку?</translation>
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
+<translation id="631063167932043783">Истражите апликацију</translation>
 <translation id="6319207335391420837">Ажурирајте фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Укључите чувар екрана</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
@@ -642,6 +648,7 @@
 <translation id="6516990319416533844">Да бисте тестирали брзину пуњења батерије, дозволите да се батерија мало испразни</translation>
 <translation id="6517239166834772319">Истражите</translation>
 <translation id="6527081081771465939">Непознат безбедносни протокол за WiFi</translation>
+<translation id="6535178685492749208">Офлајн сте. Повратне информације ће бити послате касније.</translation>
 <translation id="65587193855025101">Положено</translation>
 <translation id="6564646048574748301">Није успело – штампач није доступан</translation>
 <translation id="6566314079205407217">Скенирање више страница</translation>
@@ -720,6 +727,7 @@
 <translation id="7297226631177386107">Не можете да се повежете са HTTPS веб-сајтовима кроз заштитни зид</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Питајте стручњаке на Chromebook форуму помоћи</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
@@ -762,6 +770,7 @@
 <translation id="773153675489693198">Број циклуса</translation>
 <translation id="7747039790905080783">Тајни кључ</translation>
 <translation id="7762130827864645708">Лозинка је промењена. Од сада користите нову лозинку.</translation>
+<translation id="7762839321248874531">Шаљите <ph name="BEGIN_LINK1" />информације о систему и апликацијама<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатеље<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Подударање суфикса домена</translation>
 <translation id="7769672763586021400">ИД модела</translation>
 <translation id="7784116172884276937">Није подешен ниједан DNS сервер</translation>
@@ -831,6 +840,7 @@
 <translation id="8382302752385457774">Бела ознака</translation>
 <translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
+<translation id="8420955526972171689">Покретање тестова и решавање проблема са хардвером</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Интерна тастатура</translation>
 <translation id="8431300646573772016">Новости у Chrome ОС-у</translation>

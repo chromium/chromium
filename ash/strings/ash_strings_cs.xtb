@@ -536,6 +536,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Pokud chcete odemknout Chromebook, zkontrolujte, zda je na telefonu zapnutý Bluetooth</translation>
+<translation id="4125970834901680537">V režimu tabletu aplikace streamovat nelze. Zkuste to znovu v režimu notebooku.</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
 <translation id="4136724716305260864">Do východu slunce zapnuto</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
@@ -553,6 +554,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
 <translation id="4217571870635786043">Diktování</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalovaná aplikace, pozastaveno</translation>
+<translation id="423685346499232137">Momentálně nelze kopírovat ani vkládat obsah</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
@@ -1231,7 +1233,6 @@ Nová instalace</translation>
 <translation id="826107067893790409">Chcete-li zařízení odemknout pro účet <ph name="USER_EMAIL_ADDRESS" />, stiskněte Enter</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8270450402312105425">{0,plural, =1{Do hodiny zařízení převeďte na předchozí verzi}few{Do # hodin zařízení převeďte na předchozí verzi}many{Do # hodiny zařízení převeďte na předchozí verzi}other{Do # hodin zařízení převeďte na předchozí verzi}}</translation>
-<translation id="8271580342040932214">Baterie je při zapojení dočasně udržována na 80 %, aby se prodloužila její životnost. Baterie se plně nabije za <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Na předchozí plochu přejdete přejetím čtyřmi prsty doleva</translation>
 <translation id="828708037801473432">Vypnuto</translation>
 <translation id="8297006494302853456">Slabý</translation>

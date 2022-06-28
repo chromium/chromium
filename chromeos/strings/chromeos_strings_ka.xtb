@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">მუქი რეჟიმის გააქტიურება</translation>
 <translation id="2177831236093724629">მოიძებნა <ph name="LINK_BEGIN" />კრიტერიუმებთან შეუსაბამო კომპონენტები<ph name="LINK_END" />. კრიტერიუმებთან შესაბამისი ყველა კომპონენტი იდენტიფიცირებული რომ იყოს, განაახლეთ Chrome OS უახლეს ვერსიამდე.</translation>
 <translation id="2180197493692062006">რაღაც შეცდომა მოხდა. ცადეთ აპის ხელახლა გახსნა.</translation>
+<translation id="2182088270354640012">გმადლობთ გამოხმაურებისთვის. თქვენი გამოხმაურება ხელს უწყობს Chrome OS-ის გაუმჯობესებას — მას Chrome OS-ის გუნდი გაეცნობა. მომართვების რაოდენობიდან გამომდინარე, ყველას უშუალოდ ვერ ვუპასუხებთ.</translation>
 <translation id="2209788852729124853">ტრაფიკის მთვლელების გადაყენება</translation>
 <translation id="2212733584906323460">სახელის გამორკვევა</translation>
 <translation id="2217935453350629363">ამჟამინდელი სიჩქარე</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">მიმდინარეობს გადატვირთვა...</translation>
 <translation id="2533048460510040082">შემოთავაზებული დამხმარე კონტენტი</translation>
 <translation id="2536159006530886390">ინტერნეტთან დაკავშირება ვერ მოხერხდა.</translation>
+<translation id="256360469103926202">თქვენი გამოხმაურება ხელს უწყობს ChromeOS-ის გაუმჯობესებას — მას ჩვენი გუნდი გაეცნობა. მომართვების რაოდენობიდან გამომდინარე, ყველას ინდივიდუალურად ვერ ვუპასუხებთ.</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
 <translation id="2619761439309613843">ყოველდღიური განახლება</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
+<translation id="3275729367986477355">ავატარის სურათი</translation>
 <translation id="3283504360622356314">{0,plural, =1{ფაილის რედაქტირება}other{ფაილების რედაქტირება}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> გჰც</translation>
 <translation id="3291996639387199448">გასაღების მიმართულება</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">დამატებითი დახმარებისთვის გადადით <ph name="BEGIN_LINK" />დახმარების ცენტრზე<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">შეკუმშვის ალგორითმი</translation>
 <translation id="4794140124556169553">CPU-ს ტესტის გაშვება, შესაძლოა, აისახოს სისტემის წარმადობაზე</translation>
+<translation id="4800589996161293643">Chromebook საზოგადოება</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="4808449224298348341">ბეჭდვის დავალება გაუქმდა <ph name="DOCUMENT_TITLE" />-ისთვის</translation>
 <translation id="4809927044794281115">ღია თემა</translation>
@@ -488,6 +492,7 @@
 გთხოვთ, შეეხოთ მიკროფონს და მკითხოთ, რაც გსურთ.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
+<translation id="522307662484862935">არ დაერთოს ელფოსტის მისამართი</translation>
 <translation id="5227902338748591677">მუქი თემის განრიგი</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="5252456968953390977">როუმინგი</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
 <translation id="6295178529664209245">გსურთ შეკეთების გაგრძელება?</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
+<translation id="631063167932043783">გაცნობის აპი</translation>
 <translation id="6319207335391420837">განაახლეთ ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="6321407676395378991">ეკრანმზოგის ჩართვა</translation>
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
@@ -642,6 +648,7 @@
 <translation id="6516990319416533844">ბატარეის დატენის სიჩქარის შესამოწმებლად ჯერ დაცალეთ ბატარეა გარკვეული დროის განმავლობაში</translation>
 <translation id="6517239166834772319">გაცნობა</translation>
 <translation id="6527081081771465939">Wi-Fi-ს უცნობი უსაფრთხოების პროტოკოლი</translation>
+<translation id="6535178685492749208">თქვენ ხაზგარეშე რეჟიმში ხართ. გამოხმაურება მოგვიანებით გაიგზავნება.</translation>
 <translation id="65587193855025101">ბაქანი</translation>
 <translation id="6564646048574748301">ვერ მოხერხდა — პრინტერთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="6566314079205407217">მრავალი გვერდის სკანირება</translation>
@@ -720,6 +727,7 @@
 <translation id="7297226631177386107">ქსელის დაცვიდან HTTPS ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">დაუსვით შეკითხვები ექსპერტებს Chromebook-ის დახმარების ფორუმში</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; შედეგის Google Search-ში სანახავად დააჭირეთ კლავიშთა კომბინაციას Search პლუს შორისი.</translation>
 <translation id="7343649194310845056">ქსელური მოწყობილობები</translation>
@@ -762,6 +770,7 @@
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
 <translation id="7747039790905080783">წინასწარ გაზიარებული გასაღები</translation>
 <translation id="7762130827864645708">პაროლი წარმატებით შეიცვალა. ამიერიდან გამოიყენეთ ახალი პაროლი.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />სისტემისა და აპების ინფორმაციის<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />მეტრიკის<ph name="END_LINK2" /> გაგზავნა</translation>
 <translation id="7763470514545477072">დომენის სუფიქსის დამთხვევა</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
 <translation id="7784116172884276937">DNS სერვერები არ არის დაყენებული</translation>
@@ -831,6 +840,7 @@
 <translation id="8382302752385457774">თეთრი ეტიკეტი</translation>
 <translation id="8395584934117017006">ეს <ph name="DEVICE_TYPE" /> მართულია ორგანიზაციის მიერ</translation>
 <translation id="8398927464629426868">სიხშირე, რომლითაც მოწყობილობა ამჟამად იტენება ან იცლება</translation>
+<translation id="8420955526972171689">შეასრულეთ ტესტები და დეფექტების აღმოფხვრა აპარატურის პრობლემების შემთხვევაში</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">შიდა კლავიატურა</translation>
 <translation id="8431300646573772016">სიახლეები ChromeOS-ში</translation>

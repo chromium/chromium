@@ -326,6 +326,7 @@ Pratite korake u nastavku:</translation>
 <translation id="369349502275246497">Ponudi da sačuvaš lozinke</translation>
 <translation id="3709582977625132201">Označi kao nepročitano</translation>
 <translation id="371230970611282515">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih.</translation>
+<translation id="37207012422556617">Pretrage u trendu</translation>
 <translation id="3740397331642243698">Otvara unete URL-ove u Google Chrome-u u režimu bez arhiviranja.</translation>
 <translation id="3762232513783804601">Napravljeno za iPad</translation>
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
@@ -533,6 +534,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Podešavanja), a uređaji moraju da koriste isti iCloud nalog.</translation>
 <translation id="5551897871312988470">Ponudi prevod</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
+<translation id="556042886152191864">Dugme</translation>
 <translation id="5580834567471114021">Želite da dodate na listu za čitanje za kasnije?</translation>
 <translation id="560322036295180549">Isključila je organizacija</translation>
 <translation id="5614553682702429503">Želite li da sačuvate lozinku?</translation>
@@ -913,7 +915,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8591976964826315682">Blokirajte kolačiće trećih strana u režimu bez arhiviranja</translation>
 <translation id="8605219856220328675">Zatvori karticu.</translation>
 <translation id="8620640915598389714">Izmeni</translation>
-<translation id="8620785403235741379">Izaberite opciju</translation>
 <translation id="8626393685701737946">Možete da promenite podrazumevani prikaz sajta na računar u odeljku Podešavanja &gt; Podešavanja sadržaja</translation>
 <translation id="863090005774946393">Organizacija upravlja pregledačem. Neke funkcije mogu da budu onemogućene.</translation>
 <translation id="8636825310635137004">Da bi vam kartice bile dostupne na drugim uređajima, uključite sinhronizaciju.</translation>

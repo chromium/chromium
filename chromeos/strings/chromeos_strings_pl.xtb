@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
 <translation id="2177831236093724629">Znaleziono <ph name="LINK_BEGIN" />niezgodne komponenty<ph name="LINK_END" />. Aby mieć pewność, że zostały zidentyfikowane wszystkie zgodne komponenty, zaktualizuj Chrome OS do najnowszej wersji.</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
+<translation id="2182088270354640012">Dziękujemy za opinię. Twoją opinię przeczyta nasz zespół, bo opinie pomagają nam ulepszać Chrome OS. Ze względu na liczbę przesłanych zgłoszeń nie będziemy mogli wysłać bezpośredniej odpowiedzi.</translation>
 <translation id="2209788852729124853">Zresetuj liczniki natężenia ruchu</translation>
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Uruchamiam ponownie…</translation>
 <translation id="2533048460510040082">Sugerowane materiały pomocy</translation>
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
+<translation id="256360469103926202">Twoją opinię przeczyta nasz zespół, bo opinie pomagają nam ulepszać ChromeOS. Ze względu na dużą liczbę zgłoszeń nie będziemy mogli wysłać odpowiedzi.</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Szukam skanerów</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
+<translation id="3275729367986477355">Awatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edytuj plik}few{Edytuj pliki}many{Edytuj pliki}other{Edytuj pliki}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Kierunek klucza</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Więcej pomocy uzyskasz w <ph name="BEGIN_LINK" />Centrum pomocy<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorytm kompresji</translation>
 <translation id="4794140124556169553">Uruchomienie testu procesora może wpłynąć na wydajność systemu</translation>
+<translation id="4800589996161293643">Społeczność Chromebooka</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
 <translation id="4809927044794281115">Jasny motyw</translation>
@@ -488,6 +492,7 @@
 Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
+<translation id="522307662484862935">Nie podawaj adresu e-mail</translation>
 <translation id="5227902338748591677">Harmonogram ciemnego motywu</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -614,6 +619,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6284632978374966585">Włącz ciemny motyw</translation>
 <translation id="6295178529664209245">Kontynuować naprawę?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> został anulowany</translation>
+<translation id="631063167932043783">Aplikacja Odkrywaj</translation>
 <translation id="6319207335391420837">Aktualizacja oprogramowania układowego na urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Włącz wygaszacz ekranu</translation>
 <translation id="6325525973963619867">Niepowodzenie</translation>
@@ -720,6 +726,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7297226631177386107">Nie można połączyć się z witrynami HTTPS przez zaporę sieciową</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Zapytaj ekspertów na forum pomocy Chromebooka</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Naciśnij Wyszukaj i spację, aby zobaczyć wynik w wyszukiwarce Google.</translation>
 <translation id="7343649194310845056">Urządzenia sieciowe</translation>
@@ -762,6 +769,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="773153675489693198">Liczba cykli</translation>
 <translation id="7747039790905080783">Klucz wstępny</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
+<translation id="7762839321248874531">Wyślij <ph name="BEGIN_LINK1" />informacje o systemie i aplikacjach<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />dane<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
@@ -831,6 +839,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8382302752385457774">Bez oznaczenia marki</translation>
 <translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
 <translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
+<translation id="8420955526972171689">Uruchamianie testów i rozwiązywanie problemów ze sprzętem</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Klawiatura wbudowana</translation>
 <translation id="8431300646573772016">Co nowego w Chrome OS</translation>

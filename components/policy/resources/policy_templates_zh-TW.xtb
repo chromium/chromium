@@ -86,7 +86,6 @@
       如果設為 True，系統會回報裝置背光的資訊。</translation>
 <translation id="1076751984131277498">卸除式 USB 裝置許可清單</translation>
 <translation id="1077675271127011209">停用使用量和當機相關資料的報告功能</translation>
-<translation id="1079120839835170592">重新啟用 Event.path API，直到 M115 為止。</translation>
 <translation id="1079425471279127373">設定這項政策可讓強制安裝的網頁應用程式的某些來源，透過 Device Attributes API 取得各種裝置屬性，例如序號和主機名稱。
 
       Device Attributes API 是一系列的網路 API，請參閱 https://wicg.github.io/WebApiDevice/device_attributes。這些 API 僅適用於透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 強制安裝的網頁應用程式所對應的來源，或是在資訊站工作階段中設定的來源。</translation>

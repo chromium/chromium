@@ -537,6 +537,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">tetingkap</translation>
 <translation id="4123259114412175274">Untuk membuka kunci Chromebook anda, pastikan Bluetooth telefon anda dihidupkan</translation>
+<translation id="4125970834901680537">Tidak dapat menstrim apl dalam mod tablet. Cuba lagi dalam mod komputer riba.</translation>
 <translation id="4129129681837227511">Untuk melihat pemberitahuan pada skrin kunci anda, buka kunci untuk menukar tetapan</translation>
 <translation id="4136724716305260864">Dihidupkan sehingga matahari terbit</translation>
 <translation id="4146833061457621061">Mainkan muzik</translation>
@@ -554,6 +555,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
+<translation id="423685346499232137">Tidak dapat menyalin atau menampal kandungan pada masa ini</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
@@ -1232,7 +1234,6 @@ Pemasangan baharu</translation>
 <translation id="826107067893790409">Tekan Enter bagi membuka kunci untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8270450402312105425">{0,plural, =1{Tukar peranti kepada versi sebelumnya dalam masa sejam}other{Tukar peranti kepada versi sebelumnya dalam masa # jam}}</translation>
-<translation id="8271580342040932214">Bateri anda adalah pada tahap 80% untuk sementara waktu semasa palam dipasangkan untuk melanjutkan hayat bateri. Bateri anda akan dicas sepenuhnya selewat-lewatnya <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Leret ke kiri dengan empat jari untuk beralih kepada meja sebelumnya</translation>
 <translation id="828708037801473432">Dimatikan</translation>
 <translation id="8297006494302853456">Lemah</translation>

@@ -536,6 +536,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Ak chcete odomknúť svoj Chromebook, uistite sa, že máte v telefóne zapnuté rozhranie Bluetooth</translation>
+<translation id="4125970834901680537">V režime tabletu sa nedajú streamovať aplikácie. Skúste to znova v režime laptopu.</translation>
 <translation id="4129129681837227511">Ak chcete, aby sa na uzamknutej obrazovke zobrazovali upozornenia, odomknite zariadenie a zmeňte nastavenie</translation>
 <translation id="4136724716305260864">Zapnutý do východu slnka</translation>
 <translation id="4146833061457621061">Prehrať hudbu</translation>
@@ -553,6 +554,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4215497585250573029">Nastavenia VPN</translation>
 <translation id="4217571870635786043">Diktovanie</translation>
 <translation id="4221957499226645091">Nainštalovaná aplikácia <ph name="APP_NAME" /> bola pozastavená</translation>
+<translation id="423685346499232137">Obsah sa momentálne nedá skopírovať ani prilepiť</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4250229828105606438">Snímka obrazovky</translation>
@@ -1231,7 +1233,6 @@ Nová inštalácia</translation>
 <translation id="826107067893790409">Stlačením tlačidla Enter odomknite pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8270450402312105425">{0,plural, =1{Do hodiny obnovte v zariadení predchádzajúcu verziu}few{Do # hodín obnovte v zariadení predchádzajúcu verziu}many{Do # hodiny obnovte v zariadení predchádzajúcu verziu}other{Do # hodín obnovte v zariadení predchádzajúcu verziu}}</translation>
-<translation id="8271580342040932214">Keď je zariadenie zapojené, stav batérie je dočasne na úrovni 80 %, čo predlžuje jej výdrž. Batéria bude úplne nabitá do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Na predchádzajúcu plochu prepnete potiahnutím štyrmi prstami doľava</translation>
 <translation id="828708037801473432">Vypnuté</translation>
 <translation id="8297006494302853456">Slabé</translation>

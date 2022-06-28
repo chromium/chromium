@@ -536,6 +536,7 @@
 <translation id="4115378294792113321">สีม่วงแดง</translation>
 <translation id="412298498316631026">หน้าต่าง</translation>
 <translation id="4123259114412175274">หากต้องการปลดล็อก Chromebook ให้ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
+<translation id="4125970834901680537">สตรีมแอปในโหมดแท็บเล็ตไม่ได้ โปรดลองอีกครั้งในโหมดแล็ปท็อป</translation>
 <translation id="4129129681837227511">หากต้องการดูการแจ้งเตือนในหน้าจอล็อก ให้ปลดล็อกเพื่อเปลี่ยนการตั้งค่า</translation>
 <translation id="4136724716305260864">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
@@ -553,6 +554,7 @@
 <translation id="4215497585250573029">การตั้งค่า VPN</translation>
 <translation id="4217571870635786043">การพิมพ์ตามคำบอก</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
+<translation id="423685346499232137">คัดลอกหรือวางเนื้อหาไม่ได้ในขณะนี้</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
@@ -1231,7 +1233,6 @@
 <translation id="826107067893790409">กด Enter เพื่อปลดล็อกสำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8270450402312105425">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 ชั่วโมง}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # ชั่วโมง}}</translation>
-<translation id="8271580342040932214">แบตเตอรี่จะอยู่ที่ระดับ 80% เป็นการชั่วคราวในระหว่างเสียบปลั๊กอยู่เพื่อยืดอายุการใช้งานแบตเตอรี่ แบตเตอรี่จะชาร์จจนเต็มภายใน <ph name="FULLY_CHARGE_TIME" /></translation>
 <translation id="8284362522226889623">ใช้ 4 นิ้วเลื่อนไปทางซ้ายเพื่อเปลี่ยนไปใช้เดสก์ก่อนหน้า</translation>
 <translation id="828708037801473432">ปิด</translation>
 <translation id="8297006494302853456">อ่อน</translation>

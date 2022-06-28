@@ -536,6 +536,7 @@
 <translation id="4115378294792113321">किरमिजी</translation>
 <translation id="412298498316631026">विंडो</translation>
 <translation id="4123259114412175274">तुमचे Chromebook अनलॉक करण्यासाठी, तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा</translation>
+<translation id="4125970834901680537">टॅबलेट मोडमध्ये ॲप्स स्ट्रीम करू शकत नाही. लॅपटॉप मोडमध्ये पुन्हा प्रयत्न करा.</translation>
 <translation id="4129129681837227511">तुमच्या लॉक स्क्रीनवर सूचना पाहाण्यासाठी, सेटिंग बदलण्याकरिता अनलॉक करा</translation>
 <translation id="4136724716305260864">सूर्योदयापर्यंत सुरू</translation>
 <translation id="4146833061457621061">म्युझिक प्ले करा</translation>
@@ -553,6 +554,7 @@
 <translation id="4215497585250573029">VPN सेटिंग्ज</translation>
 <translation id="4217571870635786043">डिक्टेशन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, थांबवले आहे</translation>
+<translation id="423685346499232137">यावेळी आशय कॉपी किंवा पेस्ट करू शकत नाही</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -1231,7 +1233,6 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> अनलॉक करण्यासाठी एंटर दाबा</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक तासामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# तासांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
-<translation id="8271580342040932214">बॅटरी लाइफ वाढवण्यासाठी प्लग इन केलेले असताना तुमची बॅटरी तात्पुरती ८०% वर असते. तुमची बॅटरी <ph name="FULLY_CHARGE_TIME" /> पर्यंत पूर्णपणे चार्ज होईल.</translation>
 <translation id="8284362522226889623">मागील डेस्कवर स्विच करण्यासाठी चार बोटांनी डावीकडे स्‍वाइप करा</translation>
 <translation id="828708037801473432">बंद</translation>
 <translation id="8297006494302853456">कमकुवत</translation>

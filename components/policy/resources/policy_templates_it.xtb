@@ -86,7 +86,6 @@
       Se viene impostato su true, le informazioni sulla retroilluminazione del dispositivo vengono segnalate.</translation>
 <translation id="1076751984131277498">Elenco di dispositivi USB che è consentito scollegare</translation>
 <translation id="1077675271127011209">Disattiva i report sull'utilizzo e sui dati relativi agli arresti anomali</translation>
-<translation id="1079120839835170592">Riattiva l'API Event.path fino alla versione M115.</translation>
 <translation id="1079425471279127373">La configurazione di questo criterio consente di stabilire se consentire o meno ad alcune origini delle applicazioni web con installazione forzata di ricevere gli attributi dei dispositivi (ad esempio, numero di serie, nome host) usando l'API Device Attributes.
 
       L'API Device Attributes è un elenco di API web; visita la pagina https://wicg.github.io/WebApiDevice/device_attributes. Sono disponibili soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o per quella configurata nella sessione kiosk.</translation>

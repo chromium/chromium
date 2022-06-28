@@ -3668,7 +3668,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4510479820467554003">Lista de conturi de părinte</translation>
 <translation id="451102079304155829">coșuri de cumpărături</translation>
 <translation id="4513872120116766993">Scriere predictivă</translation>
-<translation id="4513909579793564731">Aplică setul de îndrumare</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Cu tehnologia <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Redă sau întrerupe videoclipul</translation>
@@ -4088,6 +4087,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> dorește să comunice cu extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4918134162946436591">Afișează suprapunerea indiciului</translation>
+<translation id="4921348630401250116">Redarea vocală a textului</translation>
 <translation id="492299503953721473">Elimină aplicațiile Android</translation>
 <translation id="492363500327720082">Se dezinstalează <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Trimite feedback</translation>

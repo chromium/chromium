@@ -3665,7 +3665,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4510479820467554003">Lijst met ouderaccounts</translation>
 <translation id="451102079304155829">winkelwagens</translation>
 <translation id="4513872120116766993">Voorspellend schrijven</translation>
-<translation id="4513909579793564731">Playbook toepassen</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Mogelijk gemaakt door <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Video schakelen tussen afspelen en pauzeren</translation>
@@ -4084,6 +4083,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wil communiceren met de extensie '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="4918086044614829423">Accepteren</translation>
 <translation id="4918134162946436591">Hintoverlay tonen</translation>
+<translation id="4921348630401250116">Tekst-naar-spraak</translation>
 <translation id="492299503953721473">Android-apps verwijderen</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> verwijderen…</translation>
 <translation id="4924002401726507608">Feedback sturen</translation>

@@ -3664,7 +3664,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4510479820467554003">Ebeveyn hesap listesi</translation>
 <translation id="451102079304155829">alışveriş sepetleri</translation>
 <translation id="4513872120116766993">Tahmine dayalı yazım</translation>
-<translation id="4513909579793564731">Başucu kitabını uygula</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> tarafından destekleniyor</translation>
 <translation id="4514610446763173167">Oynatmak veya duraklatmak için videoyu aç/kapat</translation>
@@ -4084,6 +4083,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" uzantısıyla iletişim kurmak istiyor</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4918134162946436591">İpucu yer paylaşımını göster</translation>
+<translation id="4921348630401250116">Metin okuma</translation>
 <translation id="492299503953721473">Android uygulamalarını kaldır</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> uygulaması kaldırılıyor...</translation>
 <translation id="4924002401726507608">Geri Bildirim Gönder</translation>

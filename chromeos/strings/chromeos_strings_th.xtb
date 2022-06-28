@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
 <translation id="2177831236093724629">พบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> โปรดอัปเดต Chrome OS เป็นเวอร์ชันล่าสุดเพื่อให้แน่ใจว่ามีการระบุคอมโพเนนต์ที่ตรงตามข้อกำหนดทุกคอมโพเนนต์</translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
+<translation id="2182088270354640012">ขอบคุณสำหรับความคิดเห็น ความคิดเห็นของคุณจะช่วยปรับปรุง Chrome OS และได้รับการตรวจสอบจากทีม Chrome OS คุณจะไม่ได้รับการตอบกลับโดยตรงเนื่องจากมีผู้ส่งรายงานเข้ามาเป็นจำนวนมาก</translation>
 <translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
 <translation id="2212733584906323460">การจำแนกชื่อ</translation>
 <translation id="2217935453350629363">ความเร็วในปัจจุบัน</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">กำลังรีสตาร์ท…</translation>
 <translation id="2533048460510040082">เนื้อหาช่วยเหลือที่แนะนำ</translation>
 <translation id="2536159006530886390">เชื่อมต่ออินเทอร์เน็ตไม่ได้</translation>
+<translation id="256360469103926202">ความคิดเห็นของคุณจะช่วยปรับปรุง Chrome OS และได้รับการตรวจสอบจากทีมของเรา แต่เราไม่สามารถตอบกลับคุณได้เนื่องจากได้รับรายงานเข้ามาเป็นจำนวนมาก</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ไปที่การตั้งค่าเพื่อตั้งค่า</translation>
 <translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
+<translation id="3275729367986477355">รูปโปรไฟล์</translation>
 <translation id="3283504360622356314">{0,plural, =1{แก้ไขไฟล์}other{แก้ไขไฟล์}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">ทิศทางของคีย์</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">ดูความช่วยเหลือเพิ่มเติมได้ที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">อัลกอริทึมการบีบอัด</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
+<translation id="4800589996161293643">ชุมชน Chromebook</translation>
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
 <translation id="4809927044794281115">ธีมสว่าง</translation>
@@ -488,6 +492,7 @@
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
+<translation id="522307662484862935">อย่าใส่อีเมล</translation>
 <translation id="5227902338748591677">กำหนดเวลาธีมมืด</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5252456968953390977">โรมมิ่ง</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">เปิดธีมมืด</translation>
 <translation id="6295178529664209245">ดำเนินการซ่อมต่อใช่ไหม</translation>
 <translation id="6302401976930124515">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
+<translation id="631063167932043783">แอป "สำรวจ"</translation>
 <translation id="6319207335391420837">อัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">เปิดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="6325525973963619867">ล้มเหลว</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">ถามผู้เชี่ยวชาญในฟอรัมความช่วยเหลือของ Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Google Search</translation>
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">จำนวนรอบ</translation>
 <translation id="7747039790905080783">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="7762130827864645708">เปลี่ยนรหัสผ่านสำเร็จ โปรดใช้รหัสผ่านใหม่จากนี้ไป</translation>
+<translation id="7762839321248874531">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลระบบและแอป<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />เมตริก<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">การจับคู่ส่วนต่อท้ายโดเมน</translation>
 <translation id="7769672763586021400">รหัสรุ่น</translation>
 <translation id="7784116172884276937">ไม่มีเซิร์ฟเวอร์ DNS ที่ตั้งค่าไว้</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">ไวท์เลเบล</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดยองค์กร</translation>
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
+<translation id="8420955526972171689">ทำการทดสอบและแก้ปัญหาเกี่ยวกับฮาร์ดแวร์</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">แป้นพิมพ์ภายใน</translation>
 <translation id="8431300646573772016">มีอะไรใหม่ใน Chrome OS</translation>

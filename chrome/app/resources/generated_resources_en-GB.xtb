@@ -3696,7 +3696,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4510479820467554003">Parent account list</translation>
 <translation id="451102079304155829">baskets</translation>
 <translation id="4513872120116766993">Predictive writing</translation>
-<translation id="4513909579793564731">Apply playbook</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Toggle video to play or pause</translation>
@@ -4120,6 +4119,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wants to communicate with the extension "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4918134162946436591">Show hint overlay</translation>
+<translation id="4921348630401250116">Text-to-speech</translation>
 <translation id="492299503953721473">Remove Android apps</translation>
 <translation id="492363500327720082">Uninstalling <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Submit feedback</translation>

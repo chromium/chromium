@@ -1233,7 +1233,6 @@ New install</translation>
 <translation id="826107067893790409">Press Enter to unlock for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
-<translation id="8271580342040932214">Your battery is temporarily at 80% while plugged in to extend battery life. Your battery will fully charge by <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Swipe left with four fingers to switch to the previous desk</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>

@@ -82,7 +82,6 @@
       このポリシーを true に設定した場合、デバイスのバックライトに関する情報が報告されます。</translation>
 <translation id="1076751984131277498">取り外し可能な USB デバイスの許可リスト</translation>
 <translation id="1077675271127011209">使用状況とクラッシュ関連データのレポートを無効にする</translation>
-<translation id="1079120839835170592">M115 まで Event.path API を再度使用できるようにします。</translation>
 <translation id="1079425471279127373">このポリシーでは、自動インストールされたウェブ アプリケーションの一部のオリジンに Device Attributes API を使用したデバイス属性（シリアル番号、ホスト名など）の取得を許可するかどうかを設定します。
 
       Device Attributes API はウェブの API のリストです。詳しくは、https://wicg.github.io/WebApiDevice/device_attributes をご覧ください。これらの API は、<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> に沿って自動インストールされたウェブ アプリケーションと一致するオリジンまたはキオスク セッションで設定されたオリジンに対してのみ使用できます。</translation>

@@ -86,7 +86,6 @@
       Nếu bạn đặt chính sách này thành true, thì thông tin về đèn nền của thiết bị sẽ được báo cáo.</translation>
 <translation id="1076751984131277498">Danh sách thiết bị USB được phép tháo</translation>
 <translation id="1077675271127011209">Tắt tính năng báo cáo về hoạt động sử dụng và dữ liệu liên quan đến sự cố</translation>
-<translation id="1079120839835170592">Đã bật lại API Event.path cho đến phiên bản M115.</translation>
 <translation id="1079425471279127373">Đặt chính sách để cho phép một số nguồn gốc của ứng dụng web bị buộc cài đặt nhận các thuộc tính của thiết bị (ví dụ: số sê-ri, tên máy chủ) bằng cách sử dụng API thuộc tính thiết bị.
 
       API Thuộc tính thiết bị là danh sách các API web, vui lòng xem tại https://wicg.github.io/WebApiDevice/device_attributes. Các API này chỉ có sẵn cho những nguồn tương ứng với các ứng dụng web bị buộc cài đặt qua <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> hoặc ứng dụng được định cấu hình trong phiên Kiosk.</translation>

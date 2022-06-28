@@ -1232,7 +1232,6 @@ Uus installimine</translation>
 <translation id="826107067893790409">E-posti aadressi <ph name="USER_EMAIL_ADDRESS" /> puhul avamiseks vajutage sisestusklahvi</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
-<translation id="8271580342040932214">Kui teie aku on vooluvõrguga ühendatud, hoitakse seda ajutiselt 80% täislaetuna, et pikendada aku tööiga. Teie aku laetakse täielikult täis järgmiseks ajaks: <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>

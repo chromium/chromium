@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
 <translation id="2177831236093724629">Byly zjištěny <ph name="LINK_BEGIN" />nekvalifikované komponenty<ph name="LINK_END" />. Pokud chcete zajistit, aby byly identifikovány všechny kvalifikované komponenty, aktualizujte systém Chrome OS na nejnovější verzi.</translation>
 <translation id="2180197493692062006">Došlo k chybě. Zkuste aplikaci otevřít znovu.</translation>
+<translation id="2182088270354640012">Díky za zpětnou vazbu. Zpětná vazba od vás nám s vylepšováním systému Chrome OS a tým Chrome OS si ji přečte. Vzhledem k množství odeslaných hlášení neobdržíte přímou odpověď.</translation>
 <translation id="2209788852729124853">Resetovat počítadla návštěvnosti</translation>
 <translation id="2212733584906323460">Rozlišení názvu</translation>
 <translation id="2217935453350629363">Aktuální rychlost</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Restartování…</translation>
 <translation id="2533048460510040082">Navrhovaný obsah nápovědy</translation>
 <translation id="2536159006530886390">Nelze se připojit k internetu.</translation>
+<translation id="256360469103926202">Vaše zpětná vazba nám pomáhá s vylepšováním systému ChromeOS a náš tým si ji přečte. Vzhledem k velkému počtu hlášení vám nebudeme moci odpovědět.</translation>
 <translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Konfiguraci lze provést v sekci Nastavení</translation>
 <translation id="2619761439309613843">Denní obnovení</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
+<translation id="3275729367986477355">Obrázek avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Směr klíče</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Další informace naleznete v <ph name="BEGIN_LINK" />centru nápovědy<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Kompresní algoritmus</translation>
 <translation id="4794140124556169553">Test procesoru může mít vliv na výkon systému</translation>
+<translation id="4800589996161293643">Komunita Chromebooků</translation>
 <translation id="4804818685124855865">Odpojit</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Světlý motiv</translation>
@@ -488,6 +492,7 @@
 Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
+<translation id="522307662484862935">Nezahrnovat e‑mailovou adresu</translation>
 <translation id="5227902338748591677">Plán tmavého motivu</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -614,6 +619,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6284632978374966585">Zapnout tmavý motiv</translation>
 <translation id="6295178529664209245">Pokračovat v opravě?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
+<translation id="631063167932043783">Prozkoumat aplikaci</translation>
 <translation id="6319207335391420837">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnout spořič obrazovky</translation>
 <translation id="6325525973963619867">Došlo k selhání</translation>
@@ -720,6 +726,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7297226631177386107">Přes firewall se nelze připojit k webům HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Zeptejte se odborníků ve fóru nápovědy pro Chromebooky</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ve Vyhledávání Google výsledek zobrazíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
@@ -762,6 +769,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="773153675489693198">Počet cyklů</translation>
 <translation id="7747039790905080783">Předsdílený klíč</translation>
 <translation id="7762130827864645708">Změna hesla byla úspěšná. Odteď používejte nové heslo.</translation>
+<translation id="7762839321248874531">Odesílat <ph name="BEGIN_LINK1" />informace o systému a aplikacích<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Shoda přípon domén</translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7784116172884276937">Nejsou nastaveny žádné servery DNS</translation>
@@ -831,6 +839,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8382302752385457774">Bílý štítek</translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
+<translation id="8420955526972171689">Testování a odstraňování problémů s hardwarem</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interní klávesnice</translation>
 <translation id="8431300646573772016">Novinky v ChromeOS</translation>

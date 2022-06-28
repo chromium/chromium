@@ -536,6 +536,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">Fenster</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
+<translation id="4125970834901680537">Apps können im Tabletmodus nicht gestreamt werden. Bitte versuch es noch einmal im Laptopmodus.</translation>
 <translation id="4129129681837227511">Wenn du Benachrichtigungen auf dem Sperrbildschirm sehen möchtest, entsperre das Gerät, um die Einstellung zu ändern</translation>
 <translation id="4136724716305260864">Bis Sonnenaufgang aktiviert</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
@@ -553,6 +554,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4215497585250573029">VPN-Einstellungen</translation>
 <translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installierte App, pausiert</translation>
+<translation id="423685346499232137">Inhalte können momentan nicht kopiert oder eingefügt werden</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -1231,7 +1233,6 @@ Neuinstallation</translation>
 <translation id="826107067893790409">Zum Entsperren für <ph name="USER_EMAIL_ADDRESS" /> Eingabetaste drücken</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8270450402312105425">{0,plural, =1{Gerät innerhalb von einer Stunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Stunden auf eine frühere Version zurücksetzen}}</translation>
-<translation id="8271580342040932214">Dein Akku bleibt vorübergehend mit 80 % aufgeladen, während er ans Stromnetz angeschlossen ist, um die Akkulaufzeit zu verlängern. Bis <ph name="FULLY_CHARGE_TIME" /> wird der Akku vollständig aufgeladen.</translation>
 <translation id="8284362522226889623">Wische mit vier Fingern nach links, um zum vorigen Desktop zu wechseln</translation>
 <translation id="828708037801473432">Aus</translation>
 <translation id="8297006494302853456">Schwach</translation>
@@ -1242,7 +1243,7 @@ Neuinstallation</translation>
 <translation id="8364673525741149932">Shelf Party ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="8369166482916924789">Gespeicherter Desktop, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Weiter um einen Buchstaben</translation>
-<translation id="8371991222807690464">Die Leistung von Peripheriegeräten kann im Gastmodus eingeschränkt sein</translation>
+<translation id="8371991222807690464">Die Leistung des Peripheriegeräts kann im Gastmodus eingeschränkt sein</translation>
 <translation id="8374601332003098278">Eingabetaste drücken, um einen Teil des Bildschirms aufzuzeichnen</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> und dein Smartphone werden automatisch miteinander verbunden</translation>
 <translation id="8380784334203145311">Gute Nacht,</translation>

@@ -536,6 +536,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">janela</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, certifique-se de que o Bluetooth do telemóvel está ativado</translation>
+<translation id="4125970834901680537">Não é possível fazer stream de apps no modo de tablet. Tente novamente no modo de portátil.</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
 <translation id="4136724716305260864">Ativada até ao nascer do sol</translation>
 <translation id="4146833061457621061">Tocar música</translation>
@@ -553,6 +554,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, em pausa</translation>
+<translation id="423685346499232137">Não é possível copiar ou colar conteúdo neste momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>
@@ -1231,7 +1233,6 @@ Nova instalação</translation>
 <translation id="826107067893790409">Prima Enter para desbloquear para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Alteração do dispositivo para uma versão anterior dentro de uma hora}other{Alteração do dispositivo para uma versão anterior dentro de # horas}}</translation>
-<translation id="8271580342040932214">A bateria está temporariamente a 80% quando ligada à corrente para prolongar a autonomia da bateria. A bateria vai ficar totalmente carregada à(s) <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Deslize rapidamente para a esquerda com quatro dedos para mudar para o espaço de trabalho anterior.</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraca</translation>

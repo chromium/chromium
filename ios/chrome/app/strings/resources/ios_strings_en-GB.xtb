@@ -534,6 +534,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="556042886152191864">Button</translation>
 <translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
 <translation id="5614553682702429503">Save password?</translation>
@@ -914,7 +915,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>
-<translation id="8620785403235741379">Select option</translation>
 <translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
 <translation id="863090005774946393">Your browser is managed by your organisation. Some features may be disabled.</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>

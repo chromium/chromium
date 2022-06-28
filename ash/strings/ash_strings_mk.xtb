@@ -537,6 +537,7 @@
 <translation id="4115378294792113321">Магента</translation>
 <translation id="412298498316631026">прозорец</translation>
 <translation id="4123259114412175274">За да го отклучите вашиот Chromebook, уверете се дека Bluetooth на телефонот е вклучен</translation>
+<translation id="4125970834901680537">Не може да се стримуваат апликации во режим на таблет. Обидете се повторно во режим на лаптоп.</translation>
 <translation id="4129129681837227511">За да гледате известувања на заклучениот екран, отклучете за да ја промените поставката</translation>
 <translation id="4136724716305260864">Вклучено до изгрејсонце</translation>
 <translation id="4146833061457621061">Пушти музика</translation>
@@ -554,6 +555,7 @@
 <translation id="4215497585250573029">Поставки за VPN</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
+<translation id="423685346499232137">Не може да се копираат или залепат содржини во моментов</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
@@ -1232,7 +1234,6 @@
 <translation id="826107067893790409">Притиснете Enter за да се отклучи за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8270450402312105425">{0,plural, =1{Променете го уредот на претходната верзија во рок од еден час}one{Променете го уредот на претходната верзија во рок од # час}other{Променете го уредот на претходната верзија во рок од # часа}}</translation>
-<translation id="8271580342040932214">Батеријата привремено е на 80 % додека е приклучена за да се продолжи траењето на батеријата. Батеријата ќе се наполни целосно до <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Повлечете налево со четири прста за да се префрлите на претходната работна површина</translation>
 <translation id="828708037801473432">Исклучено</translation>
 <translation id="8297006494302853456">Слаб</translation>

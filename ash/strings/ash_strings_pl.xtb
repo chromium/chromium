@@ -536,6 +536,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Aby odblokować Chromebooka, sprawdź, czy na telefonie jest włączony Bluetooth</translation>
+<translation id="4125970834901680537">W trybie tabletu nie można przesyłać strumieniowo aplikacji. Spróbuj ponownie w trybie laptopa.</translation>
 <translation id="4129129681837227511">Aby wyświetlać powiadomienia na ekranie blokady, odblokuj ekran i zmień ustawienie</translation>
 <translation id="4136724716305260864">Włączone do wschodu słońca</translation>
 <translation id="4146833061457621061">Włącz muzykę</translation>
@@ -553,6 +554,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
+<translation id="423685346499232137">W tej chwili nie można kopiować ani wklejać treści</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -1230,7 +1232,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="826107067893790409">Naciśnij Enter, by odblokować dla: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
-<translation id="8271580342040932214">Urządzenie jest podłączone, a bateria tymczasowo jest naładowana do 80%, aby wydłużyć jej żywotność. Bateria zostanie naładowana do pełna o <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>

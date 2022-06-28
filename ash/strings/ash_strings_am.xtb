@@ -1231,7 +1231,6 @@
 <translation id="826107067893790409">ለ<ph name="USER_EMAIL_ADDRESS" /> ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8270450402312105425">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
-<translation id="8271580342040932214">የባትሪ ዕድሜን ለማራዘም ሲሰካ ባትሪዎ ለጊዜው 80% ነው። የእርስዎ ባትሪ እስከ <ph name="FULLY_CHARGE_TIME" /> ድረስ ሙሉ ኃይል ይሞላል።</translation>
 <translation id="8284362522226889623">ወደ ቀዳሚው ዴስክ ለመቀየር በአራት ጣቶች ወደ ግራ ያንሸራትቱ</translation>
 <translation id="828708037801473432">ጠፍቷል</translation>
 <translation id="8297006494302853456">ደካማ</translation>

@@ -1228,7 +1228,6 @@ Instal·lació nova</translation>
 <translation id="826107067893790409">Prem Retorn per desbloquejar-lo per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8270450402312105425">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’una hora}other{Canvia el dispositiu a la versió anterior en el termini de # hores}}</translation>
-<translation id="8271580342040932214">La bateria està temporalment al 80% mentre el dispositiu està connectat per allargar la durada de la bateria. Es carregarà completament a les <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Fes lliscar quatre dits cap a l'esquerra per canviar a l'escriptori anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>

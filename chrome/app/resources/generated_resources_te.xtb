@@ -3682,7 +3682,6 @@
 <translation id="4510479820467554003">తల్లి/తండ్రి ఖాతా లిస్ట్‌</translation>
 <translation id="451102079304155829">కార్ట్‌లు</translation>
 <translation id="4513872120116766993">సూచనాత్మక వ్రాత</translation>
-<translation id="4513909579793564731">గైడ్‌లైన్ కిట్‌ని వర్తింపజేయండి</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> అందిస్తోంది</translation>
 <translation id="4514610446763173167">ప్లే లేదా పాజ్ చేయడానికి వీడియోని టోగుల్ చేయండి</translation>
@@ -4102,6 +4101,7 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్‌తో కమ్యూనికేట్ చేయాలనుకుంటోంది</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
 <translation id="4918134162946436591">సూచించే ఓవర్‌లేను చూపించు</translation>
+<translation id="4921348630401250116">టెక్స్ట్-టు-స్పీచ్</translation>
 <translation id="492299503953721473">Android యాప్‌లను తీసివేయి</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4924002401726507608">ఫీడ్‌బ్యాక్‌ను సమర్పించండి</translation>
@@ -5682,7 +5682,7 @@
         <ph name="EVENT_NAME" /></translation>
 <translation id="6519689855001245063">అర్హతను చెక్ చేస్తోంది</translation>
 <translation id="6520087076882753524">మీరు Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడవచ్చు, మేనేజ్ చేయవచ్చు</translation>
-<translation id="6520876759015997832"><ph name="LIST_SIZE" /> శోధన ఫలితం <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. విభాగానికి నావిగేట్ చేయడానికి ఎంటర్ నొక్కండి.</translation>
+<translation id="6520876759015997832"><ph name="LIST_SIZE" /> సెర్చ్ ఫలితం <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. విభాగానికి నావిగేట్ చేయడానికి ఎంటర్ నొక్కండి.</translation>
 <translation id="6521214596282732365">సైట్‌లు సాధారణంగా మీ ఫాంట్‌లను ఉపయోగించుకుంటాయి, తద్వారా ఆన్‌లైన్ డిజైన్, గ్రాఫిక్స్ టూల్స్‌తో మీరు అధిక క్వాలిటీ గల కంటెంట్‌ను క్రియేట్ చేయవచ్చు</translation>
 <translation id="6523303810310758032">మీరు బ్రౌజింగ్ హిస్టరీ — మొత్తాన్ని లేదా ఒక నిర్దిష్ట సైట్‌కు సంబంధించిన బ్రౌజింగ్ హిస్టరీని తొలగించినప్పుడు — అనుబంధించి ఉన్న అంచనా సమాచారాన్ని కూడా మీరు తొలగిస్తారు. <ph name="BEGIN_LINK" />మీ బ్రౌజింగ్ హిస్టరీని<ph name="END_LINK" /> చూడండి</translation>
 <translation id="6523574494641144162">Google Password Manager ఈ పాస్‌వర్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయలేకపోయింది. మీరు వాటిని ఈ పరికరంలో సేవ్ చేయవచ్చు.</translation>

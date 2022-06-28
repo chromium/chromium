@@ -3656,7 +3656,6 @@
 <translation id="4510479820467554003">保護者のアカウント リスト</translation>
 <translation id="451102079304155829">カート</translation>
 <translation id="4513872120116766993">予測入力</translation>
-<translation id="4513909579793564731">Playbook を適用</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">動画の再生と一時停止を切り替え</translation>
@@ -4075,6 +4074,7 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> が拡張機能「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4918134162946436591">ヒントをオーバーレイ表示する</translation>
+<translation id="4921348630401250116">テキスト読み上げ</translation>
 <translation id="492299503953721473">Android アプリを削除</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4924002401726507608">フィードバックを送信</translation>

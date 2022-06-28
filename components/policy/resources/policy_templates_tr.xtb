@@ -86,7 +86,6 @@
       True (doğru) değerine ayarlanırsa cihazın arka ışık bilgileri raporlanır.</translation>
 <translation id="1076751984131277498">İzin verilen çıkarılabilir USB cihazların listesi</translation>
 <translation id="1077675271127011209">Kullanım ve kilitlenme ile ilgili verilerin raporlanmasını devre dışı bırak</translation>
-<translation id="1079120839835170592">Event.path API, M115'e kadar yeniden etkinleştirildi.</translation>
 <translation id="1079425471279127373">Zorunlu yüklenmiş web uygulamalarıyla ilgili bazı kaynakların Device Attributes API'yi kullanarak cihaz özelliklerini (ör. seri numarası, ana makine adı) almasına izin vermek için politikayı ayarlar.
 
       Device Attributes API, web API'leri içeren bir listedir. Lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin. Bu API'ler, yalnızca <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> veya Kiosk oturumunda yapılandırılan politika aracılığıyla zorunlu yüklenmiş web uygulamalarına karşılık gelen kaynaklar için kullanılabilir.</translation>

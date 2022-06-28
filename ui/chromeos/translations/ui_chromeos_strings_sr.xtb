@@ -340,6 +340,7 @@
 <translation id="3971140002794351170">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">енглески (УК)</translation>
 <translation id="3975895378829046965">фонетски бенгалски</translation>
+<translation id="3991446849494482687">Тиме ћете онемогућити и подешавање закључавања SIM картице на уређају.</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4017788180641807848">енглески (САД) са тастатуром Workman</translation>
 <translation id="4040753847560036377">Нетачан PUK</translation>
@@ -768,6 +769,7 @@
 <translation id="7663224033570512922">хинди</translation>
 <translation id="7693909743393669729">Ако форматирате диск, избрисаћете све податке који се на њему чувају и уклонити све постојеће партиције, укључујући и оне које можда нису видљиве. Ова радња не може да се опозове.</translation>
 <translation id="7695430100978772476">Форматирање меморијског уређаја <ph name="DRIVE_NAME" /> није успело</translation>
+<translation id="76959938259365003">Пражњење отпада није успело.</translation>
 <translation id="770015031906360009">грчки</translation>
 <translation id="7705251383879779343">Копираних ставки: <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">Информације о датотеци слике</translation>

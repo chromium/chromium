@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">ഡാർക്ക് മോഡ് ഓണാക്കുക</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />യോഗ്യതയില്ലാത്ത ഘടകങ്ങൾ<ph name="LINK_END" /> കണ്ടെത്തി. യോഗ്യതയുള്ള എല്ലാ ഘടകങ്ങളെയും തിരിച്ചറിഞ്ഞെന്ന് ഉറപ്പാക്കാൻ നിങ്ങളുടെ Chrome OS ഏറ്റവും പുതിയ പതിപ്പിലേക്ക് അപ്ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
+<translation id="2182088270354640012">ഫീഡ്‌ബാക്കിന് നന്ദി. ChromeOS മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ ഫീഡ്ബാക്ക് സഹായിക്കുന്നു, അത് Chrome OS ടീം അവലോകനം ചെയ്യും. ധാരാളം പരാതികൾ സമർപ്പിക്കപ്പെട്ടതിനാൽ, നിങ്ങൾക്ക് നേരിട്ടുള്ള മറുപടി ലഭിക്കില്ല.</translation>
 <translation id="2209788852729124853">ട്രാഫിക് കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2212733584906323460">നെയിം റെസല്യൂഷൻ</translation>
 <translation id="2217935453350629363">നിലവിലെ വേഗത</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">റീസ്റ്റാർട്ട് ചെയ്യുന്നു…</translation>
 <translation id="2533048460510040082">നിർദ്ദേശിക്കുന്ന സഹായ ഉള്ളടക്കം</translation>
 <translation id="2536159006530886390">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
+<translation id="256360469103926202">ChromeOS മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ ഫീഡ്ബാക്ക് സഹായിക്കുന്നു, അത് ഞങ്ങളുടെ ടീം അവലോകനം ചെയ്യും. ധാരാളം പരാതികൾ ഉള്ളതിനാൽ, ഞങ്ങൾക്ക് മറുപടി അയയ്‌ക്കാനാകില്ല.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2619761439309613843">പ്രതിദിന റീഫ്രഷ് ചെയ്യൽ</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">സ്‌കാനറുകൾ തിരയുന്നു</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
+<translation id="3275729367986477355">അവതാർ ചിത്രം</translation>
 <translation id="3283504360622356314">{0,plural, =1{ഫയൽ എഡിറ്റ് ചെയ്യുക}other{ഫയലുകൾ എഡിറ്റ് ചെയ്യുക}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">കീയുടെ ദിശ</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">കൂടുതൽ സഹായത്തിന് <ph name="BEGIN_LINK" />സഹായകേന്ദ്രത്തിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="4793756956024303490">കംപ്രഷൻ അൽഗോരിതം</translation>
 <translation id="4794140124556169553">CPU ടെസ്‌റ്റ് റൺ ചെയ്യുന്നത് സിസ്‌റ്റത്തിന്റെ പ്രകടനത്തെ ബാധിച്ചേക്കാം</translation>
+<translation id="4800589996161293643">Chromebook കമ്മ്യൂണിറ്റി</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> എന്ന പ്രിന്റ് ജോലി റദ്ദാക്കി</translation>
 <translation id="4809927044794281115">ലൈറ്റ് തീം</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5212593641110061691">ടാബ്ലോയ്‌ഡ്</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="522307662484862935">ഇമെയില്‍ വിലാസം ഉൾപ്പെടുത്തരുത്</translation>
 <translation id="5227902338748591677">ഡാർക്ക് തീം ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="5252456968953390977">റോമിംഗ്</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="6295178529664209245">റിപ്പയർ തുടരണോ?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> പരിശോധന റദ്ദാക്കി</translation>
+<translation id="631063167932043783">ആപ്പ് അടുത്തറിയുക</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> എന്നതിൽ ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6321407676395378991">സ്ക്രീൻ സേവർ ഓണാക്കുക</translation>
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook സഹായ ഫോറത്തിലെ വിദഗ്ദ്ധരോട് സംസാരിക്കുക</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-ൽ ഫലം കാണാൻ Search+space അമർത്തുക.</translation>
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">സൈക്കിളിന്റെ എണ്ണം</translation>
 <translation id="7747039790905080783">മുമ്പ് പങ്കിട്ട കീ</translation>
 <translation id="7762130827864645708">നിങ്ങൾ പാസ്‌വേഡ് മാറ്റി. ഇപ്പോൾ മുതൽ പുതിയ പാസ്‌വേഡ് ഉപയോഗിക്കുക.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />സിസ്‌റ്റവും ആപ്പ് വിവരവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മെട്രിക്‌സും<ph name="END_LINK2" /> അയയ്‌ക്കുക</translation>
 <translation id="7763470514545477072">ഡൊമെയ്ന്‍ സഫിക്സ് പൊരുത്തം</translation>
 <translation id="7769672763586021400">മോഡൽ ഐഡി</translation>
 <translation id="7784116172884276937">DNS സെർവറുകളൊന്നും സജ്ജീകരിച്ചിട്ടില്ല</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">വൈറ്റ്-ലേബൽ</translation>
 <translation id="8395584934117017006">ഈ <ph name="DEVICE_TYPE" /> എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="8398927464629426868">ഉപകരണം നിലവിൽ ചാർജ് ചെയ്യുന്നതോ ഡിസ്‌ചാർജ് ചെയ്യുന്നതോ ആയ റേറ്റ്</translation>
+<translation id="8420955526972171689">ഹാര്‍ഡ്‍വെയര്‍ പ്രശ്‌നങ്ങൾ കണ്ടെത്താൻ ടെസ്റ്റുകളും ട്രബിള്‍ഷൂട്ടിംഗും റൺ ചെയ്യുക</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ആന്തരിക കീബോർഡ്</translation>
 <translation id="8431300646573772016">ChromeOS-ൽ പുതിയത്</translation>

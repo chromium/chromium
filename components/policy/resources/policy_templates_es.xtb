@@ -86,7 +86,6 @@
       Si se le asigna el valor "true", se enviará la información sobre la retroiluminación del dispositivo.</translation>
 <translation id="1076751984131277498">Lista de dispositivos USB desvinculables permitidos</translation>
 <translation id="1077675271127011209">Inhabilitar informes de uso y de datos sobre fallos</translation>
-<translation id="1079120839835170592">Volver a habilitar la API Event.path hasta la versión M115.</translation>
 <translation id="1079425471279127373">Si se establece la política, se permitirá que algunos orígenes de aplicaciones web de instalación forzada obtengan atributos de dispositivo (por ejemplo, el número de serie o el nombre de host) usando la API Device Attributes.
 
       La API Device Attributes es una lista de APIs web. Consulta https://wicg.github.io/WebApiDevice/device_attributes. Solo están disponibles para los orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o la política que esté configurada en la sesión de kiosco.</translation>

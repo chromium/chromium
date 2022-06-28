@@ -86,7 +86,6 @@
       True로 설정된 경우 기기의 백라이트 정보가 보고됩니다.</translation>
 <translation id="1076751984131277498">USB 분리 가능 기기 허용 목록</translation>
 <translation id="1077675271127011209">사용 및 비정상 종료 관련 데이터 보고 사용 안함</translation>
-<translation id="1079120839835170592">M115까지 Event.path API를 다시 사용 설정합니다.</translation>
 <translation id="1079425471279127373">정책을 설정하면 강제 설치된 웹 애플리케이션의 일부 원본이 Device Attributes API를 사용하여 기기 속성(예: 일련번호, 호스트 이름)을 가져올 수 있습니다.
 
       Device Attributes API는 웹 API 목록입니다. https://wicg.github.io/WebApiDevice/device_attributes 페이지를 참고하세요. <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 정책을 통해 강제 설치되었거나 키오스크 세션에서 구성된 웹 애플리케이션에 해당하는 원본에만 사용 가능합니다.</translation>

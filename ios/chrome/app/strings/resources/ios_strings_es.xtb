@@ -533,6 +533,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 Handoff también debe estar habilitado en la sección General de Configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
+<translation id="556042886152191864">Botón</translation>
 <translation id="5580834567471114021">¿Añadir a lista de lectura para más tarde?</translation>
 <translation id="560322036295180549">Desactivado por tu organización</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
@@ -913,7 +914,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8591976964826315682">Bloquear cookies de terceros en incógnito</translation>
 <translation id="8605219856220328675">Cerrar pestaña.</translation>
 <translation id="8620640915598389714">Editar</translation>
-<translation id="8620785403235741379">Seleccionar opción</translation>
 <translation id="8626393685701737946">Puedes cambiar la vista predeterminada de los sitios a Ordenador en Configuración &gt; Configuración de contenido</translation>
 <translation id="863090005774946393">Tu organización gestiona tu navegador. Puede que algunas funciones estén inhabilitadas.</translation>
 <translation id="8636825310635137004">Activa la sincronización para ver las pestañas de tus otros dispositivos.</translation>
