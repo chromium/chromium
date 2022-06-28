@@ -56,7 +56,16 @@ struct CrosWindowInfo {
 
 // Represents a screen display.
 struct CrosScreenInfo {
-  int32 width;
+  // Display's area, minus permanent or semipermanent user interface features
+  // displayed by the operating system.
+  gfx.mojom.Rect work_area;
+
+  // Display's bounds.
+  gfx.mojom.Rect bounds;
+
+  // If this screen is designated as the 'primary' screen by the OS (otherwise
+  // it is 'secondary'). Useful for placing prominent vs peripheral windows.
+  bool is_primary;
 };
 
 // Chrome OS Window Management API for System Extensions.

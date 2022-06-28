@@ -22,7 +22,19 @@ class CrosScreen : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
-  int32_t width() { return screen_->width; }
+  int32_t availWidth() { return screen_->work_area.width(); }
+
+  int32_t availHeight() { return screen_->work_area.height(); }
+
+  int32_t width() { return screen_->bounds.width(); }
+
+  int32_t height() { return screen_->bounds.height(); }
+
+  int32_t left() { return screen_->bounds.x(); }
+
+  int32_t top() { return screen_->bounds.y(); }
+
+  bool isPrimary() { return screen_->is_primary; }
 
  private:
   Member<CrosWindowManagement> window_management_;

@@ -4,7 +4,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -38,6 +41,9 @@
 #include "ui/display/test/display_manager_test_api.h"
 
 namespace ash {
+class AshTestBase;
+class Shelf;
+class ShelfWidget;
 
 namespace {
 
@@ -272,18 +278,38 @@ class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosScreenWidthSampleTest) {
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosScreenPropertiesTest) {
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-1280x720,1280+600-1920x1080");
 
-  const char test_code[] = R"(
+  gfx::Rect shelf_bounds =
+      AshTestBase::GetPrimaryShelf()->shelf_widget()->GetVisibleShelfBounds();
+
+  std::string test_code = content::JsReplace(R"(
 async function cros_test() {
   let screens = await chromeos.windowManagement.getScreens();
 
+  assert_equals(screens.length, 2);
+
   assert_equals(screens[0].width, 1280);
+  assert_equals(screens[0].availWidth, 1280);
+  assert_equals(screens[0].height, 720);
+  assert_equals(screens[0].availHeight, 720 - $1);
+  assert_equals(screens[0].left, 0);
+  assert_equals(screens[0].top, 0);
+
   assert_equals(screens[1].width, 1920);
+  assert_equals(screens[1].availWidth, 1920);
+  assert_equals(screens[1].height, 1080);
+  assert_equals(screens[1].availHeight, 1080 - $1);
+  assert_equals(screens[1].left, 1280);
+
+  // TODO(b/236793342): Uncomment when DisplayManagerTestApi::UpdateDisplay
+  // correctly updates y bounds of display.
+  // assert_equals(screens[1].top, 600);
 }
-  )";
+  )",
+                                             shelf_bounds.height());
 
   RunTest(test_code);
 }
