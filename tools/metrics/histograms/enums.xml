@@ -58382,6 +58382,7 @@ from previous Chrome versions.
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
   <int value="26875005" label="disable-explicit-dma-fences"/>
   <int value="26945819" label="EnhancedDeskAnimations:disabled"/>
+  <int value="27442980" label="ArcGameModeFeature:enabled"/>
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
@@ -60516,6 +60517,7 @@ from previous Chrome versions.
   <int value="1413948819" label="NupPrinting:enabled"/>
   <int value="1414918327" label="enable-accelerated-video-decode"/>
   <int value="1416592483" label="ash-enable-mirrored-screen"/>
+  <int value="1416970206" label="ArcGameModeFeature:disabled"/>
   <int value="1418054870" label="SpecialLocale:enabled"/>
   <int value="1419806576" label="OsFeedback:enabled"/>
   <int value="1419984081"

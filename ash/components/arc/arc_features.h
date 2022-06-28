@@ -26,6 +26,7 @@ extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
 extern const base::Feature kEnableVirtioBlkForData;
 extern const base::Feature kFilePickerExperimentFeature;
+extern const base::Feature kGameModeFeature;
 extern const base::Feature kGmsCoreLowMemoryKillerProtection;
 extern const base::Feature kGuestZram;
 extern const base::FeatureParam<int> kGuestZramSize;

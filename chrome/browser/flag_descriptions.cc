@@ -4275,6 +4275,12 @@ const char kArcFilePickerExperimentName[] =
 const char kArcFilePickerExperimentDescription[] =
     "Enables using ChromeOS file picker in ARC.";
 
+const char kArcGameModeName[] =
+    "Enable Game Mode for ARC";
+const char kArcGameModeDescription[] =
+    "ARC Fullscreen Games will request accomodation from ChromeOS for "
+    "sustained performance.";
+
 const char kArcKeyboardShortcutHelperIntegrationName[] =
     "Enable keyboard shortcut helper integration for ARC";
 const char kArcKeyboardShortcutHelperIntegrationDescription[] =

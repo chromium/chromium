@@ -216,6 +216,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "arc-game-mode",
+    "owners": [ "matvore", "niwa" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "arc-input-overlay",
     "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
     "expiry_milestone": 110

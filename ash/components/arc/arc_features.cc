@@ -76,6 +76,11 @@ const base::Feature kEnableVirtioBlkForData{"ArcEnableVirtioBlkForData",
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether ARCVM can request resourced make more resources available
+// for a currently-active ARCVM game.
+const base::Feature kGameModeFeature{
+    "ArcGameModeFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 const base::Feature kGuestZram{"ArcGuestZram",
                                base::FEATURE_DISABLED_BY_DEFAULT};
