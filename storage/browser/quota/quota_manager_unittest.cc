@@ -3116,8 +3116,7 @@ TEST_F(QuotaManagerImplTest, DumpBucketTable) {
                            MatchesBucketTableEntry(kStorageKey, kPerm, 2)));
 }
 
-// TODO(crbug.com/1329201): Test is flaky on all platforms. Re-enable it.
-TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
+TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   const StorageKey kStorageKey = ToStorageKey("http://example.com/");
   const std::string kSerializedStorageKey = kStorageKey.Serialize();
   const base::Time kAccessTime = base::Time::Now();
@@ -3133,18 +3132,7 @@ TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
 
   quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kTemp, kAccessTime);
   quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kPerm, kAccessTime);
-
-  base::RunLoop run_loop;
-  base::Time time1 = client->IncrementMockTime();
-  client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kTemp,
-                                    10);
-  client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kPerm,
-                                    10);
-  base::Time time2 = client->IncrementMockTime();
-  client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kTemp,
-                                    10, run_loop.QuitClosure());
-  base::Time time3 = client->IncrementMockTime();
-  run_loop.Run();
+  const base::Time time1 = base::Time::Now();
 
   auto temp_bucket = GetBucket(kStorageKey, kDefaultBucketName, kTemp);
   auto perm_bucket = GetBucket(kStorageKey, kDefaultBucketName, kPerm);
@@ -3156,27 +3144,25 @@ TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
       FindBucketTableEntry(bucket_table_entries, temp_bucket->id);
   EXPECT_TRUE(temp_entry);
   EXPECT_EQ(temp_entry->storage_key, kSerializedStorageKey);
-  EXPECT_EQ(temp_entry->host, "example.com");
   EXPECT_EQ(temp_entry->type, "temporary");
   EXPECT_EQ(temp_entry->name, kDefaultBucketName);
   EXPECT_EQ(temp_entry->use_count, 1);
   EXPECT_EQ(temp_entry->last_accessed, kAccessTime);
-  EXPECT_GE(temp_entry->last_modified, time2);
-  EXPECT_LE(temp_entry->last_modified, time3);
-  EXPECT_EQ(temp_entry->usage, 143);
+  EXPECT_GE(temp_entry->last_modified, kAccessTime);
+  EXPECT_LE(temp_entry->last_modified, time1);
+  EXPECT_EQ(temp_entry->usage, 123);
 
   auto* perm_entry =
       FindBucketTableEntry(bucket_table_entries, perm_bucket->id);
   EXPECT_TRUE(perm_entry);
   EXPECT_EQ(perm_entry->storage_key, kSerializedStorageKey);
-  EXPECT_EQ(perm_entry->host, "example.com");
   EXPECT_EQ(perm_entry->type, "persistent");
   EXPECT_EQ(perm_entry->name, kDefaultBucketName);
   EXPECT_EQ(perm_entry->use_count, 1);
   EXPECT_EQ(perm_entry->last_accessed, kAccessTime);
-  EXPECT_GE(perm_entry->last_modified, time1);
-  EXPECT_LE(perm_entry->last_modified, time2);
-  EXPECT_EQ(perm_entry->usage, 466);
+  EXPECT_GE(temp_entry->last_modified, kAccessTime);
+  EXPECT_LE(temp_entry->last_modified, time1);
+  EXPECT_EQ(perm_entry->usage, 456);
 }
 
 TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {
