@@ -30,6 +30,14 @@ UserNoteStorageImpl::UserNoteStorageImpl(
 
 UserNoteStorageImpl::~UserNoteStorageImpl() = default;
 
+void UserNoteStorageImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void UserNoteStorageImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void UserNoteStorageImpl::GetNoteMetadataForUrls(
     const std::vector<GURL>& urls,
     base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) {
@@ -50,23 +58,44 @@ void UserNoteStorageImpl::UpdateNote(const UserNote* model,
                                      std::string note_body_text,
                                      bool is_creation) {
   database_.AsyncCall(&UserNoteDatabase::UpdateNote)
-      .WithArgs(model, note_body_text, is_creation);
+      .WithArgs(model, note_body_text, is_creation)
+      .Then(base::BindOnce(&UserNoteStorageImpl::OnNotesChanged,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void UserNoteStorageImpl::DeleteNote(const base::UnguessableToken& id) {
-  database_.AsyncCall(&UserNoteDatabase::DeleteNote).WithArgs(id);
+  database_.AsyncCall(&UserNoteDatabase::DeleteNote)
+      .WithArgs(id)
+      .Then(base::BindOnce(&UserNoteStorageImpl::OnNotesChanged,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void UserNoteStorageImpl::DeleteAllForUrl(const GURL& url) {
-  database_.AsyncCall(&UserNoteDatabase::DeleteAllForUrl).WithArgs(url);
+  database_.AsyncCall(&UserNoteDatabase::DeleteAllForUrl)
+      .WithArgs(url)
+      .Then(base::BindOnce(&UserNoteStorageImpl::OnNotesChanged,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void UserNoteStorageImpl::DeleteAllForOrigin(const url::Origin& origin) {
-  database_.AsyncCall(&UserNoteDatabase::DeleteAllForOrigin).WithArgs(origin);
+  database_.AsyncCall(&UserNoteDatabase::DeleteAllForOrigin)
+      .WithArgs(origin)
+      .Then(base::BindOnce(&UserNoteStorageImpl::OnNotesChanged,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void UserNoteStorageImpl::DeleteAllNotes() {
-  database_.AsyncCall(&UserNoteDatabase::DeleteAllNotes);
+  database_.AsyncCall(&UserNoteDatabase::DeleteAllNotes)
+      .Then(base::BindOnce(&UserNoteStorageImpl::OnNotesChanged,
+                           weak_factory_.GetWeakPtr()));
+}
+
+void UserNoteStorageImpl::OnNotesChanged(bool notes_changed) {
+  if (!notes_changed)
+    return;
+
+  for (auto& observer : observers_)
+    observer.OnNotesChanged();
 }
 
 }  // namespace user_notes

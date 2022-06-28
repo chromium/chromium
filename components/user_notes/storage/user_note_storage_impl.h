@@ -28,7 +28,13 @@ class UserNoteStorageImpl : public UserNoteStorage {
   UserNoteStorageImpl(const UserNoteStorageImpl& other) = delete;
   UserNoteStorageImpl& operator=(const UserNoteStorageImpl& other) = delete;
 
+  using Observer = UserNoteStorage::Observer;
+
   // Implement UserNoteStorage
+  void AddObserver(Observer* observer) override;
+
+  void RemoveObserver(Observer* observer) override;
+
   void GetNoteMetadataForUrls(
       const std::vector<GURL>& urls,
       base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) override;
@@ -51,9 +57,14 @@ class UserNoteStorageImpl : public UserNoteStorage {
   void DeleteAllNotes() override;
 
  private:
+  void OnNotesChanged(bool notes_changed);
+  base::ObserverList<Observer>::Unchecked observers_;
+
   // Owns and manages access to the UserNotesDatabase living on a different
   // sequence.
   base::SequenceBound<UserNoteDatabase> database_;
+
+  base::WeakPtrFactory<UserNoteStorageImpl> weak_factory_{this};
 };
 }  // namespace user_notes
 

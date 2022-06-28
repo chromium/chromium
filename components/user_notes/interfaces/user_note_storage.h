@@ -25,6 +25,7 @@ class UserNoteStorage {
   // Observer class for the notes storage. Notifies implementers when the notes
   // have changed on disk so they can update their model.
   class Observer {
+   public:
     // Called when notes have changed on disk.
     virtual void OnNotesChanged() = 0;
   };
@@ -33,6 +34,11 @@ class UserNoteStorage {
   UserNoteStorage(const UserNoteStorage&) = delete;
   UserNoteStorage& operator=(const UserNoteStorage&) = delete;
   virtual ~UserNoteStorage() = default;
+
+  // Adds an observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  // Removes an observer.
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Fetches all `UserNoteMetadata` entries for the given URLs from disk. The
   // results are returned via `callback`, mapped by URL and by note

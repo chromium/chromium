@@ -161,7 +161,9 @@ TEST_F(UserNoteDatabaseTest, CreateNote) {
       new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                    GetTestUserNotePageTarget());
 
-  user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  bool create_note =
+      user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  EXPECT_TRUE(create_note);
 
   check_notes_body_from_db(&user_note_db, note_id, "new test note");
   delete user_note;
@@ -176,8 +178,12 @@ TEST_F(UserNoteDatabaseTest, UpdateNote) {
       new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                    GetTestUserNotePageTarget());
 
-  user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
-  user_note_db.UpdateNote(user_note, "edit test note", false);
+  bool create_note =
+      user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  bool update_note =
+      user_note_db.UpdateNote(user_note, "edit test note", false);
+  EXPECT_TRUE(create_note);
+  EXPECT_TRUE(update_note);
 
   check_notes_body_from_db(&user_note_db, note_id, "edit test note");
   delete user_note;
@@ -192,8 +198,11 @@ TEST_F(UserNoteDatabaseTest, DeleteNote) {
       new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                    GetTestUserNotePageTarget());
 
-  user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
-  user_note_db.DeleteNote(note_id);
+  bool create_note =
+      user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  EXPECT_TRUE(create_note);
+  bool delete_note = user_note_db.DeleteNote(note_id);
+  EXPECT_TRUE(delete_note);
 
   check_is_removed_from_db(&user_note_db, note_id);
   delete user_note;
@@ -217,7 +226,9 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      std::move(test_target));
-    user_note_db.UpdateNote(user_note, body, /*is_creation=*/true);
+    bool create_note =
+        user_note_db.UpdateNote(user_note, body, /*is_creation=*/true);
+    EXPECT_TRUE(create_note);
     delete user_note;
   }
 
@@ -248,10 +259,13 @@ TEST_F(UserNoteDatabaseTest, DeleteAllNotes) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget());
-    user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+                                               /*is_creation=*/true);
+    EXPECT_TRUE(create_note);
     delete user_note;
   }
-  user_note_db.DeleteAllNotes();
+  bool delete_notes = user_note_db.DeleteAllNotes();
+  EXPECT_TRUE(delete_notes);
 
   for (const base::UnguessableToken& id : ids) {
     check_is_removed_from_db(&user_note_db, id);
@@ -269,12 +283,15 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForOrigin) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
-    user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+                                               /*is_creation=*/true);
+    EXPECT_TRUE(create_note);
     delete user_note;
   }
 
-  user_note_db.DeleteAllForOrigin(
+  bool delete_notes = user_note_db.DeleteAllForOrigin(
       url::Origin::Create(GURL("https://www.test.com")));
+  EXPECT_TRUE(delete_notes);
 
   for (const base::UnguessableToken& id : ids) {
     check_is_removed_from_db(&user_note_db, id);
@@ -292,10 +309,14 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForUrl) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
-    user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+                                               /*is_creation=*/true);
+    EXPECT_TRUE(create_note);
     delete user_note;
   }
-  user_note_db.DeleteAllForUrl(GURL("https://www.test.com"));
+  bool delete_notes =
+      user_note_db.DeleteAllForUrl(GURL("https://www.test.com"));
+  EXPECT_TRUE(delete_notes);
 
   for (const base::UnguessableToken& id : ids) {
     check_is_removed_from_db(&user_note_db, id);
@@ -318,7 +339,9 @@ TEST_F(UserNoteDatabaseTest, GetNoteMetadataForUrls) {
     UserNote* user_note =
         new UserNote(note_id, std::move(note_metadata), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
-    user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+                                               /*is_creation=*/true);
+    EXPECT_TRUE(create_note);
     delete user_note;
   }
 

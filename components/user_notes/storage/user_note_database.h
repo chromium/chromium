@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
@@ -37,17 +38,17 @@ class UserNoteDatabase {
   std::vector<std::unique_ptr<UserNote>> GetNotesById(
       std::vector<base::UnguessableToken> ids);
 
-  void UpdateNote(const UserNote* model,
+  bool UpdateNote(const UserNote* model,
                   std::string note_body_text,
                   bool is_creation);
 
-  void DeleteNote(const base::UnguessableToken& id);
+  bool DeleteNote(const base::UnguessableToken& id);
 
-  void DeleteAllForUrl(const GURL& url);
+  bool DeleteAllForUrl(const GURL& url);
 
-  void DeleteAllForOrigin(const url::Origin& origin);
+  bool DeleteAllForOrigin(const url::Origin& origin);
 
-  void DeleteAllNotes();
+  bool DeleteAllNotes();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, GetNotesById);
@@ -64,11 +65,11 @@ class UserNoteDatabase {
   bool InitSchema();
 
   // Called by UpdateNote() with is_creation=true to create a new note.
-  void CreateNote(const UserNote* model, std::string note_body_text);
+  bool CreateNote(const UserNote* model, std::string note_body_text);
 
   bool CreateSchema();
 
-  void DeleteNoteWithStringId(std::string id);
+  bool DeleteNoteWithStringId(std::string id);
 
   std::unique_ptr<UserNote> GetNoteById(const base::UnguessableToken& id);
 

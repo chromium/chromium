@@ -94,6 +94,9 @@ class MockUserNoteStorage : public UserNoteStorage {
 
   MOCK_METHOD(void, DeleteAllNotes, (), (override));
 
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+
   const std::vector<GURL>& requested_metadata_urls() {
     return requested_metadata_urls_;
   }
