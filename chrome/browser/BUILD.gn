@@ -4372,6 +4372,7 @@ static_library("browser") {
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/enterprise/signals:utils",
+      "//chrome/browser/fast_checkout/proto:proto",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
