@@ -20,6 +20,7 @@ import {DisplayableImage} from '../../common/constants.js';
 import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
 
@@ -121,6 +122,11 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         type: String,
         observer: 'onPhotosResumeTokenChanged_',
       },
+
+      error_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -160,6 +166,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** The resume token needed to fetch the next page of photos. */
   private photosResumeToken_: string|null;
 
+  /** The current personalization error state. */
+  private error_: PersonalizationStateError|null;
+
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
@@ -180,7 +189,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     this.watch<GooglePhotosPhotos['photosResumeToken_']>(
         'photosResumeToken_',
         state => state.wallpaper.googlePhotos.resumeTokens.photos);
-
+    this.watch<GooglePhotosPhotos['error_']>('error_', state => state.error);
     this.updateFromStore();
   }
 
@@ -317,7 +326,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   /** Invoked on changes to this element's |hidden| state. */
   private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
-    if (hidden) {
+    if (hidden && this.error_ && this.error_.id === ERROR_ID) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
       this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));

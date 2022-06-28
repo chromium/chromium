@@ -21,6 +21,7 @@ import {DisplayableImage} from '../../common/constants.js';
 import {getLoadingPlaceholders, isSelectionEvent} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
 
@@ -76,6 +77,11 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
       photosByAlbumId_: Object,
       photosByAlbumIdLoading_: Object,
       photosByAlbumIdResumeTokens_: Object,
+
+      error_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -114,6 +120,9 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   /** The resume tokens needed to fetch the next page of photos by album id. */
   private photosByAlbumIdResumeTokens_: Record<string, string|null>|undefined;
 
+  /** The current personalization error state. */
+  private error_: PersonalizationStateError|null;
+
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
@@ -136,6 +145,8 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumIdResumeTokens_']>(
         'photosByAlbumIdResumeTokens_',
         state => state.wallpaper.googlePhotos.resumeTokens.photosByAlbumId);
+    this.watch<GooglePhotosPhotosByAlbumId['error_']>(
+        'error_', state => state.error);
 
     this.updateFromStore();
   }
@@ -169,7 +180,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 
   /** Invoked on changes to this element's |hidden| state. */
   private onHiddenChanged_(hidden: GooglePhotosPhotosByAlbumId['hidden']) {
-    if (hidden) {
+    if (hidden && this.error_ && this.error_.id === ERROR_ID) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
       this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));

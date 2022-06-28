@@ -20,6 +20,7 @@ import {getCountText, getLoadingPlaceholders, isSelectionEvent} from '../../comm
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
+import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './google_photos_albums_element.html.js';
@@ -76,6 +77,11 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
         type: String,
         observer: 'onAlbumsResumeTokenChanged_',
       },
+
+      error_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -94,6 +100,9 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** The resume token needed to fetch the next page of albums. */
   private albumsResumeToken_: string|null;
 
+  /** The current personalization error state. */
+  private error_: PersonalizationStateError|null;
+
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
@@ -108,6 +117,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     this.watch<GooglePhotosAlbums['albumsResumeToken_']>(
         'albumsResumeToken_',
         state => state.wallpaper.googlePhotos.resumeTokens.albums);
+    this.watch<GooglePhotosAlbums['error_']>('error_', state => state.error);
 
     this.updateFromStore();
   }
@@ -185,7 +195,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
 
   /** Invoked on changes to this element's |hidden| state. */
   private onHiddenChanged_(hidden: GooglePhotosAlbums['hidden']) {
-    if (hidden) {
+    if (hidden && this.error_ && this.error_.id === ERROR_ID) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
       this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));
