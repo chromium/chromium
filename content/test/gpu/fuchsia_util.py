@@ -38,16 +38,18 @@ def RunTestOnFuchsiaDevice(script_cmd):
 
   if runner_script_args.browser == 'web-engine-shell':
     package_names = ['web_engine_with_webui', 'web_engine_shell']
-    package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web',
-                               'webengine')
+    package_dirs = [
+        os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web',
+                     'webengine'),
+        os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web', 'shell')
+    ]
   else:
     package_names = ['chrome']
-    package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'chrome',
-                               'app')
+    package_dirs = [
+        os.path.join(runner_script_args.out_dir, 'gen', 'chrome', 'app')
+    ]
 
-  package_paths = list(
-      map(lambda package_name: os.path.join(package_dir, package_name),
-          package_names))
+  package_paths = list(map(os.path.join, package_dirs, package_names))
 
   # Pass all other arguments to the gpu integration tests.
   script_cmd.extend(test_args)
@@ -80,9 +82,9 @@ def RunTestOnFuchsiaDevice(script_cmd):
         # Install necessary packages on the device.
         far_files = list(
             map(
-                lambda package_name: os.path.join(package_dir, package_name,
-                                                  package_name + '.far'),
-                package_names))
+                lambda package_dir, package_name: os.path.join(
+                    package_dir, package_name, package_name + '.far'),
+                package_dirs, package_names))
         target.InstallPackage(far_files)
         return subprocess.call(script_cmd)
   finally:

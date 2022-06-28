@@ -169,13 +169,13 @@ int main(int argc, char** argv) {
   additional_args.erase(additional_args.begin());
 
   // Set up the content directory fuchsia-pkg://shell-data/, which will host
-  // the files stored under //fuchsia_web/webengine/test/shell_data.
+  // the files stored under //fuchsia_web/shell/data.
   fuchsia::web::CreateContextParams create_context_params;
   fuchsia::web::ContentDirectoryProvider content_directory;
   base::FilePath pkg_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   content_directory.set_directory(base::OpenDirectoryHandle(
-      pkg_path.AppendASCII("fuchsia_web/webengine/test/shell_data")));
+      pkg_path.AppendASCII("fuchsia_web/shell/data")));
   content_directory.set_name("shell-data");
   std::vector<fuchsia::web::ContentDirectoryProvider> content_directories;
   content_directories.emplace_back(std::move(content_directory));

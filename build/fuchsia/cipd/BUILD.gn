@@ -234,8 +234,10 @@ cipd_archive("web_engine_shell") {
   description = "Simple command-line embedder for WebEngine."
   testonly = true
 
-  deps = [ "//fuchsia_web/webengine:web_engine_shell_pkg" ]
-  sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_shell/web_engine_shell.far" ]
+  deps = [ "//fuchsia_web/shell:web_engine_shell_pkg" ]
+  sources = [
+    "${root_gen_dir}/fuchsia_web/shell/web_engine_shell/web_engine_shell.far",
+  ]
 }
 
 _stripped_chromedriver_file = "${root_out_dir}/clang_x64/stripped/chromedriver"

@@ -1,6 +1,3 @@
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
 # For sandbox security review.
 per-file context_provider_impl.*=set noparent
 per-file context_provider_impl.*=file://build/fuchsia/SECURITY_OWNERS

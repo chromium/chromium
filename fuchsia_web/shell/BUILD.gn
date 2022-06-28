@@ -1,0 +1,69 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//build/config/fuchsia/generate_runner_scripts.gni")
+
+# Nothing else should depend on these targets except the final component.
+visibility = [ ":*" ]
+
+group("shell") {
+  testonly = true
+  visibility += [
+    "//chrome/test:*",
+    "//content/test:*",
+    "//fuchsia_web:gn_all",
+  ]
+  deps = [ ":web_engine_shell" ]
+}
+
+fuchsia_component("web_engine_shell_component") {
+  testonly = true
+  manifest = "web_engine_shell.cmx"
+  data_deps = [ ":web_engine_shell_exec" ]
+}
+
+fuchsia_package("web_engine_shell_pkg") {
+  testonly = true
+
+  # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
+  package_name = "web_engine_shell"
+  deps = [ ":web_engine_shell_component" ]
+}
+
+fuchsia_package_installer("web_engine_shell") {
+  testonly = true
+  package = ":web_engine_shell_pkg"
+  package_name = "web_engine_shell"
+  package_deps = [
+    [
+      "//fuchsia_web/webengine:web_engine",
+      "web_engine",
+    ],
+    [
+      "//fuchsia_web/webengine:web_engine_with_webui",
+      "web_engine_with_webui",
+    ],
+  ]
+}
+
+executable("web_engine_shell_exec") {
+  testonly = true
+  sources = [ "web_engine_shell.cc" ]
+
+  data = [ "data" ]
+
+  deps = [
+    "//base",
+    "//fuchsia_web/common",
+    "//fuchsia_web/webinstance_host/",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//url",
+  ]
+}

@@ -789,7 +789,7 @@ if (is_fuchsia) {
     data = [ "//content/test/gpu/fuchsia_util.py" ]
     data_deps = [
       "//chrome/app:chrome_fuchsia",
-      "//fuchsia_web/webengine:web_engine_shell",
+      "//fuchsia_web/shell",
       "//fuchsia_web/webengine:web_engine_with_webui_installer",
     ]
   }

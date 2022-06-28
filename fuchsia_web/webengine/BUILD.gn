@@ -5,7 +5,6 @@
 assert(is_fuchsia)
 
 import("//build/config/fuchsia/generate_runner_scripts.gni")
-import("//build/config/fuchsia/symbol_archive.gni")
 import("//build/config/locales.gni")
 import("//testing/test.gni")
 import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
@@ -360,6 +359,7 @@ fuchsia_component("context_provider_component") {
 }
 
 fuchsia_package("web_engine") {
+  # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   deps = [
     ":context_provider_component",
     ":web_instance_component",
@@ -398,6 +398,7 @@ fuchsia_component("context_provider_with_webui_component") {
 }
 
 fuchsia_package("web_engine_with_webui") {
+  # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   deps = [
     ":context_provider_with_webui_component",
     ":web_instance_component",
@@ -613,7 +614,8 @@ test("web_engine_integration_tests") {
     "web_engine_integration_test_base.cc",
     "web_engine_integration_test_base.h",
 
-    # TODO(crbug.com/1081525): Move to //fuchsia_web/webinstance_host/.
+    # TODO(crbug.com/1081525): Move to //fuchsia_web/webinstance_host/ and
+    # remove the deps below.
     "web_instance_host_integration_test.cc",
   ]
   data = [ "test/data" ]
@@ -645,52 +647,5 @@ test("web_engine_integration_tests") {
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
     "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
     "//build/config/fuchsia/test/web_instance_host_capabilities.test-cmx",
-  ]
-}
-
-fuchsia_component("web_engine_shell_component") {
-  testonly = true
-  manifest = "test/web_engine_shell.cmx"
-  data_deps = [ ":web_engine_shell_exec" ]
-}
-
-fuchsia_package("web_engine_shell_pkg") {
-  testonly = true
-  package_name = "web_engine_shell"
-  deps = [ ":web_engine_shell_component" ]
-}
-
-fuchsia_package_installer("web_engine_shell") {
-  testonly = true
-  package = ":web_engine_shell_pkg"
-  package_name = "web_engine_shell"
-  package_deps = [
-    [
-      ":web_engine",
-      "web_engine",
-    ],
-    [
-      ":web_engine_with_webui",
-      "web_engine_with_webui",
-    ],
-  ]
-}
-
-executable("web_engine_shell_exec") {
-  testonly = true
-  sources = [ "test/web_engine_shell.cc" ]
-
-  data = [ "test/shell_data" ]
-
-  deps = [
-    "//base",
-    "//fuchsia_web/common",
-    "//fuchsia_web/webinstance_host",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
-    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//url",
   ]
 }

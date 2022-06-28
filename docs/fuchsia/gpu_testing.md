@@ -5,7 +5,7 @@
 General instruction on running and debugging GPU integration tests can be
 found [here](../gpu/gpu_testing.md).
 
-Fuchsia uses either [web_engine_shell](../../fuchsia_web/webengine/test/README.md)
+Fuchsia uses either [web_engine_shell](../../fuchsia_web/shell/README.md)
 or the Chrome browser to run GPU integration tests. For the sake of this
 example, we will be using `web_engine_shell` as the target browser and
 `gpu_process` as the test suite we wish to execute. Build the target

@@ -11,9 +11,11 @@ visibility = [ "//:gn_all" ]
 # TODO(crbug.com/1081525): Update these to targets within this directory as
 # they are moved.
 group("gn_all") {
+  testonly = true
   deps = [
     "runners:cast_runner",
     "runners:web_runner",
+    "shell",
     "webengine:web_engine",
   ]
 }

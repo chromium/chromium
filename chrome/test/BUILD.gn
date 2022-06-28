@@ -730,9 +730,11 @@ if (is_android) {
       "//content/test:telemetry_gpu_integration_test_support",
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
     ]
+
+    # TODO(crbug.com/1310086): Move WebEngine-specific cases in //fuchsia_web.
     if (fuchsia_browser_type == "web_engine_shell") {
       data_deps += [
-        "//fuchsia_web/webengine:web_engine_shell",
+        "//fuchsia_web/shell",
         "//fuchsia_web/webengine:web_engine_with_webui_installer",
       ]
     }
