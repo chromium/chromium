@@ -24,7 +24,6 @@
 #include "chromeos/dbus/image_burner/image_burner_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
-#include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
 namespace chromeos {
@@ -98,11 +97,6 @@ ImageLoaderClient* DBusThreadManager::GetImageLoaderClient() {
 
 OobeConfigurationClient* DBusThreadManager::GetOobeConfigurationClient() {
   return clients_browser_->oobe_configuration_client_.get();
-}
-
-RuntimeProbeClient* DBusThreadManager::GetRuntimeProbeClient() {
-  return clients_browser_ ? clients_browser_->runtime_probe_client_.get()
-                          : nullptr;
 }
 
 #undef RETURN_DBUS_CLIENT

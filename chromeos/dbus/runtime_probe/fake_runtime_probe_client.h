@@ -24,11 +24,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_RUNTIME_PROBE) FakeRuntimeProbeClient
   ~FakeRuntimeProbeClient() override;
 
   // RuntimeProbeClient overrides:
+  void Init(dbus::Bus* bus) override {}
   void ProbeCategories(const runtime_probe::ProbeRequest& request,
                        RuntimeProbeCallback callback) override;
-
- protected:
-  void Init(dbus::Bus* bus) override {}
 
  private:
   // Used to simulates changes in live values. This field will be iterated

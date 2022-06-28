@@ -8,16 +8,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/location.h"
 #include "base/logging.h"
-#include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/runtime_probe/fake_runtime_probe_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/runtime_probe/dbus-constants.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
+namespace {
+
+RuntimeProbeClient* g_instance = nullptr;
 
 class RuntimeProbeClientImpl : public RuntimeProbeClient {
  public:
@@ -46,7 +46,6 @@ class RuntimeProbeClientImpl : public RuntimeProbeClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         runtime_probe::kRuntimeProbeServiceName,
@@ -81,12 +80,38 @@ class RuntimeProbeClientImpl : public RuntimeProbeClient {
   base::WeakPtrFactory<RuntimeProbeClientImpl> weak_ptr_factory_{this};
 };
 
-RuntimeProbeClient::RuntimeProbeClient() = default;
+}  // namespace
 
-RuntimeProbeClient::~RuntimeProbeClient() = default;
+// static
+RuntimeProbeClient* RuntimeProbeClient::Get() {
+  return g_instance;
+}
 
-std::unique_ptr<RuntimeProbeClient> RuntimeProbeClient::Create() {
-  return std::make_unique<RuntimeProbeClientImpl>();
+// static
+void RuntimeProbeClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new RuntimeProbeClientImpl())->Init(bus);
+}
+
+// static
+void RuntimeProbeClient::InitializeFake() {
+  (new FakeRuntimeProbeClient())->Init(nullptr);
+}
+
+// static
+void RuntimeProbeClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+RuntimeProbeClient::RuntimeProbeClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+RuntimeProbeClient::~RuntimeProbeClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

@@ -2047,6 +2047,7 @@ source_set("ash") {
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/resourced",
+    "//chromeos/dbus/runtime_probe",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/update_engine",

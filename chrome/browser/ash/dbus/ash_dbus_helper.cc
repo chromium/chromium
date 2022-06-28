@@ -66,6 +66,7 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -156,6 +157,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::PermissionBrokerClient>(bus);
   InitializeDBusClient<chromeos::PowerManagerClient>(bus);
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
+  InitializeDBusClient<chromeos::RuntimeProbeClient>(bus);
   InitializeDBusClient<SeneschalClient>(bus);
   InitializeDBusClient<SessionManagerClient>(bus);
   InitializeDBusClient<SmbProviderClient>(bus);
@@ -239,6 +241,7 @@ void ShutdownDBus() {
   SmbProviderClient::Shutdown();
   SessionManagerClient::Shutdown();
   SeneschalClient::Shutdown();
+  chromeos::RuntimeProbeClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();
   if (ash::features::IsRgbKeyboardEnabled()) {
     RgbkbdClient::Shutdown();

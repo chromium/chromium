@@ -29,7 +29,6 @@ class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
 class OobeConfigurationClient;
-class RuntimeProbeClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
@@ -78,7 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   ImageBurnerClient* GetImageBurnerClient();
   ImageLoaderClient* GetImageLoaderClient();
   OobeConfigurationClient* GetOobeConfigurationClient();
-  RuntimeProbeClient* GetRuntimeProbeClient();
 
  private:
   DBusThreadManager();
