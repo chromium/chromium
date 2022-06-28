@@ -363,9 +363,9 @@ class DictationTest
     WaitForTextAreaValue(value);
   }
 
-  void SendFinalResultAndWaitForSelectionChanged(
-      const std::string& result,
-      content::WebContents* web_contents) {
+  void SendFinalResultAndWaitForSelectionChanged(const std::string& result) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
         ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
@@ -798,31 +798,27 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, UndoAndRedo) {
 
 // Flaky, https://crbug.com/1296811
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_SelectAllAndUnselect) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
-  SendFinalResultAndWaitForSelectionChanged("Select all", web_contents);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
   SendFinalResultAndWaitForTextAreaValue("delete the previous character", "");
   SendFinalResultAndWaitForTextAreaValue(
       "Vega is the fifth brightest star in the sky",
       "Vega is the fifth brightest star in the sky");
-  SendFinalResultAndWaitForSelectionChanged("Select all", web_contents);
-  SendFinalResultAndWaitForSelectionChanged("Unselect", web_contents);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForSelectionChanged("Unselect");
   SendFinalResultAndWaitForTextAreaValue(
       "!", "Vega is the fifth brightest star in the sky!");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CutCopyPaste) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   SendFinalResultAndWaitForTextAreaValue("Star", "Star");
-  SendFinalResultAndWaitForSelectionChanged("Select all", web_contents);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
   SendFinalResultAndWaitForClipboardChanged("Copy");
   EXPECT_EQ("Star", GetClipboardText());
-  SendFinalResultAndWaitForSelectionChanged("unselect", web_contents);
+  SendFinalResultAndWaitForSelectionChanged("unselect");
   SendFinalResultAndWaitForTextAreaValue("paste", "StarStar");
-  SendFinalResultAndWaitForSelectionChanged("select ALL ", web_contents);
+  SendFinalResultAndWaitForSelectionChanged("select ALL ");
   SendFinalResultAndWaitForClipboardChanged("cut");
   EXPECT_EQ("StarStar", GetClipboardText());
   WaitForTextAreaValue("");
@@ -1013,9 +1009,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartInsertBefore) {
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartSelectBetween) {
   SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
-  SendFinalResultAndWaitForSelectionChanged(
-      "select from this to test",
-      browser()->tab_strip_model()->GetActiveWebContents());
+  SendFinalResultAndWaitForSelectionChanged("select from this to test");
   SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world.");
 }
 
@@ -1295,11 +1289,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
   WaitForRecognitionStarted();
 
   // Perform a select all command.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
-  SendFinalResultAndWaitForSelectionChanged("Select all", web_contents);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/u"Select all",
