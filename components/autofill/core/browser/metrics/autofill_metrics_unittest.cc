@@ -5420,6 +5420,98 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
   }
 }
 
+// Test to log when an unique local card is autofilled, when other duplicated
+// server cards exist.
+TEST_P(
+    AutofillMetricsIFrameTest,
+    CreditCardFilledFormEventsUsingUniqueLocalCardWhenOtherDuplicateServerCardsPresent) {
+  CreateLocalAndDuplicateServerCreditCard();
+  // Creating a local mastercard credit card.
+  std::string local_guid = CreateLocalMasterCard();
+
+  // Set up our form data.
+  FormData form = test::GetFormData(
+      {.description_for_logging = "PaymentProfileImportRequirements",
+       .fields = {
+           {.role = ServerFieldType::CREDIT_CARD_EXP_MONTH, .value = u""},
+           {.role = ServerFieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR,
+            .value = u""},
+           {.role = ServerFieldType::CREDIT_CARD_NUMBER, .value = u""}}});
+  std::vector<ServerFieldType> field_types = {
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
+
+  autofill_manager().AddSeenForm(form, field_types, field_types);
+  // Simulate filling a unique local card suggestion.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
+      autofill_manager().suggestion_generator()->MakeFrontendId(local_guid,
+                                                                std::string()));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1),
+          Bucket(
+              FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
+              0)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(credit_card_form_events_frame_histogram_),
+      BucketsInclude(
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1),
+          Bucket(
+              FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
+              0)));
+}
+
+// Test to log when a local card is autofilled and its duplicated
+// server card exists.
+TEST_P(AutofillMetricsIFrameTest,
+       CreditCardFilledFormEventsUsingDuplicateServerCard) {
+  // Creating a local and a duplicate server card.
+  std::vector<std::string> local_and_duplicate_server_card_guids =
+      CreateLocalAndDuplicateServerCreditCard();
+  // Set up our form data.
+  FormData form = test::GetFormData(
+      {.description_for_logging = "PaymentProfileImportRequirements",
+       .fields = {
+           {.role = ServerFieldType::CREDIT_CARD_EXP_MONTH, .value = u""},
+           {.role = ServerFieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR,
+            .value = u""},
+           {.role = ServerFieldType::CREDIT_CARD_NUMBER, .value = u""}}});
+  std::vector<ServerFieldType> field_types = {
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
+
+  autofill_manager().AddSeenForm(form, field_types, field_types);
+  // Simulate filling a local card suggestion with a duplicate server card.
+  base::HistogramTester histogram_tester;
+  // Local card with a duplicate server card present at index 0.
+  std::string local_guid(local_and_duplicate_server_card_guids.at(0));
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
+      autofill_manager().suggestion_generator()->MakeFrontendId(local_guid,
+                                                                std::string()));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1),
+          Bucket(
+              FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
+              1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(credit_card_form_events_frame_histogram_),
+      BucketsInclude(
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1),
+          Bucket(
+              FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
+              1)));
+}
+
 // Test that we log preflight calls for credit card unmasking.
 TEST_F(AutofillMetricsTest, CreditCardUnmaskingPreflightCall) {
   scoped_feature_list_.InitAndEnableFeature(

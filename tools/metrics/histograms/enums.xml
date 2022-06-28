@@ -7078,6 +7078,8 @@ others/histograms.xml -->
   <int value="55"
       label="CreditCardSeamlessFillable :-( (all other scenarios = Partial
              fill)"/>
+  <int value="56"
+      label="Local suggestion of a deduped server card filled (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
