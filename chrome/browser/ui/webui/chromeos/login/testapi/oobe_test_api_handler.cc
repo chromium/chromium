@@ -116,7 +116,9 @@ void OobeTestAPIHandler::SkipToLoginForTesting() {
   ash::WizardController* controller =
       ash::WizardController::default_controller();
   if (!controller || !controller->is_initialized()) {
-    NOTREACHED() << "Please fix the test";
+    LOG(ERROR)
+        << "SkipToLoginForTesting is called when WizardController is not yet "
+           "initialized. Please report at https://crbug.com/1336940";
     return;
   }
   controller->SkipToLoginForTesting();  // IN-TEST
