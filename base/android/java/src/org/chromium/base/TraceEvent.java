@@ -731,6 +731,15 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
+     * Triggers a 'instant' native "AndroidIPC" event.
+     * @param name The name of the IPC.
+     * @param durMs The duration the IPC took in milliseconds.
+     */
+    public static void instantAndroidIPC(String name, long durMs) {
+        if (sEnabled) TraceEventJni.get().instantAndroidIPC(name, durMs);
+    }
+
+    /**
      * Triggers the 'start' native trace event with no arguments.
      * @param name The name of the event.
      * @param id   The id of the asynchronous event.
@@ -820,6 +829,7 @@ public class TraceEvent implements AutoCloseable {
         long startActivityDump(String name, long dumpProtoPtr);
         void addViewDump(int id, int parentId, boolean isShown, boolean isDirty, String className,
                 String resourceName, long activityProtoPtr);
+        void instantAndroidIPC(String name, long durMs);
     }
 
     /**
