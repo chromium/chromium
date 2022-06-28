@@ -9121,6 +9121,26 @@
             ]
         }
     ],
+    "VisualFeaturesInCsppPings": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VisualFeaturesInCsppPings"
+                    ]
+                }
+            ]
+        }
+    ],
     "Vp9kSVCHWDecoding": [
         {
             "platforms": [
