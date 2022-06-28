@@ -264,6 +264,7 @@ test("components_unittests") {
       "//components/media_message_center:unit_tests",
       "//components/ui_devtools:unit_tests",
       "//components/user_education/views:unit_tests",
+      "//components/user_education/webui:unit_tests",
     ]
   }
 
