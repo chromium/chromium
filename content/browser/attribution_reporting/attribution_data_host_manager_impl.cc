@@ -141,13 +141,21 @@ enum class RegistrationType {
 }  // namespace
 
 struct AttributionDataHostManagerImpl::FrozenContext {
+  FrozenContext(const FrozenContext&) = delete;
+  FrozenContext& operator=(const FrozenContext&) = delete;
+
+  FrozenContext(FrozenContext&&) = default;
+  FrozenContext& operator=(FrozenContext&&) = default;
+
   // Top-level origin the data host was created in.
-  const url::Origin context_origin;
+  // Logically const.
+  url::Origin context_origin;
 
   // Source type of this context. Note that data hosts which result in
   // triggers still have a source type of` kEvent` as they share the same web
   // API surface.
-  const AttributionSourceType source_type;
+  // Logically const.
+  AttributionSourceType source_type;
 
   // For receivers with `source_type` `AttributionSourceType::kNavigation`,
   // the final committed origin of the navigation associated with the data
@@ -161,11 +169,20 @@ struct AttributionDataHostManagerImpl::FrozenContext {
 
   int num_data_registered = 0;
 
-  const base::TimeTicks register_time;
+  // Logically const.
+  base::TimeTicks register_time;
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
-  const base::TimeTicks delay_until;
+  DelayedTrigger(const DelayedTrigger&) = delete;
+  DelayedTrigger& operator=(const DelayedTrigger&) = delete;
+
+  DelayedTrigger(DelayedTrigger&&) = default;
+  DelayedTrigger& operator=(DelayedTrigger&&) = default;
+
+  // Logically const.
+  base::TimeTicks delay_until;
+
   AttributionTrigger trigger;
 
   base::TimeDelta TimeUntil() const {
@@ -180,6 +197,12 @@ struct AttributionDataHostManagerImpl::DelayedTrigger {
 };
 
 struct AttributionDataHostManagerImpl::NavigationDataHost {
+  NavigationDataHost(const NavigationDataHost&) = delete;
+  NavigationDataHost& operator=(const NavigationDataHost&) = delete;
+
+  NavigationDataHost(NavigationDataHost&&) = default;
+  NavigationDataHost& operator=(NavigationDataHost&&) = default;
+
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
   base::TimeTicks register_time;
 };
