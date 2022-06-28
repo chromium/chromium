@@ -1482,7 +1482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
-    enum="NetErrorCodes" expires_after="2022-08-07">
+    enum="NetErrorCodes" expires_after="2023-02-07">
   <owner>ericwilligers@chromium.org</owner>
   <owner>alexbn@chromium.org</owner>
   <summary>
