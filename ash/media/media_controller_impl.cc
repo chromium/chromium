@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
@@ -50,10 +49,7 @@ MediaControllerImpl::~MediaControllerImpl() = default;
 // static
 void MediaControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kLockScreenMediaControlsEnabled, true);
-  registry->RegisterBooleanPref(
-      prefs::kUserCameraAllowed,
-      /*default_value=*/true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(prefs::kUserCameraAllowed, true);
 }
 
 bool MediaControllerImpl::AreLockScreenMediaKeysEnabled() const {
