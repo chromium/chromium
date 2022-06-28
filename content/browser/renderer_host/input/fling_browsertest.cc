@@ -394,13 +394,16 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest, TouchscreenFlingInOOPIF) {
   SimulateTouchscreenFling(child_view_->host());
   WaitForFrameScroll(GetChildNode());
 }
-IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest, TouchpadFlingInOOPIF) {
+// TODO(crbug.com/1340285): flaky.
+IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
+                       DISABLED_TouchpadFlingInOOPIF) {
   LoadPageWithOOPIF();
   SimulateTouchpadFling(child_view_->host());
   WaitForFrameScroll(GetChildNode());
 }
+// TODO(crbug.com/1340285): flaky.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
-                       TouchscreenInertialGSUsBubbleFromOOPIF) {
+                       DISABLED_TouchscreenInertialGSUsBubbleFromOOPIF) {
   LoadPageWithOOPIF();
   // Scroll the parent down so that it is scrollable upward.
   EXPECT_TRUE(
@@ -439,8 +442,9 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// TODO(crbug.com/1340285): flaky.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
-                       InertialGSEGetsBubbledFromOOPIF) {
+                       DISABLED_InertialGSEGetsBubbledFromOOPIF) {
   LoadPageWithOOPIF();
   // Scroll the parent down so that it is scrollable upward.
   EXPECT_TRUE(
