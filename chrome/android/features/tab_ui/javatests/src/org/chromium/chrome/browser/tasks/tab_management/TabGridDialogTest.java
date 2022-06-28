@@ -638,7 +638,6 @@ public class TabGridDialogTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_POLISH_PARAMS})
-    @DisabledTest(message = "crbug.com/1231024")
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
