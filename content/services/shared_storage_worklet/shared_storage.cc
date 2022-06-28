@@ -297,15 +297,22 @@ void SharedStorage::OnVoidOperationFinished(
 void SharedStorage::OnStringRetrievalOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
-    bool success,
+    shared_storage_worklet::mojom::SharedStorageGetStatus status,
     const std::string& error_message,
     const std::u16string& result) {
   WorkletV8Helper::HandleScope scope(isolate);
   v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
   v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
 
-  if (success) {
+  if (status ==
+      shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess) {
     resolver->Resolve(context, gin::ConvertToV8(isolate, result)).ToChecked();
+    return;
+  }
+
+  if (status ==
+      shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound) {
+    resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
     return;
   }
 

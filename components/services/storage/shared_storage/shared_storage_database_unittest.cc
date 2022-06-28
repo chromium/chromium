@@ -407,13 +407,14 @@ TEST_P(SharedStorageDatabaseParamTest, BasicOperations) {
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value2");
 
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin1, u"key1"));
-  EXPECT_FALSE(db_->Get(kOrigin1, u"key1").data);
+  EXPECT_EQ(OperationResult::kKeyNotFound, db_->Get(kOrigin1, u"key1").result);
 
-  // Check that trying to retrieve the empty key doesn't give an error, even
-  // though the input is invalid and no value is found.
+  // Check that trying to retrieve the empty key returns
+  // `OperationResult::kKeyNotFound` rather than `OperationResult::kSqlError`,
+  // even though the input is considered invalid.
   GetResult result = db_->Get(kOrigin1, u"");
-  EXPECT_EQ(OperationResult::kSuccess, result.result);
-  EXPECT_FALSE(result.data);
+  EXPECT_EQ(OperationResult::kKeyNotFound, result.result);
+  EXPECT_TRUE(result.data.empty());
 
   // Check that trying to delete the empty key doesn't give an error, even
   // though the input is invalid and no value is found to delete.

@@ -47,7 +47,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   void OnStringRetrievalOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
-      bool success,
+      shared_storage_worklet::mojom::SharedStorageGetStatus status,
       const std::string& error_message,
       const std::u16string& result);
 
