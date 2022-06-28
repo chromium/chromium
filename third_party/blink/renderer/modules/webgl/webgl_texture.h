@@ -81,6 +81,9 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
     return last_uploaded_video_frame_metadata_.skipped;
   }
 
+  // See https://www.w3.org/TR/webxrlayers-1/#opaque-texture.
+  virtual bool IsOpaqueTexture() const { return false; }
+
  protected:
   // Constructor for WebGLUnownedTexture.
   explicit WebGLTexture(WebGLRenderingContextBase* ctx,

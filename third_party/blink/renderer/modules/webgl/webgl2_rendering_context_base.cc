@@ -1130,7 +1130,7 @@ void WebGL2RenderingContextBase::texImage2D(GLenum target,
                                             int64_t offset) {
   if (isContextLost())
     return;
-  if (!ValidateTexture2DBinding("texImage2D", target))
+  if (!ValidateTexture2DBinding("texImage2D", target, true))
     return;
   if (!bound_pixel_unpack_buffer_) {
     SynthesizeGLError(GL_INVALID_OPERATION, "texImage2D",
@@ -1820,6 +1820,23 @@ void WebGL2RenderingContextBase::texStorage2D(GLenum target,
   if (isContextLost())
     return;
 
+  WebGLTexture* tex = nullptr;
+  switch (target) {
+    case GL_TEXTURE_2D:
+      tex = texture_units_[active_texture_unit_].texture2d_binding_.Get();
+      break;
+    case GL_TEXTURE_CUBE_MAP:
+      tex =
+          texture_units_[active_texture_unit_].texture_cube_map_binding_.Get();
+      break;
+  }
+
+  if (tex && tex->IsOpaqueTexture()) {
+    SynthesizeGLError(GL_INVALID_OPERATION, "texStorage2D",
+                      "cannot invoke function with an opaque texture");
+    return;
+  }
+
   ContextGL()->TexStorage2DEXT(target, levels, internalformat, width, height);
 }
 
@@ -1831,6 +1848,22 @@ void WebGL2RenderingContextBase::texStorage3D(GLenum target,
                                               GLsizei depth) {
   if (isContextLost())
     return;
+
+  WebGLTexture* tex = nullptr;
+  switch (target) {
+    case GL_TEXTURE_3D:
+      tex = texture_units_[active_texture_unit_].texture3d_binding_.Get();
+      break;
+    case GL_TEXTURE_2D_ARRAY:
+      tex = texture_units_[active_texture_unit_].texture2d_array_binding_.Get();
+      break;
+  }
+
+  if (tex && tex->IsOpaqueTexture()) {
+    SynthesizeGLError(GL_INVALID_OPERATION, "texStorage3D",
+                      "cannot invoke function with an opaque texture");
+    return;
+  }
 
   ContextGL()->TexStorage3D(target, levels, internalformat, width, height,
                             depth);
@@ -1902,7 +1935,7 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
                                             int64_t offset) {
   if (isContextLost())
     return;
-  if (!ValidateTexture3DBinding("texImage3D", target))
+  if (!ValidateTexture3DBinding("texImage3D", target, true))
     return;
   if (!bound_pixel_unpack_buffer_) {
     SynthesizeGLError(GL_INVALID_OPERATION, "texImage3D",
@@ -2366,7 +2399,7 @@ void WebGL2RenderingContextBase::compressedTexImage2D(
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-  if (!ValidateTexture2DBinding("compressedTexImage2D", target))
+  if (!ValidateTexture2DBinding("compressedTexImage2D", target, true))
     return;
   if (!ValidateCompressedTexFormat("compressedTexImage2D", internalformat))
     return;
@@ -2512,7 +2545,7 @@ void WebGL2RenderingContextBase::compressedTexImage3D(
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-  if (!ValidateTexture3DBinding("compressedTexImage3D", target))
+  if (!ValidateTexture3DBinding("compressedTexImage3D", target, true))
     return;
   if (!ValidateCompressedTexFormat("compressedTexImage3D", internalformat))
     return;
@@ -2553,6 +2586,8 @@ void WebGL2RenderingContextBase::compressedTexImage3D(GLenum target,
                       "no bound PIXEL_UNPACK_BUFFER");
     return;
   }
+  if (!ValidateTexture3DBinding("compressedTexImage3D", target, true))
+    return;
   ContextGL()->CompressedTexImage3D(target, level, internalformat, width,
                                     height, depth, border, image_size,
                                     reinterpret_cast<uint8_t*>(offset));
@@ -3804,8 +3839,8 @@ WebGLTexture* WebGL2RenderingContextBase::ValidateTexImageBinding(
     const TexImageParams& params) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
   if (params.function_id == kTexImage3D || params.function_id == kTexSubImage3D)
-    return ValidateTexture3DBinding(func_name, params.target);
-  return ValidateTexture2DBinding(func_name, params.target);
+    return ValidateTexture3DBinding(func_name, params.target, true);
+  return ValidateTexture2DBinding(func_name, params.target, true);
 }
 
 void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
@@ -6002,7 +6037,8 @@ void WebGL2RenderingContextBase::Trace(Visitor* visitor) const {
 
 WebGLTexture* WebGL2RenderingContextBase::ValidateTexture3DBinding(
     const char* function_name,
-    GLenum target) {
+    GLenum target,
+    bool validate_opaque_textures) {
   WebGLTexture* tex = nullptr;
   switch (target) {
     case GL_TEXTURE_2D_ARRAY:
@@ -6016,9 +6052,14 @@ WebGLTexture* WebGL2RenderingContextBase::ValidateTexture3DBinding(
                         "invalid texture target");
       return nullptr;
   }
-  if (!tex)
+  if (!tex) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "no texture bound to target");
+  } else if (validate_opaque_textures && tex->IsOpaqueTexture()) {
+    SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                      "cannot invoke function with an opaque texture");
+    return nullptr;
+  }
   return tex;
 }
 
