@@ -1,0 +1,69 @@
+<html>
+<head>
+<script type="text/javascript">
+let canvas;
+let gl;
+let timeout;
+
+function send(result, message) {
+  if (window.domAutomationController)
+    window.domAutomationController.send(result);
+  if (message)
+    console.log(message);
+  else if (!window.domAutomationController)
+    console.log(result);
+}
+
+function near(val, expect) {
+  return Math.abs(val - expect) < 2;
+}
+
+function onLoad() {
+  send("LOADED");
+
+  // Originally-reported problem occurred on AMD GPU on dual-GPU MacBook Pros.
+  canvas = document.getElementById("canvas1");
+  gl = canvas.getContext('webgl2', { powerPreference: 'high-performance' });
+
+  gl.pixelStorei(gl.UNPACK_IMAGE_HEIGHT, 0xff);
+  gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
+  let ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
+  let format;
+  if (ext) {
+    format = ext.COMPRESSED_RGBA_S3TC_DXT3_EXT;
+  } else {
+    ext = gl.getExtension('WEBGL_compressed_texture_etc');
+    if (!ext) {
+      send("FAILURE", "Desktop/mobile compressed texture formats not supported");
+      return;
+    }
+    format = ext.COMPRESSED_RGBA8_ETC2_EAC;
+  }
+  gl.compressedTexImage3D(gl.TEXTURE_2D_ARRAY, 0, format, 4, 4, 4, 0, new Uint16Array(32));
+
+  // Try clearing the canvas to solid green and see if it's read back successfully.
+  // If the context was lost because of a GPU process crash in ASAN builds, this will fail.
+  gl.clearColor(0, 1, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  let readback = new Uint8Array(4);
+  gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, readback);
+  if (near(readback[0], 0) &&
+      near(readback[1], 255) &&
+      near(readback[2], 0) &&
+      near(readback[3], 255)) {
+    send("SUCCESS");
+  } else {
+    send("FAILURE", "Expected solid green, got (" +
+         readback[0] + ", " +
+         readback[1] + ", " +
+         readback[2] + ", " +
+         readback[3] + ")");
+  }
+}
+</script>
+</head>
+<body onload="onLoad()">
+<canvas id="canvas1" width="64px" height="64px">
+</canvas>
+</body>
+</html>
