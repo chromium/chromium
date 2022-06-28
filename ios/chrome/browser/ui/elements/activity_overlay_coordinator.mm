@@ -31,10 +31,15 @@
       addSubview:self.activityOverlayViewController.view];
   [self.activityOverlayViewController
       didMoveToParentViewController:self.baseViewController];
-  self.activityOverlayViewController.view
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(self.baseViewController.view,
-                     self.activityOverlayViewController.view);
+  UIView* baseView = self.baseViewController.view;
+  UIView* activityOverlayView = self.activityOverlayViewController.view;
+  AddSameCenterConstraints(baseView, activityOverlayView);
+  [NSLayoutConstraint activateConstraints:@[
+    [baseView.heightAnchor
+        constraintEqualToAnchor:activityOverlayView.heightAnchor],
+    [baseView.widthAnchor
+        constraintEqualToAnchor:activityOverlayView.widthAnchor],
+  ]];
 }
 
 - (void)stop {
