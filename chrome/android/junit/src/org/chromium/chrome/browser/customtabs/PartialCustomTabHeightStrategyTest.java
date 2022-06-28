@@ -76,7 +76,7 @@ public class PartialCustomTabHeightStrategyTest {
     private static final int DEVICE_WIDTH = 1440;
 
     private static final int NAVBAR_HEIGHT = 160;
-    private static final int MAX_INIT_POS = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
+    private static final int MAX_INIT_POS = DEVICE_HEIGHT / 2;
 
     @Mock
     private Activity mActivity;

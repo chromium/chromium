@@ -510,7 +510,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // We do not resize Window but just translate its vertical offset, and resize Coordinator-
         // LayoutForPointer instead. This helps us work around the round-corner bug in Android S.
         // See b/223536648.
-        attributes.y = Math.max(maxExpandedY, mDisplayHeight - height - mNavbarHeight);
+        attributes.y = Math.max(maxExpandedY, mDisplayHeight - height);
         mActivity.getWindow().setAttributes(attributes);
     }
 
@@ -540,8 +540,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private void updateWindowPos(@Px int y) {
         // Do not allow the Window to go down below the initial position or above the minimum
         // threshold capped by the status bar and (optionally) the 90%-height adjustment.
-        y = MathUtils.clamp(y, getFullyExpandedYCoordinateWithAdjustment(),
-                mMaxHeight - mInitialHeight - mNavbarHeight);
+        y = MathUtils.clamp(
+                y, getFullyExpandedYCoordinateWithAdjustment(), mMaxHeight - mInitialHeight);
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
         if (attributes.y == y) return;
 
