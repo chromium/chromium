@@ -1593,7 +1593,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioRendererMissedDeadline2.{Duration}.{LatencyTag}"
+<histogram
+    name="Media.AudioRendererMissedDeadline2{Mixing}{Duration}{LatencyTag}"
     units="permille" expires_after="2022-10-04">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -1603,16 +1604,22 @@ chromium-metrics-reviews@google.com.
     realtime deadline. Rounded up, clipped to 1/10 of the stream callbacks.
     Sampled when a low-latency output audio stream is destructed.
   </summary>
+  <token key="Mixing">
+    <variant name="" summary="Whole stream lifetime"/>
+    <variant name=".Mixing" summary="During mixing"/>
+  </token>
   <token key="Duration">
-    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
+    <variant name=".Long"
+        summary="Streams equal or longer than 3000 callbacks"/>
+    <variant name=".Short" summary="Streams shorter than 3000 callbacks"/>
   </token>
   <token key="LatencyTag">
-    <variant name="LatencyExactMs"/>
-    <variant name="LatencyInteractive"/>
-    <variant name="LatencyPlayback"/>
-    <variant name="LatencyRtc"/>
-    <variant name="LatencyUnknown"/>
+    <variant name="" summary="All latencies combined"/>
+    <variant name=".LatencyExactMs"/>
+    <variant name=".LatencyInteractive"/>
+    <variant name=".LatencyPlayback"/>
+    <variant name=".LatencyRtc"/>
+    <variant name=".LatencyUnknown"/>
   </token>
 </histogram>
 
