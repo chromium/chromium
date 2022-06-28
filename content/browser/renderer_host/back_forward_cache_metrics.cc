@@ -182,10 +182,6 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       SCOPED_CRASH_KEY_NUMBER(
           "BFCacheMismatch", "disallow_activation",
           page_store_result_->disallow_activation_reasons().size());
-      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "navigation_type",
-                              navigation->navigation_type());
-      SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "did_replace",
-                            navigation->DidReplaceEntry());
       SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "restore_type",
                               static_cast<int>(navigation->GetRestoreType()));
       SCOPED_CRASH_KEY_STRING256("BFCacheMismatch", "url",
