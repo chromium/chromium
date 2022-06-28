@@ -543,7 +543,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Storage.StoragePressure.Bubble"
     enum="StoragePressureBubbleUserAction" expires_after="2023-03-09">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How did the user interact with the StoragePressure Bubble? Ignored means the

@@ -327,7 +327,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.ClearBrowsingData.InstalledAppExcluded" enum="Boolean"
     expires_after="2023-03-09">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
@@ -342,7 +341,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.ClearBrowsingData.InstalledAppsDialogAction"
     enum="InstalledAppsDialogActions" expires_after="2023-04-19">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
@@ -354,7 +352,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.ClearBrowsingData.InstalledAppsDialogShown"
     enum="Boolean" expires_after="2023-04-19">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
@@ -368,7 +365,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.ClearBrowsingData.InstalledDeselectedNum"
     units="units" expires_after="2023-03-09">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
@@ -382,7 +378,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.ClearBrowsingData.InstalledDeselectedPercent"
     units="%" expires_after="2023-03-09">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
