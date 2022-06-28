@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -74,7 +75,7 @@ public class WebappRegistry {
     private boolean mIsInitialized;
 
     /** Maps webapp ids to storages. */
-    private HashMap<String, WebappDataStorage> mStorages;
+    private Map<String, WebappDataStorage> mStorages;
     private SharedPreferences mPreferences;
     private InstalledWebappPermissionStore mPermissionStore;
 
@@ -179,8 +180,7 @@ public class WebappRegistry {
     public WebappDataStorage getWebappDataStorageForUrl(final String url) {
         WebappDataStorage bestMatch = null;
         int largestOverlap = 0;
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
+        for (WebappDataStorage storage : mStorages.values()) {
             if (storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) continue;
 
             String scope = storage.getScope();
@@ -215,9 +215,7 @@ public class WebappRegistry {
      * @param origin The origin to search a WebAPK for.
      */
     public boolean hasAtLeastOneWebApkForOrigin(String origin) {
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
-
+        for (WebappDataStorage storage : mStorages.values()) {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
@@ -229,11 +227,9 @@ public class WebappRegistry {
     /**
      * Returns a Set of all origins that have an installed WebAPK.
      */
-    Set<String> getOriginsWithWebApk() {
-        HashSet<String> origins = new HashSet<String>();
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
-
+    private Set<String> getOriginsWithWebApk() {
+        Set<String> origins = new HashSet<>();
+        for (WebappDataStorage storage : mStorages.values()) {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
@@ -255,7 +251,7 @@ public class WebappRegistry {
      * Returns all origins that have a WebAPK or TWA installed.
      */
     public Set<String> getOriginsWithInstalledApp() {
-        HashSet<String> origins = new HashSet<String>();
+        Set<String> origins = new HashSet<>();
         origins.addAll(getOriginsWithWebApk());
         origins.addAll(mPermissionStore.getStoredOrigins());
         return origins;
@@ -266,7 +262,7 @@ public class WebappRegistry {
      * uninstalled.
      * */
     public List<String> findWebApksWithPendingUpdate() {
-        ArrayList<String> webApkIdsWithPendingUpdate = new ArrayList<String>();
+        List<String> webApkIdsWithPendingUpdate = new ArrayList<>();
         for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
             if (!TextUtils.isEmpty(storage.getPendingUpdateRequestPath())
@@ -395,8 +391,7 @@ public class WebappRegistry {
      */
     @VisibleForTesting
     void clearWebappHistoryForUrlsImpl(UrlFilter urlFilter) {
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
+        for (WebappDataStorage storage : mStorages.values()) {
             if (urlFilter.matchesUrl(storage.getUrl())) {
                 storage.clearHistory();
             }
@@ -434,8 +429,7 @@ public class WebappRegistry {
             mIsInitialized = true;
         }
 
-        List<Pair<String, WebappDataStorage>> initedStorages =
-                new ArrayList<Pair<String, WebappDataStorage>>();
+        List<Pair<String, WebappDataStorage>> initedStorages = new ArrayList<>();
         if (initAll) {
             for (String id : webapps) {
                 // See crbug.com/1055566 for details on bug which caused this scenario to occur.
