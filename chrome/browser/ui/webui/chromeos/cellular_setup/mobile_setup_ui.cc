@@ -234,7 +234,7 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   void Reset();
 
   // Handlers for JS WebUI messages.
-  void HandleGetDeviceInfo(const base::ListValue* args);
+  void HandleGetDeviceInfo(const base::Value::List& args);
 
   // NetworkStateHandlerObserver implementation.
   void NetworkConnectionStateChanged(const NetworkState* network) override;
@@ -402,13 +402,13 @@ void MobileSetupHandler::Reset() {
 }
 
 void MobileSetupHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kJsGetDeviceInfo,
       base::BindRepeating(&MobileSetupHandler::HandleGetDeviceInfo,
                           base::Unretained(this)));
 }
 
-void MobileSetupHandler::HandleGetDeviceInfo(const base::ListValue* args) {
+void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
   DCHECK_NE(TYPE_ACTIVATION, type_);
   if (!web_ui())
     return;
