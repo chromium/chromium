@@ -146,7 +146,9 @@ CGFloat ToolbarHeight() {
       [[ToolbarButtonFactory alloc] initWithStyle:NORMAL];
   UIView* fakeToolbar = [[UIView alloc] init];
   fakeToolbar.backgroundColor =
-      buttonFactory.toolbarConfiguration.backgroundColor;
+      IsContentSuggestionsUIModuleRefreshEnabled()
+          ? [UIColor clearColor]
+          : buttonFactory.toolbarConfiguration.backgroundColor;
   [searchField insertSubview:fakeToolbar atIndex:0];
   fakeToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 
