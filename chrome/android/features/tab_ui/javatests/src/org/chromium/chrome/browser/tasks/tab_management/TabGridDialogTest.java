@@ -929,6 +929,7 @@ public class TabGridDialogTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
+    @DisabledTest(message = "crbug.com/1119899, crbug.com/1131545")
     public void testUndoClosureInDialog_WithStartSurface() throws Exception {
         // Create a tab group with 2 tabs.
         finishActivity(mActivityTestRule.getActivity());
