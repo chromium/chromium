@@ -19,7 +19,7 @@
         app:maxWidthLandscape="@dimen/privacy_sandbox_dialog_max_width"
         app:maxWidthPortrait="@dimen/privacy_sandbox_dialog_max_width">
 
-        <ScrollView
+        <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
@@ -85,7 +85,7 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
         <LinearLayout
             android:orientation="horizontal"
