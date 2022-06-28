@@ -1530,7 +1530,6 @@ class DnsTransactionImpl : public DnsTransaction,
             result = StartQuery();
           }
           break;
-        case ERR_CONNECTION_REFUSED:
         case ERR_DNS_TIMED_OUT:
           timer_.Stop();
 

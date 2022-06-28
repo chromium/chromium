@@ -3996,6 +3996,115 @@ TEST_F(DnsTransactionTestWithMockTime, RejectsQueryingLongNames) {
   helper0.RunUntilComplete();
 }
 
+// Test that ERR_CONNECTION_REFUSED error after fallback of DnsTCPAttempt
+// should not cause DCHECK failure (https://crbug.com/1334250).
+TEST_F(DnsTransactionTestWithMockTime, TcpConnectionRefusedAfterFallback) {
+  ConfigureNumServers(2);
+  ConfigureFactory();
+  socket_factory_->diverse_source_ports_ = false;
+
+  // Data for UDP attempts to set `low_entropy` flag.
+  for (int i = 0; i <= DnsUdpTracker::kPortReuseThreshold; ++i) {
+    AddQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                        std::size(kT0ResponseDatagram), ASYNC, Transport::UDP);
+  }
+
+  // Data for TCP attempt.
+  std::unique_ptr<DnsSocketData> data1(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::TCP));
+  data1->AddReadError(ERR_IO_PENDING, ASYNC);
+  data1->AddReadError(ERR_CONNECTION_REFUSED, ASYNC);
+  SequencedSocketData* sequenced_socket_data1 = data1->GetProvider();
+  AddSocketData(std::move(data1));
+
+  std::unique_ptr<DnsSocketData> data2(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::TCP));
+  data2->AddReadError(ERR_IO_PENDING, ASYNC);
+  data2->AddResponseData(kT0ResponseDatagram, std::size(kT0ResponseDatagram),
+                         ASYNC);
+  SequencedSocketData* sequenced_socket_data2 = data2->GetProvider();
+  AddSocketData(std::move(data2));
+
+  // DNS transactions for UDP attempts to set `low_entropy` flag.
+  for (int i = 0; i <= DnsUdpTracker::kPortReuseThreshold; ++i) {
+    TransactionHelper udp_helper(kT0RecordCount);
+    udp_helper.StartTransaction(transaction_factory_.get(), kT0HostName,
+                                kT0Qtype, false /* secure */,
+                                resolve_context_.get());
+    udp_helper.RunUntilComplete();
+  }
+
+  ASSERT_TRUE(session_->udp_tracker()->low_entropy());
+
+  // DNS transactions for TCP attempt.
+  TransactionHelper helper0(kT0RecordCount);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           false /* secure */, resolve_context_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  base::TimeDelta timeout = resolve_context_->NextClassicFallbackPeriod(
+      0 /* classic_server_index */, 0 /* attempt */, session_.get());
+  FastForwardBy(timeout);
+
+  // Resume the first query.
+  sequenced_socket_data1->Resume();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  // Resume the second query.
+  sequenced_socket_data2->Resume();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(helper0.has_completed());
+}
+
+// Test that ERR_CONNECTION_REFUSED error after fallback of DnsHTTPAttempt
+// should not cause DCHECK failure (https://crbug.com/1334250).
+TEST_F(DnsTransactionTestWithMockTime, HttpsConnectionRefusedAfterFallback) {
+  ConfigureDohServers(false /* use_post */, 2 /* num_doh_servers */,
+                      true /* make_available */);
+
+  std::unique_ptr<DnsSocketData> data1(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128));
+  data1->AddReadError(ERR_IO_PENDING, ASYNC);
+  data1->AddReadError(ERR_CONNECTION_REFUSED, ASYNC);
+  SequencedSocketData* sequenced_socket_data1 = data1->GetProvider();
+  AddSocketData(std::move(data1), false /* enqueue_transaction_id */);
+
+  std::unique_ptr<DnsSocketData> data2(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128));
+  data2->AddReadError(ERR_IO_PENDING, ASYNC);
+  data2->AddResponseData(kT0ResponseDatagram, std::size(kT0ResponseDatagram),
+                         ASYNC);
+  SequencedSocketData* sequenced_socket_data2 = data2->GetProvider();
+  AddSocketData(std::move(data2), false /* enqueue_transaction_id */);
+
+  TransactionHelper helper0(kT0RecordCount);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           true /* secure */, resolve_context_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  base::TimeDelta timeout = resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get());
+  FastForwardBy(timeout);
+
+  // Resume the first query.
+  sequenced_socket_data1->Resume();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  // Resume the second query.
+  sequenced_socket_data2->Resume();
+
+  EXPECT_TRUE(helper0.has_completed());
+}
+
 }  // namespace
 
 }  // namespace net
