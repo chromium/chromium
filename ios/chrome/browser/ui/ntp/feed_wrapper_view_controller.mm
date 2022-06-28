@@ -6,31 +6,30 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation DiscoverFeedWrapperViewController {
-  __weak id<DiscoverFeedWrapperViewControllerDelegate> _delegate;
+@implementation FeedWrapperViewController {
+  __weak id<FeedWrapperViewControllerDelegate> _delegate;
 }
 
-- (instancetype)initWithDelegate:
-                    (id<DiscoverFeedWrapperViewControllerDelegate>)delegate
-      discoverFeedViewController:(UIViewController*)discoverFeed {
+- (instancetype)initWithDelegate:(id<FeedWrapperViewControllerDelegate>)delegate
+              feedViewController:(UIViewController*)feedViewController {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    if (discoverFeed) {
-      _discoverFeed = discoverFeed;
+    if (feedViewController) {
+      _feedViewController = feedViewController;
       _delegate = delegate;
 
       // Iterates through subviews to find collection view containing feed
       // articles.
       // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed,
       // remove this loop.
-      for (UIView* view in _discoverFeed.view.subviews) {
+      for (UIView* view in _feedViewController.view.subviews) {
         if ([view isKindOfClass:[UICollectionView class]]) {
           _contentCollectionView = static_cast<UICollectionView*>(view);
         }
@@ -45,9 +44,9 @@
   [super viewDidLoad];
 
   // Configure appropriate collection view based on feed visibility. If
-  // |discoverFeed| exists, then the feed must be enabled and visible.
-  if (self.discoverFeed && self.contentCollectionView) {
-    [self configureDiscoverFeedAsWrapper];
+  // |feedViewController| exists, then the feed must be enabled and visible.
+  if (self.feedViewController && self.contentCollectionView) {
+    [self configureFeedAsWrapper];
     [_delegate updateTheme];
   } else {
     [self configureEmptyCollectionAsWrapper];
@@ -58,14 +57,14 @@
 
 // If the feed is visible, we configure the feed's collection view and view
 // controller to be used in the NTP.
-- (void)configureDiscoverFeedAsWrapper {
-  UIView* discoverView = self.discoverFeed.view;
-  [self.discoverFeed willMoveToParentViewController:self];
-  [self addChildViewController:self.discoverFeed];
-  [self.view addSubview:discoverView];
-  [self.discoverFeed didMoveToParentViewController:self];
-  discoverView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(discoverView, self.view);
+- (void)configureFeedAsWrapper {
+  UIView* feedView = self.feedViewController.view;
+  [self.feedViewController willMoveToParentViewController:self];
+  [self addChildViewController:self.feedViewController];
+  [self.view addSubview:feedView];
+  [self.feedViewController didMoveToParentViewController:self];
+  feedView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(feedView, self.view);
 }
 
 // If the feed is not visible, we prepare the empty collection view to be used

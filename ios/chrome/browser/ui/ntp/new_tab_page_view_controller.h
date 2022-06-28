@@ -14,7 +14,7 @@
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @class FeedMetricsRecorder;
-@class DiscoverFeedWrapperViewController;
+@class FeedWrapperViewController;
 @class FeedHeaderViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
@@ -27,9 +27,9 @@
                         ThumbStripSupporting,
                         UIScrollViewDelegate>
 
-// View controller wrapping the Discover feed.
+// View controller wrapping the feed.
 @property(nonatomic, strong)
-    DiscoverFeedWrapperViewController* discoverFeedWrapperViewController;
+    FeedWrapperViewController* feedWrapperViewController;
 
 // Delegate for the overscroll actions.
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>

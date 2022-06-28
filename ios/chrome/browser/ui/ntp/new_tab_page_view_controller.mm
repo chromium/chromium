@@ -17,10 +17,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -110,11 +110,11 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  DCHECK(self.discoverFeedWrapperViewController);
+  DCHECK(self.feedWrapperViewController);
   DCHECK([self contentSuggestionsViewController]);
 
   // TODO(crbug.com/1262536): Remove this when bug is fixed.
-  [self.discoverFeedWrapperViewController loadViewIfNeeded];
+  [self.feedWrapperViewController loadViewIfNeeded];
   [[self contentSuggestionsViewController] loadViewIfNeeded];
 
   // Prevent the NTP from spilling behind the toolbar and tab strip.
@@ -324,21 +324,21 @@
 #pragma mark - Public
 
 - (void)layoutContentInParentCollectionView {
-  DCHECK(self.discoverFeedWrapperViewController);
+  DCHECK(self.feedWrapperViewController);
   DCHECK([self contentSuggestionsViewController]);
 
   // Ensure the view is loaded so we can set the accessibility identifier.
-  [self.discoverFeedWrapperViewController loadViewIfNeeded];
+  [self.feedWrapperViewController loadViewIfNeeded];
   self.collectionView.accessibilityIdentifier = kNTPCollectionViewIdentifier;
 
-  // Configures the Discover feed and wrapper in the view hierarchy.
-  UIView* discoverFeedView = self.discoverFeedWrapperViewController.view;
-  [self.discoverFeedWrapperViewController willMoveToParentViewController:self];
-  [self addChildViewController:self.discoverFeedWrapperViewController];
-  [self.view addSubview:discoverFeedView];
-  [self.discoverFeedWrapperViewController didMoveToParentViewController:self];
-  discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(discoverFeedView, self.view);
+  // Configures the feed and wrapper in the view hierarchy.
+  UIView* feedView = self.feedWrapperViewController.view;
+  [self.feedWrapperViewController willMoveToParentViewController:self];
+  [self addChildViewController:self.feedWrapperViewController];
+  [self.view addSubview:feedView];
+  [self.feedWrapperViewController didMoveToParentViewController:self];
+  feedView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(feedView, self.view);
 
   // Configures the content suggestions in the view hierarchy.
   // TODO(crbug.com/1262536): Remove this when issue is fixed.
@@ -352,8 +352,8 @@
                                      kContentSuggestionsReset];
   }
   UIViewController* parentViewController =
-      self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
-                         : self.discoverFeedWrapperViewController;
+      self.isFeedVisible ? self.feedWrapperViewController.feedViewController
+                         : self.feedWrapperViewController;
   // Configures the feed header in the view hierarchy if it is visible.
   if (self.feedHeaderViewController) {
     // Ensure that sticky header is not covered by omnibox.
@@ -400,11 +400,10 @@
   }
 
   // If the feed is not visible, we control the delegate ourself (since it is
-  // otherwise controlled by the DiscoverProvider). The view is also layed out
+  // otherwise controlled by the feed service). The view is also layed out
   // so that we can correctly calculate the minimum height.
   if (!self.isFeedVisible) {
-    self.discoverFeedWrapperViewController.contentCollectionView.delegate =
-        self;
+    self.feedWrapperViewController.contentCollectionView.delegate = self;
 
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
@@ -478,7 +477,7 @@
 }
 
 - (void)resetViewHierarchy {
-  [self removeFromViewHierarchy:self.discoverFeedWrapperViewController];
+  [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:[self contentSuggestionsViewController]];
   if (self.feedHeaderViewController) {
     [self removeFromViewHierarchy:self.feedHeaderViewController];
@@ -508,7 +507,7 @@
   DCHECK(self.isFeedVisible);
   CGFloat minimumNTPHeight =
       self.collectionView.bounds.size.height +
-      self.discoverFeedWrapperViewController.view.safeAreaInsets.top;
+      self.feedWrapperViewController.view.safeAreaInsets.top;
   minimumNTPHeight -= [self feedHeaderHeight];
   if ([self shouldPinFakeOmnibox]) {
     minimumNTPHeight -= ([self.headerController headerHeight] +
@@ -610,7 +609,7 @@
 #pragma mark - ContentSuggestionsCollectionControlling
 
 - (UICollectionView*)collectionView {
-  return self.discoverFeedWrapperViewController.contentCollectionView;
+  return self.feedWrapperViewController.contentCollectionView;
 }
 
 #pragma mark - NewTabPageOmniboxPositioning
@@ -721,8 +720,7 @@
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     self.headerTopAnchor = [self.headerController.view.topAnchor
-        constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
-                                    .topAnchor
+        constraintEqualToAnchor:self.feedWrapperViewController.view.topAnchor
                        constant:-([self stickyOmniboxHeight] +
                                   [self feedHeaderHeight])];
     // This issue fundamentally comes down to the topAnchor being set just once
@@ -731,24 +729,23 @@
     self.fakeOmniboxConstraints = @[
       self.headerTopAnchor,
       [self.headerController.view.leadingAnchor
-          constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+          constraintEqualToAnchor:self.feedWrapperViewController.view
                                       .leadingAnchor],
       [self.headerController.view.trailingAnchor
-          constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+          constraintEqualToAnchor:self.feedWrapperViewController.view
                                       .trailingAnchor],
     ];
   } else {
     self.fakeOmniboxConstraints = @[
       [self.headerController.view.topAnchor
-          constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
-                                      .topAnchor
+          constraintEqualToAnchor:self.feedWrapperViewController.view.topAnchor
                          constant:-([self stickyOmniboxHeight] +
                                     [self feedHeaderHeight])],
       [self.headerController.view.leadingAnchor
-          constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+          constraintEqualToAnchor:self.feedWrapperViewController.view
                                       .leadingAnchor],
       [self.headerController.view.trailingAnchor
-          constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+          constraintEqualToAnchor:self.feedWrapperViewController.view
                                       .trailingAnchor],
       [self.headerController.view.heightAnchor
           constraintEqualToConstant:self.headerController.view.frame.size
@@ -1144,8 +1141,8 @@
 // find a fix.
 - (void)verifyNTPViewHierarchy {
   // The view hierarchy with the feed enabled should be: self.view ->
-  // self.discoverFeedWrapperViewController.view ->
-  // self.discoverFeedWrapperViewController.discoverFeed.view ->
+  // self.feedWrapperViewController.view ->
+  // self.feedWrapperViewController.feedViewController.view ->
   // self.collectionView -> self.contentSuggestionsViewController.view.
   if (![self.collectionView.subviews
           containsObject:[self contentSuggestionsViewController].view]) {
@@ -1158,15 +1155,15 @@
 
     // Add child VC to new parent.
     [[self contentSuggestionsViewController]
-        willMoveToParentViewController:self.discoverFeedWrapperViewController
-                                           .discoverFeed];
-    [self.discoverFeedWrapperViewController.discoverFeed
+        willMoveToParentViewController:self.feedWrapperViewController
+                                           .feedViewController];
+    [self.feedWrapperViewController.feedViewController
         addChildViewController:[self contentSuggestionsViewController]];
     [self.collectionView
         addSubview:[self contentSuggestionsViewController].view];
     [[self contentSuggestionsViewController]
-        didMoveToParentViewController:self.discoverFeedWrapperViewController
-                                          .discoverFeed];
+        didMoveToParentViewController:self.feedWrapperViewController
+                                          .feedViewController];
 
     [self.feedMetricsRecorder
         recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
@@ -1184,13 +1181,12 @@
              isSubviewOf:self.collectionView
       withRelationshipID:BrokenNTPHierarchyRelationship::kFeedHeaderParent];
   [self ensureView:self.collectionView
-             isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed
-                             .view
+             isSubviewOf:self.feedWrapperViewController.feedViewController.view
       withRelationshipID:BrokenNTPHierarchyRelationship::kELMCollectionParent];
-  [self ensureView:self.discoverFeedWrapperViewController.discoverFeed.view
-             isSubviewOf:self.discoverFeedWrapperViewController.view
+  [self ensureView:self.feedWrapperViewController.feedViewController.view
+             isSubviewOf:self.feedWrapperViewController.view
       withRelationshipID:BrokenNTPHierarchyRelationship::kDiscoverFeedParent];
-  [self ensureView:self.discoverFeedWrapperViewController.view
+  [self ensureView:self.feedWrapperViewController.view
              isSubviewOf:self.view
       withRelationshipID:BrokenNTPHierarchyRelationship::
                              kDiscoverFeedWrapperParent];
@@ -1253,7 +1249,7 @@
     if (IsNTPViewHierarchyRepairEnabled()) {
       [self verifyNTPViewHierarchy];
     }
-    containerView = self.discoverFeedWrapperViewController.discoverFeed.view;
+    containerView = self.feedWrapperViewController.feedViewController.view;
   } else {
     containerView = self.view;
   }

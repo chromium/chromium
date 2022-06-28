@@ -192,8 +192,7 @@
                         prefService:prefs
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
                             browser:self.browser];
-  self.contentSuggestionsMediator.discoverFeedDelegate =
-      self.discoverFeedDelegate;
+  self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.contentSuggestionsMediator.dispatcher =

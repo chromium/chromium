@@ -32,7 +32,7 @@ class PrefRegistrySyncable;
 class Browser;
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsCollectionConsumer;
-@protocol DiscoverFeedDelegate;
+@protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
 class NotificationPromoWhatsNew;
@@ -72,8 +72,8 @@ class WebStateList;
     id<ContentSuggestionsCommands, ContentSuggestionsGestureCommands>
         commandHandler;
 
-// Delegate used to communicate to communicate events to the DiscoverFeed.
-@property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
+// Delegate used to communicate to communicate events to the feed.
+@property(nonatomic, weak) id<FeedDelegate> feedDelegate;
 
 // The consumer that will be notified when the data change.
 @property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer>

@@ -4,9 +4,9 @@
 
 source_set("ntp") {
   sources = [
-    "discover_feed_delegate.h",
     "discover_feed_preview_delegate.h",
     "feed_control_delegate.h",
+    "feed_delegate.h",
     "new_tab_page_configuring.h",
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
@@ -115,8 +115,6 @@ source_set("util") {
 source_set("ntp_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "discover_feed_wrapper_view_controller.h",
-    "discover_feed_wrapper_view_controller.mm",
     "feed_header_view_controller.h",
     "feed_header_view_controller.mm",
     "feed_menu_commands.h",
@@ -126,6 +124,8 @@ source_set("ntp_internal") {
     "feed_top_section_mediator.mm",
     "feed_top_section_view_controller.h",
     "feed_top_section_view_controller.mm",
+    "feed_wrapper_view_controller.h",
+    "feed_wrapper_view_controller.mm",
     "incognito_view.h",
     "incognito_view.mm",
     "incognito_view_controller.h",

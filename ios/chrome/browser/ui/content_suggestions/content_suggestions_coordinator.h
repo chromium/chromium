@@ -13,7 +13,7 @@ class WebState;
 
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
-@protocol DiscoverFeedDelegate;
+@protocol FeedDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 class NotificationPromoWhatsNew;
@@ -60,8 +60,8 @@ class NotificationPromoWhatsNew;
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
-// Delegate used to communicate to communicate events to the DiscoverFeed.
-@property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
+// Delegate used to communicate to communicate events to the feed.
+@property(nonatomic, weak) id<FeedDelegate> feedDelegate;
 
 // Stop any scrolling in the scroll view.
 - (void)stopScrolling;

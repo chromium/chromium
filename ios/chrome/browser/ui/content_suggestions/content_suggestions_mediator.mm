@@ -45,7 +45,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
@@ -336,12 +336,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   } else {
-    [self.collectionConsumer
-        addSection:self.returnToRecentTabSectionInfo
-         withItems:items
-        completion:^{
-          [self.discoverFeedDelegate returnToRecentTabWasAdded];
-        }];
+    [self.collectionConsumer addSection:self.returnToRecentTabSectionInfo
+                              withItems:items
+                             completion:^{
+                               [self.feedDelegate returnToRecentTabWasAdded];
+                             }];
   }
 }
 
@@ -624,7 +623,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     // is enabled.
     [self reloadAllData];
   }
-  [self.discoverFeedDelegate contentSuggestionsWasUpdated];
+
+  [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
 - (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo {
