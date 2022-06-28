@@ -15,6 +15,7 @@ android_resources("java_resources") {
     "java/res/layout/history_clusters_related_searches_view.xml",
     "java/res/layout/history_clusters_toolbar.xml",
     "java/res/menu/history_clusters_menu.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

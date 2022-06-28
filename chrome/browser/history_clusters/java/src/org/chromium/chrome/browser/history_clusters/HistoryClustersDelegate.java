@@ -75,4 +75,8 @@ public interface HistoryClustersDelegate {
     default ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
         return new ObservableSupplierImpl<>();
     }
+
+    default void markVisitForRemoval(ClusterVisit clusterVisit) {}
+
+    default void removeMarkedItems() {}
 }

@@ -149,7 +149,6 @@ public class HistoryUITest {
         mHistoryProvider.addItem(mItem1);
         mHistoryProvider.addItem(mItem2);
 
-        HistoryContentManager.setProviderForTests(mHistoryProvider);
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
         doReturn(1L).when(mMockLargeIconBridgeJni).init();
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
@@ -165,7 +164,7 @@ public class HistoryUITest {
         mActivityScenario = ActivityScenario.launch(TestActivity.class)
                                     .onActivity(activity -> mActivity = activity);
         mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
-                /* Supplier<Tab>= */ null, false, null);
+                /* Supplier<Tab>= */ null, false, null, mHistoryProvider);
         mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();

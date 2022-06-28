@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -49,7 +50,8 @@ public class HistoryPage extends BasicNativePage {
                 uri.getQueryParameter(HistoryClustersConstants.HISTORY_CLUSTERS_QUERY_KEY);
 
         mHistoryManager = new HistoryManager(activity, false, snackbarManager, isIncognito,
-                tabSupplier, showHistoryClustersImmediately, historyClustersQuery);
+                tabSupplier, showHistoryClustersImmediately, historyClustersQuery,
+                new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
         mTitle = host.getContext().getResources().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());

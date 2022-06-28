@@ -38,6 +38,8 @@ class HistoryClustersItemProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<ClusterVisit> CLUSTER_VISIT =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<OnClickListener> END_BUTTON_CLICK_HANDLER =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> END_BUTTON_DRAWABLE =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> ICON_DRAWABLE =
@@ -50,5 +52,6 @@ class HistoryClustersItemProperties {
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {CHIP_CLICK_HANDLER, CLICK_HANDLER, CLUSTER_VISIT,
-            END_BUTTON_DRAWABLE, ICON_DRAWABLE, LABEL, RELATED_SEARCHES, TITLE, URL, VISIBILITY};
+            END_BUTTON_CLICK_HANDLER, END_BUTTON_DRAWABLE, ICON_DRAWABLE, LABEL, RELATED_SEARCHES,
+            TITLE, URL, VISIBILITY};
 }

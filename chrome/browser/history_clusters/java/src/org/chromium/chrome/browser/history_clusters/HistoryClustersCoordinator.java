@@ -214,6 +214,9 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             mDelegate.toggleInfoHeaderVisibility();
             mToolbar.updateInfoMenuItem(
                     true, mDelegate.shouldShowPrivacyDisclaimerSupplier().get());
+        } else if (menuItem.getItemId() == R.id.selection_mode_delete_menu_id) {
+            mMediator.deleteVisits(mSelectionDelegate.getSelectedItemsAsList());
+            mSelectionDelegate.clearSelection();
             return true;
         }
         return false;
@@ -221,7 +224,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
 
     private void openVisitsInNewTabs(List<ClusterVisit> visits, boolean isIncognito) {
         for (ClusterVisit visit : visits) {
-            mMediator.navigateToUrl(visit.getGURL(), isIncognito, true);
+            mMediator.navigateToUrl(visit.getNormalizedUrl(), isIncognito, true);
         }
     }
 

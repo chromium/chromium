@@ -95,11 +95,13 @@ public class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static ClusterVisit buildClusterVisit(float score, GURL url, String urlForDisplay, String title,
-            int[] titleMatchStarts, int[] titleMatchEnds, int[] urlMatchStarts,
-            int[] urlMatchEnds) {
+    static ClusterVisit buildClusterVisit(float score, GURL normalizedUrl, String urlForDisplay,
+            String title, int[] titleMatchStarts, int[] titleMatchEnds, int[] urlMatchStarts,
+            int[] urlMatchEnds, GURL rawUrl, long timestamp, long[] duplicateVisitTimestamps,
+            GURL[] duplicateVisitUrls) {
         assert titleMatchStarts.length == titleMatchEnds.length;
         assert urlMatchStarts.length == urlMatchEnds.length;
+        assert duplicateVisitTimestamps.length == duplicateVisitUrls.length;
 
         List<MatchPosition> titleMatchPositions = new ArrayList<>(titleMatchStarts.length);
         for (int i = 0; i < titleMatchStarts.length; i++) {
@@ -113,8 +115,15 @@ public class HistoryClustersBridge {
             urlMatchPositions.add(matchPosition);
         }
 
-        return new ClusterVisit(
-                score, url, title, urlForDisplay, titleMatchPositions, urlMatchPositions);
+        List<ClusterVisit.DuplicateVisit> duplicateVisits =
+                new ArrayList<>(duplicateVisitTimestamps.length);
+        for (int i = 0; i < duplicateVisitTimestamps.length; i++) {
+            duplicateVisits.add(new ClusterVisit.DuplicateVisit(
+                    duplicateVisitTimestamps[i], duplicateVisitUrls[i]));
+        }
+
+        return new ClusterVisit(score, normalizedUrl, title, urlForDisplay, titleMatchPositions,
+                urlMatchPositions, rawUrl, timestamp, duplicateVisits);
     }
 
     @NativeMethods

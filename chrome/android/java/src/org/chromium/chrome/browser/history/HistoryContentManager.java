@@ -128,13 +128,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param toggleViewFactory Function that provides a toggle view container for the given parent
      *         ViewGroup. This toggle is used to switch between the Journeys UI and the regular
      *         history UI and is thus controlled by our parent component.
+     * @param historyProvider Provider of methods for querying and managing browsing history.
      */
     public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearDataIfAvailable, @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable Supplier<Tab> tabSupplier, boolean showHistoryToggle,
-            Function<ViewGroup, ViewGroup> toggleViewFactory) {
+            Function<ViewGroup, ViewGroup> toggleViewFactory, HistoryProvider historyProvider) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -169,8 +170,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // explicitly redirects to use regular profile for Incognito case.
         Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryAdapter = new HistoryAdapter(this,
-                sProviderForTests != null ? sProviderForTests : new BrowsingHistoryBridge(profile),
-                showHistoryToggle, toggleViewFactory);
+                sProviderForTests != null ? sProviderForTests : historyProvider, showHistoryToggle,
+                toggleViewFactory);
 
         // Create a recycler view.
         mRecyclerView =

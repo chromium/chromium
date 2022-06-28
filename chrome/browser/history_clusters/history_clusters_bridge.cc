@@ -117,6 +117,15 @@ void HistoryClustersBridge::ClustersQueryDone(
         url_match_ends.push_back(match.second);
       }
 
+      std::vector<int64_t> duplicated_visit_timestamps;
+      std::vector<ScopedJavaLocalRef<jobject>> duplicated_visit_urls;
+      for (const auto& duplicate : visit.duplicate_visits) {
+        duplicated_visit_timestamps.push_back(
+            duplicate.annotated_visit.visit_row.visit_time.ToInternalValue());
+        duplicated_visit_urls.push_back(url::GURLAndroid::FromNativeGURL(
+            env, duplicate.annotated_visit.url_row.url()));
+      }
+
       const ScopedJavaLocalRef<jobject>& j_cluster_visit =
           Java_HistoryClustersBridge_buildClusterVisit(
               env, visit.score,
@@ -128,7 +137,12 @@ void HistoryClustersBridge::ClustersQueryDone(
               base::android::ToJavaIntArray(env, title_match_starts),
               base::android::ToJavaIntArray(env, title_match_ends),
               base::android::ToJavaIntArray(env, url_match_starts),
-              base::android::ToJavaIntArray(env, url_match_ends));
+              base::android::ToJavaIntArray(env, url_match_ends),
+              url::GURLAndroid::FromNativeGURL(
+                  env, visit.annotated_visit.url_row.url()),
+              visit.annotated_visit.visit_row.visit_time.ToInternalValue(),
+              base::android::ToJavaLongArray(env, duplicated_visit_timestamps),
+              url::GURLAndroid::ToJavaArrayOfGURLs(env, duplicated_visit_urls));
       cluster_visits.push_back(j_cluster_visit);
     }
     base::Time visit_time;

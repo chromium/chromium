@@ -46,6 +46,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -162,7 +163,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, queryState);
         if (!queryState.isSearching()) {
             mModelList.clear();
-            startQuery("");
+            startQuery(mQueryState.getQuery());
         }
     }
 
@@ -232,6 +233,16 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
     }
 
+    void deleteVisits(List<ClusterVisit> visits) {
+        for (int i = 0; i < visits.size(); i++) {
+            mDelegate.markVisitForRemoval(visits.get(i));
+        }
+        mDelegate.removeMarkedItems();
+
+        mModelList.clear();
+        startQuery(mQueryState.getQuery());
+    }
+
     private void queryComplete(HistoryClustersResult result) {
         boolean isQueryLess = !mQueryState.isSearching();
         if (isQueryLess) {
@@ -259,23 +270,27 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     new ArrayList<>(cluster.getVisits().size() + 1);
             for (ClusterVisit visit : cluster.getVisits()) {
                 PropertyModel visitModel =
-                        new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-                visitModel.set(HistoryClustersItemProperties.TITLE,
-                        new SpannableString(
-                                applyBolding(visit.getTitle(), visit.getTitleMatchPositions())));
-                visitModel.set(HistoryClustersItemProperties.URL,
-                        applyBolding(visit.getUrlForDisplay(), visit.getUrlMatchPositions()));
-                visitModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                        (v) -> onClusterVisitClicked((SelectableItemView) v, visit));
-                visitModel.set(HistoryClustersItemProperties.CLUSTER_VISIT, visit);
-                visitModel.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
+                        new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
+                                .with(HistoryClustersItemProperties.TITLE,
+                                        new SpannableString(applyBolding(
+                                                visit.getTitle(), visit.getTitleMatchPositions())))
+                                .with(HistoryClustersItemProperties.URL,
+                                        applyBolding(visit.getUrlForDisplay(),
+                                                visit.getUrlMatchPositions()))
+                                .with(HistoryClustersItemProperties.CLICK_HANDLER,
+                                        (v) -> onClusterVisitClicked((SelectableItemView) v, visit))
+                                .with(HistoryClustersItemProperties.CLUSTER_VISIT, visit)
+                                .with(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE)
+                                .with(HistoryClustersItemProperties.END_BUTTON_CLICK_HANDLER,
+                                        (v) -> deleteVisits(Arrays.asList(visit)))
+                                .build();
                 if (mLargeIconBridge != null) {
-                    mLargeIconBridge.getLargeIconForUrl(visit.getGURL(), mFaviconSize,
+                    mLargeIconBridge.getLargeIconForUrl(visit.getNormalizedUrl(), mFaviconSize,
                             (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                                     int iconType) -> {
                                 Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon,
-                                        visit.getGURL(), fallbackColor, mIconGenerator, mResources,
-                                        mFaviconSize);
+                                        visit.getNormalizedUrl(), fallbackColor, mIconGenerator,
+                                        mResources, mFaviconSize);
                                 visitModel.set(
                                         HistoryClustersItemProperties.ICON_DRAWABLE, drawable);
                             });
@@ -287,11 +302,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             List<String> relatedSearches = cluster.getRelatedSearches();
             if (!relatedSearches.isEmpty()) {
                 PropertyModel relatedSearchesModel =
-                        new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-                relatedSearchesModel.set(
-                        HistoryClustersItemProperties.RELATED_SEARCHES, relatedSearches);
-                relatedSearchesModel.set(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
-                        this::onRelatedSearchesChipClicked);
+                        new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
+                                .with(HistoryClustersItemProperties.RELATED_SEARCHES,
+                                        relatedSearches)
+                                .with(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
+                                        this::onRelatedSearchesChipClicked)
+                                .build();
                 ListItem relatedSearchesItem =
                         new ListItem(ItemType.RELATED_SEARCHES, relatedSearchesModel);
                 visitsAndRelatedSearches.add(relatedSearchesItem);
@@ -344,7 +360,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         if (mSelectionDelegate.isSelectionEnabled()) {
             view.onLongClick(view);
         } else {
-            navigateToUrl(clusterVisit.getGURL(), false, false);
+            navigateToUrl(clusterVisit.getNormalizedUrl(), false, false);
         }
     }
 

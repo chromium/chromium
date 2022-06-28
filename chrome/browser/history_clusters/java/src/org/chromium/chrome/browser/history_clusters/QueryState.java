@@ -21,7 +21,7 @@ public class QueryState {
     }
 
     public static QueryState forQueryless() {
-        return new QueryState(null, false);
+        return new QueryState("", false);
     }
 
     private QueryState(String query, boolean isSearching) {

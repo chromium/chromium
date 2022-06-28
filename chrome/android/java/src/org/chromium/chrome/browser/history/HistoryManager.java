@@ -35,6 +35,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history_clusters.ClusterVisit;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
 import org.chromium.chrome.browser.history_clusters.QueryState;
@@ -84,6 +85,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private final Activity mActivity;
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
+    private final HistoryProvider mHistoryProvider;
     private ViewGroup mRootView;
     private ViewGroup mContentView;
     private SelectableListLayout<HistoryItem> mSelectableListLayout;
@@ -112,16 +114,18 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @param showHistoryClustersImmediately Whether the Journeys (history clusters) UI should be
      *         shown immediately instead of the normal history UI.
      * @param historyClustersQuery The preset query that the Journeys UI should use.
+     * @param historyProvider Provider of methods for querying and managing browsing history.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(@NonNull Activity activity, boolean isSeparateActivity,
             @NonNull SnackbarManager snackbarManager, boolean isIncognito,
             @Nullable Supplier<Tab> tabSupplier, boolean showHistoryClustersImmediately,
-            String historyClustersQuery) {
+            String historyClustersQuery, HistoryProvider historyProvider) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
         mIsIncognito = isIncognito;
+        mHistoryProvider = historyProvider;
 
         recordUserAction("Show");
         // If incognito placeholder is shown, we don't need to create History UI elements.
@@ -198,6 +202,27 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 public ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
                     return mShouldShowClearBrowsingDataSupplier;
                 }
+
+                @Override
+                public void markVisitForRemoval(ClusterVisit clusterVisit) {
+                    HistoryItem item = new HistoryItem(clusterVisit.getRawUrl(), null, null,
+                            clusterVisit.getTimestamp(), new long[] {clusterVisit.getTimestamp()},
+                            false);
+                    mHistoryProvider.markItemForRemoval(item);
+                    for (int i = 0; i < clusterVisit.getDuplicateVisits().size(); i++) {
+                        ClusterVisit.DuplicateVisit duplicateVisit =
+                                clusterVisit.getDuplicateVisits().get(i);
+                        item = new HistoryItem(duplicateVisit.getUrl(), null, null,
+                                duplicateVisit.getTimestamp(),
+                                new long[] {duplicateVisit.getTimestamp()}, false);
+                        mHistoryProvider.markItemForRemoval(item);
+                    }
+                }
+
+                @Override
+                public void removeMarkedItems() {
+                    mHistoryProvider.removeItems();
+                }
             };
 
             mHistoryClustersCoordinator =
@@ -218,7 +243,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity,
                 isIncognito, shouldShowInfoHeader, /* shouldShowClearData */ true,
                 /* hostName */ null, mSelectionDelegate, tabSupplier, historyClustersEnabled,
-                (vg) -> buildToggleView(vg, HISTORY_TAB_INDEX));
+                (vg) -> buildToggleView(vg, HISTORY_TAB_INDEX), historyProvider);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 

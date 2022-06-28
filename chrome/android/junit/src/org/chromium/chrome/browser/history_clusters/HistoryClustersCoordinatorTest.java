@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history_clusters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -24,6 +25,7 @@ import androidx.test.core.app.ActivityScenario;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,6 +60,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /** Unit tests for HistoryClustersCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -130,6 +133,11 @@ public class HistoryClustersCoordinatorTest {
         public ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
             return mShouldShowClearBrowsingDataSupplier;
         }
+
+        @Override
+        public void markVisitForRemoval(ClusterVisit clusterVisit) {
+            mVisitsForRemoval.add(clusterVisit);
+        }
     }
 
     @Rule
@@ -168,6 +176,7 @@ public class HistoryClustersCoordinatorTest {
     private ClusterVisit mVisit2;
     private TestHistoryClustersDelegate mHistoryClustersDelegate =
             new TestHistoryClustersDelegate();
+    private List<ClusterVisit> mVisitsForRemoval = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -177,10 +186,10 @@ public class HistoryClustersCoordinatorTest {
         HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
         doReturn(mPromise).when(mHistoryClustersBridge).queryClusters(anyString());
 
-        mVisit1 = new ClusterVisit(
-                1.0F, mGurl1, "Title 1", "foo.com", new ArrayList<>(), new ArrayList<>());
-        mVisit2 = new ClusterVisit(
-                1.0F, mGurl2, "Title 2", "bar.com", new ArrayList<>(), new ArrayList<>());
+        mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1", "foo.com", new ArrayList<>(),
+                new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
+        mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "bar.com", new ArrayList<>(),
+                new ArrayList<>(), mGurl2, 123L, new ArrayList<>());
 
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
@@ -309,6 +318,20 @@ public class HistoryClustersCoordinatorTest {
         mHistoryClustersCoordinator.onMenuItemClick(menuItem);
         assertTrue(mHistoryClustersDelegate.shouldShowPrivacyDisclaimerSupplier().get());
         assertEquals(menuItem.getTitle(), mActivity.getResources().getString(R.string.hide_info));
+    }
+
+    @Test
+    public void testDeleteMenuItem() {
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+
+        mHistoryClustersCoordinator.getSelectionDelegateForTesting().setSelectedItems(
+                new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
+        mHistoryClustersCoordinator.onMenuItemClick(
+                toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id));
+
+        assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit2));
     }
 
     private static void resetStaticState() {
