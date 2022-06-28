@@ -659,7 +659,7 @@ WizardController::CreateScreens() {
   }
 
   append(std::make_unique<AutoEnrollmentCheckScreen>(
-      oobe_ui->GetView<AutoEnrollmentCheckScreenHandler>(),
+      oobe_ui->GetView<AutoEnrollmentCheckScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnAutoEnrollmentCheckScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -1514,8 +1514,10 @@ void WizardController::OnUpdateCompleted() {
   ShowAutoEnrollmentCheckScreen();
 }
 
-void WizardController::OnAutoEnrollmentCheckScreenExit() {
-  OnScreenExit(AutoEnrollmentCheckScreenView::kScreenId, kDefaultExitReason);
+void WizardController::OnAutoEnrollmentCheckScreenExit(
+    AutoEnrollmentCheckScreen::Result result) {
+  OnScreenExit(AutoEnrollmentCheckScreenView::kScreenId,
+               AutoEnrollmentCheckScreen::GetResultString(result));
   VLOG(1) << "WizardController::OnAutoEnrollmentCheckScreenExit()";
   // Check whether the device is disabled. OnDeviceDisabledChecked() will be
   // invoked when the result of this check is known. Until then, the current

@@ -19,23 +19,12 @@ namespace chromeos {
 AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler()
     : BaseScreenHandler(kScreenId) {}
 
-AutoEnrollmentCheckScreenHandler::~AutoEnrollmentCheckScreenHandler() {
-  if (delegate_)
-    delegate_->OnViewDestroyed(this);
-}
-
 void AutoEnrollmentCheckScreenHandler::Show() {
   if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
   ShowInWebUI();
-}
-
-void AutoEnrollmentCheckScreenHandler::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
 }
 
 void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
@@ -47,9 +36,6 @@ void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
 }
 
 void AutoEnrollmentCheckScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !delegate_)
-    return;
-
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

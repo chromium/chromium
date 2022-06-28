@@ -13,9 +13,10 @@ namespace ash {
 
 class MockAutoEnrollmentCheckScreen : public AutoEnrollmentCheckScreen {
  public:
-  MockAutoEnrollmentCheckScreen(AutoEnrollmentCheckScreenView* view,
-                                ErrorScreen* error_screen,
-                                const base::RepeatingClosure& exit_callback);
+  MockAutoEnrollmentCheckScreen(
+      base::WeakPtr<AutoEnrollmentCheckScreenView> view,
+      ErrorScreen* error_screen,
+      const base::RepeatingCallback<void(Result result)>& exit_callback);
   ~MockAutoEnrollmentCheckScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
@@ -30,13 +31,7 @@ class MockAutoEnrollmentCheckScreenView : public AutoEnrollmentCheckScreenView {
   MockAutoEnrollmentCheckScreenView();
   ~MockAutoEnrollmentCheckScreenView() override;
 
-  void SetDelegate(Delegate* screen) override;
-
-  MOCK_METHOD(void, MockSetDelegate, (Delegate * screen));
   MOCK_METHOD(void, Show, ());
-
- private:
-  Delegate* screen_ = nullptr;
 };
 
 }  // namespace ash

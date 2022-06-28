@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -326,7 +327,8 @@ class WizardController : public OobeUI::Observer {
   void OnEulaAccepted(bool usage_statistics_reporting_enabled);
   void OnUpdateScreenExit(UpdateScreen::Result result);
   void OnUpdateCompleted();
-  void OnAutoEnrollmentCheckScreenExit();
+  void OnAutoEnrollmentCheckScreenExit(
+      AutoEnrollmentCheckScreen::Result result);
   void OnEnrollmentScreenExit(EnrollmentScreen::Result result);
   void OnEnrollmentDone();
   void OnEnableAdbSideloadingScreenExit();

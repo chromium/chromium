@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
@@ -25,22 +26,27 @@ namespace ash {
 // keeping track of current auto-enrollment state and displaying and updating
 // the error screen upon failures. Similar to a screen controller, but it
 // doesn't actually drive a dedicated screen.
-class AutoEnrollmentCheckScreen
-    : public AutoEnrollmentCheckScreenView::Delegate,
-      public BaseScreen,
-      public NetworkPortalDetector::Observer {
+class AutoEnrollmentCheckScreen : public BaseScreen,
+                                  public NetworkPortalDetector::Observer {
  public:
+  enum class Result {
+    NEXT,
+    NOT_APPLICABLE,
+  };
   using TView = AutoEnrollmentCheckScreenView;
 
-  AutoEnrollmentCheckScreen(AutoEnrollmentCheckScreenView* view,
-                            ErrorScreen* error_screen,
-                            const base::RepeatingClosure& exit_callback);
+  AutoEnrollmentCheckScreen(
+      base::WeakPtr<AutoEnrollmentCheckScreenView> view,
+      ErrorScreen* error_screen,
+      const base::RepeatingCallback<void(Result result)>& exit_callback);
 
   AutoEnrollmentCheckScreen(const AutoEnrollmentCheckScreen&) = delete;
   AutoEnrollmentCheckScreen& operator=(const AutoEnrollmentCheckScreen&) =
       delete;
 
   ~AutoEnrollmentCheckScreen() override;
+
+  static std::string GetResultString(Result result);
 
   // Clears the cached state causing the forced enrollment check to be retried.
   void ClearState();
@@ -50,12 +56,10 @@ class AutoEnrollmentCheckScreen
     auto_enrollment_controller_ = auto_enrollment_controller;
   }
 
-  void set_exit_callback_for_testing(const base::RepeatingClosure& callback) {
+  void set_exit_callback_for_testing(
+      const base::RepeatingCallback<void(Result result)>& callback) {
     exit_callback_ = callback;
   }
-
-  // AutoEnrollmentCheckScreenView::Delegate implementation:
-  void OnViewDestroyed(AutoEnrollmentCheckScreenView* view) override;
 
   // NetworkPortalDetector::Observer implementation:
   void OnPortalDetectionCompleted(
@@ -66,11 +70,12 @@ class AutoEnrollmentCheckScreen
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  bool MaybeSkip(WizardContext* context) override;
 
   // Runs `exit_callback_` - used to prevent `exit_callback_` from running after
   // `this` has been destroyed (by wrapping it with a callback bound to a weak
   // ptr).
-  void RunExitCallback() { exit_callback_.Run(); }
+  void RunExitCallback(Result result) { exit_callback_.Run(result); }
 
  private:
   // Handles update notifications regarding the auto-enrollment check.
@@ -113,10 +118,10 @@ class AutoEnrollmentCheckScreen
   // necessary".
   bool ShouldBlockOnServerError() const;
 
-  AutoEnrollmentCheckScreenView* view_;
+  base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
   ErrorScreen* error_screen_;
-  base::RepeatingClosure exit_callback_;
-  AutoEnrollmentController* auto_enrollment_controller_;
+  base::RepeatingCallback<void(Result result)> exit_callback_;
+  base::raw_ptr<AutoEnrollmentController> auto_enrollment_controller_ = nullptr;
 
   base::CallbackListSubscription auto_enrollment_progress_subscription_;
 

@@ -29,28 +29,33 @@ NetworkPortalDetector::CaptivePortalStatus GetCaptivePortalStatus() {
 
 }  // namespace
 
+// static
+std::string AutoEnrollmentCheckScreen::GetResultString(Result result) {
+  switch (result) {
+    case Result::NEXT:
+      return "Next";
+    case Result::NOT_APPLICABLE:
+      return BaseScreen::kNotApplicable;
+  }
+}
+
 AutoEnrollmentCheckScreen::AutoEnrollmentCheckScreen(
-    AutoEnrollmentCheckScreenView* view,
+    base::WeakPtr<AutoEnrollmentCheckScreenView> view,
     ErrorScreen* error_screen,
-    const base::RepeatingClosure& exit_callback)
+    const base::RepeatingCallback<void(Result result)>& exit_callback)
     : BaseScreen(AutoEnrollmentCheckScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
       auto_enrollment_controller_(nullptr),
       captive_portal_status_(
           NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN),
       auto_enrollment_state_(policy::AUTO_ENROLLMENT_STATE_IDLE),
-      histogram_helper_(new ErrorScreensHistogramHelper("Enrollment")) {
-  if (view_)
-    view_->SetDelegate(this);
-}
+      histogram_helper_(new ErrorScreensHistogramHelper("Enrollment")) {}
 
 AutoEnrollmentCheckScreen::~AutoEnrollmentCheckScreen() {
   network_portal_detector::GetInstance()->RemoveObserver(this);
-  if (view_)
-    view_->SetDelegate(NULL);
 }
 
 void AutoEnrollmentCheckScreen::ClearState() {
@@ -63,19 +68,14 @@ void AutoEnrollmentCheckScreen::ClearState() {
 }
 
 void AutoEnrollmentCheckScreen::ShowImpl() {
-  // If the decision got made already, don't show the screen at all.
-  if (!policy::AutoEnrollmentTypeChecker::IsEnabled() || IsCompleted()) {
-    SignalCompletion();
-    return;
-  }
-
   // Start from a clean slate.
   ClearState();
 
   // Bring up the screen. It's important to do this before updating the UI,
   // because the latter may switch to the error screen, which needs to stay on
   // top.
-  view_->Show();
+  if (view_)
+    view_->Show();
   histogram_helper_->OnScreenShow();
 
   // Set up state change observers.
@@ -116,12 +116,17 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   network_portal_detector::GetInstance()->StartPortalDetection();
 }
 
-void AutoEnrollmentCheckScreen::HideImpl() {}
+void AutoEnrollmentCheckScreen::HideImpl() {
+  network_portal_detector::GetInstance()->RemoveObserver(this);
+}
 
-void AutoEnrollmentCheckScreen::OnViewDestroyed(
-    AutoEnrollmentCheckScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
+bool AutoEnrollmentCheckScreen::MaybeSkip(WizardContext* context) {
+  // If the decision got made already, don't show the screen at all.
+  if (!policy::AutoEnrollmentTypeChecker::IsEnabled() || IsCompleted()) {
+    RunExitCallback(Result::NOT_APPLICABLE);
+    return true;
+  }
+  return false;
 }
 
 void AutoEnrollmentCheckScreen::OnPortalDetectionCompleted(
@@ -268,7 +273,7 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
   // finish their work before.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&AutoEnrollmentCheckScreen::RunExitCallback,
-                                weak_ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr(), Result::NEXT));
 }
 
 bool AutoEnrollmentCheckScreen::IsCompleted() const {
