@@ -320,6 +320,13 @@ NGFragmentItemsBuilder::AddPreviousItems(
                 line_child.OffsetInContainerFragment() - line_box_bounds.offset,
                 line_child.Size()),
             line_child);
+
+        // Be sure to pick the post-layout fragment.
+        const NGFragmentItem& new_item = items_.back().item;
+        if (const NGPhysicalBoxFragment* box = new_item.BoxFragment()) {
+          box = box->PostLayout();
+          new_item.GetMutableForCloning().ReplaceBoxFragment(*box);
+        }
       }
       if (++line_count == max_lines)
         break;
