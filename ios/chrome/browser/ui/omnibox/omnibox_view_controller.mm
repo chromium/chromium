@@ -80,10 +80,10 @@ const CGFloat kClearButtonSize = 28.0f;
 // Stores whether the clipboard currently stores copied content.
 @property(nonatomic, assign) BOOL hasCopiedContent;
 // Stores the current content type in the clipboard. This is only valid if
-// |hasCopiedContent| is YES.
+// `hasCopiedContent` is YES.
 @property(nonatomic, assign) ClipboardContentType copiedContentType;
 // Stores whether the cached clipboard state is currently being updated. See
-// |-updateCachedClipboardState| for more information.
+// `-updateCachedClipboardState` for more information.
 @property(nonatomic, assign) BOOL isUpdatingCachedClipboardState;
 
 @end
@@ -501,12 +501,12 @@ const CGFloat kClearButtonSize = 28.0f;
 
 // Omnibox uses a custom clear button. It has a custom tint and image, but
 // otherwise it should act exactly like a system button. To achieve this, a
-// custom button is used as the |rightView|. Textfield's setRightViewMode: is
+// custom button is used as the `rightView`. Textfield's setRightViewMode: is
 // used to make the button invisible when the textfield is empty; the visibility
 // is updated on textfield text changes and clear button presses.
 - (void)setupClearButton {
   // Do not use the system clear button. Use a custom "right view" instead.
-  // Note that |rightView| is an incorrect name, it's really a trailing view.
+  // Note that `rightView` is an incorrect name, it's really a trailing view.
   [self.textField setClearButtonMode:UITextFieldViewModeNever];
   [self.textField setRightViewMode:UITextFieldViewModeAlways];
 

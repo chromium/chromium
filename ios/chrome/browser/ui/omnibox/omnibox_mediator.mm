@@ -134,8 +134,8 @@
 }
 
 // Loads a favicon for a given page URL.
-// |pageURL| is url for the page that needs a favicon
-// |completion| handler might be called multiple
+// `pageURL` is url for the page that needs a favicon
+// `completion` handler might be called multiple
 // times, synchronously and asynchronously. It will always be called on the main
 // thread.
 - (void)loadFaviconByPageURL:(GURL)pageURL
@@ -166,7 +166,7 @@
 }
 
 // Loads a favicon for the current default search engine.
-// |completion| handler might be called multiple times, synchronously
+// `completion` handler might be called multiple times, synchronously
 // and asynchronously. It will always be called on the main
 // thread.
 - (void)loadDefaultSearchEngineFaviconWithCompletion:

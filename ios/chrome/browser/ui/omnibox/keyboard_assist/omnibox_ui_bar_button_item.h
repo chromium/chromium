@@ -10,7 +10,7 @@
 @protocol OmniboxAssistiveKeyboardDelegate;
 
 // UIBarButtonItem wrapper that calls OmniboxAssistiveKeyboardDelegate's
-// |-keyPressed:| when pressed.
+// `-keyPressed:` when pressed.
 @interface OmniboxUIBarButtonItem : UIBarButtonItem
 
 // Default initializer.

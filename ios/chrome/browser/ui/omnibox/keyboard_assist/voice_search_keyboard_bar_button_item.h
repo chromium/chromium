@@ -14,7 +14,7 @@ class VoiceSearchAvailability;
 // unavailable.
 @interface VoiceSearchKeyboardBarButtonItem : UIBarButtonItem
 
-// Initializer for an item that disables itself when |availability| returns
+// Initializer for an item that disables itself when `availability` returns
 // false for IsVoiceSearchAvailable().
 - (instancetype)initWithImage:(UIImage*)image
                         style:(UIBarButtonItemStyle)style

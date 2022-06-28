@@ -189,7 +189,7 @@
 
 - (void)insertTextToOmnibox:(NSString*)text {
   [self.textField insertTextWhileEditing:text];
-  // The call to |setText| shouldn't be needed, but without it the "Go" button
+  // The call to `setText` shouldn't be needed, but without it the "Go" button
   // of the keyboard is disabled.
   [self.textField setText:text];
   // Notify the accessibility system to start reading the new contents of the

@@ -97,7 +97,7 @@ UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType iconType) {
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
-// Converts the |security_level| to an appropriate security icon type.
+// Converts the `security_level` to an appropriate security icon type.
 LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     security_state::SecurityLevel security_level) {
   switch (security_level) {
@@ -115,7 +115,7 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
   }
 }
 
-// Converts the |security_level| to an appropriate icon in "always template"
+// Converts the `security_level` to an appropriate icon in "always template"
 // rendering mode.
 UIImage* GetLocationBarSecurityIconForSecurityState(
     security_state::SecurityLevel security_level) {

@@ -42,8 +42,8 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 #pragma mark - OmniboxContainerView
 
 @interface OmniboxContainerView ()
-// Constraints the leading textfield side to the leading of |self|.
-// Active when the |leadingView| is nil or hidden.
+// Constraints the leading textfield side to the leading of `self`.
+// Active when the `leadingView` is nil or hidden.
 @property(nonatomic, strong) NSLayoutConstraint* leadingTextfieldConstraint;
 // The leading image view. Used for autocomplete icons.
 @property(nonatomic, strong) UIImageView* leadingImageView;

@@ -77,7 +77,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
      autocompleteLength:(NSUInteger)autocompleteLength;
 // Override deleteBackward so that backspace can clear query refinement chips.
 - (void)deleteBackward;
-// Returns the layers affected by animations added by |-animateFadeWithStyle:|.
+// Returns the layers affected by animations added by `-animateFadeWithStyle:`.
 - (NSArray*)fadeAnimationLayers;
 // Font that should be used in current size class.
 - (UIFont*)currentFont;
@@ -311,8 +311,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 #pragma mark - UI Refresh animation public helpers
 
 - (CGFloat)offsetForString:(NSString*)string {
-  // Sometimes |string| is not contained in self.text, for example for
-  // https://en.m.wikipedia.org/foo the |string| might be "en.wikipedia.org" if
+  // Sometimes `string` is not contained in self.text, for example for
+  // https://en.m.wikipedia.org/foo the `string` might be "en.wikipedia.org" if
   // the scheme and the "m." trivial subdomain are stripped. In this case,
   // default to a reasonable prefix string to give a plausible offset.
   NSString* prefixString = @"https://";
@@ -428,7 +428,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
   // When editing, use the default text color for all text.
   if (self.editing) {
-    // Hide the text when the |_selection| label is displayed.
+    // Hide the text when the `_selection` label is displayed.
     UIColor* textColor = _selection ? UIColor.clearColor : _displayedTextColor;
     [mutableText addAttribute:NSForegroundColorAttributeName
                         value:textColor
@@ -866,7 +866,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       [text attributedSubstringFromRange:fieldRange];
 
   if (autocompleteLength > 0) {
-    // Creating |autocompleteText| from |[text string]| has the added bonus of
+    // Creating `autocompleteText` from `[text string]` has the added bonus of
     // removing all the previously set attributes. This way the autocomplete
     // text doesn't have a highlighted protocol, etc.
     NSMutableAttributedString* autocompleteText =
@@ -892,11 +892,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // update the attributed text here is to change the colors of the omnibox
   // (such as host, protocol) when !self.editing, but also to hide real
   // UITextField text under the _selection text when self.editing. Since we will
-  // correct the omnibox editing text color anytime |self.text| is different
-  // than |fieldText|, it seems it's OK to skip calling self.attributedText
+  // correct the omnibox editing text color anytime `self.text` is different
+  // than `fieldText`, it seems it's OK to skip calling self.attributedText
   // during the condition added below. If we change mobile omnibox to match
   // desktop and also color the omnibox while self.editing, this workaround will
-  // no longer work. The check for |autocompleteLength| reduces the scope of
+  // no longer work. The check for `autocompleteLength` reduces the scope of
   // this workaround, without it having introduced crbug.com/740075.
   BOOL updateText = YES;
   if (experimental_flags::IsThirdPartyKeyboardWorkaroundEnabled()) {
@@ -963,7 +963,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 // Aligns the selection UILabel to match the editing rect bounds. Takes iOS
 // version-specific text rendering differences into account.
 - (void)layoutSelectionViewWithNewEditingRectBounds:(CGRect)newBounds {
-  // The goal is to visually align the _selection label and the |self| textfield
+  // The goal is to visually align the _selection label and the `self` textfield
   // to avoid text jumping when inline autocomplete is shown or hidden.
   newBounds.origin.y -= kUILabelUITextfieldBaselineDeltaInPoints;
 

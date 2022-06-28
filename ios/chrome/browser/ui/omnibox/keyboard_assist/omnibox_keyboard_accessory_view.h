@@ -14,8 +14,8 @@
 // and buttons to start Voice Search or a Camera Search.
 @interface OmniboxKeyboardAccessoryView : UIInputView <UIInputViewAudioFeedback>
 
-// Designated initializer. |buttonTitles| lists the titles of the shortcut
-// buttons. |delegate| receives the various events triggered in the view. Not
+// Designated initializer. `buttonTitles` lists the titles of the shortcut
+// buttons. `delegate` receives the various events triggered in the view. Not
 // retained, and can be nil.
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate

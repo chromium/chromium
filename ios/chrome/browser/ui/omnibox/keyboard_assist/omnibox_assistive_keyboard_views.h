@@ -9,9 +9,9 @@
 
 @protocol OmniboxAssistiveKeyboardDelegate;
 
-// Adds a keyboard assistive view [1] to |textField|. The assistive view
-// contains among other things a button to quickly enter |dotComTLD|, and the
-// callbacks are handled via |delegate|. |dotComTLD| must not be nil.
+// Adds a keyboard assistive view [1] to `textField`. The assistive view
+// contains among other things a button to quickly enter `dotComTLD`, and the
+// callbacks are handled via `delegate`. `dotComTLD` must not be nil.
 //
 // [1]
 // On iPhone the assistive view is a keyboard accessory view.

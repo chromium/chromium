@@ -45,7 +45,7 @@ class OmniboxTextFieldTest : public PlatformTest {
     EXPECT_EQ(expectedRect.size.height, actualRect.size.height);
   }
 
-  // Verifies that the |selectedNSRange| function properly converts from opaque
+  // Verifies that the `selectedNSRange` function properly converts from opaque
   // UITextRanges to NSRanges.  This function selects blocks of text in the text
   // field and compares the field's actual selected text to the converted
   // NSRange.
@@ -56,9 +56,9 @@ class OmniboxTextFieldTest : public PlatformTest {
     [textfield_ becomeFirstResponder];
     ASSERT_TRUE([textfield_ isFirstResponder]);
 
-    // |i| and |j| hold the start and end offsets of the range that is currently
+    // `i` and `j` hold the start and end offsets of the range that is currently
     // being tested.  This function iterates through all possible combinations
-    // of |i| and |j|.
+    // of `i` and `j`.
     NSInteger i = 0;
     NSInteger j = i + 1;
     UITextPosition* beginning = [textfield_ beginningOfDocument];
@@ -67,10 +67,10 @@ class OmniboxTextFieldTest : public PlatformTest {
                                   offset:i];
 
     // In order to avoid making any assumptions about the length of the text in
-    // the field, this test operates by incrementing the |i| and |j| offsets and
-    // converting them to opaque UITextPositions.  If either |i| or |j| are
+    // the field, this test operates by incrementing the `i` and `j` offsets and
+    // converting them to opaque UITextPositions.  If either `i` or `j` are
     // invalid offsets for the current field text,
-    // |positionFromPosition:offset:| is documented to return nil.  This is used
+    // `positionFromPosition:offset:` is documented to return nil.  This is used
     // as a signal to stop incrementing that offset and reset (or end the test).
     while (start) {
       UITextPosition* end =
@@ -91,14 +91,14 @@ class OmniboxTextFieldTest : public PlatformTest {
         NSString* uitext = [textfield_ textInRange:uirange];
         EXPECT_NSEQ(nstext, uitext);
 
-        // Increment |j| and |end| for the next iteration of the inner while
+        // Increment `j` and `end` for the next iteration of the inner while
         // loop.
         ++j;
         end = [textfield_ positionFromPosition:beginning offset:j];
       }
 
-      // Increment |i| and |start| for the next iteration of the outer while
-      // loop.  This also requires |j| to be reset.
+      // Increment `i` and `start` for the next iteration of the outer while
+      // loop.  This also requires `j` to be reset.
       ++i;
       j = i + 1;
       start = [textfield_ positionFromPosition:beginning offset:i];
