@@ -120,9 +120,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   }
   if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
     match_result.SetDependsOnRemContainerQueries();
-  if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)
-    depends_on_font_ = true;
   results_.Set(&query, Result{result, change});
+  unit_flags_ |= unit_flags;
   return result;
 }
 
@@ -190,7 +189,7 @@ void ContainerQueryEvaluator::SetData(Document& document,
 void ContainerQueryEvaluator::ClearResults() {
   results_.clear();
   referenced_by_unit_ = false;
-  depends_on_font_ = false;
+  unit_flags_ = 0;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
@@ -207,10 +206,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
   return change;
 }
 
+void ContainerQueryEvaluator::RootFontChanged(Document& document,
+                                              Element& container) {
+  if (!(unit_flags_ & MediaQueryExpValue::kRootFontRelative))
+    return;
+  if (!media_query_evaluator_)
+    return;
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      document, container, existing_values.Width(), existing_values.Height());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+  font_dirty_ = true;
+}
+
 void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style) {
-  if (!depends_on_font_ || font_dirty_)
+  if (!(unit_flags_ & MediaQueryExpValue::kFontRelative) || font_dirty_)
     return;
   font_dirty_ = old_style.GetFont() != new_style.GetFont();
 }

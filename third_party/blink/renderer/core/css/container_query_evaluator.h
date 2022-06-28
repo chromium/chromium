@@ -65,6 +65,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
                           PhysicalSize,
                           PhysicalAxes contained_axes);
 
+  void RootFontChanged(Document&, Element& container);
   void MarkFontDirtyIfNeeded(const ComputedStyle& old_style,
                              const ComputedStyle& new_style);
 
@@ -101,7 +102,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
   PhysicalAxes contained_axes_;
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   bool referenced_by_unit_ = false;
-  bool depends_on_font_ = false;
+  // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
+  // ContainerQueryEvaluator.
+  unsigned unit_flags_ = 0;
   bool font_dirty_ = false;
 };
 

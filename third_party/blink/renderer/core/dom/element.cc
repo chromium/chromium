@@ -4247,6 +4247,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
       } else if (evaluator) {
         DCHECK(old_style);
         evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
+
+        if (child_change.RecalcDescendants()) {
+          // If we are recalculating all descendants, the root font *may*
+          // have changed. See call to `UpdateRemUnits` higher up in this
+          // function.
+          evaluator->RootFontChanged(GetDocument(), *this);
+        }
       }
     }
   }

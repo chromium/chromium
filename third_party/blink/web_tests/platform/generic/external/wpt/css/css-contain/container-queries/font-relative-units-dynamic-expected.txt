@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS em units respond to changes
-FAIL rem units respond to changes assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS ex units respond to changes
-PASS ch units respond to changes
-Harness: the test ran to completion.
-

@@ -88,6 +88,8 @@ class CORE_EXPORT MediaQueryEvaluator final
 
   ~MediaQueryEvaluator();
 
+  const MediaValues& GetMediaValues() const { return *media_values_; }
+
   bool MediaTypeMatch(const String& media_type_to_match) const;
 
   // Evaluates a list of media queries.
