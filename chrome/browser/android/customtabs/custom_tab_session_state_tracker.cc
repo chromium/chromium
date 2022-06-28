@@ -31,7 +31,7 @@ void CustomTabSessionStateTracker::RecordCustomTabSession(
   custom_tab_session_->set_time_sec(time_sec);
   custom_tab_session_->set_package_name(package_name);
   custom_tab_session_->set_session_duration_sec(session_duration);
-  // TODO(crbug.com/1334500): add set_did_user_interact as well.
+  custom_tab_session_->set_did_user_interact(did_user_interact_);
   custom_tab_session_->set_was_user_closed(was_user_closed);
   custom_tab_session_->set_is_partial(is_partial);
 }
@@ -42,6 +42,10 @@ CustomTabSessionStateTracker::GetSession() {
   has_custom_tab_session_ = false;
 
   return std::move(custom_tab_session_);
+}
+
+void CustomTabSessionStateTracker::OnUserInteraction() {
+  did_user_interact_ = true;
 }
 
 CustomTabSessionStateTracker::CustomTabSessionStateTracker() = default;

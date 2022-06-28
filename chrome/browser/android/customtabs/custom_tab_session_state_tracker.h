@@ -29,6 +29,7 @@ class CustomTabSessionStateTracker {
 
   bool HasCustomTabSessionState() const;
   std::unique_ptr<metrics::CustomTabSessionProto> GetSession();
+  void OnUserInteraction();
 
  private:
   friend class base::NoDestructor<CustomTabSessionStateTracker>;
@@ -37,6 +38,7 @@ class CustomTabSessionStateTracker {
   ~CustomTabSessionStateTracker();
 
   bool has_custom_tab_session_;
+  bool did_user_interact_;
 
   std::unique_ptr<metrics::CustomTabSessionProto> custom_tab_session_;
 };
