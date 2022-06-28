@@ -708,9 +708,9 @@ void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
     return;
   }
   int id = message.FindIntKey(kFrontendHostId).value_or(0);
-  std::vector<base::Value> params_list;
+  base::Value::List params_list;
   if (params)
-    params_list = std::move(*params).TakeListDeprecated();
+    params_list = std::move(params->GetList());
   embedder_message_dispatcher_->Dispatch(
       base::BindOnce(&DevToolsUIBindings::SendMessageAck,
                      weak_factory_.GetWeakPtr(), id),
