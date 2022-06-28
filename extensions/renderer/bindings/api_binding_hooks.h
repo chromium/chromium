@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
 
 namespace gin {
@@ -46,16 +45,12 @@ class APIBindingHooks {
 
     explicit RequestResult(ResultCode code);
     RequestResult(ResultCode code, v8::Local<v8::Function> custom_callback);
-    RequestResult(ResultCode code,
-                  v8::Local<v8::Function> custom_callback,
-                  binding::ResultModifierFunction result_modifier);
-    explicit RequestResult(std::string invocation_error);
-    RequestResult(RequestResult&& other);
+    RequestResult(std::string invocation_error);
+    RequestResult(const RequestResult& other);
     ~RequestResult();
 
     ResultCode code;
     v8::Local<v8::Function> custom_callback;
-    binding::ResultModifierFunction result_modifier;
     v8::Local<v8::Value> return_value;  // Only valid if code == HANDLED.
     std::string error;
   };

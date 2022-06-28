@@ -247,14 +247,12 @@ void CompleteHandleRequestHelper(
 // success and adds another handler function to the end of |arguments| for
 // resolving in the case of a failure. Also adds the associated promise to the
 // return on |result| if this is for a promise based request.
-void AddSuccessAndFailureCallbacks(
-    v8::Local<v8::Context> context,
-    binding::AsyncResponseType async_type,
-    APIRequestHandler& request_handler,
-    binding::ResultModifierFunction result_modifier,
-    base::WeakPtr<APIBindingHooks> weak_ptr,
-    std::vector<v8::Local<v8::Value>>* arguments,
-    APIBindingHooks::RequestResult& result) {
+void AddSuccessAndFailureCallbacks(v8::Local<v8::Context> context,
+                                   binding::AsyncResponseType async_type,
+                                   APIRequestHandler& request_handler,
+                                   base::WeakPtr<APIBindingHooks> weak_ptr,
+                                   std::vector<v8::Local<v8::Value>>* arguments,
+                                   APIBindingHooks::RequestResult& result) {
   DCHECK(!arguments->empty());
 
   // Since ParseArgumentsToV8 fills missing optional arguments with null, the
@@ -272,8 +270,7 @@ void AddSuccessAndFailureCallbacks(
   }
 
   APIRequestHandler::RequestDetails request_details =
-      request_handler.AddPendingRequest(context, async_type, response_callback,
-                                        std::move(result_modifier));
+      request_handler.AddPendingRequest(context, async_type, response_callback);
   DCHECK_EQ(async_type == binding::AsyncResponseType::kPromise,
             !request_details.promise.IsEmpty());
   result.return_value = request_details.promise;
@@ -323,17 +320,11 @@ APIBindingHooks::RequestResult::RequestResult(
     ResultCode code,
     v8::Local<v8::Function> custom_callback)
     : code(code), custom_callback(custom_callback) {}
-APIBindingHooks::RequestResult::RequestResult(
-    ResultCode code,
-    v8::Local<v8::Function> custom_callback,
-    binding::ResultModifierFunction result_modifier)
-    : code(code),
-      custom_callback(custom_callback),
-      result_modifier(std::move(result_modifier)) {}
 APIBindingHooks::RequestResult::RequestResult(std::string invocation_error)
     : code(INVALID_INVOCATION), error(std::move(invocation_error)) {}
-APIBindingHooks::RequestResult::~RequestResult() = default;
-APIBindingHooks::RequestResult::RequestResult(RequestResult&& other) = default;
+APIBindingHooks::RequestResult::~RequestResult() {}
+APIBindingHooks::RequestResult::RequestResult(const RequestResult& other) =
+    default;
 
 APIBindingHooks::APIBindingHooks(const std::string& api_name,
                                  APIRequestHandler* request_handler)
@@ -346,7 +337,6 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
     const APISignature* signature,
     std::vector<v8::Local<v8::Value>>* arguments,
     const APITypeReferenceMap& type_refs) {
-  binding::ResultModifierFunction result_modifier;
   // Easy case: a native custom hook.
   if (delegate_) {
     RequestResult result = delegate_->HandleRequest(
@@ -356,19 +346,14 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
         !result.custom_callback.IsEmpty()) {
       return result;
     }
-    // If the native hooks didn't handle the call but did set a result modifier,
-    // grab it to be able to use it along with the custom hooks below.
-    result_modifier = std::move(result.result_modifier);
   }
 
   // Harder case: looking up a custom hook registered on the context (since
   // these are JS, each context has a separate instance).
   v8::Local<v8::Object> hook_interface_object =
       GetJSHookInterfaceObject(api_name_, context, false);
-  if (hook_interface_object.IsEmpty()) {
-    return RequestResult(RequestResult::NOT_HANDLED, v8::Local<v8::Function>(),
-                         std::move(result_modifier));
-  }
+  if (hook_interface_object.IsEmpty())
+    return RequestResult(RequestResult::NOT_HANDLED);
 
   v8::Isolate* isolate = context->GetIsolate();
 
@@ -403,10 +388,8 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
 
   // If both the post validation hook and the handle request hook are empty,
   // we're done...
-  if (post_validate_hook.IsEmpty() && handle_request.IsEmpty()) {
-    return RequestResult(RequestResult::NOT_HANDLED, custom_callback,
-                         std::move(result_modifier));
-  }
+  if (post_validate_hook.IsEmpty() && handle_request.IsEmpty())
+    return RequestResult(RequestResult::NOT_HANDLED, custom_callback);
 
   // ... otherwise, we have to validate the arguments.
   APISignature::V8ParseResult parse_result =
@@ -441,16 +424,15 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
     RequestResult::ResultCode result = updated_args
                                            ? RequestResult::ARGUMENTS_UPDATED
                                            : RequestResult::NOT_HANDLED;
-    return RequestResult(result, custom_callback, std::move(result_modifier));
+    return RequestResult(result, custom_callback);
   }
 
   RequestResult result(RequestResult::HANDLED, custom_callback);
 
   if (signature->has_async_return()) {
     AddSuccessAndFailureCallbacks(context, parse_result.async_type,
-                                  *request_handler_, std::move(result_modifier),
-                                  weak_factory_.GetWeakPtr(), arguments,
-                                  result);
+                                  *request_handler_, weak_factory_.GetWeakPtr(),
+                                  arguments, result);
   }
 
   // Safe to use synchronous JS since it's in direct response to JS calling

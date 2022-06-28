@@ -201,8 +201,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
 
     APIRequestHandler::RequestDetails details =
         bindings_system_->api_system()->request_handler()->AddPendingRequest(
-            script_context->v8_context(), async_type, response_callback,
-            binding::ResultModifierFunction());
+            script_context->v8_context(), async_type, response_callback);
     OneTimeOpener& port = data->openers[new_port_id];
     port.request_id = details.request_id;
     port.routing_id = routing_id;

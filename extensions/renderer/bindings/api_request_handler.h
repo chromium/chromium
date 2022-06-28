@@ -77,8 +77,7 @@ class APIRequestHandler {
       std::unique_ptr<base::Value> arguments_list,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
-      v8::Local<v8::Function> custom_callback,
-      binding::ResultModifierFunction result_modifier);
+      v8::Local<v8::Function> custom_callback);
 
   // Adds a pending request for the request handler to manage (and complete via
   // CompleteRequest). This is used by renderer-side implementations that
@@ -86,11 +85,9 @@ class APIRequestHandler {
   // classes don't have to worry about context invalidation. Returns the details
   // of the newly-added request.
   // Note: Unlike StartRequest(), this will not track user gesture state.
-  RequestDetails AddPendingRequest(
-      v8::Local<v8::Context> context,
-      binding::AsyncResponseType async_type,
-      v8::Local<v8::Function> callback,
-      binding::ResultModifierFunction result_modifier);
+  RequestDetails AddPendingRequest(v8::Local<v8::Context> context,
+                                   binding::AsyncResponseType async_type,
+                                   v8::Local<v8::Function> callback);
 
   // Responds to the request with the given |request_id|, calling the callback
   // with the given |response| arguments.
@@ -155,7 +152,6 @@ class APIRequestHandler {
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
       v8::Local<v8::Function> custom_callback,
-      binding::ResultModifierFunction result_modifier,
       v8::Local<v8::Promise>* promise_out);
 
   // Common implementation for completing a request.
