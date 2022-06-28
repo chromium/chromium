@@ -505,4 +505,13 @@ TEST_F(ExtensionTelemetryServiceTest, StartupUploadCheck) {
     EXPECT_EQ(info, nullptr);
   }
 }
+TEST_F(ExtensionTelemetryServiceTest, PersisterThreadSafetyCheck) {
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  std::unique_ptr<ExtensionTelemetryService> telemetry_service_2 =
+      std::make_unique<ExtensionTelemetryService>(
+          &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
+          extension_registry_, extension_prefs_);
+  telemetry_service_2->SetEnabled(true);
+  telemetry_service_2.reset();
+}
 }  // namespace safe_browsing

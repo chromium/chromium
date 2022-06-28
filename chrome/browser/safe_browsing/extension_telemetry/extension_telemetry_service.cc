@@ -14,6 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -30,6 +32,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
@@ -194,9 +197,12 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
       // Instantiate persister which is used to read/write telemetry reports to
       // disk and start timer for sending periodic telemetry reports.
       if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence)) {
-        persister_ = std::make_unique<ExtensionTelemetryPersister>(
-            kMaxNumFilesPersisted, profile_);
-        persister_->PersisterInit();
+        persister_ = base::SequenceBound<ExtensionTelemetryPersister>(
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                 base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+            kMaxNumFilesPersisted, profile_->GetPath());
+        persister_.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
         int writes_per_interval = kExtensionTelemetryWritesPerInterval.Get();
         // Ensure that the `writes_per_interval` is never larger than the
         // persister cache or smaller than 1.
@@ -231,8 +237,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     signal_processors_.clear();
     // Delete persisted files.
     if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
-        persister_) {
-      persister_->ClearPersistedFiles();
+        !persister_.is_null()) {
+      persister_.AsyncCall(&ExtensionTelemetryPersister::ClearPersistedFiles);
     }
   }
 }
@@ -240,12 +246,13 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
 void ExtensionTelemetryService::Shutdown() {
   if (enabled_ &&
       base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
-      SignalDataPresent() && persister_) {
+      SignalDataPresent() && !persister_.is_null()) {
     // Saving data to disk.
     active_report_ = CreateReport();
     std::string write_string;
     active_report_->SerializeToString(&write_string);
-    persister_->WriteReportDuringShutdown(std::move(write_string));
+    persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
+        .WithArgs(std::move(write_string));
   }
   timer_.Stop();
   pref_change_registrar_.RemoveAll();
@@ -299,21 +306,22 @@ void ExtensionTelemetryService::CreateAndUploadReport() {
 
 void ExtensionTelemetryService::OnUploadComplete(bool success) {
   if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
-      enabled_ && persister_) {
+      enabled_ && !persister_.is_null()) {
     // Upload saved report(s) if there are any.
     if (success) {
       // Bind the callback to our current thread.
-      auto read_callback = base::BindPostTask(
-          base::SequencedTaskRunnerHandle::Get(),
+      auto read_callback =
           base::BindOnce(&ExtensionTelemetryService::UploadPersistedFile,
-                         weak_factory_.GetWeakPtr()));
-      persister_->ReadReport(std::move(read_callback));
+                         weak_factory_.GetWeakPtr());
+      persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
+          .Then(std::move(read_callback));
       SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
     } else {
       // Save report to disk on a failed upload.
       std::string write_string;
       active_report_->SerializeToString(&write_string);
-      persister_->WriteReport(std::move(write_string));
+      persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
+          .WithArgs(std::move(write_string));
       active_uploader_.reset();
       active_report_.reset();
     }
@@ -323,11 +331,10 @@ void ExtensionTelemetryService::OnUploadComplete(bool success) {
   }
 }
 
-void ExtensionTelemetryService::UploadPersistedFile(std::string report,
-                                                    bool success) {
+void ExtensionTelemetryService::UploadPersistedFile(std::string report) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto upload_data = std::make_unique<std::string>(report);
-  if (success) {
+  if (!report.empty()) {
+    auto upload_data = std::make_unique<std::string>(report);
     if (!active_report_->SerializeToString(upload_data.get())) {
       active_report_.reset();
       return;
@@ -375,7 +382,8 @@ void ExtensionTelemetryService::PersistOrUploadData() {
       active_report_.reset();
       return;
     }
-    persister_->WriteReport(std::move(write_string));
+    persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
+        .WithArgs(std::move(write_string));
   }
 }
 
