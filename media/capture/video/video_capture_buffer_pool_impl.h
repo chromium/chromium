@@ -23,17 +23,25 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "media/base/win/dxgi_device_manager.h"
+#endif
+
 namespace media {
 
 class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
     : public VideoCaptureBufferPool {
  public:
   VideoCaptureBufferPoolImpl() = delete;
-
-  explicit VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type);
-  explicit VideoCaptureBufferPoolImpl(
+#if BUILDFLAG(IS_WIN)
+  VideoCaptureBufferPoolImpl(
       VideoCaptureBufferType buffer_type,
-      int count);
+      int count,
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager = nullptr);
+#else
+  VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type, int count);
+#endif
+  explicit VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type);
 
   VideoCaptureBufferPoolImpl(const VideoCaptureBufferPoolImpl&) = delete;
   VideoCaptureBufferPoolImpl& operator=(const VideoCaptureBufferPoolImpl&) =

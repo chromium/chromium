@@ -59,6 +59,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
     use_d3d11_with_media_foundation_ = use;
   }
 
+  scoped_refptr<DXGIDeviceManager> GetDxgiDeviceManager() override;
+
  protected:
   // Protected and virtual for testing.
   virtual bool CreateDeviceEnumMonikerDirectShow(IEnumMoniker** enum_moniker);
@@ -87,10 +89,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
 
   bool use_d3d11_with_media_foundation_for_testing() {
     return use_d3d11_with_media_foundation_;
-  }
-
-  scoped_refptr<DXGIDeviceManager> dxgi_device_manager_for_testing() {
-    return dxgi_device_manager_;
   }
 
  private:

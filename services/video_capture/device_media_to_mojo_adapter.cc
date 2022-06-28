@@ -22,7 +22,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_WIN)
+#include "media/capture/video/win/video_capture_device_factory_win.h"
+#endif
 
 namespace {
 
@@ -61,8 +63,16 @@ DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
     scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner)
     : device_(std::move(device)),
       jpeg_decoder_factory_callback_(std::move(jpeg_decoder_factory_callback)),
-      jpeg_decoder_task_runner_(std::move(jpeg_decoder_task_runner)),
-      device_started_(false) {}
+      jpeg_decoder_task_runner_(std::move(jpeg_decoder_task_runner)) {}
+#elif BUILDFLAG(IS_WIN)
+DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
+    std::unique_ptr<media::VideoCaptureDevice> device,
+    media::VideoCaptureDeviceFactory* factory)
+    : device_(std::move(device)),
+      device_started_(false),
+      dxgi_device_manager_(factory ? factory->GetDxgiDeviceManager()
+                                   : nullptr) {}
+
 #else
 DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureDevice> device)
@@ -111,8 +121,15 @@ void DeviceMediaToMojoAdapter::Start(
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                  "CreateVideoCaptureBufferPoolImpl");
     // Create a dedicated buffer pool for the device usage session.
+#if BUILDFLAG(IS_WIN)
+    buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+        requested_settings.buffer_type, max_buffer_pool_buffer_count(),
+        dxgi_device_manager_);
+#else
     buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
         requested_settings.buffer_type, max_buffer_pool_buffer_count());
+
+#endif
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -5,15 +5,20 @@
 #ifndef MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 #define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 
-namespace media {
+#if BUILDFLAG(IS_WIN)
+#include "media/base/win/dxgi_device_manager.h"
+#endif
 
+namespace media {
 // VideoCaptureErrorOrDevice stores the result of CreateDevice function. This is
 // designed to pass information such that when device creation fails, instead of
 // returning a null_ptr, this would store an error_code explaining why the
@@ -71,6 +76,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
   using GetDevicesInfoCallback = base::OnceCallback<void(
       std::vector<VideoCaptureDeviceInfo> devices_info)>;
   virtual void GetDevicesInfo(GetDevicesInfoCallback callback) = 0;
+
+#if BUILDFLAG(IS_WIN)
+  // Returns used DXGI device manager.
+  // This is used for testing and to allow sharing the same DXGI device manger
+  // with GpuMemoryBufferTracker in VideoCaptureBufferPool. Default
+  // implementation always returns nullptr. Should be overridden by actual
+  // factory implementation on Windows.
+  virtual scoped_refptr<DXGIDeviceManager> GetDxgiDeviceManager();
+#endif
 
  protected:
   base::ThreadChecker thread_checker_;

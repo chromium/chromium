@@ -105,6 +105,9 @@ source_set("capture_device_specific") {
     "//third_party/libyuv",
     "//ui/gfx",
   ]
+  if (is_win) {
+    deps += [ "//media/base/win:media_foundation_util" ]
+  }
 }
 
 component("capture_lib") {

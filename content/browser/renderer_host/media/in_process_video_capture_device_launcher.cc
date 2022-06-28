@@ -58,6 +58,8 @@
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
+#elif BUILDFLAG(IS_WIN)
+#include "media/capture/video/win/video_capture_device_factory_win.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
@@ -313,9 +315,21 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
     base::WeakPtr<media::VideoFrameReceiver> receiver_on_io_thread) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<media::DXGIDeviceManager> dxgi_device_manager;
+  if (video_capture_system_ && video_capture_system_->GetFactory()) {
+    dxgi_device_manager =
+        video_capture_system_->GetFactory()->GetDxgiDeviceManager();
+  }
+  scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
+      base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+          requested_buffer_type, buffer_pool_max_buffer_count,
+          dxgi_device_manager);
+#else
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
       new media::VideoCaptureBufferPoolImpl(requested_buffer_type,
                                             buffer_pool_max_buffer_count);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<media::VideoCaptureDeviceClient>(

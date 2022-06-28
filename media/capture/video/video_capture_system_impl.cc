@@ -155,4 +155,8 @@ void VideoCaptureSystemImpl::DevicesInfoReady(
   }
 }
 
+VideoCaptureDeviceFactory* VideoCaptureSystemImpl::GetFactory() {
+  return factory_.get();
+}
+
 }  // namespace media

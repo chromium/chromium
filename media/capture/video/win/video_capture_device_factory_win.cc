@@ -998,4 +998,9 @@ VideoCaptureDeviceFactoryWin::GetSupportedFormatsMediaFoundation(
   return formats;
 }
 
+scoped_refptr<DXGIDeviceManager>
+VideoCaptureDeviceFactoryWin::GetDxgiDeviceManager() {
+  return dxgi_device_manager_;
+}
+
 }  // namespace media

@@ -11,8 +11,9 @@
 
 namespace media {
 
-VideoCaptureBufferTrackerFactoryWin::VideoCaptureBufferTrackerFactoryWin()
-    : dxgi_device_manager_(DXGIDeviceManager::Create({0, 0})) {}
+VideoCaptureBufferTrackerFactoryWin::VideoCaptureBufferTrackerFactoryWin(
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager)
+    : dxgi_device_manager_(std::move(dxgi_device_manager)) {}
 
 VideoCaptureBufferTrackerFactoryWin::~VideoCaptureBufferTrackerFactoryWin() {}
 
@@ -21,6 +22,8 @@ VideoCaptureBufferTrackerFactoryWin::CreateTracker(
     VideoCaptureBufferType buffer_type) {
   switch (buffer_type) {
     case VideoCaptureBufferType::kGpuMemoryBuffer:
+      if (!dxgi_device_manager_)
+        return nullptr;
       return std::make_unique<GpuMemoryBufferTracker>(dxgi_device_manager_);
     default:
       return std::make_unique<SharedMemoryBufferTracker>();

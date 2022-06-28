@@ -17,7 +17,8 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureBufferTrackerFactoryWin
     : public VideoCaptureBufferTrackerFactory {
  public:
-  VideoCaptureBufferTrackerFactoryWin();
+  explicit VideoCaptureBufferTrackerFactoryWin(
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
   ~VideoCaptureBufferTrackerFactoryWin() override;
   std::unique_ptr<VideoCaptureBufferTracker> CreateTracker(
       VideoCaptureBufferType buffer_type) override;

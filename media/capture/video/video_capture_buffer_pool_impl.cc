@@ -22,6 +22,25 @@
 
 namespace media {
 
+#if BUILDFLAG(IS_WIN)
+VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
+    VideoCaptureBufferType buffer_type)
+    : VideoCaptureBufferPoolImpl(buffer_type,
+                                 kVideoCaptureDefaultMaxBufferPoolSize,
+                                 nullptr) {}
+
+VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
+    VideoCaptureBufferType buffer_type,
+    int count,
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager)
+    : buffer_type_(buffer_type),
+      count_(count),
+      buffer_tracker_factory_(
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>(
+              std::move(dxgi_device_manager))) {
+  DCHECK_GT(count, 0);
+}
+#else
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     VideoCaptureBufferType buffer_type)
     : VideoCaptureBufferPoolImpl(buffer_type,
@@ -32,16 +51,11 @@ VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     int count)
     : buffer_type_(buffer_type),
       count_(count),
-#if BUILDFLAG(IS_WIN)
       buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>())
-#else
-      buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>())
-#endif
-{
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {
   DCHECK_GT(count, 0);
 }
+#endif
 
 VideoCaptureBufferPoolImpl::~VideoCaptureBufferPoolImpl() = default;
 
@@ -309,5 +323,4 @@ VideoCaptureBufferTracker* VideoCaptureBufferPoolImpl::GetTracker(
   auto it = trackers_.find(buffer_id);
   return (it == trackers_.end()) ? nullptr : it->second.get();
 }
-
 }  // namespace media

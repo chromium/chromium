@@ -6,6 +6,7 @@
 #define SERVICES_VIDEO_CAPTURE_DEVICE_MEDIA_TO_MOJO_ADAPTER_H_
 
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_client.h"
@@ -18,7 +19,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_WIN)
+#include "media/capture/video/win/video_capture_device_factory_win.h"
+#endif
 
 namespace video_capture {
 
@@ -33,6 +36,9 @@ class DeviceMediaToMojoAdapter : public mojom::Device {
       std::unique_ptr<media::VideoCaptureDevice> device,
       media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
       scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner);
+#elif BUILDFLAG(IS_WIN)
+  DeviceMediaToMojoAdapter(std::unique_ptr<media::VideoCaptureDevice> device,
+                           media::VideoCaptureDeviceFactory* factory);
 #else
   DeviceMediaToMojoAdapter(
       std::unique_ptr<media::VideoCaptureDevice> device);
@@ -67,7 +73,10 @@ class DeviceMediaToMojoAdapter : public mojom::Device {
   scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ReceiverMojoToMediaAdapter> receiver_;
-  bool device_started_;
+  bool device_started_ = false;
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<media::DXGIDeviceManager> dxgi_device_manager_;
+#endif
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<DeviceMediaToMojoAdapter> weak_factory_{this};
 };
