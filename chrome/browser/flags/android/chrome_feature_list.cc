@@ -373,6 +373,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfSigninPromo,
     &send_tab_to_self::kSendTabToSelfV2,
     &share::kPersistShareHubOnAppSwitch,
+    &share::kScreenshotsForAndroidV2,
     &share::kUpcomingSharingFeatures,
     &switches::kAllowSyncOffForChildAccounts,
     &switches::kEnableCbdSignOut,
