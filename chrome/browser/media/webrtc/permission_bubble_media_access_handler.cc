@@ -337,7 +337,9 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
   }
 
   std::unique_ptr<content::MediaStreamUI> ui;
-  if (devices.audio_device.has_value() || devices.video_device.has_value()) {
+  if (!stream_devices_set.stream_devices.empty() &&
+      (stream_devices_set.stream_devices[0]->audio_device.has_value() ||
+       stream_devices_set.stream_devices[0]->video_device.has_value())) {
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
              ->RegisterMediaStream(web_contents, devices);

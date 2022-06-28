@@ -14,13 +14,16 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
+#include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/common/content_client.h"
@@ -35,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -996,6 +1000,42 @@ TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
         EXPECT_FALSE(raw_device_id.has_value());
       }));
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MediaStreamManagerTest, MultiCaptureOnMediaStreamUIWindowId) {
+  std::vector<media::VideoCaptureSessionId> session_ids;
+  VideoCaptureManager::SetDesktopCaptureWindowIdCallback callback =
+      base::BindLambdaForTesting(
+          [&session_ids](const media::VideoCaptureSessionId& session_id,
+                         gfx::NativeViewId window_id) {
+            session_ids.push_back(session_id);
+          });
+  media_stream_manager_->video_capture_manager()
+      ->set_desktop_capture_window_id_callback_for_testing(callback);
+
+  gfx::NativeViewId native_view_id = 1;
+  blink::mojom::StreamDevicesSetPtr stream_devices_set =
+      blink::mojom::StreamDevicesSet::New();
+  blink::MediaStreamDevice device_0 = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, "screen:0:0",
+      "test_device_0");
+  base::UnguessableToken session_id_0 = base::UnguessableToken::Create();
+  device_0.set_session_id(session_id_0);
+  blink::MediaStreamDevice device_1 = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, "screen:1:0",
+      "test_device_1");
+  base::UnguessableToken session_id_1 = base::UnguessableToken::Create();
+  device_1.set_session_id(session_id_1);
+  stream_devices_set->stream_devices.emplace_back(
+      blink::mojom::StreamDevices(absl::nullopt, device_0).Clone());
+  stream_devices_set->stream_devices.emplace_back(
+      blink::mojom::StreamDevices(absl::nullopt, device_1).Clone());
+  media_stream_manager_->OnMediaStreamUIWindowId(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+      std::move(stream_devices_set), native_view_id);
+  ASSERT_EQ(2u, session_ids.size());
+  ASSERT_EQ(session_id_0, session_ids[0]);
+  ASSERT_EQ(session_id_1, session_ids[1]);
 }
 
 // TODO(crbug.com/1300883): Add test cases for multi stream generation.

@@ -305,8 +305,9 @@ void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
 
   // The SpeechRecognictionManager is not used with multiple streams
   // which is only supported in combination with the getDisplayMediaSet API.
-  DCHECK_EQ(stream_devices_set.stream_devices.size(), 1u);
-  DCHECK(stream_devices_set.stream_devices[0]);
+  // The |stream_devices| vector can be empty e.g. if the permission
+  // was denied.
+  DCHECK_LE(stream_devices_set.stream_devices.size(), 1u);
 
   blink::MediaStreamDevices devices_list =
       blink::ToMediaStreamDevicesList(stream_devices_set);

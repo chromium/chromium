@@ -625,6 +625,11 @@ void VideoCaptureManager::SetDesktopCaptureWindowId(
 
   notification_window_ids_[session_id] = window_id;
   MaybePostDesktopCaptureWindowId(session_id);
+
+  if (set_desktop_capture_window_id_callback_for_testing_) {
+    set_desktop_capture_window_id_callback_for_testing_.Run(session_id,
+                                                            window_id);
+  }
 }
 
 void VideoCaptureManager::MaybePostDesktopCaptureWindowId(

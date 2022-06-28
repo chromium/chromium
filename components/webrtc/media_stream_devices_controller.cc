@@ -325,15 +325,7 @@ void MediaStreamDevicesController::RunCallback(
       (video_setting_ == CONTENT_SETTING_ALLOW ||
        video_setting_ == CONTENT_SETTING_DEFAULT)) {
     stream_devices_set = GetDevices(audio_setting_, video_setting_);
-    DCHECK(!stream_devices_set ||
-           stream_devices_set->stream_devices.size() <= 1u);
-    blink::mojom::StreamDevices devices;
-    if (stream_devices_set && !stream_devices_set->stream_devices.empty()) {
-      devices = *stream_devices_set->stream_devices[0];
-    }
-
-    if (!devices.audio_device.has_value() &&
-        !devices.video_device.has_value()) {
+    if (stream_devices_set->stream_devices.empty()) {
       // Even if all requested permissions are allowed, if there are no devices
       // at this point we still report a failure.
       request_result = blink::mojom::MediaStreamRequestResult::NO_HARDWARE;

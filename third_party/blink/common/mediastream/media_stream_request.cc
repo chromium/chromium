@@ -144,18 +144,6 @@ bool MediaStreamDevice::IsSameDevice(
          session_id_ == other_device.session_id_;
 }
 
-BLINK_COMMON_EXPORT MediaStreamDevices
-ToMediaStreamDevicesList(const mojom::StreamDevices& stream_devices) {
-  blink::MediaStreamDevices devices;
-  if (stream_devices.audio_device.has_value()) {
-    devices.push_back(stream_devices.audio_device.value());
-  }
-  if (stream_devices.video_device.has_value()) {
-    devices.push_back(stream_devices.video_device.value());
-  }
-  return devices;
-}
-
 blink::MediaStreamDevices ToMediaStreamDevicesList(
     const blink::mojom::StreamDevicesSet& stream_devices_set) {
   blink::MediaStreamDevices devices;
