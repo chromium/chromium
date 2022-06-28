@@ -145,6 +145,15 @@ enum class PreloadingFailureReason {
   kUnspecified = 0,
 };
 
+// This constant is used to define the value from which specifying preloading
+// types can add more enums beyond this value. We mask it by 100 to avoid usage
+// of the same numbers for logging. The semantics of values beyond 100 can vary
+// by preloading type (for example 101 might mean "the page was destroyed" for
+// prerender, but "the user already had cookies for a cross-origin prefetch" for
+// prefetch). This constant determines the value of enumerations persisted into
+// logs so should not be changed.
+static constexpr int64_t kPreloadingFailureReasonContentEnd = 100;
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_PRELOADING_H_

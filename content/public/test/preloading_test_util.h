@@ -29,6 +29,7 @@ class PreloadingAttemptUkmEntryBuilder {
       PreloadingEligibility eligibility,
       PreloadingHoldbackStatus holdback_status,
       PreloadingTriggeringOutcome triggering_outcome,
+      PreloadingFailureReason failure_reason,
       bool accurate) const;
 
  private:

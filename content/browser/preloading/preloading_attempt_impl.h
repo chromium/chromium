@@ -22,6 +22,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   void SetHoldbackStatus(PreloadingHoldbackStatus holdback_status) override;
   void SetTriggeringOutcome(
       PreloadingTriggeringOutcome triggering_outcome) override;
+  void SetFailureReason(PreloadingFailureReason reason) override;
 
   // Records both UKMs Preloading_Attempt and
   // Preloading_Attempt_PreviousPrimaryPage. Metrics for both these are same.
@@ -33,10 +34,6 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // If the navigation doesn't happen these could be invalid/ empty.
   void RecordPreloadingAttemptUKMs(ukm::SourceId navigated_page,
                                    const GURL& navigated_url);
-
-  // Sets the specific failure reason specific to the PreloadingType. This also
-  // sets the PreloadingTriggeringOutcome to kFailure.
-  void SetFailureReason(PreloadingFailureReason reason);
 
   explicit PreloadingAttemptImpl(
       PreloadingPredictor predictor,

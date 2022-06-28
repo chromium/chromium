@@ -28,6 +28,11 @@ bool is_match_for_preconnect(const url::SchemeHostPort& preconnected_origin,
 const char kPreloadingAnchorElementPreloaderPreloadingTriggered[] =
     "Preloading.AnchorElementPreloader.PreloadingTriggered";
 
+content::PreloadingFailureReason ToFailureReason(
+    AnchorPreloadingFailureReason reason) {
+  return static_cast<content::PreloadingFailureReason>(reason);
+}
+
 AnchorElementPreloader::~AnchorElementPreloader() = default;
 
 AnchorElementPreloader::AnchorElementPreloader(
@@ -96,6 +101,16 @@ void AnchorElementPreloader::OnPointerDown(const GURL& target) {
     // We've already preconnected to that origin.
     attempt->SetTriggeringOutcome(
         content::PreloadingTriggeringOutcome::kDuplicate);
+    return;
+  }
+  int max_preloading_attempts = base::GetFieldTrialParamByFeatureAsInt(
+      blink::features::kAnchorElementInteraction, "max_preloading_attempts",
+      -1);
+  if (max_preloading_attempts >= 0 &&
+      preconnected_targets_.size() >=
+          static_cast<size_t>(max_preloading_attempts)) {
+    attempt->SetFailureReason(
+        ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded));
     return;
   }
   preconnected_targets_.insert(scheme_host_port);

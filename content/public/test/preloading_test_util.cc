@@ -18,6 +18,7 @@ const std::vector<std::string> kPreloadingAttemptUkmMetrics{
     Preloading_Attempt::kEligibilityName,
     Preloading_Attempt::kHoldbackStatusName,
     Preloading_Attempt::kTriggeringOutcomeName,
+    Preloading_Attempt::kFailureReasonName,
     Preloading_Attempt::kAccurateTriggeringName,
 };
 
@@ -31,6 +32,7 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     PreloadingEligibility eligibility,
     PreloadingHoldbackStatus holdback_status,
     PreloadingTriggeringOutcome triggering_outcome,
+    PreloadingFailureReason failure_reason,
     bool accurate) const {
   return UkmEntry{
       source_id,
@@ -45,6 +47,8 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
            static_cast<int64_t>(holdback_status)},
           {Preloading_Attempt::kTriggeringOutcomeName,
            static_cast<int64_t>(triggering_outcome)},
+          {Preloading_Attempt::kFailureReasonName,
+           static_cast<int64_t>(failure_reason)},
           {Preloading_Attempt::kAccurateTriggeringName, accurate ? 1 : 0},
       }};
 }

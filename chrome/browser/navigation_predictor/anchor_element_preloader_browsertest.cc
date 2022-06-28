@@ -174,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
       ukm_source_id, content::PreloadingEligibility::kEligible,
       content::PreloadingHoldbackStatus::kAllowed,
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
+      content::PreloadingFailureReason::kUnspecified,
       /*accurate=*/true);
   EXPECT_EQ(ukm_entries[0], expected_entry)
       << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
@@ -207,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
       ukm_source_id, content::PreloadingEligibility::kEligible,
       content::PreloadingHoldbackStatus::kAllowed,
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
+      content::PreloadingFailureReason::kUnspecified,
       /*accurate=*/false);
   EXPECT_EQ(ukm_entries[0], expected_entry)
       << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
@@ -244,18 +246,21 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, Duplicates) {
           ukm_source_id, content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
+          content::PreloadingFailureReason::kUnspecified,
           /*accurate=*/true),
       // Duplicate preconnect to first origin.
       ukm_entry_builder().BuildEntry(
           ukm_source_id, content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kDuplicate,
+          content::PreloadingFailureReason::kUnspecified,
           /*accurate=*/true),
       // Preconnect to first second origin.
       ukm_entry_builder().BuildEntry(
           ukm_source_id, content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
+          content::PreloadingFailureReason::kUnspecified,
           /*accurate=*/false),
   };
   EXPECT_THAT(ukm_entries, testing::UnorderedElementsAreArray(expected_entries))
@@ -332,6 +337,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
       ukm_source_id, content::PreloadingEligibility::kPreloadingDisabled,
       content::PreloadingHoldbackStatus::kUnspecified,
       content::PreloadingTriggeringOutcome::kUnspecified,
+      content::PreloadingFailureReason::kUnspecified,
       /*accurate=*/true);
   EXPECT_EQ(ukm_entries[0], expected_entry)
       << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
@@ -382,9 +388,63 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
       ukm_source_id, content::PreloadingEligibility::kEligible,
       content::PreloadingHoldbackStatus::kHoldback,
       content::PreloadingTriggeringOutcome::kUnspecified,
+      content::PreloadingFailureReason::kUnspecified,
       /*accurate=*/true);
   EXPECT_EQ(ukm_entries[0], expected_entry)
       << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
                                                          expected_entry);
+}
+
+class AnchorElementPreloaderLimitedBrowserTest
+    : public AnchorElementPreloaderBrowserTest {
+ public:
+  void SetFeatures() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kAnchorElementInteraction,
+        {{"max_preloading_attempts", "1"}});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
+                       LimitExceeded) {
+  const GURL& url = GetTestURL("/many_anchors.html");
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // First link with mousedown event should get preconnected.
+  SimulateMouseDownElementWithId("anchor1_origin1");
+  WaitForPreresolveCountForURL(1);
+
+  // Second mousedown event to a different origin: limit should be exceeded.
+  SimulateMouseDownElementWithId("anchor1_origin2");
+
+  // Navigate away to the first origin that was preconnected. This should flush
+  // the Preloading UKM logs.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kOrigin1) + "foo")));
+  ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
+      Preloading_Attempt::kEntryName,
+      content::test::kPreloadingAttemptUkmMetrics);
+  EXPECT_EQ(ukm_entries.size(), 2u);
+  std::vector<UkmEntry> expected_entries = {
+      // Successful preconnect to first origin.
+      ukm_entry_builder().BuildEntry(
+          ukm_source_id, content::PreloadingEligibility::kEligible,
+          content::PreloadingHoldbackStatus::kAllowed,
+          content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
+          content::PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true),
+      // LimitExceeded for second origin.
+      ukm_entry_builder().BuildEntry(
+          ukm_source_id, content::PreloadingEligibility::kEligible,
+          content::PreloadingHoldbackStatus::kAllowed,
+          content::PreloadingTriggeringOutcome::kFailure,
+          ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded),
+          /*accurate=*/false),
+  };
+  EXPECT_THAT(ukm_entries, testing::UnorderedElementsAreArray(expected_entries))
+      << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                           expected_entries);
 }
 }  // namespace

@@ -58,6 +58,10 @@ class CONTENT_EXPORT PreloadingAttempt {
   virtual void SetTriggeringOutcome(
       PreloadingTriggeringOutcome triggering_outcome) = 0;
 
+  // Sets the specific failure reason specific to the PreloadingType. This also
+  // sets the PreloadingTriggeringOutcome to kFailure.
+  virtual void SetFailureReason(PreloadingFailureReason failure_reason) = 0;
+
  protected:
   virtual ~PreloadingAttempt() = default;
 };
