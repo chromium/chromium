@@ -113,13 +113,9 @@
 
 namespace {
 
-NSString* const kSyncAndGoogleServicesImageName = @"sync_and_google_services";
-NSString* const kSyncAndGoogleServicesSyncErrorImageName =
-    @"google_services_sync_error";
-NSString* const kSyncAndGoogleServicesSyncOffImageName =
-    @"sync_and_google_services_sync_off";
-NSString* const kSyncAndGoogleServicesSyncOnImageName =
-    @"sync_and_google_services_sync_on";
+NSString* const kSyncErrorImageName = @"google_services_sync_error";
+NSString* const kSyncOffImageName = @"sync_and_google_services_sync_off";
+NSString* const kSyncOnImageName = @"sync_and_google_services_sync_on";
 NSString* const kSettingsGoogleServicesImageName = @"settings_google_services";
 NSString* const kSettingsSearchEngineImageName = @"settings_search_engine";
 NSString* const kLegacySettingsPasswordsImageName = @"legacy_settings_passwords";
@@ -705,7 +701,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   syncItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   syncItem.accessibilityIdentifier = kSettingsGoogleSyncAndServicesCellId;
-  syncItem.image = [UIImage imageNamed:kSyncAndGoogleServicesSyncOffImageName];
+  syncItem.image = [UIImage imageNamed:kSyncOffImageName];
   return syncItem;
 }
 
@@ -1535,66 +1531,19 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 }
 
-// Updates the Sync & Google services item to display the right icon and status
-// message in the detail text of the cell.
-- (void)updateSyncAndGoogleServicesItem:
-    (SettingsImageDetailTextItem*)googleServicesItem {
-  googleServicesItem.detailTextColor = nil;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(_browserState);
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // No sync status when the user is not signed-in.
-    googleServicesItem.detailText = nil;
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesImageName];
-  } else if (syncService->GetDisableReasons().Has(
-                 syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    googleServicesItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_STATUS);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOffImageName];
-  } else if (!syncSetupService->IsFirstSetupComplete()) {
-    googleServicesItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SYNC_SETUP_IN_PROGRESS);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOnImageName];
-  } else if (!IsTransientSyncError(syncSetupService->GetSyncServiceState())) {
-    googleServicesItem.detailTextColor = [UIColor colorNamed:kRedColor];
-    googleServicesItem.detailText =
-        GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncErrorImageName];
-  } else if (syncSetupService->CanSyncFeatureStart()) {
-    googleServicesItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOnImageName];
-  } else {
-    googleServicesItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_OFF);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOffImageName];
-  }
-  DCHECK(googleServicesItem.image);
-}
-
 // Updates the Sync item to display the right icon and status message in the
 // cell.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
   switch (GetSyncStateFromBrowserState(_browserState)) {
     case kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
+      googleSyncItem.iconImageName = kSyncOffImageName;
       break;
     }
     case kSyncOff:
     case kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = nil;
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
+      googleSyncItem.iconImageName = kSyncOffImageName;
       break;
     }
     case kSyncEnabledWithError: {
@@ -1602,7 +1551,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           SyncSetupServiceFactory::GetForBrowserState(_browserState);
       googleSyncItem.detailText =
           GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncErrorImageName;
+      googleSyncItem.iconImageName = kSyncErrorImageName;
 
       // Return a vertical layout of title / subtitle in the case of a sync
       // error.
@@ -1611,7 +1560,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case kSyncEnabled: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOnImageName;
+      googleSyncItem.iconImageName = kSyncOnImageName;
       break;
     }
     case kSyncDisabledByAdministrator:
@@ -1621,31 +1570,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // Needed to update the item text layout in the case that it was previously
   // set to UILayoutConstraintAxisVertical due to a sync error.
   googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisHorizontal;
-}
-
-// Updates and reloads the Google service cell.
-- (void)reloadSyncAndGoogleServicesCell {
-  if (!_syncItem)
-    return;
-
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    NSIndexPath* itemIndexPath =
-        [self.tableViewModel indexPathForItem:_syncItem];
-    [self.tableViewModel removeItemWithType:SettingsItemTypeGoogleSync
-                  fromSectionWithIdentifier:SettingsSectionIdentifierAccount];
-    _syncItem = [self syncItem];
-    [self.tableViewModel insertItem:_syncItem
-            inSectionWithIdentifier:SettingsSectionIdentifierAccount
-                            atIndex:itemIndexPath.row];
-    [self.tableView reloadRowsAtIndexPaths:@[ itemIndexPath ]
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-    return;
-  }
-  [self.tableViewModel removeItemWithType:SettingsItemTypeGoogleSync
-                fromSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  _syncItem = nil;
 }
 
 // Check if the default search engine is managed by policy.
@@ -1770,7 +1694,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  [self reloadSyncAndGoogleServicesCell];
   [self updateSigninSection];
   // The Identity section may be added or removed depending on sign-in is
   // allowed. Reload all sections in the model to account for the change.

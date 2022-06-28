@@ -91,7 +91,6 @@ source_set("settings") {
     "resources:settings_search_engine",
     "resources:settings_unsafe_state",
     "resources:settings_voice_search",
-    "resources:sync_and_google_services",
     "resources:sync_and_google_services_sync_off",
     "resources:sync_and_google_services_sync_on",
     "//base",
