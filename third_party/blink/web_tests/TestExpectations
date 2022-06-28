@@ -78,9 +78,12 @@ crbug.com/881040 media/controls/lazy-loaded-style.html [ Failure Pass ]
 
 # With --enable-display-compositor-pixel-dump enabled by default, these three
 # tests fail. See crbug.com/887140 for more info.
-crbug.com/887140 virtual/hdr/color-jpeg-with-color-profile.html [ Failure ]
-crbug.com/887140 virtual/hdr/color-profile-video.html [ Failure ]
-crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
+# TODO(crbug.com/1336161): Re-enable this test
+crbug.com/887140 virtual/hdr/color-jpeg-with-color-profile.html [ Skip ]
+# TODO(crbug.com/1336161): Re-enable this test
+crbug.com/887140 virtual/hdr/color-profile-video.html [ Skip ]
+# TODO(crbug.com/1336161): Re-enable this test
+crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Skip ]
 
 # Tested by paint/background/root-element-background-transparency.html for now.
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
