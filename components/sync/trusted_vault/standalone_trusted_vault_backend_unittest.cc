@@ -18,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -1216,6 +1217,74 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultVerifyDeviceRegistration);
+
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration({kVaultKey}, kLastKeyVersion,
+                                      account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // Now the device should be registered.
+  ASSERT_TRUE(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered());
+
+  // Mimic a restart. The device should remain registered.
+  ResetBackend();
+  backend()->ReadDataFromDisk();
+
+  ASSERT_TRUE(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered());
+
+  // The device should not register again.
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
+
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  EXPECT_CALL(*connection(), DownloadNewKeys(Eq(account_info),
+                                             TrustedVaultKeyAndVersionEq(
+                                                 kVaultKey, kLastKeyVersion),
+                                             _, _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+                    std::unique_ptr<SecureBoxKeyPair> key_pair,
+                    TrustedVaultConnection::DownloadNewKeysCallback callback) {
+        download_keys_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Advance exactly `kVerifyDeviceRegistrationDelay` so the download procedure
+  // kicks in. Due to the mock time and the synchronous behavior above of
+  // DownloadNewKeys(), there is no need for epsilons or additional waiting.
+  environment.FastForwardBy(base::Seconds(10));
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  // Mimic a successful request that returns no new keys.
+  base::HistogramTester histogram_tester;
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kNoNewKeys, {}, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultVerifyDeviceRegistrationState",
+      /*sample=*/
+      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
+          kNoNewKeys,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

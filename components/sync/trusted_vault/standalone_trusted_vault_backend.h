@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
@@ -198,6 +197,8 @@ class StandaloneTrustedVaultBackend
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
+  void VerifyDeviceRegistrationForUMA(const std::string& gaia_id);
+
   const base::FilePath file_path_;
 
   const std::unique_ptr<Delegate> delegate_;
@@ -241,6 +242,8 @@ class StandaloneTrustedVaultBackend
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_verify_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/1201659): Move elsewhere.

@@ -16,10 +16,12 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -36,7 +38,8 @@ namespace syncer {
 
 namespace {
 
-const int kCurrentLocalTrustedVaultVersion = 1;
+constexpr int kCurrentLocalTrustedVaultVersion = 1;
+constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);
 
 sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
   sync_pb::LocalTrustedVault proto;
@@ -136,6 +139,13 @@ void UpgradeToVersion1(sync_pb::LocalTrustedVault* local_trusted_vault) {
     }
   }
   local_trusted_vault->set_data_version(1);
+}
+
+void RecordVerifyRegistrationStatus(
+    StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA
+        status) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
 }
 
 }  // namespace
@@ -358,6 +368,22 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       !device_registration_state_recorded_to_uma_) {
     device_registration_state_recorded_to_uma_ = true;
     RecordTrustedVaultDeviceRegistrationState(*registration_state);
+
+    // If the local state indicates that the device is already registered, and
+    // behind a feature toggle, trigger a procedure to verify that the server
+    // has a consistent state (i.e. downloading of new keys should succeed but
+    // return no new keys).
+    if (*registration_state ==
+            TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered &&
+        base::FeatureList::IsEnabled(
+            kSyncTrustedVaultVerifyDeviceRegistration)) {
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA,
+              base::WrapRefCounted(this), primary_account->gaia),
+          kVerifyDeviceRegistrationDelay);
+    }
   }
 
   if (pending_trusted_recovery_method_.has_value()) {
@@ -880,6 +906,54 @@ sync_pb::LocalTrustedVaultPerUser* StandaloneTrustedVaultBackend::FindUserVault(
     }
   }
   return nullptr;
+}
+
+void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
+    const std::string& gaia_id) {
+  const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(gaia_id);
+
+  // Ignore call if things have changed since the task was scheduled, although
+  // in normal circumstances it shouldn't happen.
+  if (!connection_ || !primary_account_.has_value() ||
+      primary_account_->gaia != gaia_id || !per_user_vault ||
+      !per_user_vault->local_device_registration_info().device_registered()) {
+    return;
+  }
+
+  if (AreConnectionRequestsThrottled()) {
+    // Keys download attempt is not possible.
+    RecordVerifyRegistrationStatus(
+        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide);
+    return;
+  }
+
+  std::unique_ptr<SecureBoxKeyPair> key_pair =
+      SecureBoxKeyPair::CreateByPrivateKeyImport(
+          ProtoStringToBytes(per_user_vault->local_device_registration_info()
+                                 .private_key_material()));
+  if (!key_pair) {
+    RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA::
+                                       kCorruptedLocalDeviceRegistration);
+    return;
+  }
+
+  // Guaranteed by |device_registered| check above.
+  DCHECK(!per_user_vault->vault_key().empty());
+
+  ongoing_verify_registration_request_ = connection_->DownloadNewKeys(
+      *primary_account_,
+      TrustedVaultKeyAndVersion(
+          ProtoStringToBytes(
+              per_user_vault->vault_key().rbegin()->key_material()),
+          per_user_vault->last_vault_key_version()),
+      std::move(key_pair),
+      base::BindOnce([](TrustedVaultDownloadKeysStatus status,
+                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
+                        int last_vault_key_version) {
+        RecordVerifyRegistrationStatus(
+            GetDownloadKeysStatusForUMAFromResponse(status));
+      }));
 }
 
 }  // namespace syncer

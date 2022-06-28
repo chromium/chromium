@@ -121,6 +121,13 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         &kSyncTrustedVaultPassphraseRecovery,
         "TrustedVaultServiceThrottlingDuration", base::Days(1)};
 
+// Enables logging a UMA metric that requires first communicating with the
+// trusted vault server, in order to verify that the local notion of the device
+// being registered is consistent with the server-side state.
+inline constexpr base::Feature kSyncTrustedVaultVerifyDeviceRegistration{
+    "SyncTrustedVaultVerifyDeviceRegistration",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the device will register with FCM and listen to new
 // invalidations. Also, FCM token will be set in DeviceInfo, which signals to
 // the server that device listens to new invalidations.
