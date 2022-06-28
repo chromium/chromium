@@ -112,9 +112,13 @@ class MediaFactory {
   blink::WebEncryptedMediaClient* EncryptedMediaClient();
 
   // Returns `DecoderFactory`, which can be used to created decoders in WebRTC.
+  // Can be dereferenced only on the media thread.
   base::WeakPtr<media::DecoderFactory> GetDecoderFactory();
 
  private:
+  // Initializes `decoder_factory_` if it hasn't been initialized yet.
+  void EnsureDecoderFactory();
+
   std::unique_ptr<media::RendererFactorySelector> CreateRendererFactorySelector(
       media::MediaLog* media_log,
       blink::WebURL url,

@@ -439,10 +439,12 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       std::move(handlers));
 
+  EnsureDecoderFactory();
+
   base::WeakPtr<media::MediaObserver> media_observer;
   auto factory_selector = CreateRendererFactorySelector(
       media_log.get(), url, render_frame_->GetRenderFrameMediaPlaybackOptions(),
-      GetDecoderFactory().get(),
+      decoder_factory_.get(),
       std::make_unique<blink::RemotePlaybackClientWrapperImpl>(client),
       &media_observer);
 
@@ -801,6 +803,11 @@ MediaFactory::GetWebMediaPlayerDelegate() {
 }
 
 base::WeakPtr<media::DecoderFactory> MediaFactory::GetDecoderFactory() {
+  EnsureDecoderFactory();
+  return decoder_factory_->GetWeakPtr();
+}
+
+void MediaFactory::EnsureDecoderFactory() {
   if (!decoder_factory_) {
     std::unique_ptr<media::DecoderFactory> external_decoder_factory;
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
@@ -815,8 +822,6 @@ base::WeakPtr<media::DecoderFactory> MediaFactory::GetDecoderFactory() {
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(
         std::move(external_decoder_factory));
   }
-
-  return decoder_factory_->GetWeakPtr();
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
