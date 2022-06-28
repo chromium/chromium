@@ -38,7 +38,8 @@ class CrashHandler {
   static void UploadDumps(const base::FilePath& crash_dump_path,
                           const base::FilePath& reports_path,
                           const std::string& uuid,
-                          const std::string& application_feedback);
+                          const std::string& application_feedback,
+                          const bool can_send_usage_stats);
 
  private:
   CrashHandler(const std::string& process_type,

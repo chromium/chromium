@@ -35,7 +35,6 @@ class CastCrashReporterClientAndroid
   base::FilePath GetReporterLogFilename() override;
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
   int GetAndroidMinidumpDescriptor() override;
-  bool GetCollectStatsConsent() override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
 
  private:

@@ -107,17 +107,8 @@ cast_source_set("base") {
       "android/dumpstate_writer.h",
       "android/system_time_change_notifier_android.cc",
       "android/system_time_change_notifier_android.h",
-      "chromecast_config_android.h",
     ]
     deps += [ ":jni_headers" ]
-    if (chromecast_branding == "public") {
-      sources += [ "chromecast_config_android_dummy.cc" ]
-    } else {
-      sources +=
-          [ "//chromecast/internal/base/chromecast_config_android_internal.cc" ]
-      deps +=
-          [ "//chromecast/internal/base:chromecast_config_android_jni_headers" ]
-    }
   }
 }
 

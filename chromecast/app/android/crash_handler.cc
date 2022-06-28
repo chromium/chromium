@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
-#include "chromecast/base/chromecast_config_android.h"
 #include "chromecast/base/version.h"
 #include "chromecast/browser/jni_headers/CastCrashHandler_jni.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -75,7 +74,8 @@ void CrashHandler::Initialize() {
 void CrashHandler::UploadDumps(const base::FilePath& crash_dump_path,
                                const base::FilePath& reports_path,
                                const std::string& uuid,
-                               const std::string& application_feedback) {
+                               const std::string& application_feedback,
+                               const bool can_send_usage_stats) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> crash_dump_path_java =
       base::android::ConvertUTF8ToJavaString(env, crash_dump_path.value());
@@ -87,8 +87,6 @@ void CrashHandler::UploadDumps(const base::FilePath& crash_dump_path,
       base::android::ConvertUTF8ToJavaString(env, application_feedback);
   // TODO(servolk): Remove the UploadToStaging param and clean up Java code, if
   // dev crash uploading to prod server works fine (b/113130776)
-  bool can_send_usage_stats =
-      android::ChromecastConfigAndroid::GetInstance()->CanSendUsageStats();
 
   if (can_send_usage_stats) {
     Java_CastCrashHandler_uploadOnce(env, crash_dump_path_java,
