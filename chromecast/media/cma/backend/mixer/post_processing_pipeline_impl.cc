@@ -55,6 +55,8 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
   if (!filter_description_list) {
     return;  // Warning logged.
   }
+
+  LOG(INFO) << "Create pipeline for " << channels << " input channels";
   for (const base::Value& processor_description_dict :
        filter_description_list->GetListDeprecated()) {
     DCHECK(processor_description_dict.is_dict());
@@ -102,8 +104,8 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
       base::JSONWriter::Write(*processor_config_val, &processor_config_string);
     }
 
-    LOG(INFO) << "Creating an instance of " << library_path << "("
-              << processor_config_string << ")";
+    LOG(INFO) << "Creating '" << processor_name << "', an instance of "
+              << library_path << ", for " << channels << " channels";
 
     processors_.emplace_back(PostProcessorInfo{
         factory_.CreatePostProcessor(library_path, processor_config_string,
@@ -112,15 +114,16 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
     channels = processors_.back().ptr->GetStatus().output_channels;
   }
   num_output_channels_ = channels;
+  LOG(INFO) << "Created pipeline with " << channels << " output channels";
 }
 
 PostProcessingPipelineImpl::~PostProcessingPipelineImpl() = default;
 
-double PostProcessingPipelineImpl::ProcessFrames(float* data,
-                                                 int num_input_frames,
-                                                 float current_multiplier,
-                                                 float target_multiplier,
-                                                 bool is_silence) {
+void PostProcessingPipelineImpl::ProcessFrames(float* data,
+                                               int num_input_frames,
+                                               float current_multiplier,
+                                               float target_multiplier,
+                                               bool is_silence) {
   DCHECK_GT(input_sample_rate_, 0);
   DCHECK(data);
   if (processors_.size() > 0) {
@@ -140,7 +143,7 @@ double PostProcessingPipelineImpl::ProcessFrames(float* data,
         std::fill_n(silence_buffer_.data(), silence_buffer_.size(), 0.0);
         output_buffer_ = silence_buffer_.data();
       }
-      return delay_s_;
+      return;
     }
     silence_frames_processed_ += num_input_frames;
   } else {
@@ -160,7 +163,6 @@ double PostProcessingPipelineImpl::ProcessFrames(float* data,
                 status.input_sample_rate;
     output_buffer_ = status.output_buffer;
   }
-  return delay_s_;
 }
 
 int PostProcessingPipelineImpl::NumOutputChannels() const {
@@ -169,7 +171,6 @@ int PostProcessingPipelineImpl::NumOutputChannels() const {
 
 float* PostProcessingPipelineImpl::GetOutputBuffer() {
   DCHECK(output_buffer_);
-
   return output_buffer_;
 }
 
@@ -203,6 +204,13 @@ bool PostProcessingPipelineImpl::SetOutputConfig(
                           processors_[0].input_frames_per_write *
                           output_sample_rate_ / input_sample_rate_;
     silence_buffer_.resize(silence_size);
+  }
+
+  delay_s_ = 0;
+  for (auto& processor : processors_) {
+    const auto& status = processor.ptr->GetStatus();
+    delay_s_ += static_cast<double>(status.rendering_delay_frames) /
+                status.input_sample_rate;
   }
 
   return true;
@@ -274,6 +282,10 @@ void PostProcessingPipelineImpl::UpdatePlayoutChannel(int channel) {
   for (auto& processor : processors_) {
     processor.ptr->SetPlayoutChannel(channel);
   }
+}
+
+double PostProcessingPipelineImpl::GetDelaySeconds() {
+  return delay_s_;
 }
 
 }  // namespace media

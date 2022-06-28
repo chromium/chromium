@@ -446,7 +446,7 @@ void AudioOutputRedirector::MixInput(MixerInput* mixer_input,
     float* dest_channel = current_mix_data_ + c * next_num_frames_;
     if (config_.apply_volume) {
       mixer_input->VolumeScaleAccumulate(data->channel(c), num_frames,
-                                         dest_channel);
+                                         dest_channel, c);
     } else {
       const float* temp_channel = data->channel(c);
       for (int i = 0; i < num_frames; ++i) {

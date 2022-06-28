@@ -23,12 +23,11 @@ class PostProcessingPipeline {
  public:
   virtual ~PostProcessingPipeline() = default;
 
-  // Returns the rendering delay in seconds.
-  virtual double ProcessFrames(float* data,
-                               int num_frames,
-                               float current_multiplier,
-                               float target_volume,
-                               bool is_silence) = 0;
+  virtual void ProcessFrames(float* data,
+                             int num_frames,
+                             float current_multiplier,
+                             float target_volume,
+                             bool is_silence) = 0;
   virtual float* GetOutputBuffer() = 0;
   virtual int NumOutputChannels() const = 0;
 
@@ -40,6 +39,8 @@ class PostProcessingPipeline {
                                       const std::string& config) = 0;
   virtual void SetContentType(AudioContentType content_type) = 0;
   virtual void UpdatePlayoutChannel(int channel) = 0;
+  // Returns the rendering delay in seconds.
+  virtual double GetDelaySeconds() = 0;
 };
 
 class PostProcessingPipelineFactory {
