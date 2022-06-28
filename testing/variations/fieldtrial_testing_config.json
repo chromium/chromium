@@ -1367,6 +1367,37 @@
             ]
         }
     ],
+    "AutofillSaveCardUiExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledEncryptedAndSecure",
+                    "params": {
+                        "autofill_save_card_ui_experiment_selector_in_number": "2"
+                    },
+                    "enable_features": [
+                        "AutofillSaveCardUiExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledFasterAndProtected",
+                    "params": {
+                        "autofill_save_card_ui_experiment_selector_in_number": "1"
+                    },
+                    "enable_features": [
+                        "AutofillSaveCardUiExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillServerTypeTakesPrecedence": [
         {
             "platforms": [
