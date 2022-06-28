@@ -228,7 +228,7 @@ TEST_F(GinJavaMethodInvocationHelperTest, HandleObjectIsGone) {
   helper->Invoke();
   EXPECT_TRUE(object_delegate->get_local_ref_called());
   EXPECT_TRUE(helper->HoldsPrimitiveResult());
-  EXPECT_TRUE(helper->GetPrimitiveResult().GetListDeprecated().empty());
+  EXPECT_TRUE(helper->GetPrimitiveResult().empty());
   EXPECT_EQ(kGinJavaBridgeObjectIsGone, helper->GetInvocationError());
 }
 
@@ -279,7 +279,7 @@ TEST_F(GinJavaMethodInvocationHelperTest, HandleMethodNotFound) {
   helper->Invoke();
   EXPECT_TRUE(object_delegate->find_method_called());
   EXPECT_TRUE(helper->HoldsPrimitiveResult());
-  EXPECT_TRUE(helper->GetPrimitiveResult().GetListDeprecated().empty());
+  EXPECT_TRUE(helper->GetPrimitiveResult().empty());
   EXPECT_EQ(kGinJavaBridgeMethodNotFound, helper->GetInvocationError());
 }
 
@@ -338,7 +338,7 @@ TEST_F(GinJavaMethodInvocationHelperTest, HandleGetClassInvocation) {
   EXPECT_TRUE(object_delegate->find_method_called());
   EXPECT_TRUE(object_delegate->get_class_called());
   EXPECT_TRUE(helper->HoldsPrimitiveResult());
-  EXPECT_TRUE(helper->GetPrimitiveResult().GetListDeprecated().empty());
+  EXPECT_TRUE(helper->GetPrimitiveResult().empty());
   EXPECT_EQ(kGinJavaBridgeAccessToObjectGetClassIsBlocked,
             helper->GetInvocationError());
 }
