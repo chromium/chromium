@@ -140,8 +140,8 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     if (group->saved_tabs.empty())
       return;
-    chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(), group,
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB);
+    chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(),
+                              group->group_id, group->saved_tabs.size());
   }
 }
 
