@@ -83,13 +83,18 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Updates or creates |color_transform_| for YUV-to-RGB conversion.
   void UpdateColorTransform(const gfx::ColorSpace& frame_cs, int bit_depth);
 
-  // Renders |image| in |buffer|. Returns whether |image| was rendered
-  // successfully.
-  bool RenderImage(const avifImage* image, ImageFrame* buffer);
+  // Renders the rows [from_row, *to_row) of |image| to |buffer|. Returns
+  // whether |image| was rendered successfully. On return, the in/out argument
+  // |*to_row| may be decremented in case of subsampled chroma needing more
+  // data.
+  bool RenderImage(const avifImage* image,
+                   int from_row,
+                   int* to_row,
+                   ImageFrame* buffer);
 
-  // Applies color profile correction to the pixel data for |buffer|, if
-  // desired.
-  void ColorCorrectImage(ImageFrame* buffer);
+  // Applies color profile correction to the rows [from_row, to_row) of
+  // |buffer|, if desired.
+  void ColorCorrectImage(int from_row, int to_row, ImageFrame* buffer);
 
   bool have_parsed_current_data_ = false;
   // The bit depth from the container.
@@ -98,6 +103,8 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
   bool progressive_ = false;
+  // Number of displayed rows for a non-progressive still image.
+  int incrementally_displayed_height_ = 0;
   // The YUV format from the container.
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   wtf_size_t decoded_frame_count_ = 0;
@@ -110,6 +117,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   std::unique_ptr<gfx::ColorTransform> color_transform_;
 
   const AnimationOption animation_option_;
+
+  // Used temporarily during incremental decoding.
+  std::vector<uint32_t> previous_last_decoded_row_;
 };
 
 }  // namespace blink
