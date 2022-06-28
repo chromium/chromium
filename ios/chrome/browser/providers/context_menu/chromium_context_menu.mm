@@ -15,9 +15,17 @@ bool AddContextMenuElements(NSMutableArray<UIMenuElement*>* menu_elements,
                             ChromeBrowserState* browser_state,
                             web::WebState* web_state,
                             web::ContextMenuParams params,
-                            UIViewController* presentingViewController) {
+                            UIViewController* presenting_view_controller) {
   // Chromium does not add elements to the context menu.
   return false;
+}
+
+ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
+    ChromeBrowserState* browser_state,
+    web::WebState* web_state,
+    web::ContextMenuParams params,
+    UIViewController* presenting_view_controller) {
+  return nil;
 }
 
 }  // namespace provider
