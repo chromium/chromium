@@ -108,15 +108,11 @@ class GnGenerator(object):
     """
     args = []
 
-    # build/config/ios/ios_sdk.gni asserts that goma is not enabled when
-    # building Official, so ignore the value of goma.enabled when creating
-    # args.gn for Official.
-    if self._config != 'Official':
-      if self._settings.getboolean('goma', 'enabled'):
-        args.append(('use_goma', True))
-        goma_dir = self._settings.getstring('goma', 'install')
-        if goma_dir:
-          args.append(('goma_dir', '"%s"' % os.path.expanduser(goma_dir)))
+    if self._settings.getboolean('goma', 'enabled'):
+      args.append(('use_goma', True))
+      goma_dir = self._settings.getstring('goma', 'install')
+      if goma_dir:
+        args.append(('goma_dir', '"%s"' % os.path.expanduser(goma_dir)))
 
     is_debug = self._config == 'Debug'
     official = self._config == 'Official'
