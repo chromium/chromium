@@ -25,12 +25,12 @@ namespace trace_event {
 struct BASE_EXPORT TraceSourceLocation {
   const char* function_name = nullptr;
   const char* file_name = nullptr;
-  size_t line_number = 0;
+  int line_number = 0;
 
   TraceSourceLocation() = default;
   TraceSourceLocation(const char* function_name,
                       const char* file_name,
-                      size_t line_number)
+                      int line_number)
       : function_name(function_name),
         file_name(file_name),
         line_number(line_number) {}
@@ -40,7 +40,7 @@ struct BASE_EXPORT TraceSourceLocation {
   explicit TraceSourceLocation(const base::Location& location)
       : function_name(location.function_name()),
         file_name(location.file_name()),
-        line_number(static_cast<size_t>(location.line_number())) {}
+        line_number(location.line_number()) {}
 
   bool operator==(const TraceSourceLocation& other) const {
     return file_name == other.file_name &&
@@ -73,10 +73,10 @@ template <>
 struct hash<base::trace_event::TraceSourceLocation> {
   std::size_t operator()(
       const base::trace_event::TraceSourceLocation& loc) const {
-    static_assert(sizeof(base::trace_event::TraceSourceLocation) ==
-                      2 * sizeof(const char*) + sizeof(size_t),
-                  "Padding will cause uninitialized memory to be hashed.");
-    return base::FastHash(base::as_bytes(base::make_span(&loc, 1)));
+    return base::HashInts(
+        base::HashInts(reinterpret_cast<uintptr_t>(loc.file_name),
+                       reinterpret_cast<uintptr_t>(loc.function_name)),
+        static_cast<size_t>(loc.line_number));
   }
 };
 
@@ -84,10 +84,7 @@ template <>
 struct hash<base::trace_event::UnsymbolizedSourceLocation> {
   std::size_t operator()(
       const base::trace_event::UnsymbolizedSourceLocation& module) const {
-    static_assert(sizeof(base::trace_event::UnsymbolizedSourceLocation) ==
-                      2 * sizeof(uint64_t),
-                  "Padding will cause uninitialized memory to be hashed.");
-    return base::FastHash(base::as_bytes(base::make_span(&module, 1)));
+    return base::HashInts(module.mapping_id, module.rel_pc);
   }
 };
 

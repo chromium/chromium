@@ -37,7 +37,7 @@ const char testrawstring[] = "Hello new world"; // Test raw string writing
 // Test raw char16_t writing, assumes UTF16 encoding is ANSI for alpha chars.
 const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
 const char testdata[] = "AAA\0BBB\0";
-const int testdatalen = std::size(testdata) - 1;
+const size_t testdatalen = std::size(testdata) - 1;
 
 // checks that the results can be read correctly from the Pickle
 void VerifyResult(const Pickle& pickle) {
@@ -98,7 +98,7 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_EQ(testrawstring16, outstringpiece16);
 
   const char* outdata;
-  int outdatalen;
+  size_t outdatalen;
   EXPECT_TRUE(iter.ReadData(&outdata, &outdatalen));
   EXPECT_EQ(testdatalen, outdatalen);
   EXPECT_EQ(memcmp(testdata, outdata, outdatalen), 0);
@@ -442,8 +442,7 @@ TEST(PickleTest, Resize) {
   // note that any data will have a 4-byte header indicating the size
   const size_t payload_size_after_header = unit - sizeof(uint32_t);
   Pickle pickle;
-  pickle.WriteData(
-      data_ptr, static_cast<int>(payload_size_after_header - sizeof(uint32_t)));
+  pickle.WriteData(data_ptr, payload_size_after_header - sizeof(uint32_t));
   size_t cur_payload = payload_size_after_header;
 
   // note: we assume 'unit' is a power of 2
@@ -451,7 +450,7 @@ TEST(PickleTest, Resize) {
   EXPECT_EQ(pickle.payload_size(), payload_size_after_header);
 
   // fill out a full page (noting data header)
-  pickle.WriteData(data_ptr, static_cast<int>(unit - sizeof(uint32_t)));
+  pickle.WriteData(data_ptr, unit - sizeof(uint32_t));
   cur_payload += unit;
   EXPECT_EQ(unit * 2, pickle.capacity_after_header());
   EXPECT_EQ(cur_payload, pickle.payload_size());
@@ -531,9 +530,9 @@ TEST(PickleTest, ZeroLength) {
 
   PickleIterator iter(pickle);
   const char* outdata;
-  int outdatalen;
+  size_t outdatalen;
   EXPECT_TRUE(iter.ReadData(&outdata, &outdatalen));
-  EXPECT_EQ(0, outdatalen);
+  EXPECT_EQ(0u, outdatalen);
   // We can't assert that outdata is NULL.
 }
 

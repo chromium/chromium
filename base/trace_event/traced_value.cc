@@ -153,7 +153,7 @@ class PickleWriter final : public TracedValue::Writer {
 
     BeginDictionary(name);
     pickle_.WriteBytes(pickle_writer->pickle_.payload(),
-                       static_cast<int>(pickle_writer->pickle_.payload_size()));
+                       pickle_writer->pickle_.payload_size());
     EndDictionary();
   }
 
@@ -163,7 +163,7 @@ class PickleWriter final : public TracedValue::Writer {
 
     BeginDictionaryWithCopiedName(name);
     pickle_.WriteBytes(pickle_writer->pickle_.payload(),
-                       static_cast<int>(pickle_writer->pickle_.payload_size()));
+                       pickle_writer->pickle_.payload_size());
     EndDictionary();
   }
 

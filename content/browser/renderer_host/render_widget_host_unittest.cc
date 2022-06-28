@@ -795,7 +795,7 @@ class RenderWidgetHostTest : public testing::Test {
   const WebInputEvent* GetInputEventFromMessage(const IPC::Message& message) {
     base::PickleIterator iter(message);
     const char* data;
-    int data_length;
+    size_t data_length;
     if (!iter.ReadData(&data, &data_length))
       return nullptr;
     return reinterpret_cast<const WebInputEvent*>(data);
