@@ -644,3 +644,39 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   EXPECT_TRUE(request->finished());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ChromePermissionRequestManagerAdaptiveQuietUiActivationTest
+    : public ChromePermissionRequestManagerTest {
+ public:
+  ChromePermissionRequestManagerAdaptiveQuietUiActivationTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts,
+          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
+            "true"}}}},
+        {features::kPermissionPredictions});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromePermissionRequestManagerAdaptiveQuietUiActivationTest,
+       EnableDisabledQuietNotificationToggleUponThreeConsecutiveBlocks) {
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kEnableQuietNotificationPermissionUi));
+
+  for (const char* origin_spec :
+       {"https://a.com", "https://b.com", "https://c.com"}) {
+    GURL requesting_origin(origin_spec);
+    NavigateAndCommit(requesting_origin);
+    permissions::MockPermissionRequest notification_request(
+        requesting_origin, permissions::RequestType::kNotifications);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         &notification_request);
+    WaitForBubbleToBeShown();
+    Deny();
+  }
+
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kEnableQuietNotificationPermissionUi));
+}
