@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/tab_group_info.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
@@ -90,7 +91,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   absl::optional<std::string> handler_id;
   absl::optional<std::vector<GURL>> urls;
   absl::optional<int32_t> active_tab_index;
-  absl::optional<apps::mojom::IntentPtr> intent;
+  absl::optional<apps::IntentPtr> intent;
   absl::optional<std::vector<base::FilePath>> file_paths;
   absl::optional<bool> app_type_browser;
   absl::optional<std::string> app_name;

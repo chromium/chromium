@@ -255,8 +255,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     app_launch_info->file_paths = app_restore_data->file_paths;
     if (app_restore_data->intent.has_value() &&
         app_restore_data->intent.value()) {
-      app_launch_info->intent =
-          apps::ConvertMojomIntentToIntent(app_restore_data->intent.value());
+      app_launch_info->intent = app_restore_data->intent.value()->Clone();
     }
   }
 

@@ -254,8 +254,8 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         it.second->display_id.value(),
         it.second->file_paths.has_value() ? it.second->file_paths.value()
                                           : std::vector<base::FilePath>{},
-        it.second->intent.has_value()
-            ? apps::ConvertMojomIntentToIntent(it.second->intent.value())
+        it.second->intent.has_value() && it.second->intent.value()
+            ? it.second->intent.value()->Clone()
             : nullptr);
     params.restore_id = it.first;
     proxy->LaunchAppWithParams(std::move(params));

@@ -457,8 +457,7 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
       ::full_restore::SaveAppLaunchInfo(
           file_path,
           std::make_unique<::app_restore::AppLaunchInfo>(
-              app_id, event_flags,
-              apps::ConvertMojomIntentToIntent(data_it.second->intent.value()),
+              app_id, event_flags, data_it.second->intent.value()->Clone(),
               arc_session_id, display_id));
     } else {
       ::full_restore::SaveAppLaunchInfo(
@@ -643,10 +642,10 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
 
   if (data_it->second->intent.has_value()) {
     DCHECK(data_it->second->intent.value());
-    proxy->LaunchAppWithIntent(app_id, data_it->second->event_flag.value(),
-                               data_it->second->intent->Clone(),
-                               apps::mojom::LaunchSource::kFromFullRestore,
-                               std::move(window_info));
+    proxy->LaunchAppWithIntent(
+        app_id, data_it->second->event_flag.value(),
+        apps::ConvertIntentToMojomIntent(data_it->second->intent.value()),
+        apps::mojom::LaunchSource::kFromFullRestore, std::move(window_info));
   } else {
     proxy->Launch(app_id, data_it->second->event_flag.value(),
                   apps::mojom::LaunchSource::kFromFullRestore,
