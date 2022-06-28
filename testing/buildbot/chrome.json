@@ -1966,7 +1966,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R102-14695.107.0",
+        "cros_img": "atlas-release/R103-14816.82.0",
         "name": "lacros_all_tast_tests ATLAS_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2030,7 +2030,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R102-14695.107.0",
+        "cros_img": "eve-release/R103-14816.82.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2139,7 +2139,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14695.107.0",
+        "cros_img": "hana-release/R103-14816.82.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2244,7 +2244,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14695.107.0",
+        "cros_img": "hana-release/R103-14816.82.0",
         "name": "ozone_unittests HANA_RELEASE_STABLE",
         "swarming": {},
         "test": "ozone_unittests",
@@ -2335,7 +2335,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14695.107.0",
+        "cros_img": "hana-release/R103-14816.82.0",
         "name": "viz_unittests HANA_RELEASE_STABLE",
         "swarming": {},
         "test": "viz_unittests",
