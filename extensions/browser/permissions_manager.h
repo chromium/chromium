@@ -154,7 +154,7 @@ class PermissionsManager : public KeyedService {
 
  private:
   // Called whenever `user_permissions_` have changed.
-  void OnUserPermissionsSettingsChanged() const;
+  void OnUserPermissionsSettingsChanged();
 
   // Removes `origin` from the list of sites the user has allowed all
   // extensions to run on and saves the change to `extension_prefs_`. Returns if
@@ -165,6 +165,14 @@ class PermissionsManager : public KeyedService {
   // extensions from running on and saves the change to `extension_prefs_`.
   // Returns if the site has been removed.
   bool RemoveRestrictedSiteAndUpdatePrefs(const url::Origin& origin);
+
+  // Updates the given `extension` with the new `user_permitted_set` of sites
+  // all extensions are allowed to run on. Note that this only updates the
+  // permissions in the browser; updates must then be sent separately to the
+  // renderer and network service.
+  void UpdatePermissionsWithUserSettings(
+      const Extension& extension,
+      const PermissionSet& user_permitted_set);
 
   // Notifies observers of a permissions change.
   void NotifyObserversOfChange();
