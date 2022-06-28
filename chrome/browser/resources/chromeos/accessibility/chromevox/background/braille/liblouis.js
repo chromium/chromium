@@ -223,6 +223,9 @@ LibLouis.Translator = class {
       callback(null /*cells*/, null /*textToBraille*/, null /*brailleToText*/);
       return;
     }
+    // TODO(https://crbug.com/1340093): the upstream LibLouis translations for
+    // form type output is broken.
+    formTypeMap = 0;
     const message = {
       'table_names': this.tableNames_,
       text,
