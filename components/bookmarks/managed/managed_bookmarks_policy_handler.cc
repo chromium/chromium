@@ -40,8 +40,8 @@ void ManagedBookmarksPolicyHandler::ApplyPolicySettings(
     return;
 
   prefs->SetString(prefs::kManagedBookmarksFolderName, GetFolderName(*value));
-  base::Value filtered(FilterBookmarks(std::move(*value).TakeListDeprecated()));
-  prefs->SetValue(prefs::kManagedBookmarks, std::move(filtered));
+  base::Value::List filtered(FilterBookmarks(std::move(value->GetList())));
+  prefs->SetValue(prefs::kManagedBookmarks, base::Value(std::move(filtered)));
 }
 
 std::string ManagedBookmarksPolicyHandler::GetFolderName(
@@ -62,43 +62,43 @@ std::string ManagedBookmarksPolicyHandler::GetFolderName(
   return std::string();
 }
 
-base::Value::ListStorage ManagedBookmarksPolicyHandler::FilterBookmarks(
-    base::Value::ListStorage list) {
+base::Value::List ManagedBookmarksPolicyHandler::FilterBookmarks(
+    base::Value::List list) {
   // Move over conforming values found.
-  base::Value::ListStorage out;
+  base::Value::List out;
 
   for (base::Value& item : list) {
     if (!item.is_dict())
       continue;
 
-    const std::string* name =
-        item.FindStringKey(ManagedBookmarksTracker::kName);
-    const std::string* url = item.FindStringKey(ManagedBookmarksTracker::kUrl);
-    base::Value* children =
-        item.FindListKey(ManagedBookmarksTracker::kChildren);
+    base::Value::Dict& dict = item.GetDict();
+    const std::string* name = dict.FindString(ManagedBookmarksTracker::kName);
+    const std::string* url = dict.FindString(ManagedBookmarksTracker::kUrl);
+    base::Value::List* children =
+        dict.FindList(ManagedBookmarksTracker::kChildren);
     // Every bookmark must have a name, and then either a URL of a list of
     // child bookmarks.
     if (!name || (!url && !children))
       continue;
 
     if (children) {
-      // Ignore the URL if this bookmark has child nodes.
-      item.RemoveKey(ManagedBookmarksTracker::kUrl);
-      *children = base::Value(
-          FilterBookmarks(std::move(*children).TakeListDeprecated()));
+      *children = FilterBookmarks(std::move(*children));
+      // Ignore the URL if this bookmark has child nodes. Note that this needs
+      // to be after `children` is overwritten, in case removing an entry from
+      // the dictionary invalidates its pointers.
+      dict.Remove(ManagedBookmarksTracker::kUrl);
     } else {
       // Make sure the URL is valid before passing a bookmark to the pref.
-      item.RemoveKey(ManagedBookmarksTracker::kChildren);
+      dict.Remove(ManagedBookmarksTracker::kChildren);
       GURL gurl = url_formatter::FixupURL(*url, std::string());
       if (!gurl.is_valid()) {
         continue;
       }
-      item.SetStringKey(ManagedBookmarksTracker::kUrl, gurl.spec());
+      dict.Set(ManagedBookmarksTracker::kUrl, gurl.spec());
     }
 
-    out.push_back(std::move(item));
+    out.Append(std::move(item));
   }
-  list.clear();
   return out;
 }
 
