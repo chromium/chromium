@@ -15,6 +15,7 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_info.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -135,6 +136,16 @@ class RestoreDataTest : public testing::Test {
   RestoreDataTest& operator=(const RestoreDataTest&) = delete;
   ~RestoreDataTest() override = default;
 
+  apps::IntentPtr MakeIntent(const std::string& action,
+                             const std::string& mime_type,
+                             const std::string& share_text) {
+    auto intent = std::make_unique<apps::Intent>(action);
+    intent->mime_type = mime_type;
+    intent->share_text = share_text;
+    return intent;
+  }
+
+  // TODO(crbug.com/1253250): Remove and use the non mojom intent.
   apps::mojom::IntentPtr CreateIntent(const std::string& action,
                                       const std::string& mime_type,
                                       const std::string& share_text) {
@@ -153,7 +164,7 @@ class RestoreDataTest : public testing::Test {
             WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
             std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                         base::FilePath(kFilePath2)},
-            CreateIntent(kIntentActionSend, kMimeType, kShareText1));
+            MakeIntent(kIntentActionSend, kMimeType, kShareText1));
 
     std::unique_ptr<AppLaunchInfo> app_launch_info2 =
         std::make_unique<AppLaunchInfo>(
@@ -161,7 +172,7 @@ class RestoreDataTest : public testing::Test {
             apps::mojom::LaunchContainer::kLaunchContainerTab,
             WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
             std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-            CreateIntent(kIntentActionView, kMimeType, kShareText2));
+            MakeIntent(kIntentActionView, kMimeType, kShareText2));
     app_launch_info2->app_type_browser = kAppTypeBrower2;
     app_launch_info2->tab_group_infos.emplace();
     PopulateTestTabgroups(app_launch_info2->tab_group_infos.value());
@@ -172,7 +183,7 @@ class RestoreDataTest : public testing::Test {
             apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_POPUP, kDisplayId2,
             std::vector<base::FilePath>{base::FilePath(kFilePath1)},
-            CreateIntent(kIntentActionView, kMimeType, kShareText1));
+            MakeIntent(kIntentActionView, kMimeType, kShareText1));
 
     restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
     restore_data().AddAppLaunchInfo(std::move(app_launch_info2));

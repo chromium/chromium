@@ -46,6 +46,7 @@
 #include "components/favicon_base/favicon_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
@@ -254,7 +255,8 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     app_launch_info->file_paths = app_restore_data->file_paths;
     if (app_restore_data->intent.has_value() &&
         app_restore_data->intent.value()) {
-      app_launch_info->intent = app_restore_data->intent.value()->Clone();
+      app_launch_info->intent =
+          apps::ConvertMojomIntentToIntent(app_restore_data->intent.value());
     }
   }
 

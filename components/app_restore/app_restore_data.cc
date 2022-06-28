@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace app_restore {
@@ -270,7 +271,8 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   urls = std::move(app_launch_info->urls);
   active_tab_index = std::move(app_launch_info->active_tab_index);
   file_paths = std::move(app_launch_info->file_paths);
-  intent = std::move(app_launch_info->intent);
+  if (app_launch_info->intent.has_value() && app_launch_info->intent.value())
+    intent = apps::ConvertIntentToMojomIntent(app_launch_info->intent.value());
   app_type_browser = std::move(app_launch_info->app_type_browser);
   app_name = std::move(app_launch_info->app_name);
   tab_group_infos = std::move(app_launch_info->tab_group_infos);
@@ -529,8 +531,8 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
   app_launch_info->handler_id = handler_id;
   app_launch_info->urls = urls;
   app_launch_info->file_paths = file_paths;
-  if (intent.has_value())
-    app_launch_info->intent = intent->Clone();
+  if (intent.has_value() && intent.value())
+    app_launch_info->intent = apps::ConvertMojomIntentToIntent(intent.value());
   app_launch_info->app_type_browser = app_type_browser;
   app_launch_info->app_name = app_name;
   app_launch_info->tab_group_infos = tab_group_infos;

@@ -1000,7 +1000,7 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
-        ConvertIntentToMojomIntent(params_for_restore.intent));
+        std::move(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile()->GetPath(),
                                     std::move(launch_info));
   }

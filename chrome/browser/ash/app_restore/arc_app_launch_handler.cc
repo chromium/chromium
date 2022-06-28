@@ -45,6 +45,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/display.h"
@@ -454,9 +455,11 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     if (data_it.second->intent.has_value()) {
       DCHECK(data_it.second->intent.value());
       ::full_restore::SaveAppLaunchInfo(
-          file_path, std::make_unique<::app_restore::AppLaunchInfo>(
-                         app_id, event_flags, data_it.second->intent->Clone(),
-                         arc_session_id, display_id));
+          file_path,
+          std::make_unique<::app_restore::AppLaunchInfo>(
+              app_id, event_flags,
+              apps::ConvertMojomIntentToIntent(data_it.second->intent.value()),
+              arc_session_id, display_id));
     } else {
       ::full_restore::SaveAppLaunchInfo(
           file_path, std::make_unique<::app_restore::AppLaunchInfo>(

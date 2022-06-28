@@ -78,7 +78,7 @@ content::WebContents* LaunchAppWithParamsImpl(
         params_for_restore.app_id, session_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
-        apps::ConvertIntentToMojomIntent(params_for_restore.intent));
+        std::move(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
 
     return web_contents;
@@ -104,7 +104,7 @@ content::WebContents* LaunchAppWithParamsImpl(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
-        apps::ConvertIntentToMojomIntent(params_for_restore.intent));
+        std::move(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
   } else {
     RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,

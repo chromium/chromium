@@ -465,7 +465,8 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   ::full_restore::SaveAppLaunchInfo(
       file_path,
       std::make_unique<app_restore::AppLaunchInfo>(
-          app_id, event_flags, std::move(intent), session_id, display_id));
+          app_id, event_flags, apps::ConvertMojomIntentToIntent(intent),
+          session_id, display_id));
 
   std::move(callback).Run(/*success=*/true);
 }
@@ -905,8 +906,9 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     full_restore::SaveAppLaunchInfo(
         profile_->GetPath(),
         std::make_unique<app_restore::AppLaunchInfo>(
-            app_id, event_flags, std::move(intent_for_full_restore), session_id,
-            display_id));
+            app_id, event_flags,
+            apps::ConvertMojomIntentToIntent(intent_for_full_restore),
+            session_id, display_id));
     std::move(callback).Run(/*success=*/true);
     return;
   }

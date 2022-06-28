@@ -140,8 +140,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithParams(
   if (ShouldSaveToFullRestore(proxy(), params.app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params.app_id, params.container, params.disposition, params.display_id,
-        std::move(params.launch_files),
-        ConvertIntentToMojomIntent(params.intent));
+        std::move(params.launch_files), std::move(params.intent));
     full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
                                     std::move(launch_info));
   }
@@ -223,7 +222,8 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
-        std::vector<base::FilePath>{}, std::move(intent));
+        std::vector<base::FilePath>{},
+        apps::ConvertMojomIntentToIntent(intent));
     full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
                                     std::move(launch_info));
   }
