@@ -47,6 +47,13 @@ void ContentIndexServiceImpl::CreateForFrame(
 
   RenderProcessHost* render_process_host = render_frame_host->GetProcess();
   DCHECK(render_process_host);
+
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage(
+        "Content Index API is not allowed in a fenced frame");
+    return;
+  }
+
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
 
@@ -73,6 +80,16 @@ void ContentIndexServiceImpl::CreateForWorker(
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      storage_partition->GetServiceWorkerContext()->GetLiveRegistration(
+          info.registration_id);
+  if (registration && registration->ancestor_frame_type() ==
+                          blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage(
+        "Content Index API is not allowed in a fenced frame");
+    return;
+  }
 
   mojo::MakeSelfOwnedReceiver(std::make_unique<ContentIndexServiceImpl>(
                                   info.storage_key.origin(),
