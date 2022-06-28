@@ -780,7 +780,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1157518")
     public void testAdjustBackGroundViewAccessibilityImportance() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
