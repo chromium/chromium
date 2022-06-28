@@ -22,8 +22,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
@@ -41,14 +40,16 @@ std::unique_ptr<views::View> CreateButtonContainer() {
           .SetID(static_cast<int>(
               PasswordChangeRunView::ChildrenViewsIds::kButtonContainer))
           .Build();
-  views::BoxLayout* layout_manager =
-      container->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  // Buttons are right-aligned.
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  layout_manager->set_between_child_spacing(
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(/*top=*/0,
+                            /*left=*/
+                            views::LayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                            /*bottom=*/0, /*right=*/0));
   return container;
 }
 
@@ -84,14 +85,21 @@ void PasswordChangeRunView::Show() {
 void PasswordChangeRunView::CreateView() {
   // TODO(crbug.com/1322419): Add IDs to elements.
   DCHECK(controller_);
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  layout->set_inside_border_insets(
-      views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
-  layout->set_between_child_spacing(
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetInteriorMargin(
+          views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG))
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true))
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(
+                      /*top=*/views::LayoutProvider::Get()->GetDistanceMetric(
+                          views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                      /*left=*/0, /*bottom=*/0, /*right=*/0));
 
   top_icon_ = AddChildView(views::Builder<views::ImageView>().Build());
 
@@ -103,19 +111,30 @@ void PasswordChangeRunView::CreateView() {
   title_container_ = AddChildView(
       views::Builder<views::View>()
           .SetID(static_cast<int>(ChildrenViewsIds::kTitleContainer))
-          .SetLayoutManager(std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kVertical))
           .Build());
+  title_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true));
 
   body_ = AddChildView(views::Builder<views::View>()
                            .SetID(static_cast<int>(ChildrenViewsIds::kBody))
                            .Build());
-  auto* body_layout_manager =
-      body_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  body_layout_manager->set_between_child_spacing(
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+  body_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true))
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(
+                      /*top=*/views::LayoutProvider::Get()->GetDistanceMetric(
+                          views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                      /*left=*/0, /*bottom=*/0, /*right=*/0));
 }
 
 void PasswordChangeRunView::SetTopIcon(
