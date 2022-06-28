@@ -5,6 +5,7 @@
 #import "ui/base/cocoa/nsmenu_additions.h"
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 @interface NSMenuAdditionsUnitTestMenuItem : NSMenuItem
@@ -132,4 +133,27 @@ TEST(NSMenuAdditionsTest, TestMenuItemForKeyEquivalentEvent) {
 
   event = KeyEvent(NSEventModifierFlagCommand, @"g");
   EXPECT_EQ(nil, [main_menu cr_menuItemForKeyEquivalentEvent:event]);
+}
+
+// Tests that a set pre-search block is executed during calls to
+// -[NSMenu cr_menuItemForKeyEquivalentEvent:].
+TEST(NSMenuAdditionsTest, TestPreSearchBlock) {
+  __block bool block_was_called = false;
+
+  [NSMenu cr_setMenuItemForKeyEquivalentEventPreSearchBlock:^{
+    block_was_called = true;
+  }];
+
+  NSMenu* main_menu = Menu(@"Main Menu");
+  NSEvent* event = KeyEvent(NSEventModifierFlagCommand, @"c");
+  [main_menu cr_menuItemForKeyEquivalentEvent:event];
+
+  EXPECT_TRUE(block_was_called);
+
+  // Setting the block again should cause a crash (the API only supports a
+  // single pre-search block).
+  EXPECT_CHECK_DEATH(
+      [NSMenu cr_setMenuItemForKeyEquivalentEventPreSearchBlock:^{
+        block_was_called = true;
+      }]);
 }

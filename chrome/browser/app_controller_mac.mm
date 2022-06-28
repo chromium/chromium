@@ -111,6 +111,7 @@
 #include "extensions/browser/extension_system.h"
 #include "net/base/filename_util.h"
 #include "net/base/mac/url_conversions.h"
+#import "ui/base/cocoa/nsmenu_additions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/native_theme/native_theme_mac.h"
@@ -578,6 +579,22 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 @implementation AppController
 
 @synthesize startupComplete = _startupComplete;
+
++ (void)initialize {
+  if (self == [AppController self]) {
+    // -[NSMenu cr_menuItemForKeyEquivalentEvent:] lives in /content, but
+    // we need to execute special update code before the search begins.
+    // Setting this block gives us the hook we need.
+    [NSMenu cr_setMenuItemForKeyEquivalentEventPreSearchBlock:^{
+      // We avoid calling -[NSMenuDelegate menuNeedsUpdate:] on each submenu's
+      // delegate as that can be slow. Instead, we update the relevant
+      // NSMenuItems if [NSApp delegate] is an instance of AppController. See
+      // https://crbug.com/851260#c4 .
+      [base::mac::ObjCCast<AppController>([NSApp delegate])
+          updateMenuItemKeyEquivalents];
+    }];
+  }
+}
 
 - (void)dealloc {
   [[_closeTabMenuItem menu] setDelegate:nil];

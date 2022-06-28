@@ -4,9 +4,15 @@
 
 #import "ui/base/cocoa/nsmenu_additions.h"
 
+#include "base/check.h"
+#include "base/mac/scoped_nsobject.h"
 #import "ui/base/cocoa/nsmenuitem_additions.h"
 
 namespace {
+
+typedef void (^PreSearchBlock)(void);
+
+PreSearchBlock g_pre_search_block;
 
 NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
   NSMenuItem* result = nil;
@@ -31,9 +37,19 @@ NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
 
 @implementation NSMenu (ChromeAdditions)
 
++ (void)cr_setMenuItemForKeyEquivalentEventPreSearchBlock:
+    (void (^)(void))block {
+  CHECK(g_pre_search_block == nil);
+  g_pre_search_block = block;
+}
+
 - (NSMenuItem*)cr_menuItemForKeyEquivalentEvent:(NSEvent*)event {
   if ([event type] != NSEventTypeKeyDown)
     return nil;
+
+  if (g_pre_search_block) {
+    g_pre_search_block();
+  }
 
   // Validate menu items before searching.
   [self update];

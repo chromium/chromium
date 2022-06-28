@@ -9,6 +9,15 @@
 
 @interface NSMenu (ChromeAdditions)
 
+// Sets a block that cr_menuItemForKeyEquivalentEvent: calls before
+// beginning its search for a matching menu item. Useful for code
+// outside of /content to arrange for code execution (to perform custom
+// menu item updates, for example) before the search begins.
+//
+// This method does not support multiple pre-search blocks. It will
+// CHECK() if called after a block has already been set.
++ (void)cr_setMenuItemForKeyEquivalentEventPreSearchBlock:(void (^)(void))block;
+
 // Searches the menu and its submenus for the item with the keyboard
 // equivalent matching `event`. Returns nil if no corresponding
 // menu item exists.
