@@ -87,6 +87,7 @@ group("gn_all") {
     "//components/gwp_asan:gwp_asan_unittests",
     "//infra/orchestrator:orchestrator_all",
     "//net:net_unittests",
+    "//sandbox:sandbox_unittests",
     "//services:services_unittests",
     "//services/service_manager/public/cpp",
     "//skia:skia_unittests",
