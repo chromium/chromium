@@ -1371,6 +1371,9 @@ std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
 }
 
 void HTMLDocumentParser::ScanInBackground(const String& source) {
+  if (task_runner_state_->IsSynchronous() || !GetDocument()->Url().IsValid())
+    return;
+
   if (!base::FeatureList::IsEnabled(features::kPrecompileInlineScripts))
     return;
 
