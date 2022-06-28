@@ -45,26 +45,25 @@ constexpr char kInputFieldTypeTel[] = "input-type-tel";
 constexpr char kInputFieldTypeNumber[] = "input-type-number";
 constexpr char kInputFieldTypePassword[] = "input-type-password";
 
-class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
+class VirtualKeyboardTest : public WebEngineBrowserTest {
  public:
   VirtualKeyboardTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
+    set_test_server_root(base::FilePath(kTestServerRoot));
   }
   ~VirtualKeyboardTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kVirtualKeyboard, features::kKeyboardInput}, {});
-    cr_fuchsia::WebEngineBrowserTest::SetUp();
+    WebEngineBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
+    WebEngineBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     fuchsia::web::CreateFrameParams params;
-    frame_for_test_ =
-        cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+    frame_for_test_ = FrameForTest::Create(context(), std::move(params));
 
     component_context_.emplace(
         base::TestComponentContextForProcess::InitialState::kCloneAll);
@@ -80,7 +79,7 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
     fuchsia::web::NavigationControllerPtr controller;
     frame_for_test_.ptr()->GetNavigationController(controller.NewRequest());
     const GURL test_url(embedded_test_server()->GetURL("/input_fields.html"));
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+    EXPECT_TRUE(LoadUrlAndExpectResponse(
         controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
     frame_for_test_.navigation_listener().RunUntilUrlEquals(test_url);
 
@@ -108,7 +107,7 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
     // Distance to click from the top/left extents of an input field.
     constexpr int kInputFieldClickInset = 8;
 
-    absl::optional<base::Value> result = cr_fuchsia::ExecuteJavaScript(
+    absl::optional<base::Value> result = ExecuteJavaScript(
         frame_for_test_.ptr().get(),
         base::StringPrintf("getPointInsideText('%.*s')",
                            base::saturated_cast<int>(id.length()), id.data()));
@@ -125,8 +124,8 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
   }
 
  protected:
-  cr_fuchsia::FrameForTest frame_for_test_;
-  cr_fuchsia::ScenicTestHelper scenic_test_helper_;
+  FrameForTest frame_for_test_;
+  ScenicTestHelper scenic_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   absl::optional<EnsureConnectedChecker<fuchsia::ui::input3::Keyboard>>

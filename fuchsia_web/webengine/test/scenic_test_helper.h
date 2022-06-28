@@ -10,8 +10,6 @@
 #include "fuchsia_web/webengine/browser/frame_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cr_fuchsia {
-
 // Helpers for browsertests that need to create Scenic Views.
 class ScenicTestHelper {
  public:
@@ -33,7 +31,5 @@ class ScenicTestHelper {
  protected:
   fuchsia::ui::views::ViewRef view_ref_;
 };
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_SCENIC_TEST_HELPER_H_

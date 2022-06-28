@@ -25,8 +25,7 @@ void QuitLoopIfFaviconUpdated(
   ack_callback();
 }
 
-void RunUntilFaviconUpdated(
-    cr_fuchsia::TestNavigationListener* test_navigation_listener) {
+void RunUntilFaviconUpdated(TestNavigationListener* test_navigation_listener) {
   base::RunLoop run_loop;
   test_navigation_listener->SetBeforeAckHook(
       base::BindRepeating(&QuitLoopIfFaviconUpdated, run_loop.QuitClosure()));
@@ -55,11 +54,9 @@ void ValidateFavicon(const fuchsia::web::Favicon& favicon,
 
 }  // namespace
 
-class FaviconTest : public cr_fuchsia::WebEngineBrowserTest {
+class FaviconTest : public WebEngineBrowserTest {
  public:
-  FaviconTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-  }
+  FaviconTest() { set_test_server_root(base::FilePath(kTestServerRoot)); }
   ~FaviconTest() override = default;
 
  protected:
@@ -68,17 +65,17 @@ class FaviconTest : public cr_fuchsia::WebEngineBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    frame_ = cr_fuchsia::FrameForTest::Create(context(), {});
+    frame_ = FrameForTest::Create(context(), {});
   }
 
-  cr_fuchsia::FrameForTest frame_;
+  FrameForTest frame_;
 };
 
 // Verify that favicons are not loaded by default.
 IN_PROC_BROWSER_TEST_F(FaviconTest, Disabled) {
   GURL url = embedded_test_server()->GetURL(kFaviconPageUrl);
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), {}, url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(), {},
+                                       url.spec()));
 
   frame_.navigation_listener().RunUntilUrlAndTitleEquals(url, "Favicon");
 
@@ -106,8 +103,8 @@ IN_PROC_BROWSER_TEST_F(FaviconTest, LoadAndUpdate) {
       fuchsia::web::NavigationEventListenerFlags::FAVICON);
 
   GURL url = embedded_test_server()->GetURL(kFaviconPageUrl);
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), {}, url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(), {},
+                                       url.spec()));
 
   // An empty favicon should be sent first.
   RunUntilFaviconUpdated(&frame_.navigation_listener());
@@ -122,8 +119,8 @@ IN_PROC_BROWSER_TEST_F(FaviconTest, LoadAndUpdate) {
   EXPECT_EQ(frame_.navigation_listener().current_state()->title(), "Favicon");
 
   // Update the icon from the page and verify that it's updated as expected.
-  cr_fuchsia::ExecuteJavaScript(
-      frame_.get(), "document.getElementById('favicon').href = 'favicon2.png'");
+  ExecuteJavaScript(frame_.get(),
+                    "document.getElementById('favicon').href = 'favicon2.png'");
   RunUntilFaviconUpdated(&frame_.navigation_listener());
   ValidateFavicon(frame_.navigation_listener().current_state()->favicon(), 16,
                   16, 12, 7, 0xB5A39C1A);
@@ -139,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(FaviconTest, FaviconNavigations) {
       fuchsia::web::NavigationEventListenerFlags::FAVICON);
 
   GURL url = embedded_test_server()->GetURL(kFaviconPageUrl);
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), {}, url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(), {},
+                                       url.spec()));
 
   // An empty favicon should be sent first.
   RunUntilFaviconUpdated(&frame_.navigation_listener());
@@ -155,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(FaviconTest, FaviconNavigations) {
   // Reload the same page with a different query string.
   url = embedded_test_server()->GetURL(std::string(kFaviconPageUrl) +
                                        "?favicon=favicon2.png");
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), {}, url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(), {},
+                                       url.spec()));
 
   // An empty icon should be sent when navigating to a new page.
   frame_.navigation_listener().RunUntilUrlEquals(url);

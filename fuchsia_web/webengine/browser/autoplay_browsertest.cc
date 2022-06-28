@@ -21,11 +21,9 @@ constexpr char kAutoplayVp8Url[] = "/play_video.html?autoplay=1&codecs=vp8";
 
 }  // namespace
 
-class AutoplayTest : public cr_fuchsia::WebEngineBrowserTest {
+class AutoplayTest : public WebEngineBrowserTest {
  public:
-  AutoplayTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-  }
+  AutoplayTest() { set_test_server_root(base::FilePath(kTestServerRoot)); }
   ~AutoplayTest() override = default;
 
   AutoplayTest(const AutoplayTest&) = delete;
@@ -33,21 +31,21 @@ class AutoplayTest : public cr_fuchsia::WebEngineBrowserTest {
 
   void SetUpOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->Start());
-    cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
+    WebEngineBrowserTest::SetUpOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) final {
     SetHeadlessInCommandLine(command_line);
-    cr_fuchsia::WebEngineBrowserTest::SetUpCommandLine(command_line);
+    WebEngineBrowserTest::SetUpCommandLine(command_line);
   }
 
  protected:
   // Creates a Frame with |navigation_listener_| attached and |policy|
   // applied.
-  cr_fuchsia::FrameForTest CreateFrame(fuchsia::web::AutoplayPolicy policy) {
+  FrameForTest CreateFrame(fuchsia::web::AutoplayPolicy policy) {
     fuchsia::web::CreateFrameParams params;
     params.set_autoplay_policy(policy);
-    auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+    auto frame = FrameForTest::Create(context(), std::move(params));
     return frame;
   }
 };
@@ -58,12 +56,12 @@ IN_PROC_BROWSER_TEST_F(
   const GURL kUrl(embedded_test_server()->GetURL(kAutoplayVp8Url));
   constexpr const char kPageLoadedTitle[] = "initial title";
 
-  cr_fuchsia::FrameForTest frame =
+  FrameForTest frame =
       CreateFrame(fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
 
   fuchsia::web::LoadUrlParams params;
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, kPageLoadedTitle);
 
   context_impl()
@@ -80,28 +78,28 @@ IN_PROC_BROWSER_TEST_F(AutoplayTest,
                        UserActivationPolicy_UserActivatedNavigation) {
   const GURL kUrl(embedded_test_server()->GetURL(kAutoplayVp8Url));
 
-  cr_fuchsia::FrameForTest frame =
+  FrameForTest frame =
       CreateFrame(fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
 
   fuchsia::web::LoadUrlParams params;
   params.set_was_user_activated(true);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), std::move(params), kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       std::move(params), kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "playing");
 }
 
 IN_PROC_BROWSER_TEST_F(AutoplayTest, UserActivationPolicy_NoUserActivation) {
   const GURL kUrl(embedded_test_server()->GetURL(kAutoplayVp8Url));
 
-  cr_fuchsia::FrameForTest frame =
+  FrameForTest frame =
       CreateFrame(fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
 
   fuchsia::web::LoadUrlParams params;
   params.set_was_user_activated(false);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), std::move(params), kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       std::move(params), kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "blocked");
 }
 
@@ -109,12 +107,11 @@ IN_PROC_BROWSER_TEST_F(AutoplayTest,
                        AllowAllPolicy_DefaultNotUserActivatedNavigation) {
   const GURL kUrl(embedded_test_server()->GetURL(kAutoplayVp8Url));
 
-  cr_fuchsia::FrameForTest frame =
-      CreateFrame(fuchsia::web::AutoplayPolicy::ALLOW);
+  FrameForTest frame = CreateFrame(fuchsia::web::AutoplayPolicy::ALLOW);
 
   // The page is deliberately not user activated.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "playing");
 }

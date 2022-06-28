@@ -12,8 +12,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
-namespace cr_fuchsia {
-
 // Creates a connected MessagePort from a FIDL MessagePort request and
 // returns a handle to its peer blink::WebMessagePort.
 blink::WebMessagePort BlinkMessagePortFromFidl(
@@ -43,7 +41,5 @@ enum class TransferableHostType {
 absl::optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
     blink::WebMessagePort::Message blink_message,
     TransferableHostType port_type);
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_MESSAGE_PORT_H_

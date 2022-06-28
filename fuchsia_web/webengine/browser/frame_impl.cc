@@ -848,8 +848,8 @@ void FrameImpl::PostMessage(std::string origin,
 
     for (fuchsia::web::OutgoingTransferable& outgoing :
          *message.mutable_outgoing_transfer()) {
-      blink::WebMessagePort blink_port = cr_fuchsia::BlinkMessagePortFromFidl(
-          std::move(outgoing.message_port()));
+      blink::WebMessagePort blink_port =
+          BlinkMessagePortFromFidl(std::move(outgoing.message_port()));
       if (!blink_port.IsValid()) {
         callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
         return;

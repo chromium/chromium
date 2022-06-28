@@ -41,7 +41,7 @@ class WEB_ENGINE_EXPORT ContextProviderImpl
   fidl::InterfacePtrSet<fuchsia::web::DevToolsListener> devtools_listeners_;
 
   // Manages an isolated Environment, and the web instances hosted within it.
-  cr_fuchsia::WebInstanceHost web_instance_host_;
+  WebInstanceHost web_instance_host_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_CONTEXT_PROVIDER_IMPL_H_

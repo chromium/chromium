@@ -12,8 +12,6 @@
 
 #include "base/command_line.h"
 
-namespace cr_fuchsia {
-
 // Starts a WebEngine and connects a ContextProvider instance for tests.
 // WebEngine logs will be included in the test output but not in the Fuchsia
 // system log.
@@ -32,6 +30,4 @@ fuchsia::web::ContextProviderPtr ConnectContextProviderForLoggingTest(
         component_controller_request,
     const base::CommandLine& command_line =
         base::CommandLine(base::CommandLine::NO_PROGRAM));
-}  // namespace cr_fuchsia
-
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_CONTEXT_PROVIDER_TEST_CONNECTOR_H_

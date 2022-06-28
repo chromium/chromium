@@ -300,8 +300,7 @@ class DataResetComponent final : public fuchsia::sys::ComponentController {
 
 }  // namespace
 
-CastRunner::CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
-                       bool is_headless)
+CastRunner::CastRunner(WebInstanceHost* web_instance_host, bool is_headless)
     : web_instance_host_(web_instance_host),
       is_headless_(is_headless),
       main_services_(std::make_unique<base::FilteredServiceDirectory>(

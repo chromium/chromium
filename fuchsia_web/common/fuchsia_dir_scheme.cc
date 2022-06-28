@@ -6,13 +6,9 @@
 
 #include "url/url_util.h"
 
-namespace cr_fuchsia {
-
 const char kFuchsiaDirScheme[] = "fuchsia-dir";
 
 void RegisterFuchsiaDirScheme() {
   url::AddStandardScheme(kFuchsiaDirScheme, url::SCHEME_WITH_HOST);
   url::AddLocalScheme(kFuchsiaDirScheme);
 }
-
-}  // namespace cr_fuchsia

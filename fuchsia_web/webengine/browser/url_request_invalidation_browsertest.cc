@@ -17,7 +17,7 @@ namespace {
 // Test harness for browser tests exercising the URL request rewrite rule
 // invalidation logic. Sending incorrect rules should result in the frame
 // disconnecting.
-class UrlRequestInvalidationTest : public cr_fuchsia::WebEngineBrowserTest {
+class UrlRequestInvalidationTest : public WebEngineBrowserTest {
  public:
   UrlRequestInvalidationTest() = default;
   ~UrlRequestInvalidationTest() override = default;
@@ -29,7 +29,7 @@ class UrlRequestInvalidationTest : public cr_fuchsia::WebEngineBrowserTest {
   // Tests that sending |rewrite| will cause the fuchsia.web.Frame to disconnect
   // with ZX_ERR_INVALID_ARGS.
   void ExpectInvalidArgsForRewrite(fuchsia::web::UrlRequestRewrite rewrite) {
-    auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+    auto frame = FrameForTest::Create(context(), {});
     base::RunLoop run_loop;
     frame.ptr().set_error_handler([&run_loop](zx_status_t status) {
       EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
@@ -53,13 +53,11 @@ IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, EmptyRewrite) {
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidAddHeaderName) {
-  ExpectInvalidArgsForRewrite(
-      cr_fuchsia::CreateRewriteAddHeaders("Te\nst1", "Value"));
+  ExpectInvalidArgsForRewrite(CreateRewriteAddHeaders("Te\nst1", "Value"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidAddHeaderValue) {
-  ExpectInvalidArgsForRewrite(
-      cr_fuchsia::CreateRewriteAddHeaders("Test1", "Val\nue"));
+  ExpectInvalidArgsForRewrite(CreateRewriteAddHeaders("Test1", "Val\nue"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, EmptyAddHeader) {
@@ -69,8 +67,7 @@ IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, EmptyAddHeader) {
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidRemoveHeaderName) {
-  ExpectInvalidArgsForRewrite(
-      cr_fuchsia::CreateRewriteRemoveHeader("Query", "Head\ner"));
+  ExpectInvalidArgsForRewrite(CreateRewriteRemoveHeader("Query", "Head\ner"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, EmptyRemoveHeader) {
@@ -89,12 +86,12 @@ IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest,
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidReplaceUrlEndsWith) {
   ExpectInvalidArgsForRewrite(
-      cr_fuchsia::CreateRewriteReplaceUrl("some%00thing", "http://site.xyz"));
+      CreateRewriteReplaceUrl("some%00thing", "http://site.xyz"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidReplaceUrlNewUrl) {
   ExpectInvalidArgsForRewrite(
-      cr_fuchsia::CreateRewriteReplaceUrl("/something", "http:site:xyz"));
+      CreateRewriteReplaceUrl("/something", "http:site:xyz"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, EmptyReplaceUrl) {

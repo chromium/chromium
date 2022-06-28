@@ -79,7 +79,7 @@ class FakeCorsExemptHeaderProvider final
  private:
   void GetCorsExemptHeaderNames(
       GetCorsExemptHeaderNamesCallback callback) override {
-    callback({cr_fuchsia::StringToBytes("Test")});
+    callback({StringToBytes("Test")});
   }
 };
 
@@ -103,8 +103,7 @@ class FakeUrlRequestRewriteRulesProvider final
     rules_sent_ = true;
 
     std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
-    rewrites.push_back(
-        cr_fuchsia::CreateRewriteAddHeaders("Test", "TestHeaderValue"));
+    rewrites.push_back(CreateRewriteAddHeaders("Test", "TestHeaderValue"));
     fuchsia::web::UrlRequestRewriteRule rule;
     rule.set_rewrites(std::move(rewrites));
     std::vector<fuchsia::web::UrlRequestRewriteRule> rules;
@@ -349,8 +348,7 @@ class TestCastComponent {
         });
 
     base::test::TestFuture<fuchsia::web::WebMessage> response;
-    test_port_->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(response.GetCallback()));
+    test_port_->ReceiveMessage(CallbackToFitFunction(response.GetCallback()));
     EXPECT_TRUE(response.Wait());
 
     absl::optional<std::string> response_string =
@@ -624,7 +622,7 @@ TEST_F(CastRunnerIntegrationTest, RemoteDebugging) {
 
   // Connect to the debug service and ensure we get the proper response.
   base::Value devtools_list =
-      cr_fuchsia::GetDevToolsListFromPort(CastRunner::kRemoteDebuggingPort);
+      GetDevToolsListFromPort(CastRunner::kRemoteDebuggingPort);
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
 
@@ -1237,7 +1235,7 @@ TEST_F(CastRunnerFrameHostIntegrationTest, FrameHostComponent) {
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
   const GURL url = test_server().GetURL(kBlankAppUrl);
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+  EXPECT_TRUE(LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
 }
 

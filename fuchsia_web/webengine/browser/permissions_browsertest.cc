@@ -27,8 +27,7 @@ class PermissionsBrowserTest : public FrameImplTestBaseWithServer {
 
   void SetUpOnMainThread() override {
     FrameImplTestBaseWithServer::SetUpOnMainThread();
-    frame_ = cr_fuchsia::FrameForTest::Create(
-        context(), fuchsia::web::CreateFrameParams());
+    frame_ = FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
   }
 
   void GrantPermission(fuchsia::web::PermissionType type,
@@ -50,7 +49,7 @@ class PermissionsBrowserTest : public FrameImplTestBaseWithServer {
       const net::test_server::HttpRequest& request);
 
   uint64_t before_load_js_id_ = 1;
-  cr_fuchsia::FrameForTest frame_;
+  FrameForTest frame_;
 };
 
 void PermissionsBrowserTest::InjectBeforeLoadJs(const std::string& code) {
@@ -69,7 +68,7 @@ void PermissionsBrowserTest::LoadPageInIframe(const std::string& url) {
   fuchsia::web::NavigationControllerPtr controller;
   frame_->GetNavigationController(controller.NewRequest());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+  EXPECT_TRUE(LoadUrlAndExpectResponse(
       controller.get(), {},
       embedded_test_server()->GetURL(kIframeTestPagePath).spec()));
 }
@@ -109,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest, PermissionInCrossOriginIframe) {
   // page.
   net::EmbeddedTestServer second_test_server;
   second_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(cr_fuchsia::kTestServerRoot));
+      base::FilePath(kTestServerRoot));
   ASSERT_TRUE(second_test_server.Start());
 
   // Mic permissions are expected to be denied since the page is cross-origin.
@@ -131,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest,
   // page.
   net::EmbeddedTestServer second_test_server;
   second_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(cr_fuchsia::kTestServerRoot));
+      base::FilePath(kTestServerRoot));
   ASSERT_TRUE(second_test_server.Start());
 
   // Mic permissions are expected to be granted because the parent frame has

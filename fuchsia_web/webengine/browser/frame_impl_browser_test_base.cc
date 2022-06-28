@@ -10,7 +10,7 @@
 // TODO(crbug.com/1155378): Remove this and use default after updating tests in
 // frame_impl_browser_test_base.cc to use the appropriate base.
 FrameImplTestBase::FrameImplTestBase() {
-  set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
+  set_test_server_root(base::FilePath(kTestServerRoot));
 }
 
 void FrameImplTestBaseWithServer::SetUpOnMainThread() {
@@ -21,5 +21,5 @@ void FrameImplTestBaseWithServer::SetUpOnMainThread() {
 }
 
 FrameImplTestBaseWithServer::FrameImplTestBaseWithServer() {
-  set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
+  set_test_server_root(base::FilePath(kTestServerRoot));
 }

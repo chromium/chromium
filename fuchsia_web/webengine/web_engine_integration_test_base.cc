@@ -64,7 +64,7 @@ void WebEngineIntegrationTestBase::SetUp() {
 
 void WebEngineIntegrationTestBase::StartWebEngine(
     base::CommandLine command_line) {
-  web_context_provider_ = cr_fuchsia::ConnectContextProvider(
+  web_context_provider_ = ConnectContextProvider(
       web_engine_controller_.NewRequest(), std::move(command_line));
   web_context_provider_.set_error_handler(
       [](zx_status_t status) { ADD_FAILURE(); });
@@ -151,7 +151,7 @@ void WebEngineIntegrationTestBase::CreateContextAndFrameAndLoadUrl(
 
   // Navigate the Frame to |url| and wait for it to complete loading.
   auto navigation_controller = CreateNavigationController();
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+  ASSERT_TRUE(::LoadUrlAndExpectResponse(
       navigation_controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
 
   // Wait for the URL to finish loading.
@@ -167,8 +167,8 @@ void WebEngineIntegrationTestBase::LoadUrlAndExpectResponse(
   frame_->GetNavigationController(navigation_controller.NewRequest());
   navigation_controller.set_error_handler(
       [](zx_status_t status) { ADD_FAILURE(); });
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller.get(), std::move(load_url_params), url));
+  ASSERT_TRUE(::LoadUrlAndExpectResponse(navigation_controller.get(),
+                                         std::move(load_url_params), url));
 }
 
 void WebEngineIntegrationTestBase::GrantPermission(
@@ -182,29 +182,26 @@ void WebEngineIntegrationTestBase::GrantPermission(
 
 std::string WebEngineIntegrationTestBase::ExecuteJavaScriptWithStringResult(
     base::StringPiece script) {
-  absl::optional<base::Value> value =
-      cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
+  absl::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetString() : std::string();
 }
 
 double WebEngineIntegrationTestBase::ExecuteJavaScriptWithDoubleResult(
     base::StringPiece script) {
-  absl::optional<base::Value> value =
-      cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
+  absl::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetDouble() : 0.0;
 }
 
 bool WebEngineIntegrationTestBase::ExecuteJavaScriptWithBoolResult(
     base::StringPiece script) {
-  absl::optional<base::Value> value =
-      cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
+  absl::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetBool() : false;
 }
 
 void WebEngineIntegrationTestBase::CreateNavigationListener() {
   CHECK(frame_);
   CHECK(!navigation_listener_);
-  navigation_listener_ = std::make_unique<cr_fuchsia::TestNavigationListener>();
+  navigation_listener_ = std::make_unique<TestNavigationListener>();
   navigation_listener_binding_ =
       std::make_unique<fidl::Binding<fuchsia::web::NavigationEventListener>>(
           navigation_listener_.get());

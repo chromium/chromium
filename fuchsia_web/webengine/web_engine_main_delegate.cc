@@ -75,7 +75,7 @@ WebEngineMainDelegate::~WebEngineMainDelegate() = default;
 bool WebEngineMainDelegate::BasicStartupComplete(int* exit_code) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (!cr_fuchsia::InitLoggingFromCommandLine(*command_line)) {
+  if (!InitLoggingFromCommandLine(*command_line)) {
     *exit_code = 1;
     return true;
   }

@@ -54,8 +54,6 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
-namespace cr_fuchsia {
-
 namespace {
 
 // Production URL for web hosting Component instances.
@@ -261,7 +259,7 @@ void HandleCorsExemptHeadersParam(fuchsia::web::CreateContextParams* params,
   std::vector<base::StringPiece> cors_exempt_headers;
   cors_exempt_headers.reserve(params->cors_exempt_headers().size());
   for (const auto& header : params->cors_exempt_headers()) {
-    cors_exempt_headers.push_back(cr_fuchsia::BytesAsString(header));
+    cors_exempt_headers.push_back(BytesAsString(header));
   }
 
   launch_args->AppendSwitchNative(switches::kCorsExemptHeaders,
@@ -742,5 +740,3 @@ fuchsia::sys::Launcher* WebInstanceHost::IsolatedEnvironmentLauncher() {
 
   return isolated_environment_launcher_.get();
 }
-
-}  // namespace cr_fuchsia

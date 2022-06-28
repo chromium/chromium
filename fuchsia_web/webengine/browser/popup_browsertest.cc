@@ -96,14 +96,14 @@ class PopupTest : public FrameImplTestBaseWithServer {
     GURL popup_child_url = embedded_test_server()->GetURL(
         base::StringPrintf("/%s", kAutoplayFileAndQuery));
 
-    auto parent_frame = cr_fuchsia::FrameForTest::Create(
-        context(), std::move(parent_frame_params));
+    auto parent_frame =
+        FrameForTest::Create(context(), std::move(parent_frame_params));
 
     parent_frame->SetPopupFrameCreationListener(
         popup_listener_binding_.NewBinding());
 
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        parent_frame.GetNavigationController(), {}, popup_parent_url.spec()));
+    EXPECT_TRUE(LoadUrlAndExpectResponse(parent_frame.GetNavigationController(),
+                                         {}, popup_parent_url.spec()));
 
     fuchsia::web::PopupFrameCreationInfo popup_info;
     popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);
@@ -121,7 +121,7 @@ class PopupTest : public FrameImplTestBaseWithServer {
   fidl::Binding<fuchsia::web::PopupFrameCreationListener>
       popup_listener_binding_;
 
-  cr_fuchsia::TestNavigationListener popup_nav_listener_;
+  TestNavigationListener popup_nav_listener_;
   fidl::Binding<fuchsia::web::NavigationEventListener>
       popup_nav_listener_binding_;
 };
@@ -130,12 +130,12 @@ IN_PROC_BROWSER_TEST_F(PopupTest, PopupWindowRedirect) {
   GURL popup_parent_url = GetParentPageTestServerUrl(kPopupChildFile);
   GURL popup_child_url(embedded_test_server()->GetURL(kPopupRedirectPath));
   GURL title1_url(embedded_test_server()->GetURL(kPage1Path));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->SetPopupFrameCreationListener(popup_listener_binding_.NewBinding());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, popup_parent_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       popup_parent_url.spec()));
 
   // Verify the popup's initial URL, "popup_child.html".
   fuchsia::web::PopupFrameCreationInfo popup_info;
@@ -152,12 +152,12 @@ IN_PROC_BROWSER_TEST_F(PopupTest, MultiplePopups) {
   GURL popup_parent_url(embedded_test_server()->GetURL(kPopupMultiplePath));
   GURL title1_url(embedded_test_server()->GetURL(kPage1Path));
   GURL title2_url(embedded_test_server()->GetURL(kPage2Path));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->SetPopupFrameCreationListener(popup_listener_binding_.NewBinding());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, popup_parent_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       popup_parent_url.spec()));
 
   fuchsia::web::PopupFrameCreationInfo popup_info;
   popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);

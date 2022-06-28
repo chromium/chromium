@@ -5,11 +5,7 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_TEST_TEST_DATA_H_
 #define FUCHSIA_WEB_WEBENGINE_TEST_TEST_DATA_H_
 
-namespace cr_fuchsia {
-
 // Path to data used in browsertests.
 extern const char kTestServerRoot[];
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_TEST_DATA_H_

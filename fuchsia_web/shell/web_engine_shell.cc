@@ -133,7 +133,7 @@ int main(int argc, char** argv) {
   CHECK(base::CommandLine::Init(argc, argv));
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  CHECK(cr_fuchsia::InitLoggingFromCommandLineDefaultingToStderrForTest(
+  CHECK(InitLoggingFromCommandLineDefaultingToStderrForTest(  // IN-TEST
       command_line));
 
   absl::optional<uint16_t> remote_debugging_port;
@@ -224,7 +224,7 @@ int main(int argc, char** argv) {
 
   // Keep alive in run_loop scope.
   fuchsia::web::ContextProviderPtr web_context_provider;
-  std::unique_ptr<cr_fuchsia::WebInstanceHost> web_instance_host;
+  std::unique_ptr<WebInstanceHost> web_instance_host;
   fuchsia::io::DirectoryHandle tmp_directory;
 
   if (use_context_provider) {
@@ -234,7 +234,7 @@ int main(int argc, char** argv) {
     web_context_provider->Create(std::move(create_context_params),
                                  context.NewRequest());
   } else {
-    web_instance_host = std::make_unique<cr_fuchsia::WebInstanceHost>();
+    web_instance_host = std::make_unique<WebInstanceHost>();
     if (enable_web_instance_tmp) {
       const zx_status_t status = fdio_open(
           "/tmp",

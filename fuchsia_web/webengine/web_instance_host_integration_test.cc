@@ -84,7 +84,7 @@ class WebInstanceHostIntegrationTest : public testing::Test {
   fidl::InterfaceHandle<fuchsia::sys::ComponentController>
       web_engine_controller_;
 
-  cr_fuchsia::WebInstanceHost web_instance_host_;
+  WebInstanceHost web_instance_host_;
   std::unique_ptr<sys::ServiceDirectory> web_instance_services_;
   fuchsia::web::ContextPtr context_;
   fuchsia::web::FrameHostPtr frame_host_;
@@ -101,14 +101,13 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
 
   fuchsia::web::CreateFrameParams create_frame_params;
   create_frame_params.set_enable_remote_debugging(true);
-  auto frame = cr_fuchsia::FrameForTest::Create(context_,
-                                                std::move(create_frame_params));
+  auto frame = FrameForTest::Create(context_, std::move(create_frame_params));
 
   // Expect to receive a notification of the selected DevTools port.
   base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
       port_receiver;
   context_->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+      CallbackToFitFunction(port_receiver.GetCallback()));
   ASSERT_TRUE(port_receiver.Wait());
   ASSERT_TRUE(port_receiver.Get().is_response());
   uint16_t remote_debugging_port = port_receiver.Get().response().port;
@@ -117,12 +116,11 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
   // Navigate to a URL, the devtools service should be active and report a
   // single page.
   GURL url = embedded_test_server_.GetURL("/defaultresponse");
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlEquals(url);
-  base::Value devtools_list =
-      cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  base::Value devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
   base::Value* devtools_url =
@@ -137,12 +135,12 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
   // Navigate to a different page. The devtools service should still be active
   // and report the new page.
   GURL url2 = embedded_test_server_.GetURL("/title1.html");
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url2.spec()));
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url2.spec()));
   frame.navigation_listener().RunUntilUrlEquals(url2);
 
-  devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
   devtools_url = devtools_list.GetListDeprecated()[0].FindPath("url");

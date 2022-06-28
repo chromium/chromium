@@ -42,7 +42,7 @@ PendingCastComponent::PendingCastComponent(
   // Create the AgentManager through which component-specific Agent services
   // will be connected.
   // TODO(https://crbug.com/1065709): Migrate off the ConnectToAgentService()
-  // API and remove the AgentManager.
+  // API and remove the cr_fuchsia::AgentManager.
   params_.agent_manager = std::make_unique<cr_fuchsia::AgentManager>(
       params_.startup_context->component_context()->svc().get());
 }

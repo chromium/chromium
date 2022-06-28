@@ -235,7 +235,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
       port_receiver;
   context_->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+      CallbackToFitFunction(port_receiver.GetCallback()));
   ASSERT_TRUE(port_receiver.Wait());
 
   ASSERT_TRUE(port_receiver.Get().is_response());
@@ -247,8 +247,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(url.spec()));
   navigation_listener()->RunUntilUrlEquals(url);
 
-  base::Value devtools_list =
-      cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  base::Value devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
 
@@ -263,7 +262,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   web_frame2.set_error_handler([](zx_status_t) { ADD_FAILURE(); });
   context()->CreateFrame(web_frame2.NewRequest());
 
-  devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
 
@@ -283,7 +282,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // handled the Frame tear down.
   controller_run_loop.Run();
 
-  devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   EXPECT_TRUE(devtools_list.is_none());
 }
 
@@ -366,9 +365,9 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
 TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRenderer) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_audio.html",
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadUrlAndExpectResponse("fuchsia-dir://testdata/play_audio.html",
+                               CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 
@@ -386,9 +385,9 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
   media_settings.set_audio_consumer_session_id(kTestMediaSessionId);
   frame_->SetMediaSettings(std::move(media_settings));
 
-  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_audio.html",
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadUrlAndExpectResponse("fuchsia-dir://testdata/play_audio.html",
+                               CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 
@@ -413,9 +412,9 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
       TestContextParamsWithTestData();
   CreateContextAndFrame(std::move(create_params));
 
-  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_audio.html",
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadUrlAndExpectResponse("fuchsia-dir://testdata/play_audio.html",
+                               CreateLoadUrlParamsWithUserActivation()));
 
   // The file is still expected to play to the end.
   navigation_listener()->RunUntilTitleEquals("ended");
@@ -428,8 +427,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      kAutoplayVp9OpusToEndUrl,
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kAutoplayVp9OpusToEndUrl, CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 
@@ -490,8 +488,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
   frame_->SetBlockMediaLoading(true);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      kAutoplayVp9OpusUrl,
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kAutoplayVp9OpusUrl, CreateLoadUrlParamsWithUserActivation()));
 
   // Check different indicators that media has not loaded and is not playing.
   navigation_listener()->RunUntilTitleEquals("stalled");
@@ -509,8 +506,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
   frame_->SetBlockMediaLoading(true);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      kAutoplayVp9OpusUrl,
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kAutoplayVp9OpusUrl, CreateLoadUrlParamsWithUserActivation()));
 
   // Check that media loading has been blocked.
   navigation_listener()->RunUntilTitleEquals("stalled");
@@ -529,11 +525,11 @@ TEST_F(WebEngineIntegrationMediaTest,
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      kLoadVp9OpusUrl, cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kLoadVp9OpusUrl, CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("loaded");
   frame_->SetBlockMediaLoading(true);
-  cr_fuchsia::ExecuteJavaScript(frame_.get(), "bear.play()");
+  ExecuteJavaScript(frame_.get(), "bear.play()");
   navigation_listener()->RunUntilTitleEquals("playing");
 }
 
@@ -645,8 +641,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   CreateContextAndFrame(std::move(create_params));
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      kAutoplayVp9OpusToEndUrl,
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kAutoplayVp9OpusToEndUrl, CreateLoadUrlParamsWithUserActivation()));
   codec_connected_run_loop.Run();
 }
 
@@ -667,8 +662,7 @@ TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
   CreateContextAndFrame(std::move(create_params));
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      kAutoplayVp9OpusToEndUrl,
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+      kAutoplayVp9OpusToEndUrl, CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
 

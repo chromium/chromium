@@ -9,8 +9,6 @@
 #include <lib/fidl/cpp/binding.h>
 #include <memory>
 
-namespace cr_fuchsia {
-
 class TestNavigationListener;
 
 // Helper for tests which need to create fuchsia.web.Frames.
@@ -70,7 +68,5 @@ class FrameForTest {
   std::unique_ptr<fidl::Binding<fuchsia::web::NavigationEventListener>>
       navigation_listener_binding_;
 };
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_FRAME_FOR_TEST_H_

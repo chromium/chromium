@@ -12,7 +12,7 @@
 
 namespace {
 
-using FrameHostImplBrowserTest = cr_fuchsia::WebEngineBrowserTest;
+using FrameHostImplBrowserTest = WebEngineBrowserTest;
 
 }  // namespace
 

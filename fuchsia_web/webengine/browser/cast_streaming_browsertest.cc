@@ -49,10 +49,10 @@ media::VideoDecoderConfig GetDefaultVideoConfig() {
 }  // namespace
 
 // Base test fixture for Cast Streaming tests.
-class CastStreamingBaseTest : public cr_fuchsia::WebEngineBrowserTest {
+class CastStreamingBaseTest : public WebEngineBrowserTest {
  public:
   CastStreamingBaseTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
+    set_test_server_root(base::FilePath(kTestServerRoot));
   }
   ~CastStreamingBaseTest() override = default;
 
@@ -100,11 +100,11 @@ IN_PROC_BROWSER_TEST_F(CastStreamingDisabledTest, LoadFailure) {
   const GURL page_url(
       embedded_test_server()->GetURL(kCastStreamingReceiverPath));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
   frame.navigation_listener().RunUntilTitleEquals("error");
 }
 
@@ -133,17 +133,17 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
                GetDefaultAudioConfig(), GetDefaultVideoConfig());
 
   // Create a Frame and set the Receiver MessagePort on it.
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
   frame->PostMessage(
       "cast-streaming:receiver",
-      cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-          std::move(message_port_request), std::move(ignored_message_string)),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+      CreateWebMessageWithMessagePortRequest(std::move(message_port_request),
+                                             std::move(ignored_message_string)),
+      CallbackToFitFunction(post_result.GetCallback()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
 
   ASSERT_TRUE(sender.RunUntilActive());
   frame.navigation_listener().RunUntilTitleEquals("canplay");
@@ -177,18 +177,18 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
                GetDefaultAudioConfig(), GetDefaultVideoConfig());
 
   // Create a Frame and set the Receiver MessagePort on it.
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
   frame->PostMessage(
       "cast-streaming:video-only-receiver",
-      cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-          std::move(message_port_request), std::move(ignored_message_string)),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+      CreateWebMessageWithMessagePortRequest(std::move(message_port_request),
+                                             std::move(ignored_message_string)),
+      CallbackToFitFunction(post_result.GetCallback()));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kPageUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kPageUrl.spec()));
 
   ASSERT_TRUE(sender.RunUntilActive());
   frame.navigation_listener().RunUntilTitleEquals("canplay");

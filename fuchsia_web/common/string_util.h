@@ -10,14 +10,10 @@
 
 #include "base/strings/string_piece.h"
 
-namespace cr_fuchsia {
-
 // Creates a byte vector from a string.
 std::vector<uint8_t> StringToBytes(base::StringPiece str);
 
 // Creates a string from a byte vector.
 base::StringPiece BytesAsString(const std::vector<uint8_t>& bytes);
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_STRING_UTIL_H_

@@ -29,9 +29,8 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr,
         url_rewrite::mojom::UrlRequestRewriteAddHeaders::New();
     if (input.has_headers()) {
       for (const auto& header : input.headers()) {
-        base::StringPiece header_name = cr_fuchsia::BytesAsString(header.name);
-        base::StringPiece header_value =
-            cr_fuchsia::BytesAsString(header.value);
+        base::StringPiece header_name = BytesAsString(header.name);
+        base::StringPiece header_value = BytesAsString(header.value);
         url_rewrite::mojom::UrlHeaderPtr url_header =
             url_rewrite::mojom::UrlHeader::New(std::string(header_name),
                                                std::string(header_value));
@@ -53,7 +52,7 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr,
       remove_header->query_pattern = absl::make_optional(input.query_pattern());
     if (input.has_header_name()) {
       remove_header->header_name =
-          std::string(cr_fuchsia::BytesAsString(input.header_name()));
+          std::string(BytesAsString(input.header_name()));
     }
     return remove_header;
   }

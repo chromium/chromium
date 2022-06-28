@@ -26,7 +26,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScript) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId, {embedded_test_server()->GetOrigin().Serialize()},
@@ -35,9 +35,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScript) {
         EXPECT_TRUE(result.is_response());
       });
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlEquals(url);
 }
 
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptUpdated) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId, {embedded_test_server()->GetOrigin().Serialize()},
@@ -68,9 +68,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptUpdated) {
         EXPECT_TRUE(result.is_response());
       });
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "clobber");
 }
 
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptOrdered) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId1, {embedded_test_server()->GetOrigin().Serialize()},
@@ -99,9 +99,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptOrdered) {
         EXPECT_TRUE(result.is_response());
       });
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "hello there");
 }
 
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptRemoved) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId1, {embedded_test_server()->GetOrigin().Serialize()},
@@ -133,9 +133,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptRemoved) {
   // Deletes the clobbering script.
   frame->RemoveBeforeLoadJavaScript(kBindingsId2);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "foo");
 }
 
@@ -144,13 +144,13 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptRemoveInvalidId) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kPage1Path));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->RemoveBeforeLoadJavaScript(kOnLoadScriptId);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, kPage1Title);
 }
 
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptRemoveInvalidId) {
 // ExecuteJavaScript() to retrieve that value.
 IN_PROC_BROWSER_TEST_F(JavaScriptTest, ExecuteJavaScript) {
   constexpr char kJsonStringLiteral[] = "\"I am a literal, literally\"";
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -166,9 +166,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, ExecuteJavaScript) {
   const GURL kUrl(embedded_test_server()->GetURL(kPage1Path));
 
   // Navigate to a page and wait for it to finish loading.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, kPage1Title);
 
   // Execute with no result to set the variable.
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptVmoDestroyed) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {embedded_test_server()->GetOrigin().Serialize()},
@@ -209,9 +209,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptVmoDestroyed) {
         EXPECT_TRUE(result.is_response());
       });
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "hello");
 }
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptWrongOrigin) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {"http://example.com"},
@@ -231,9 +231,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptWrongOrigin) {
 
   // Expect that the original HTML title is used, because we didn't inject a
   // script with a replacement title.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(
       url, "Welcome to Stan the Offline Dino's Homepage");
 }
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptWildcardOrigin) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {"*"},
@@ -253,22 +253,22 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BeforeLoadScriptWildcardOrigin) {
       });
 
   // Test script injection for the origin 127.0.0.1.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "hello");
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url::kAboutBlankURL));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url::kAboutBlankURL));
   frame.navigation_listener().RunUntilUrlEquals(GURL(url::kAboutBlankURL));
 
   // Test script injection using a different origin ("localhost"), which should
   // still be picked up by the wildcard.
   GURL alt_url = embedded_test_server()->GetURL("localhost", kDynamicTitlePath);
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      alt_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       alt_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(alt_url, "hello");
 }
 
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest,
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kDynamicTitlePath));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {embedded_test_server()->GetOrigin().Serialize()},
@@ -290,9 +290,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest,
         EXPECT_TRUE(result.is_response());
       });
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "hello");
 
   frame->AddBeforeLoadJavaScript(
@@ -303,29 +303,29 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest,
       });
 
   // Navigate away to clean the slate.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url::kAboutBlankURL));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url::kAboutBlankURL));
   frame.navigation_listener().RunUntilUrlEquals(GURL(url::kAboutBlankURL));
 
   // Navigate back and see if both scripts are working.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "hello there");
 }
 
 IN_PROC_BROWSER_TEST_F(JavaScriptTest, BadEncoding) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kPage1Path));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, kPage1Title);
 
   base::RunLoop run_loop;

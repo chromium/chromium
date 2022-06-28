@@ -12,8 +12,6 @@
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 
-namespace cr_fuchsia {
-
 bool LoadUrlAndExpectResponse(
     fuchsia::web::NavigationController* navigation_controller,
     fuchsia::web::LoadUrlParams load_url_params,
@@ -72,5 +70,3 @@ fuchsia::web::WebMessage CreateWebMessageWithMessagePortRequest(
   web_message.set_data(std::move(buffer));
   return web_message;
 }
-
-}  // namespace cr_fuchsia

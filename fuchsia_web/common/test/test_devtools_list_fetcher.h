@@ -7,12 +7,8 @@
 
 #include "base/values.h"
 
-namespace cr_fuchsia {
-
 // Returns the JSON value of the list URL for the DevTools service listening
 // on port |port| on localhost. Returns an empty value on error.
 base::Value GetDevToolsListFromPort(uint16_t port);
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_

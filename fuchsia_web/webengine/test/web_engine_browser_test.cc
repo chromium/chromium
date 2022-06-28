@@ -23,8 +23,6 @@
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
-namespace cr_fuchsia {
-
 WebEngineBrowserTest::WebEngineBrowserTest() = default;
 
 WebEngineBrowserTest::~WebEngineBrowserTest() = default;
@@ -107,5 +105,3 @@ std::vector<FrameHostImpl*> WebEngineBrowserTest::frame_host_impls() const {
 
   return main_parts->frame_hosts_for_test();
 }
-
-}  // namespace cr_fuchsia

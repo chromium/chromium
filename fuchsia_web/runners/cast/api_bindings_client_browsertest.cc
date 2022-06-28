@@ -26,7 +26,7 @@
 
 namespace {
 
-class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
+class ApiBindingsClientTest : public WebEngineBrowserTest {
  public:
   ApiBindingsClientTest() : api_service_binding_(&api_service_) {
     set_test_server_root(base::FilePath("fuchsia_web/runners/cast/testdata"));
@@ -37,7 +37,7 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
   ApiBindingsClientTest(const ApiBindingsClientTest&) = delete;
   ApiBindingsClientTest& operator=(const ApiBindingsClientTest&) = delete;
 
-  void SetUp() override { cr_fuchsia::WebEngineBrowserTest::SetUp(); }
+  void SetUp() override { WebEngineBrowserTest::SetUp(); }
 
  protected:
   void StartClient(bool disconnect_before_attach,
@@ -52,8 +52,7 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
     run_loop.Run();
     ASSERT_TRUE(client_->HasBindings());
 
-    frame_ = cr_fuchsia::FrameForTest::Create(
-        context(), fuchsia::web::CreateFrameParams());
+    frame_ = FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
     connector_ =
         std::make_unique<NamedMessagePortConnectorFuchsia>(frame_.get());
 
@@ -67,7 +66,7 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
+    WebEngineBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -76,7 +75,7 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
     client_.reset();
   }
 
-  cr_fuchsia::FrameForTest frame_;
+  FrameForTest frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
   FakeApiBindingsImpl api_service_;
   fidl::Binding<chromium::cast::ApiBindings> api_service_binding_;
@@ -104,9 +103,9 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
 
   // Navigate to a test page that makes use of the injected bindings.
   const GURL test_url = embedded_test_server()->GetURL("/echo.html");
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      test_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       test_url.spec()));
   frame_.navigation_listener().RunUntilUrlEquals(test_url);
 
   std::string connect_message;
@@ -134,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
 
   // Handle the ping response.
   base::test::TestFuture<fuchsia::web::WebMessage> response;
-  port->ReceiveMessage(
-      cr_fuchsia::CallbackToFitFunction(response.GetCallback()));
+  port->ReceiveMessage(CallbackToFitFunction(response.GetCallback()));
   ASSERT_TRUE(response.Wait());
 
   absl::optional<std::string> response_string =

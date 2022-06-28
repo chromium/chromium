@@ -11,9 +11,6 @@ namespace base {
 class CommandLine;
 }
 
-// TODO(crbug/1081525): Remove the cr_fuchsia namespace from all files.
-namespace cr_fuchsia {
-
 // Configures logging for the current process based on the supplied
 // |command_line|. Returns false if a logging output stream could not
 // be created.
@@ -28,7 +25,5 @@ bool InitLoggingFromCommandLineDefaultingToStderrForTest(
 // version. Call during the startup of a Fuchsia Component (e.g., in main())
 // after InitLoggingFromCommandLine() succeeds.
 void LogComponentStartWithVersion(base::StringPiece component_name);
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_INIT_LOGGING_H_

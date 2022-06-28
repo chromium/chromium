@@ -19,11 +19,9 @@ namespace {
 
 // Defines a suite of tests that exercise browser-level configuration and
 // functionality.
-class HeadlessTest : public cr_fuchsia::WebEngineBrowserTest {
+class HeadlessTest : public WebEngineBrowserTest {
  public:
-  HeadlessTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-  }
+  HeadlessTest() { set_test_server_root(base::FilePath(kTestServerRoot)); }
   ~HeadlessTest() override = default;
 
   HeadlessTest(const HeadlessTest&) = delete;
@@ -34,7 +32,7 @@ class HeadlessTest : public cr_fuchsia::WebEngineBrowserTest {
     command_line_.GetProcessCommandLine()->AppendSwitchNative(
         switches::kOzonePlatform, switches::kHeadless);
     command_line_.GetProcessCommandLine()->AppendSwitch(switches::kHeadless);
-    cr_fuchsia::WebEngineBrowserTest::SetUp();
+    WebEngineBrowserTest::SetUp();
   }
 
   base::test::ScopedCommandLine command_line_;
@@ -45,12 +43,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessTest, AnimationRunsWhenFrameAlreadyActive) {
   const GURL kAnimationUrl(
       embedded_test_server()->GetURL("/css_animation.html"));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
   frame->EnableHeadlessRendering();
-  cr_fuchsia::LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kAnimationUrl.spec());
+  LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                           fuchsia::web::LoadUrlParams(), kAnimationUrl.spec());
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kAnimationUrl,
                                                         "animation finished");
 }
@@ -59,11 +56,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTest, AnimationNeverRunsWhenInactive) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kAnimationUrl(
       embedded_test_server()->GetURL("/css_animation.html"));
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
-  cr_fuchsia::LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kAnimationUrl.spec());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
+  LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                           fuchsia::web::LoadUrlParams(), kAnimationUrl.spec());
   frame.navigation_listener().RunUntilUrlAndTitleEquals(
       kAnimationUrl, "animation never started");
 }
@@ -72,11 +68,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTest, ActivateFrameAfterDocumentLoad) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kAnimationUrl(
       embedded_test_server()->GetURL("/css_animation.html"));
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
-  cr_fuchsia::LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kAnimationUrl.spec());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
+  LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                           fuchsia::web::LoadUrlParams(), kAnimationUrl.spec());
   frame.navigation_listener().RunUntilUrlAndTitleEquals(
       kAnimationUrl, "animation never started");
 
@@ -91,12 +86,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessTest, DeactivationPreventsFutureAnimations) {
       embedded_test_server()->GetURL("/css_animation.html"));
 
   // Activate the frame and load the page. The animation should run.
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
   frame->EnableHeadlessRendering();
-  cr_fuchsia::LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kAnimationUrl.spec());
+  LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                           fuchsia::web::LoadUrlParams(), kAnimationUrl.spec());
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kAnimationUrl,
                                                         "animation finished");
 

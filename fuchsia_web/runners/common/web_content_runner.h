@@ -16,11 +16,8 @@
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 
-namespace cr_fuchsia {
-class WebInstanceHost;
-}  // namespace cr_fuchsia
-
 class WebComponent;
+class WebInstanceHost;
 
 // sys::Runner that instantiates components hosting standard web content.
 class WebContentRunner : public fuchsia::sys::Runner {
@@ -46,12 +43,12 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // |get_web_instance_config_callback|: Returns parameters for the Runner's
   //     fuchsia.web.Context.
   WebContentRunner(
-      cr_fuchsia::WebInstanceHost* web_instance_host,
+      WebInstanceHost* web_instance_host,
       GetWebInstanceConfigCallback get_web_instance_config_callback);
 
   // Creates a Runner using a Context configured with `web_instance_config`.
   // The Runner becomes non-functional if the Context terminates.
-  WebContentRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
+  WebContentRunner(WebInstanceHost* web_instance_host,
                    WebInstanceConfig web_instance_config);
 
   ~WebContentRunner() override;
@@ -109,7 +106,7 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // Starts the web_instance and connects |context_| to it.
   void CreateWebInstanceAndContext(WebInstanceConfig web_instance_config);
 
-  cr_fuchsia::WebInstanceHost* const web_instance_host_;
+  WebInstanceHost* const web_instance_host_;
   const GetWebInstanceConfigCallback get_web_instance_config_callback_;
 
   // If set, invoked whenever a WebComponent is created.

@@ -357,8 +357,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  if (!request.url.SchemeIs(cr_fuchsia::kFuchsiaDirScheme) ||
-      !request.url.is_valid()) {
+  if (!request.url.SchemeIs(kFuchsiaDirScheme) || !request.url.is_valid()) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_INVALID_URL));
     return;

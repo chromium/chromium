@@ -10,8 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace cr_fuchsia {
-
 // Utility functions to create a fuchsia.web.UrlRequestRewrite in one line.
 
 fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
@@ -32,7 +30,5 @@ fuchsia::web::UrlRequestRewrite CreateRewriteReplaceUrl(
 
 fuchsia::web::UrlRequestRewrite CreateRewriteAppendToQuery(
     base::StringPiece query);
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_TEST_URL_REQUEST_REWRITE_TEST_UTIL_H_

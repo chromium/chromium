@@ -145,8 +145,8 @@ class AgentImplTest : public ::testing::Test {
 TEST_F(AgentImplTest, PublishAndUnpublish) {
   base::test::TestFuture<zx_status_t> client_disconnect_status1;
   fuchsia::modular::AgentPtr agent = CreateAgentAndConnect();
-  agent.set_error_handler(cr_fuchsia::CallbackToFitFunction(
-      client_disconnect_status1.GetCallback()));
+  agent.set_error_handler(
+      CallbackToFitFunction(client_disconnect_status1.GetCallback()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(client_disconnect_status1.IsReady());
@@ -161,8 +161,8 @@ TEST_F(AgentImplTest, PublishAndUnpublish) {
   // Verify that the Agent service is no longer available.
   base::test::TestFuture<zx_status_t> client_disconnect_status2;
   test_context_.published_services()->Connect(agent.NewRequest());
-  agent.set_error_handler(cr_fuchsia::CallbackToFitFunction(
-      client_disconnect_status2.GetCallback()));
+  agent.set_error_handler(
+      CallbackToFitFunction(client_disconnect_status2.GetCallback()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(client_disconnect_status2.Get(), ZX_ERR_PEER_CLOSED);
@@ -422,8 +422,8 @@ TEST_F(AgentImplTestWithPublicService, PublicService) {
   // If we successfully connect then the service connection will be closed
   // with ZX_OK, by the connection-handler implementation in the test base.
   base::test::TestFuture<zx_status_t> service_disconnect_status;
-  test_interface.set_error_handler(cr_fuchsia::CallbackToFitFunction(
-      service_disconnect_status.GetCallback()));
+  test_interface.set_error_handler(
+      CallbackToFitFunction(service_disconnect_status.GetCallback()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(service_disconnect_status.IsReady());
   EXPECT_EQ(service_disconnect_status.Get(), ZX_OK);
@@ -453,8 +453,8 @@ TEST_F(AgentImplTestWithPublicService, PublicServiceNotProvided) {
   // If the service is not routed as "public" by the AgentImpl then the
   // request should simply be dropped.
   base::test::TestFuture<zx_status_t> service_disconnect_status;
-  test_interface.set_error_handler(cr_fuchsia::CallbackToFitFunction(
-      service_disconnect_status.GetCallback()));
+  test_interface.set_error_handler(
+      CallbackToFitFunction(service_disconnect_status.GetCallback()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(service_disconnect_status.IsReady());
   EXPECT_EQ(service_disconnect_status.Get(), ZX_ERR_PEER_CLOSED);

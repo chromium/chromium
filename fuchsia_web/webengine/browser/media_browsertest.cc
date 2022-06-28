@@ -30,11 +30,9 @@ constexpr char kCanPlaySoftwareOnlyCodecUrl[] = "/can_play_vp8.html";
 
 }  // namespace
 
-class MediaTest : public cr_fuchsia::WebEngineBrowserTest {
+class MediaTest : public WebEngineBrowserTest {
  public:
-  MediaTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-  }
+  MediaTest() { set_test_server_root(base::FilePath(kTestServerRoot)); }
   ~MediaTest() override = default;
 
   MediaTest(const MediaTest&) = delete;
@@ -43,7 +41,7 @@ class MediaTest : public cr_fuchsia::WebEngineBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     CHECK(embedded_test_server()->Start());
-    cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
+    WebEngineBrowserTest::SetUpOnMainThread();
   }
 };
 
@@ -99,12 +97,12 @@ IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersEnabledTest,
   // possibly to simplify the calls below since some of the details are not
   // interesting to the individual tests. In particular, has_user_activation is
   // more relevant than specific LoadUrlParams.
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl,
                                                         "can play vp8: true");
 }
@@ -115,12 +113,12 @@ IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersDisabledTest,
                        CanPlayTypeSoftwareOnlyCodecIsFalse) {
   const GURL kUrl(embedded_test_server()->GetURL(kCanPlaySoftwareOnlyCodecUrl));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl,
                                                         "can play vp8: false");
 }
@@ -131,12 +129,12 @@ IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersEnabledTest,
                        PlaySoftwareOnlyCodecSucceeds) {
   const GURL kUrl(embedded_test_server()->GetURL(kLoadSoftwareOnlyCodecUrl));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "loaded");
 }
 
@@ -146,12 +144,12 @@ IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersDisabledTest,
                        LoadSoftwareOnlyCodecFails) {
   const GURL kUrl(embedded_test_server()->GetURL(kLoadSoftwareOnlyCodecUrl));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kUrl.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl,
                                                         "media element error");
 }
@@ -166,15 +164,15 @@ IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersDisabledTest,
   const GURL kUrl(
       embedded_test_server()->GetURL(kLoadHardwareAndSoftwareCodecUrl));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(),
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation(), kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       CreateLoadUrlParamsWithUserActivation(),
+                                       kUrl.spec()));
 
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "loaded");
-  cr_fuchsia::ExecuteJavaScript(frame.get(), "bear.play()");
+  ExecuteJavaScript(frame.get(), "bear.play()");
 
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "playing");
 }
@@ -189,15 +187,15 @@ IN_PROC_BROWSER_TEST_F(
   const GURL kUrl(
       embedded_test_server()->GetURL(kLoadHardwareAndSoftwareCodecUrl));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(),
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation(), kUrl.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       CreateLoadUrlParamsWithUserActivation(),
+                                       kUrl.spec()));
 
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "loaded");
-  cr_fuchsia::ExecuteJavaScript(frame.get(), "bear.play()");
+  ExecuteJavaScript(frame.get(), "bear.play()");
 
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "playing");
 }

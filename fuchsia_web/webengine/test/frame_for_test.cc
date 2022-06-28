@@ -6,8 +6,6 @@
 
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 
-namespace cr_fuchsia {
-
 // static
 FrameForTest FrameForTest::Create(fuchsia::web::Context* context,
                                   fuchsia::web::CreateFrameParams params) {
@@ -64,5 +62,3 @@ void FrameForTest::CreateAndAttachNavigationListener(
   frame_->SetNavigationEventListener2(
       navigation_listener_binding_->NewBinding(), flags);
 }
-
-}  // namespace cr_fuchsia

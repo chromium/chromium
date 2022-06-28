@@ -96,27 +96,27 @@ class ExplicitSitesFilterTest : public FrameImplTestBaseWithServer {
 };
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FilterDisabled_SiteAllowed) {
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
   SetPageIsNotExplicit();
 
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FilterDisabled_SiteBlocked) {
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
   SetPageIsExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
@@ -125,12 +125,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, DefaultErrorPage_SiteAllowed) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       fuchsia::mem::Data::WithBytes({}));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+  auto frame = FrameForTest::Create(context(), std::move(params));
 
   SetPageIsNotExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
@@ -139,12 +139,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, DefaultErrorPage_SiteBlocked) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       fuchsia::mem::Data::WithBytes({}));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+  auto frame = FrameForTest::Create(context(), std::move(params));
 
   SetPageIsExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   // The page title is the URL for which navigation failed without the scheme
   // part ("http://");
@@ -157,12 +157,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, CustomErrorPage_SiteAllowed) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+  auto frame = FrameForTest::Create(context(), std::move(params));
 
   SetPageIsNotExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
@@ -171,12 +171,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, CustomErrorPage_SiteBlocked) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+  auto frame = FrameForTest::Create(context(), std::move(params));
 
   SetPageIsExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilErrorPageIsLoadedAndTitleEquals(
       kCustomErrorPageTitle);
@@ -192,12 +192,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FrameHost_SiteAllowed) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame = cr_fuchsia::FrameForTest::Create(frame_host, std::move(params));
+  auto frame = FrameForTest::Create(frame_host, std::move(params));
 
   SetPageIsNotExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
@@ -212,12 +212,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FrameHost_SiteBlocked) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame = cr_fuchsia::FrameForTest::Create(frame_host, std::move(params));
+  auto frame = FrameForTest::Create(frame_host, std::move(params));
 
   SetPageIsExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame.navigation_listener().RunUntilErrorPageIsLoadedAndTitleEquals(
       kCustomErrorPageTitle);
@@ -234,13 +234,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest,
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame1 =
-      cr_fuchsia::FrameForTest::Create(frame_host1, std::move(params));
+  auto frame1 = FrameForTest::Create(frame_host1, std::move(params));
 
   SetPageIsNotExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame1.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame1.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame1.navigation_listener().RunUntilTitleEquals(kPage1Title);
 
@@ -257,11 +256,10 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest,
   fuchsia::web::CreateFrameParams params2;
   params2.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame2 =
-      cr_fuchsia::FrameForTest::Create(frame_host2, std::move(params2));
+  auto frame2 = FrameForTest::Create(frame_host2, std::move(params2));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame2.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame2.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame2.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
@@ -277,13 +275,12 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest,
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame1 =
-      cr_fuchsia::FrameForTest::Create(frame_host1, std::move(params));
+  auto frame1 = FrameForTest::Create(frame_host1, std::move(params));
 
   SetPageIsExplicit();
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame1.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame1.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame1.navigation_listener().RunUntilErrorPageIsLoadedAndTitleEquals(
       kCustomErrorPageTitle);
@@ -301,11 +298,10 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest,
   fuchsia::web::CreateFrameParams params2;
   params2.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-  auto frame2 =
-      cr_fuchsia::FrameForTest::Create(frame_host2, std::move(params2));
+  auto frame2 = FrameForTest::Create(frame_host2, std::move(params2));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame2.GetNavigationController(), {}, GetPage1UrlSpec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame2.GetNavigationController(), {},
+                                       GetPage1UrlSpec()));
 
   frame2.navigation_listener().RunUntilErrorPageIsLoadedAndTitleEquals(
       kCustomErrorPageTitle);

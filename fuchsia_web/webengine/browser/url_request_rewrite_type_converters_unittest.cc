@@ -33,8 +33,7 @@ url_rewrite::mojom::UrlRequestRewriteRulesPtr ConvertFuchsiaRulesToMojom(
 // Tests AddHeaders rewrites are properly converted to their Mojo equivalent.
 TEST(UrlRequestRewriteTypeConvertersTest, ConvertAddHeader) {
   url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
-      ConvertFuchsiaRulesToMojom(
-          cr_fuchsia::CreateRewriteAddHeaders("Test", "Value"));
+      ConvertFuchsiaRulesToMojom(CreateRewriteAddHeaders("Test", "Value"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -51,8 +50,8 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertAddHeader) {
 // Tests RemoveHeader rewrites are properly converted to their Mojo equivalent.
 TEST(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
   url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
-      ConvertFuchsiaRulesToMojom(cr_fuchsia::CreateRewriteRemoveHeader(
-          absl::make_optional("Test"), "Header"));
+      ConvertFuchsiaRulesToMojom(
+          CreateRewriteRemoveHeader(absl::make_optional("Test"), "Header"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -67,7 +66,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
 
   // Create a RemoveHeader rewrite with no pattern.
   rules = ConvertFuchsiaRulesToMojom(
-      cr_fuchsia::CreateRewriteRemoveHeader(absl::nullopt, "Header"));
+      CreateRewriteRemoveHeader(absl::nullopt, "Header"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -85,8 +84,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
 TEST(UrlRequestRewriteTypeConvertersTest, ConvertSubstituteQueryPattern) {
   url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
       ConvertFuchsiaRulesToMojom(
-          cr_fuchsia::CreateRewriteSubstituteQueryPattern("Pattern",
-                                                          "Substitution"));
+          CreateRewriteSubstituteQueryPattern("Pattern", "Substitution"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -105,7 +103,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertReplaceUrl) {
   GURL url("http://site.xyz");
   url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
       ConvertFuchsiaRulesToMojom(
-          cr_fuchsia::CreateRewriteReplaceUrl("/something", url.spec()));
+          CreateRewriteReplaceUrl("/something", url.spec()));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -121,8 +119,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertReplaceUrl) {
 // Tests AppendToQuery rewrites are properly converted to their Mojo equivalent.
 TEST(UrlRequestRewriteTypeConvertersTest, ConvertAppendToQuery) {
   url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
-      ConvertFuchsiaRulesToMojom(
-          cr_fuchsia::CreateRewriteAppendToQuery("foo=bar&foo"));
+      ConvertFuchsiaRulesToMojom(CreateRewriteAppendToQuery("foo=bar&foo"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -139,7 +136,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertInternationalHostName) {
   const char kNonAsciiHostName[] = "t\u00E8st.net";
   const char kNonAsciiHostNameWithWildcard[] = "*.t\u00E8st.net";
   std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
-  rewrites.push_back(cr_fuchsia::CreateRewriteAddHeaders("Test", "Value"));
+  rewrites.push_back(CreateRewriteAddHeaders("Test", "Value"));
   fuchsia::web::UrlRequestRewriteRule rule;
   rule.set_rewrites(std::move(rewrites));
   rule.set_hosts_filter({kNonAsciiHostName, kNonAsciiHostNameWithWildcard});

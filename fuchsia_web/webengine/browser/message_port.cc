@@ -22,8 +22,6 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-
-namespace cr_fuchsia {
 namespace {
 
 using BlinkMessage = blink::WebMessagePort::Message;
@@ -203,7 +201,7 @@ class FidlMessagePortClientAdapter : public MessagePortAdapter {
     DeliverMessageToFidl();
   }
 
-  // cr_fuchsia::MessagePortAdapter implementation.
+  // MessagePortAdapter implementation.
   void DeliverMessageToFidl() override {
     absl::optional<fuchsia::web::WebMessage> message = GetNextBlinkMessage();
     if (!message)
@@ -224,7 +222,7 @@ class FidlMessagePortServerAdapter : public fuchsia::web::MessagePort,
                                      public MessagePortAdapter {
  public:
   explicit FidlMessagePortServerAdapter(blink::WebMessagePort blink_port)
-      : cr_fuchsia::MessagePortAdapter(std::move(blink_port)), binding_(this) {
+      : MessagePortAdapter(std::move(blink_port)), binding_(this) {
     binding_.set_error_handler([this](zx_status_t status) {
       ZX_LOG_IF(ERROR,
                 status != ZX_ERR_PEER_CLOSED && status != ZX_ERR_CANCELED,
@@ -252,7 +250,7 @@ class FidlMessagePortServerAdapter : public fuchsia::web::MessagePort,
  private:
   ~FidlMessagePortServerAdapter() override = default;
 
-  // cr_fuchsia::MessagePortAdapter implementation.
+  // MessagePortAdapter implementation.
   void DeliverMessageToFidl() override {
     // Do nothing if the client hasn't requested a read, or if there's nothing
     // to read.
@@ -383,5 +381,3 @@ absl::optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
   fidl_message.set_data(std::move(data_buffer));
   return fidl_message;
 }
-
-}  // namespace cr_fuchsia

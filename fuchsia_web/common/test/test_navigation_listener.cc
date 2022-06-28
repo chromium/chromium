@@ -14,8 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 
-namespace cr_fuchsia {
-
 TestNavigationListener::TestNavigationListener() {
   // Set up the default acknowledgement handling behavior.
   SetBeforeAckHook({});
@@ -229,5 +227,3 @@ void TestNavigationListener::QuitLoopIfAllFieldsMatch(
     quit_run_loop_closure.Run();
   before_ack_callback.Run(change, std::move(ack_callback));
 }
-
-}  // namespace cr_fuchsia

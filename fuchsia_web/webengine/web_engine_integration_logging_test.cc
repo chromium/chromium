@@ -75,7 +75,7 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
  private:
   // Starts WebEngine without redirecting its logs.
   void StartWebEngineForLoggingTest(base::CommandLine command_line) {
-    web_context_provider_ = cr_fuchsia::ConnectContextProviderForLoggingTest(
+    web_context_provider_ = ConnectContextProviderForLoggingTest(
         web_engine_controller_.NewRequest(), std::move(command_line));
     web_context_provider_.set_error_handler(
         [](zx_status_t status) { ADD_FAILURE(); });

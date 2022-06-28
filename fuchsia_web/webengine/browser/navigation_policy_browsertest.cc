@@ -24,22 +24,20 @@ const char kPageTitle[] = "title 1";
 
 }  // namespace
 
-class NavigationPolicyTest : public cr_fuchsia::WebEngineBrowserTest {
+class NavigationPolicyTest : public WebEngineBrowserTest {
  public:
   NavigationPolicyTest() : policy_provider_binding_(&policy_provider_) {
-    cr_fuchsia::WebEngineBrowserTest::set_test_server_root(
-        base::FilePath(cr_fuchsia::kTestServerRoot));
+    WebEngineBrowserTest::set_test_server_root(base::FilePath(kTestServerRoot));
   }
   ~NavigationPolicyTest() override = default;
 
   NavigationPolicyTest(const NavigationPolicyTest&) = delete;
   NavigationPolicyTest& operator=(const NavigationPolicyTest&) = delete;
 
-  void SetUp() override { cr_fuchsia::WebEngineBrowserTest::SetUp(); }
+  void SetUp() override { WebEngineBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
-    frame_ = cr_fuchsia::FrameForTest::Create(
-        context(), fuchsia::web::CreateFrameParams());
+    frame_ = FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
     // Spin the loop to allow the Create() request to be handled.
     base::RunLoop().RunUntilIdle();
@@ -59,7 +57,7 @@ class NavigationPolicyTest : public cr_fuchsia::WebEngineBrowserTest {
   }
 
  protected:
-  cr_fuchsia::FrameForTest frame_;
+  FrameForTest frame_;
   FrameImpl* frame_impl_ = nullptr;
   fidl::Binding<fuchsia::web::NavigationPolicyProvider>
       policy_provider_binding_;
@@ -70,9 +68,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Proceed) {
   policy_provider_.set_should_abort_navigation(false);
 
   GURL page_url(embedded_test_server()->GetURL(std::string(kPagePath)));
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
   frame_.navigation_listener().RunUntilUrlAndTitleEquals(page_url, kPageTitle);
 
   EXPECT_EQ(page_url.spec(), policy_provider_.requested_navigation()->url());
@@ -85,9 +83,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Deferred) {
 
   // Make sure the page has had time to load, but has not actually loaded, since
   // we cannot check for the absence of page data.
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));

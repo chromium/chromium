@@ -10,7 +10,7 @@
 
 // Base test class used for testing FrameImpl and the WebEngine Frame FIDL
 // service
-class FrameImplTestBase : public cr_fuchsia::WebEngineBrowserTest {
+class FrameImplTestBase : public WebEngineBrowserTest {
  public:
   FrameImplTestBase(const FrameImplTestBase&) = delete;
   FrameImplTestBase& operator=(const FrameImplTestBase&) = delete;

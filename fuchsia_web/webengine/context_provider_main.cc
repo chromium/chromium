@@ -36,12 +36,11 @@ int ContextProviderMain() {
   fuchsia_component_support::RegisterProductDataForCrashReporting(
       kComponentUrl, kCrashProductName);
 
-  if (!cr_fuchsia::InitLoggingFromCommandLine(
-          *base::CommandLine::ForCurrentProcess())) {
+  if (!InitLoggingFromCommandLine(*base::CommandLine::ForCurrentProcess())) {
     return 1;
   }
 
-  cr_fuchsia::LogComponentStartWithVersion("WebEngine context_provider");
+  LogComponentStartWithVersion("WebEngine context_provider");
 
   ContextProviderImpl context_provider;
 

@@ -105,10 +105,10 @@ int main(int argc, char** argv) {
   fuchsia_component_support::RegisterProductDataForCrashReporting(
       enable_cfv2 ? kComponentUrl : kComponentUrlCfv1, "FuchsiaCastRunner");
 
-  CHECK(cr_fuchsia::InitLoggingFromCommandLine(*command_line))
+  CHECK(InitLoggingFromCommandLine(*command_line))
       << "Failed to initialize logging.";
 
-  cr_fuchsia::LogComponentStartWithVersion("cast_runner");
+  LogComponentStartWithVersion("cast_runner");
 
   if (!enable_cfv2 && (base::CommandLine::ForCurrentProcess()->HasSwitch(
                            kRunCfv1ShimConfigKey) ||
@@ -116,13 +116,13 @@ int main(int argc, char** argv) {
     return Cfv1ToCfv2RunnerProxyMain();
   }
 
-  cr_fuchsia::RegisterFuchsiaDirScheme();
+  RegisterFuchsiaDirScheme();
 
   sys::OutgoingDirectory* const outgoing_directory =
       base::ComponentContextForProcess()->outgoing().get();
 
   // Publish the fuchsia.sys.Runner implementation for Cast applications.
-  cr_fuchsia::WebInstanceHost web_instance_host;
+  WebInstanceHost web_instance_host;
   const bool enable_headless =
       command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
       GetConfigBool(kHeadlessConfigKey);

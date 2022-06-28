@@ -11,8 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "components/version_info/version_info.h"
 
-namespace cr_fuchsia {
-
 // These values must match content/public/common/content_switches.cc so that
 // the values will be passed to child processes in projects that Chromium's
 // Content layer.
@@ -39,8 +37,8 @@ bool InitLoggingFromCommandLine(const base::CommandLine& command_line) {
 bool InitLoggingFromCommandLineDefaultingToStderrForTest(
     base::CommandLine* command_line) {
   // Set logging to stderr if not specified.
-  if (!command_line->HasSwitch(cr_fuchsia::kEnableLogging)) {
-    command_line->AppendSwitchNative(cr_fuchsia::kEnableLogging, "stderr");
+  if (!command_line->HasSwitch(kEnableLogging)) {
+    command_line->AppendSwitchNative(kEnableLogging, "stderr");
   }
 
   return InitLoggingFromCommandLine(*command_line);
@@ -56,5 +54,3 @@ void LogComponentStartWithVersion(base::StringPiece component_name) {
 
   LOG(INFO) << version_string;
 }
-
-}  // namespace cr_fuchsia

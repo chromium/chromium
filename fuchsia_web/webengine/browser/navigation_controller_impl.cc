@@ -278,8 +278,8 @@ void NavigationControllerImpl::LoadUrl(std::string url,
     std::vector<std::string> extra_headers;
     extra_headers.reserve(params.headers().size());
     for (const auto& header : params.headers()) {
-      base::StringPiece header_name = cr_fuchsia::BytesAsString(header.name);
-      base::StringPiece header_value = cr_fuchsia::BytesAsString(header.value);
+      base::StringPiece header_name = BytesAsString(header.name);
+      base::StringPiece header_value = BytesAsString(header.value);
       if (!net::HttpUtil::IsValidHeaderName(header_name) ||
           !net::HttpUtil::IsValidHeaderValue(header_value)) {
         callback(fpromise::error(

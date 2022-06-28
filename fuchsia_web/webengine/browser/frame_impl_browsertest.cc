@@ -114,13 +114,13 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, DISABLED_VisibilityState) {
                   embedded_test_server()->StartAndReturnHandle());
   GURL page_url(embedded_test_server()->GetURL(kVisibilityPath));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
 
   // Navigate to a page and wait for it to finish loading.
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
   frame.navigation_listener().RunUntilUrlEquals(page_url);
 
   // Query the document.visibilityState before creating a View.
@@ -157,7 +157,7 @@ void VerifyCanGoBackAndForward(
     bool can_go_forward_expected) {
   base::test::TestFuture<fuchsia::web::NavigationState> visible_entry;
   controller->GetVisibleEntry(
-      cr_fuchsia::CallbackToFitFunction(visible_entry.GetCallback()));
+      CallbackToFitFunction(visible_entry.GetCallback()));
   ASSERT_TRUE(visible_entry.Wait());
   EXPECT_TRUE(visible_entry.Get().has_can_go_back());
   EXPECT_EQ(visible_entry.Get().can_go_back(), can_go_back_expected);
@@ -168,11 +168,11 @@ void VerifyCanGoBackAndForward(
 // Verifies that the browser will navigate and generate a navigation listener
 // event when LoadUrl() is called.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigateFrame) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url::kAboutBlankURL));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url::kAboutBlankURL));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(
       GURL(url::kAboutBlankURL), url::kAboutBlankURL);
 }
@@ -186,11 +186,11 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationListenerRendererProcessGone) {
   GURL url(embedded_test_server()->GetURL("/nocontent"));
 
   // Create a Frame and navigate it to a URL that will not "commit".
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
 
   // Terminate the Renderer process and run the browser until that is observed.
   content::RenderProcessHost* child_process =
@@ -223,21 +223,21 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationIncreasesMemoryUsage) {
                   embedded_test_server()->StartAndReturnHandle());
   GURL url(embedded_test_server()->GetURL(kPage1Path));
 
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   // Get the renderer size when no renderer process is active.
   base::test::TestFuture<uint64_t> before_nav_size;
   frame->GetPrivateMemorySize(
-      cr_fuchsia::CallbackToFitFunction(before_nav_size.GetCallback()));
+      CallbackToFitFunction(before_nav_size.GetCallback()));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, kPage1Title);
 
   base::test::TestFuture<uint64_t> after_nav_size;
   frame->GetPrivateMemorySize(
-      cr_fuchsia::CallbackToFitFunction(after_nav_size.GetCallback()));
+      CallbackToFitFunction(after_nav_size.GetCallback()));
   ASSERT_TRUE(after_nav_size.Wait());
 
   EXPECT_EQ(before_nav_size.Get(), 0u);  // No render process - zero bytes.
@@ -245,17 +245,17 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationIncreasesMemoryUsage) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigateDataFrame) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      kDataUrl));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       kDataUrl));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(GURL(kDataUrl),
                                                         kDataUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, FrameDeletedBeforeContext) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   // Process the frame creation message.
   base::RunLoop().RunUntilIdle();
@@ -266,9 +266,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, FrameDeletedBeforeContext) {
   EXPECT_CALL(deletion_observer, RenderViewDeleted(_))
       .WillOnce(InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url::kAboutBlankURL));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url::kAboutBlankURL));
 
   frame.ptr().Unbind();
   run_loop.Run();
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, FrameDeletedBeforeContext) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrame) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   EXPECT_TRUE(frame.ptr());
 
   base::RunLoop run_loop;
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrame) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   EXPECT_TRUE(frame.ptr());
   base::RunLoop().RunUntilIdle();
   FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
@@ -315,21 +315,21 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
 // TODO(https://crbug.com/695592): Remove this test when WebSQL is removed from
 // Chrome.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, EnsureWebSqlDisabled) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL title3(embedded_test_server()->GetURL(kPage3Path));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title3.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title3.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title3, kPage3Title);
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -337,15 +337,15 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
   GURL title1(embedded_test_server()->GetURL(kPage1Path));
   GURL title2(embedded_test_server()->GetURL(kPage2Path));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title1.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title1.spec()));
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title1, kPage1Title, false, false);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title2.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title2.spec()));
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title2, kPage2Title, true, false);
 
@@ -491,7 +491,7 @@ class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
 };
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   ChunkedHttpTransactionFactory* factory = new ChunkedHttpTransactionFactory;
   base::RunLoop transaction_created_run_loop;
@@ -511,9 +511,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL hung_url(embedded_test_server()->GetURL("/pausable"));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      hung_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       hung_url.spec()));
   fuchsia::web::NavigationState state_change;
   state_change.set_url(hung_url.spec());
   state_change.set_is_main_document_loaded(false);
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, ReloadFrame) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
       &FrameImplTest::OnServeHttpRequest, base::Unretained(this)));
@@ -549,9 +549,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ReloadFrame) {
   GURL url(embedded_test_server()->GetURL(kPage1Path));
 
   EXPECT_CALL(*this, OnServeHttpRequest(_)).Times(AtLeast(1));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, kPage1Title);
 
   // Reload with NO_CACHE.
@@ -581,15 +581,14 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ReloadFrame) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, GetVisibleEntry) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   // Verify that a Frame returns an empty NavigationState prior to receiving any
   // LoadUrl() calls.
   {
     base::test::TestFuture<fuchsia::web::NavigationState> result;
     auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
     EXPECT_FALSE(result.Get().has_title());
     EXPECT_FALSE(result.Get().has_url());
@@ -603,17 +602,16 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GetVisibleEntry) {
   GURL title2(embedded_test_server()->GetURL(kPage2Path));
 
   // Navigate to a page.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title1.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title1.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title1, kPage1Title);
 
   // Verify that GetVisibleEntry() reflects the new Frame navigation state.
   {
     base::test::TestFuture<fuchsia::web::NavigationState> result;
     auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
     ASSERT_TRUE(result.Get().has_url());
     EXPECT_EQ(result.Get().url(), title1.spec());
@@ -624,17 +622,16 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GetVisibleEntry) {
   }
 
   // Navigate to another page.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title2.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title2.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title2, kPage2Title);
 
   // Verify the navigation with GetVisibleEntry().
   {
     base::test::TestFuture<fuchsia::web::NavigationState> result;
     auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
     ASSERT_TRUE(result.Get().has_url());
     EXPECT_EQ(result.Get().url(), title2.spec());
@@ -645,17 +642,16 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GetVisibleEntry) {
   }
 
   // Navigate back to the first page.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title1.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title1.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title1, kPage1Title);
 
   // Verify the navigation with GetVisibleEntry().
   {
     base::test::TestFuture<fuchsia::web::NavigationState> result;
     auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
     ASSERT_TRUE(result.Get().has_url());
     EXPECT_EQ(result.Get().url(), title1.spec());
@@ -669,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GetVisibleEntry) {
 // Verifies that NavigationState correctly reports when the Renderer terminates
 // or crashes. Also verifies that GetVisibleEntry() reports the same state.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -677,9 +673,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
   GURL url(embedded_test_server()->GetURL(kPage1Path));
 
   // Navigate to a page.
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, kPage1Title);
 
   // Kill the renderer for the tab.
@@ -712,8 +708,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
   {
     base::test::TestFuture<fuchsia::web::NavigationState> result;
     auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
     ASSERT_TRUE(result.Get().has_url());
     EXPECT_EQ(result.Get().url(), url.spec());
@@ -725,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
@@ -741,9 +736,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, DidStartNavigation(NavigationHandleUrlEquals(title1)))
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        title1.spec()));
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         title1.spec()));
     run_loop.Run();
   }
 
@@ -751,9 +746,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, DidStartNavigation(NavigationHandleUrlEquals(title2)))
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        title2.spec()));
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         title2.spec()));
     run_loop.Run();
   }
 }
@@ -761,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {
 // Verifies that a Frame will handle navigation listener disconnection events
 // gracefully.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationObserverDisconnected) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
@@ -775,9 +770,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationObserverDisconnected) {
   EXPECT_CALL(web_contents_observer,
               DidStartNavigation(NavigationHandleUrlEquals(title1)));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title1.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title1.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title1, kPage1Title);
 
   // Disconnect the listener & spin the runloop to propagate the disconnection
@@ -789,14 +784,14 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationObserverDisconnected) {
   EXPECT_CALL(web_contents_observer,
               DidStartNavigation(NavigationHandleUrlEquals(title2)))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title2.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title2.spec()));
   run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, DelayedNavigationEventAck) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
@@ -813,9 +808,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, DelayedNavigationEventAck) {
          const fuchsia::web::NavigationState& state,
          OnNavigationStateChangedCallback cb) { *dest_cb = std::move(cb); },
       base::Unretained(&captured_ack_cb)));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      title1.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       title1.spec()));
   fuchsia::web::NavigationState expected_state;
   expected_state.set_url(title1.spec());
   frame.navigation_listener().RunUntilNavigationStateMatches(expected_state);
@@ -833,9 +828,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, DelayedNavigationEventAck) {
     EXPECT_CALL(web_contents_observer,
                 DidStartNavigation(NavigationHandleUrlEquals(title2)))
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        title2.spec()));
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         title2.spec()));
     run_loop.Run();
   }
 
@@ -847,9 +842,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, DelayedNavigationEventAck) {
     EXPECT_CALL(web_contents_observer,
                 DidStartNavigation(NavigationHandleUrlEquals(title1)))
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        title1.spec()));
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         title1.spec()));
     run_loop.Run();
   }
 
@@ -867,7 +862,7 @@ struct WebContentsObserverForStop : public content::WebContentsObserver {
 };
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, Stop) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
@@ -922,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Stop) {
 #define MAYBE_SetPageScale DISABLED_SetPageScale
 #endif
 IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   auto view_tokens = scenic::ViewTokenPair::New();
   frame->CreateView(std::move(view_tokens.view_token));
@@ -941,13 +936,13 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
                   embedded_test_server()->StartAndReturnHandle());
   GURL url = embedded_test_server()->GetURL(kWaitSizePath);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "done");
 
-  absl::optional<base::Value> default_dpr = cr_fuchsia::ExecuteJavaScript(
-      frame.ptr().get(), "window.devicePixelRatio");
+  absl::optional<base::Value> default_dpr =
+      ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(default_dpr);
 
   EXPECT_EQ(default_dpr->GetDouble(), 1.0f);
@@ -956,8 +951,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   const float kZoomInScale = 1.5;
   frame->SetPageScale(kZoomInScale);
 
-  absl::optional<base::Value> scaled_dpr = cr_fuchsia::ExecuteJavaScript(
-      frame.ptr().get(), "window.devicePixelRatio");
+  absl::optional<base::Value> scaled_dpr =
+      ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(scaled_dpr);
 
   EXPECT_EQ(scaled_dpr->GetDouble(), kZoomInScale);
@@ -967,14 +962,13 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   // preserved.
   GURL url2 = embedded_test_server()->GetURL("localhost", kWaitSizePath);
   EXPECT_NE(url.host(), url2.host());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url2.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url2.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url2, "done");
 
   absl::optional<base::Value> dpr_after_navigation =
-      cr_fuchsia::ExecuteJavaScript(frame.ptr().get(),
-                                    "window.devicePixelRatio");
+      ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(scaled_dpr);
 
   EXPECT_EQ(dpr_after_navigation, scaled_dpr);
@@ -982,8 +976,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   // Reset the scale to 1.0 (default) and verify that reported DPR is updated
   // to 1.0.
   frame->SetPageScale(1.0);
-  absl::optional<base::Value> dpr_after_reset = cr_fuchsia::ExecuteJavaScript(
-      frame.ptr().get(), "window.devicePixelRatio");
+  absl::optional<base::Value> dpr_after_reset =
+      ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(dpr_after_reset);
 
   EXPECT_EQ(dpr_after_reset->GetDouble(), 1.0);
@@ -992,15 +986,15 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   const float kZoomOutScale = 0.5;
   frame->SetPageScale(kZoomOutScale);
 
-  absl::optional<base::Value> zoomed_out_dpr = cr_fuchsia::ExecuteJavaScript(
-      frame.ptr().get(), "window.devicePixelRatio");
+  absl::optional<base::Value> zoomed_out_dpr =
+      ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(zoomed_out_dpr);
 
   EXPECT_EQ(zoomed_out_dpr->GetDouble(), kZoomOutScale);
 
   // Create another frame. Verify that the scale factor is not applied to the
   // new frame.
-  auto frame2 = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame2 = FrameForTest::Create(context(), {});
 
   view_tokens = scenic::ViewTokenPair::New();
   frame2->CreateView(std::move(view_tokens.view_token));
@@ -1008,20 +1002,20 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
                                   nullptr);
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame2.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame2.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
   frame2.navigation_listener().RunUntilUrlAndTitleEquals(url, "done");
 
-  absl::optional<base::Value> frame2_dpr = cr_fuchsia::ExecuteJavaScript(
-      frame2.ptr().get(), "window.devicePixelRatio");
+  absl::optional<base::Value> frame2_dpr =
+      ExecuteJavaScript(frame2.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(frame2_dpr);
 
   EXPECT_EQ(frame2_dpr->GetDouble(), 1.0);
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -1035,9 +1029,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
 
   // Verify that the Frame can navigate, prior to the View being created.
   const GURL page1_url(embedded_test_server()->GetURL(kPage1Path));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page1_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page1_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page1_url, kPage1Title);
 
   // Request a View from the Frame, and pump the loop to process the request.
@@ -1048,9 +1042,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
 
   // Verify that the Frame still works, by navigating to Page #2.
   const GURL page2_url(embedded_test_server()->GetURL(kPage2Path));
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page2_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page2_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page2_url, kPage2Title);
 
   // Create new View tokens and request a new view.
@@ -1060,9 +1054,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
   EXPECT_TRUE(frame_impl->has_view_for_test());
 
   // Verify that the Frame still works, by navigating back to Page #1.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page1_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page1_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page1_url, kPage1Title);
 }
 
@@ -1073,12 +1067,12 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ChildFrameNavigationIgnored) {
   GURL page_url(embedded_test_server()->GetURL("/creates_child_frame.html"));
 
   // Navigate to a page and wait for the navigation to complete.
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
   fuchsia::web::NavigationState expected_state;
   expected_state.set_url(page_url.spec());
   expected_state.set_title("main frame");
@@ -1090,9 +1084,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ChildFrameNavigationIgnored) {
   fuchsia::web::WebMessage message;
   message.set_data(base::MemBufferFromString("test", "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
-  frame->PostMessage(
-      page_url.DeprecatedGetOriginAsURL().spec(), std::move(message),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+  frame->PostMessage(page_url.DeprecatedGetOriginAsURL().spec(),
+                     std::move(message),
+                     CallbackToFitFunction(post_result.GetCallback()));
 
   frame.navigation_listener().SetBeforeAckHook(
       base::BindRepeating([](const fuchsia::web::NavigationState& change,
@@ -1119,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ImmediateNavigationEvent) {
 
   // The first NavigationState received should be empty.
   base::RunLoop run_loop;
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   frame.navigation_listener().SetBeforeAckHook(base::BindRepeating(
       [](base::OnceClosure quit_loop,
          const fuchsia::web::NavigationState& change,
@@ -1133,14 +1127,14 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ImmediateNavigationEvent) {
   frame.navigation_listener().SetBeforeAckHook({});
 
   // Navigate to a page and wait for the navigation to complete.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      page_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       page_url.spec()));
   frame.navigation_listener().RunUntilUrlEquals(page_url);
 
   // Attach a new navigation listener, we should get the new page state, even if
   // no new navigation occurred.
-  cr_fuchsia::TestNavigationListener navigation_listener;
+  TestNavigationListener navigation_listener;
   fidl::Binding<fuchsia::web::NavigationEventListener>
       navigation_listener_binding(&navigation_listener);
   frame.ptr()->SetNavigationEventListener2(
@@ -1151,13 +1145,13 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ImmediateNavigationEvent) {
 // Check loading an invalid URL in NavigationController.LoadUrl() sets the right
 // error.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidUrl) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   base::test::TestFuture<fuchsia::web::NavigationController_LoadUrl_Result>
       result;
   auto controller = frame.GetNavigationController();
   controller->LoadUrl("http:google.com:foo", fuchsia::web::LoadUrlParams(),
-                      cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+                      CallbackToFitFunction(result.GetCallback()));
   ASSERT_TRUE(result.Wait());
 
   ASSERT_TRUE(result.Get().is_err());
@@ -1168,22 +1162,21 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidUrl) {
 // Check setting invalid headers in NavigationController.LoadUrl() sets the
 // right error.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidHeader) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   {
     // Set an invalid header name.
     fuchsia::web::LoadUrlParams load_url_params;
     fuchsia::net::http::Header header;
-    header.name = cr_fuchsia::StringToBytes("Invalid:Header");
-    header.value = cr_fuchsia::StringToBytes("1");
+    header.name = StringToBytes("Invalid:Header");
+    header.value = StringToBytes("1");
     load_url_params.set_headers({header});
 
     base::test::TestFuture<fuchsia::web::NavigationController_LoadUrl_Result>
         result;
     auto controller = frame.GetNavigationController();
-    controller->LoadUrl(
-        "http://site.ext/", std::move(load_url_params),
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->LoadUrl("http://site.ext/", std::move(load_url_params),
+                        CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
 
     ASSERT_TRUE(result.Get().is_err());
@@ -1195,16 +1188,15 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidHeader) {
     // Set an invalid header value.
     fuchsia::web::LoadUrlParams load_url_params;
     fuchsia::net::http::Header header;
-    header.name = cr_fuchsia::StringToBytes("Header");
-    header.value = cr_fuchsia::StringToBytes("Invalid\rValue");
+    header.name = StringToBytes("Header");
+    header.value = StringToBytes("Invalid\rValue");
     load_url_params.set_headers({header});
 
     base::test::TestFuture<fuchsia::web::NavigationController_LoadUrl_Result>
         result;
     auto controller = frame.GetNavigationController();
-    controller->LoadUrl(
-        "http://site.ext/", std::move(load_url_params),
-        cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+    controller->LoadUrl("http://site.ext/", std::move(load_url_params),
+                        CallbackToFitFunction(result.GetCallback()));
     ASSERT_TRUE(result.Wait());
 
     ASSERT_TRUE(result.Get().is_err());
@@ -1214,7 +1206,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidHeader) {
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, ContentAreaSettings) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
   auto* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
   auto* web_contents = frame_impl->web_contents_for_test();

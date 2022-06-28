@@ -63,13 +63,12 @@ int main(int argc, char** argv) {
   base::RunLoop run_loop;
 
   base::CommandLine::Init(argc, argv);
-  CHECK(cr_fuchsia::InitLoggingFromCommandLine(
-      *base::CommandLine::ForCurrentProcess()))
+  CHECK(InitLoggingFromCommandLine(*base::CommandLine::ForCurrentProcess()))
       << "Failed to initialize logging.";
 
-  cr_fuchsia::LogComponentStartWithVersion("web_runner");
+  LogComponentStartWithVersion("web_runner");
 
-  cr_fuchsia::WebInstanceHost web_instance_host;
+  WebInstanceHost web_instance_host;
   WebContentRunner runner(&web_instance_host,
                           base::BindRepeating(&GetWebInstanceConfig));
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(

@@ -126,11 +126,9 @@ class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
   int num_acked_events_ = 0;
 };
 
-class KeyboardInputTest : public cr_fuchsia::WebEngineBrowserTest {
+class KeyboardInputTest : public WebEngineBrowserTest {
  public:
-  KeyboardInputTest() {
-    set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-  }
+  KeyboardInputTest() { set_test_server_root(base::FilePath(kTestServerRoot)); }
   ~KeyboardInputTest() override = default;
 
   KeyboardInputTest(const KeyboardInputTest&) = delete;
@@ -143,16 +141,15 @@ class KeyboardInputTest : public cr_fuchsia::WebEngineBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({features::kKeyboardInput}, {});
-    cr_fuchsia::WebEngineBrowserTest::SetUp();
+    WebEngineBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
+    WebEngineBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     fuchsia::web::CreateFrameParams params;
-    frame_for_test_ =
-        cr_fuchsia::FrameForTest::Create(context(), std::move(params));
+    frame_for_test_ = FrameForTest::Create(context(), std::move(params));
 
     // Set up services needed for the test. The keyboard service is included in
     // the allowed services by default. The real service needs to be removed so
@@ -168,7 +165,7 @@ class KeyboardInputTest : public cr_fuchsia::WebEngineBrowserTest {
     fuchsia::web::NavigationControllerPtr controller;
     frame_for_test_.ptr()->GetNavigationController(controller.NewRequest());
     const GURL test_url(embedded_test_server()->GetURL("/keyevents.html"));
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+    EXPECT_TRUE(LoadUrlAndExpectResponse(
         controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
     frame_for_test_.navigation_listener().RunUntilUrlEquals(test_url);
 
@@ -194,15 +191,15 @@ class KeyboardInputTest : public cr_fuchsia::WebEngineBrowserTest {
         base::NumberToString(expected.size()));
 
     absl::optional<base::Value> actual =
-        cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
+        ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
     EXPECT_EQ(*actual, base::Value(expected));
   }
 
   // Used to publish fake services.
   absl::optional<base::TestComponentContextForProcess> component_context_;
 
-  cr_fuchsia::FrameForTest frame_for_test_;
-  cr_fuchsia::ScenicTestHelper scenic_test_helper_;
+  FrameForTest frame_for_test_;
+  ScenicTestHelper scenic_test_helper_;
   absl::optional<FakeKeyboard> keyboard_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<
@@ -352,8 +349,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Disconnect) {
   frame_for_test_.navigation_listener().RunUntilTitleEquals("loaded");
 
   // Make sure the page is still available and there are no crashes.
-  EXPECT_TRUE(cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), "true")
-                  ->GetBool());
+  EXPECT_TRUE(
+      ExecuteJavaScript(frame_for_test_.ptr().get(), "true")->GetBool());
 }
 
 class KeyboardInputTestWithoutKeyboardFeature : public KeyboardInputTest {
@@ -364,7 +361,7 @@ class KeyboardInputTestWithoutKeyboardFeature : public KeyboardInputTest {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({}, {});
-    cr_fuchsia::WebEngineBrowserTest::SetUp();
+    WebEngineBrowserTest::SetUp();
   }
 
   void SetUpService() override {

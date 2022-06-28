@@ -63,6 +63,6 @@ blink::OriginTrialPolicy* WebEngineContentClient::GetOriginTrialPolicy() {
 void WebEngineContentClient::AddAdditionalSchemes(Schemes* schemes) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
-    schemes->standard_schemes.push_back(cr_fuchsia::kFuchsiaDirScheme);
+    schemes->standard_schemes.push_back(kFuchsiaDirScheme);
   }
 }

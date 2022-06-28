@@ -53,7 +53,7 @@ WebContentRunner::WebInstanceConfig&
 WebContentRunner::WebInstanceConfig::operator=(WebInstanceConfig&&) = default;
 
 WebContentRunner::WebContentRunner(
-    cr_fuchsia::WebInstanceHost* web_instance_host,
+    WebInstanceHost* web_instance_host,
     GetWebInstanceConfigCallback get_web_instance_config_callback)
     : web_instance_host_(web_instance_host),
       get_web_instance_config_callback_(
@@ -62,9 +62,8 @@ WebContentRunner::WebContentRunner(
   DCHECK(get_web_instance_config_callback_);
 }
 
-WebContentRunner::WebContentRunner(
-    cr_fuchsia::WebInstanceHost* web_instance_host,
-    WebInstanceConfig web_instance_config)
+WebContentRunner::WebContentRunner(WebInstanceHost* web_instance_host,
+                                   WebInstanceConfig web_instance_config)
     : web_instance_host_(web_instance_host) {
   CreateWebInstanceAndContext(std::move(web_instance_config));
 }

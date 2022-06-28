@@ -16,8 +16,6 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 
-namespace cr_fuchsia {
-
 base::Value GetDevToolsListFromPort(uint16_t port) {
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json/list", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
@@ -40,5 +38,3 @@ base::Value GetDevToolsListFromPort(uint16_t port) {
 
   return base::JSONReader::Read(result).value_or(base::Value());
 }
-
-}  // namespace cr_fuchsia

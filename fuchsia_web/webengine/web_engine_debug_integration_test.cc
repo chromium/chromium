@@ -49,7 +49,7 @@ class WebEngineDebugIntegrationTest : public testing::Test {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendSwitch(test_switch);
 
-    web_context_provider_ = cr_fuchsia::ConnectContextProvider(
+    web_context_provider_ = ConnectContextProvider(
         web_engine_controller_.NewRequest(), command_line);
     web_context_provider_.set_error_handler(
         [](zx_status_t status) { ADD_FAILURE(); });
@@ -140,8 +140,8 @@ struct TestContextAndFrame {
     context_provider->Create(std::move(create_params), context.NewRequest());
     context->CreateFrame(frame.NewRequest());
     frame->GetNavigationController(controller.NewRequest());
-    if (!cr_fuchsia::LoadUrlAndExpectResponse(
-            controller.get(), fuchsia::web::LoadUrlParams(), url)) {
+    if (!LoadUrlAndExpectResponse(controller.get(),
+                                  fuchsia::web::LoadUrlParams(), url)) {
       ADD_FAILURE();
       context.Unbind();
       frame.Unbind();
@@ -170,8 +170,8 @@ TEST_F(WebEngineDebugIntegrationTest, DebugService) {
   // Test the debug information is correct.
   dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
 
-  base::Value devtools_list = cr_fuchsia::GetDevToolsListFromPort(
-      *dev_tools_listener_.debug_ports().begin());
+  base::Value devtools_list =
+      GetDevToolsListFromPort(*dev_tools_listener_.debug_ports().begin());
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
 
@@ -201,7 +201,7 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
   uint16_t port1 = *dev_tools_listener_.debug_ports().begin();
 
-  base::Value devtools_list1 = cr_fuchsia::GetDevToolsListFromPort(port1);
+  base::Value devtools_list1 = GetDevToolsListFromPort(port1);
   ASSERT_TRUE(devtools_list1.is_list());
   EXPECT_EQ(devtools_list1.GetListDeprecated().size(), 1u);
 
@@ -238,7 +238,7 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_NE(dev_tools_listener_.debug_ports().find(port2),
             dev_tools_listener_.debug_ports().end());
 
-  base::Value devtools_list2 = cr_fuchsia::GetDevToolsListFromPort(port2);
+  base::Value devtools_list2 = GetDevToolsListFromPort(port2);
   ASSERT_TRUE(devtools_list2.is_list());
   EXPECT_EQ(devtools_list2.GetListDeprecated().size(), 1u);
 
@@ -276,7 +276,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
       port_receiver;
   frame_data.context->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+      CallbackToFitFunction(port_receiver.GetCallback()));
   ASSERT_TRUE(port_receiver.Wait());
 
   ASSERT_TRUE(port_receiver.Get().is_response());
@@ -284,8 +284,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   ASSERT_EQ(remote_debugging_port, *dev_tools_listener_.debug_ports().begin());
 
   // Test the debug information is correct.
-  base::Value devtools_list =
-      cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  base::Value devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
   EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
 

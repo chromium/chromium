@@ -118,7 +118,7 @@ WebEngineContentBrowserClient::WebEngineContentBrowserClient()
       allow_insecure_content_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowRunningInsecureContent)) {
   // Logging in this class ensures this is logged once per web_instance.
-  cr_fuchsia::LogComponentStartWithVersion("WebEngine web_instance");
+  LogComponentStartWithVersion("WebEngine web_instance");
 }
 
 WebEngineContentBrowserClient::~WebEngineContentBrowserClient() = default;
@@ -185,7 +185,7 @@ void WebEngineContentBrowserClient::
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
-    factories->emplace(cr_fuchsia::kFuchsiaDirScheme,
+    factories->emplace(kFuchsiaDirScheme,
                        ContentDirectoryLoaderFactory::Create());
   }
 }
@@ -198,7 +198,7 @@ void WebEngineContentBrowserClient::
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
-    factories->emplace(cr_fuchsia::kFuchsiaDirScheme,
+    factories->emplace(kFuchsiaDirScheme,
                        ContentDirectoryLoaderFactory::Create());
   }
 }

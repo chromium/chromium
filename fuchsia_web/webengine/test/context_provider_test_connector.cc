@@ -16,8 +16,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 
-namespace cr_fuchsia {
-
 namespace {
 
 // |is_for_logging_test| should only be true when testing WebEngine's logging
@@ -88,4 +86,3 @@ fuchsia::web::ContextProviderPtr ConnectContextProviderForLoggingTest(
       std::move(component_controller_request), command_line, true));
   return web_engine_service_dir.Connect<fuchsia::web::ContextProvider>();
 }
-}  // namespace cr_fuchsia

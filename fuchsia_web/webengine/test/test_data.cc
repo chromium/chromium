@@ -6,8 +6,4 @@
 
 #include "base/files/file_path.h"
 
-namespace cr_fuchsia {
-
 const char kTestServerRoot[] = "fuchsia_web/webengine/test/data";
-
-}  // namespace cr_fuchsia

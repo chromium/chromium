@@ -13,8 +13,6 @@
 #include "base/command_line.h"
 #include "base/values.h"
 
-namespace cr_fuchsia {
-
 // Helper class that allows web_instance Components to be launched based on
 // caller-supplied |CreateContextParams|.
 //
@@ -90,7 +88,5 @@ class WebInstanceHost {
   // Set by configuration tests.
   base::Value config_for_test_;
 };
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_H_

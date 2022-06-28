@@ -150,7 +150,7 @@ class GetNextCookiesIteratorResult {
  public:
   explicit GetNextCookiesIteratorResult(
       fuchsia::web::CookiesIterator* iterator) {
-    iterator->GetNext(cr_fuchsia::CallbackToFitFunction(result_.GetCallback()));
+    iterator->GetNext(CallbackToFitFunction(result_.GetCallback()));
   }
 
   GetNextCookiesIteratorResult(const GetNextCookiesIteratorResult&) = delete;

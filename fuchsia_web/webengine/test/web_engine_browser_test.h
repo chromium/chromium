@@ -23,8 +23,6 @@ namespace sys {
 class ServiceDirectory;
 }
 
-namespace cr_fuchsia {
-
 // Base test class used for testing the WebEngine Context FIDL service in
 // integration.
 class WebEngineBrowserTest : public content::BrowserTestBase {
@@ -66,7 +64,5 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   // Client for the directory of services published by this browser process.
   std::shared_ptr<sys::ServiceDirectory> published_services_;
 };
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_WEB_ENGINE_BROWSER_TEST_H_

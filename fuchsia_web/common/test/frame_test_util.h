@@ -12,8 +12,6 @@
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace cr_fuchsia {
-
 // Uses |navigation_controller| to load |url| with |load_url_params|. Returns
 // after the load is completed. Returns true if the load was successful, false
 // otherwise.
@@ -41,7 +39,5 @@ fuchsia::web::LoadUrlParams CreateLoadUrlParamsWithUserActivation();
 fuchsia::web::WebMessage CreateWebMessageWithMessagePortRequest(
     fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
     fuchsia::mem::Buffer buffer);
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_TEST_FRAME_TEST_UTIL_H_

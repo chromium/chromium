@@ -15,8 +15,6 @@
 #include "fuchsia_web/webengine/browser/frame_window_tree_host.h"
 #include "fuchsia_web/webengine/test/test_data.h"
 
-namespace cr_fuchsia {
-
 namespace {
 const gfx::Rect kBounds = {1000, 1000};
 }  // namespace
@@ -60,5 +58,3 @@ fuchsia::ui::views::ViewRef ScenicTestHelper::CloneViewRef() {
   ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
   return dup;
 }
-
-}  // namespace cr_fuchsia

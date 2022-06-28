@@ -7,14 +7,12 @@
 #include "base/strings/string_piece.h"
 #include "fuchsia_web/common/string_util.h"
 
-namespace cr_fuchsia {
-
 fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
     base::StringPiece header_name,
     base::StringPiece header_value) {
   fuchsia::net::http::Header header;
-  header.name = cr_fuchsia::StringToBytes(header_name);
-  header.value = cr_fuchsia::StringToBytes(header_value);
+  header.name = StringToBytes(header_name);
+  header.value = StringToBytes(header_value);
 
   std::vector<fuchsia::net::http::Header> response_headers;
   response_headers.push_back(std::move(header));
@@ -33,7 +31,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
   fuchsia::web::UrlRequestRewriteRemoveHeader remove_header;
   if (query_pattern)
     remove_header.set_query_pattern(std::string(query_pattern.value()));
-  remove_header.set_header_name(cr_fuchsia::StringToBytes(header_name));
+  remove_header.set_header_name(StringToBytes(header_name));
   fuchsia::web::UrlRequestRewrite rewrite;
   rewrite.set_remove_header(std::move(remove_header));
 
@@ -74,5 +72,3 @@ fuchsia::web::UrlRequestRewrite CreateRewriteAppendToQuery(
 
   return rewrite;
 }
-
-}  // namespace cr_fuchsia

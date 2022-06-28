@@ -25,15 +25,13 @@
 
 namespace base {
 class FilteredServiceDirectory;
-}  // namespace base
+}
 
 namespace fuchsia::legacymetrics {
 class MetricsRecorder;
 }
 
-namespace cr_fuchsia {
 class WebInstanceHost;
-}  // namespace cr_fuchsia
 
 // sys::Runner which instantiates Cast activities specified via cast/casts URIs.
 class CastRunner final : public fuchsia::sys::Runner,
@@ -47,7 +45,7 @@ class CastRunner final : public fuchsia::sys::Runner,
   //     Component in which to host the fuchsia.web.Context.
   // |is_headless|: True if this instance should create Contexts with the
   //                HEADLESS feature set.
-  CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host, bool is_headless);
+  CastRunner(WebInstanceHost* web_instance_host, bool is_headless);
   ~CastRunner() override;
 
   CastRunner(const CastRunner&) = delete;
@@ -137,7 +135,7 @@ class CastRunner final : public fuchsia::sys::Runner,
   bool WasPersistedCacheErased();
 
   // Passed to WebContentRunners to use to create web_instance Components.
-  cr_fuchsia::WebInstanceHost* const web_instance_host_;
+  WebInstanceHost* const web_instance_host_;
 
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;

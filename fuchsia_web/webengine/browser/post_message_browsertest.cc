@@ -28,7 +28,7 @@ class PostMessageTest : public FrameImplTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(PostMessageTest, SendData) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -36,18 +36,18 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, SendData) {
   GURL post_message_url(
       embedded_test_server()->GetURL("/window_post_message.html"));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      post_message_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       post_message_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(post_message_url,
                                                         "postmessage");
 
   fuchsia::web::WebMessage message;
   message.set_data(base::MemBufferFromString(kPage1Path, "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
-  frame->PostMessage(
-      post_message_url.DeprecatedGetOriginAsURL().spec(), std::move(message),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+  frame->PostMessage(post_message_url.DeprecatedGetOriginAsURL().spec(),
+                     std::move(message),
+                     CallbackToFitFunction(post_result.GetCallback()));
   ASSERT_TRUE(post_result.Wait());
 
   frame.navigation_listener().RunUntilUrlAndTitleEquals(
@@ -59,16 +59,16 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, SendData) {
 // Send a MessagePort to the content, then perform bidirectional messaging
 // through the port.
 IN_PROC_BROWSER_TEST_F(PostMessageTest, PassMessagePort) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL post_message_url(embedded_test_server()->GetURL("/message_port.html"));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      post_message_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       post_message_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(post_message_url,
                                                         "messageport");
 
@@ -77,13 +77,12 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, PassMessagePort) {
     base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
     frame->PostMessage(
         post_message_url.DeprecatedGetOriginAsURL().spec(),
-        cr_fuchsia::CreateWebMessageWithMessagePortRequest(
+        CreateWebMessageWithMessagePortRequest(
             message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
-        cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+        CallbackToFitFunction(post_result.GetCallback()));
 
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
-    message_port->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+    message_port->ReceiveMessage(CallbackToFitFunction(receiver.GetCallback()));
     ASSERT_TRUE(receiver.Wait());
     ASSERT_TRUE(receiver.Get().has_data());
     EXPECT_EQ("got_port", *base::StringFromMemBuffer(receiver.Get().data()));
@@ -94,11 +93,10 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, PassMessagePort) {
     msg.set_data(base::MemBufferFromString("ping", "test"));
     base::test::TestFuture<fuchsia::web::MessagePort_PostMessage_Result>
         post_result;
-    message_port->PostMessage(std::move(msg), cr_fuchsia::CallbackToFitFunction(
-                                                  post_result.GetCallback()));
+    message_port->PostMessage(std::move(msg),
+                              CallbackToFitFunction(post_result.GetCallback()));
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
-    message_port->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+    message_port->ReceiveMessage(CallbackToFitFunction(receiver.GetCallback()));
     ASSERT_TRUE(post_result.Wait());
     ASSERT_TRUE(receiver.Wait());
     ASSERT_TRUE(receiver.Get().has_data());
@@ -110,16 +108,16 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, PassMessagePort) {
 // Send a MessagePort to the content, then perform bidirectional messaging
 // over its channel.
 IN_PROC_BROWSER_TEST_F(PostMessageTest, MessagePortDisconnected) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL post_message_url(embedded_test_server()->GetURL("/message_port.html"));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      post_message_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       post_message_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(post_message_url,
                                                         "messageport");
 
@@ -128,13 +126,12 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, MessagePortDisconnected) {
     base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
     frame->PostMessage(
         post_message_url.DeprecatedGetOriginAsURL().spec(),
-        cr_fuchsia::CreateWebMessageWithMessagePortRequest(
+        CreateWebMessageWithMessagePortRequest(
             message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
-        cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+        CallbackToFitFunction(post_result.GetCallback()));
 
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
-    message_port->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+    message_port->ReceiveMessage(CallbackToFitFunction(receiver.GetCallback()));
     ASSERT_TRUE(post_result.Wait());
     ASSERT_TRUE(receiver.Wait());
     ASSERT_TRUE(receiver.IsReady());
@@ -148,9 +145,9 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, MessagePortDisconnected) {
     base::RunLoop run_loop;
     message_port.set_error_handler(
         [&run_loop](zx_status_t) { run_loop.Quit(); });
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        url::kAboutBlankURL));
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         url::kAboutBlankURL));
     run_loop.Run();
   }
 }
@@ -159,16 +156,16 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, MessagePortDisconnected) {
 // different MessagePort that was created by the content. Verify the second
 // channel's liveness by sending a ping to it.
 IN_PROC_BROWSER_TEST_F(PostMessageTest, UseContentProvidedPort) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL post_message_url(embedded_test_server()->GetURL("/message_port.html"));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      post_message_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       post_message_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(post_message_url,
                                                         "messageport");
 
@@ -178,13 +175,12 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, UseContentProvidedPort) {
     base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
     frame->PostMessage(
         "*",
-        cr_fuchsia::CreateWebMessageWithMessagePortRequest(
+        CreateWebMessageWithMessagePortRequest(
             message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
-        cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+        CallbackToFitFunction(post_result.GetCallback()));
 
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
-    message_port->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+    message_port->ReceiveMessage(CallbackToFitFunction(receiver.GetCallback()));
     ASSERT_TRUE(receiver.Wait());
     ASSERT_TRUE(receiver.Get().has_data());
     EXPECT_EQ("got_port", *base::StringFromMemBuffer(receiver.Get().data()));
@@ -206,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, UseContentProvidedPort) {
     fuchsia::web::WebMessage msg;
     msg.set_data(base::MemBufferFromString("ping", "test"));
     incoming_message_port->PostMessage(
-        std::move(msg),
-        cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+        std::move(msg), CallbackToFitFunction(post_result.GetCallback()));
     ASSERT_TRUE(post_result.Wait());
     EXPECT_TRUE(post_result.Get().is_response());
   }
@@ -220,15 +215,14 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, UseContentProvidedPort) {
     // Quit the runloop only after we've received a WebMessage AND a PostMessage
     // result.
     base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
-    frame->PostMessage(
-        "*",
-        cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-            ack_message_port.NewRequest(),
-            base::MemBufferFromString("hi", "test")),
-        cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+    frame->PostMessage("*",
+                       CreateWebMessageWithMessagePortRequest(
+                           ack_message_port.NewRequest(),
+                           base::MemBufferFromString("hi", "test")),
+                       CallbackToFitFunction(post_result.GetCallback()));
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
     ack_message_port->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+        CallbackToFitFunction(receiver.GetCallback()));
     ASSERT_TRUE(receiver.Wait());
     ASSERT_TRUE(receiver.Get().has_data());
     EXPECT_EQ("got_port", *base::StringFromMemBuffer(receiver.Get().data()));
@@ -239,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, UseContentProvidedPort) {
   for (int i = 0; i < 3; ++i) {
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
     incoming_message_port->ReceiveMessage(
-        cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+        CallbackToFitFunction(receiver.GetCallback()));
     ASSERT_TRUE(receiver.Wait());
     ASSERT_TRUE(receiver.Get().has_data());
     EXPECT_EQ("ack ping", *base::StringFromMemBuffer(receiver.Get().data()));
@@ -247,16 +241,16 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, UseContentProvidedPort) {
 }
 
 IN_PROC_BROWSER_TEST_F(PostMessageTest, BadOriginDropped) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  auto frame = FrameForTest::Create(context(), {});
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL post_message_url(embedded_test_server()->GetURL("/message_port.html"));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      post_message_url.spec()));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       post_message_url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(post_message_url,
                                                         "messageport");
 
@@ -265,15 +259,14 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, BadOriginDropped) {
   fuchsia::web::MessagePortPtr bad_origin_incoming_message_port;
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result>
       unused_post_result;
-  frame->PostMessage(
-      "https://example.com",
-      cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-          bad_origin_incoming_message_port.NewRequest(),
-          base::MemBufferFromString("bad origin, bad!", "test")),
-      cr_fuchsia::CallbackToFitFunction(unused_post_result.GetCallback()));
+  frame->PostMessage("https://example.com",
+                     CreateWebMessageWithMessagePortRequest(
+                         bad_origin_incoming_message_port.NewRequest(),
+                         base::MemBufferFromString("bad origin, bad!", "test")),
+                     CallbackToFitFunction(unused_post_result.GetCallback()));
   base::test::TestFuture<fuchsia::web::WebMessage> unused_message_read;
   bad_origin_incoming_message_port->ReceiveMessage(
-      cr_fuchsia::CallbackToFitFunction(unused_message_read.GetCallback()));
+      CallbackToFitFunction(unused_message_read.GetCallback()));
 
   // PostMessage() with a valid origin should succeed.
   // Verify it by looking for an ack message on the MessagePort we passed in.
@@ -283,15 +276,13 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, BadOriginDropped) {
   fuchsia::web::MessagePortPtr incoming_message_port;
   fuchsia::web::MessagePortPtr message_port;
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
-  frame->PostMessage(
-      "*",
-      cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-          message_port.NewRequest(),
-          base::MemBufferFromString("good origin", "test")),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
+  frame->PostMessage("*",
+                     CreateWebMessageWithMessagePortRequest(
+                         message_port.NewRequest(),
+                         base::MemBufferFromString("good origin", "test")),
+                     CallbackToFitFunction(post_result.GetCallback()));
   base::test::TestFuture<fuchsia::web::WebMessage> receiver;
-  message_port->ReceiveMessage(
-      cr_fuchsia::CallbackToFitFunction(receiver.GetCallback()));
+  message_port->ReceiveMessage(CallbackToFitFunction(receiver.GetCallback()));
   ASSERT_TRUE(receiver.Wait());
   ASSERT_TRUE(receiver.Get().has_data());
   EXPECT_EQ("got_port", *base::StringFromMemBuffer(receiver.Get().data()));

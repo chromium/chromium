@@ -109,11 +109,10 @@ bool HasAction(const fuchsia::accessibility::semantics::Node& node,
 
 }  // namespace
 
-class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
+class AccessibilityBridgeTest : public WebEngineBrowserTest {
  public:
   AccessibilityBridgeTest() {
-    cr_fuchsia::WebEngineBrowserTest::set_test_server_root(
-        base::FilePath(cr_fuchsia::kTestServerRoot));
+    WebEngineBrowserTest::set_test_server_root(base::FilePath(kTestServerRoot));
   }
 
   ~AccessibilityBridgeTest() override = default;
@@ -126,11 +125,11 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
     command_line->AppendSwitchNative(switches::kOzonePlatform,
                                      switches::kHeadless);
     command_line->AppendSwitch(switches::kHeadless);
-    cr_fuchsia::WebEngineBrowserTest::SetUp();
+    WebEngineBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    frame_ = cr_fuchsia::FrameForTest::Create(context(), {});
+    frame_ = FrameForTest::Create(context(), {});
     base::RunLoop().RunUntilIdle();
 
     frame_impl_ = context_impl()->GetFrameImplForTest(&frame_.ptr());
@@ -162,15 +161,15 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
 
   void LoadPage(base::StringPiece url, base::StringPiece page_title) {
     GURL page_url(embedded_test_server()->GetURL(std::string(url)));
-    ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        page_url.spec()));
+    ASSERT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         page_url.spec()));
     frame_.navigation_listener().RunUntilUrlAndTitleEquals(page_url,
                                                            page_title);
   }
 
  protected:
-  cr_fuchsia::FrameForTest frame_;
+  FrameForTest frame_;
   FrameImpl* frame_impl_;
   FakeSemanticsManager semantics_manager_;
 };
@@ -1064,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
   // used as the src for an iframe.
   net::EmbeddedTestServer second_test_server;
   second_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(cr_fuchsia::kTestServerRoot));
+      base::FilePath(kTestServerRoot));
   ASSERT_TRUE(second_test_server.Start());
   GURL out_of_process_url = second_test_server.GetURL(kPage1Path);
 

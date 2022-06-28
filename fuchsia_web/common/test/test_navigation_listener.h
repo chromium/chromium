@@ -11,8 +11,6 @@
 #include "base/callback.h"
 #include "url/gurl.h"
 
-namespace cr_fuchsia {
-
 // Observes navigation events and enables test code to block until a desired
 // navigational state is observed.
 class TestNavigationListener final
@@ -100,7 +98,5 @@ class TestNavigationListener final
 
   BeforeAckCallback before_ack_;
 };
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_TEST_TEST_NAVIGATION_LISTENER_H_

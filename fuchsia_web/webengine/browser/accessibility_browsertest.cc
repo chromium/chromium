@@ -72,11 +72,10 @@ bool HasAction(const fuchsia::accessibility::semantics::Node& node,
 
 }  // namespace
 
-class FuchsiaFrameAccessibilityTest : public cr_fuchsia::WebEngineBrowserTest {
+class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
  public:
   FuchsiaFrameAccessibilityTest() {
-    cr_fuchsia::WebEngineBrowserTest::set_test_server_root(
-        base::FilePath(cr_fuchsia::kTestServerRoot));
+    WebEngineBrowserTest::set_test_server_root(base::FilePath(kTestServerRoot));
   }
 
   ~FuchsiaFrameAccessibilityTest() override = default;
@@ -90,13 +89,13 @@ class FuchsiaFrameAccessibilityTest : public cr_fuchsia::WebEngineBrowserTest {
     command_line->AppendSwitchNative(switches::kOzonePlatform,
                                      switches::kHeadless);
     command_line->AppendSwitch(switches::kHeadless);
-    cr_fuchsia::WebEngineBrowserTest::SetUp();
+    WebEngineBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     test_context_.emplace(
         base::TestComponentContextForProcess::InitialState::kCloneAll);
-    cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
+    WebEngineBrowserTest::SetUpOnMainThread();
 
     // Remove the injected a11y manager from /svc; otherwise, we won't be able
     // to replace it with the fake owned by the test fixture.
@@ -106,7 +105,7 @@ class FuchsiaFrameAccessibilityTest : public cr_fuchsia::WebEngineBrowserTest {
     semantics_manager_binding_.emplace(test_context_->additional_services(),
                                        &semantics_manager_);
 
-    frame_ = cr_fuchsia::FrameForTest::Create(context(), {});
+    frame_ = FrameForTest::Create(context(), {});
     base::RunLoop().RunUntilIdle();
 
     frame_impl_ = context_impl()->GetFrameImplForTest(&frame_.ptr());
@@ -134,9 +133,9 @@ class FuchsiaFrameAccessibilityTest : public cr_fuchsia::WebEngineBrowserTest {
 
   void LoadPage(base::StringPiece url, base::StringPiece page_title) {
     GURL page_url(embedded_test_server()->GetURL(std::string(url)));
-    ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-        page_url.spec()));
+    ASSERT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         page_url.spec()));
     frame_.navigation_listener().RunUntilUrlAndTitleEquals(page_url,
                                                            page_title);
   }
@@ -145,7 +144,7 @@ class FuchsiaFrameAccessibilityTest : public cr_fuchsia::WebEngineBrowserTest {
   // TODO(crbug.com/1038786): Maybe move to WebEngineBrowserTest.
   absl::optional<base::TestComponentContextForProcess> test_context_;
 
-  cr_fuchsia::FrameForTest frame_;
+  FrameForTest frame_;
   FrameImpl* frame_impl_;
   FakeSemanticsManager semantics_manager_;
 
@@ -467,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(FuchsiaFrameAccessibilityTest, OutOfProcessIframe) {
   // used as the src for an iframe.
   net::EmbeddedTestServer second_test_server;
   second_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(cr_fuchsia::kTestServerRoot));
+      base::FilePath(kTestServerRoot));
   ASSERT_TRUE(second_test_server.Start());
   GURL out_of_process_url = second_test_server.GetURL(kPage1Path);
 

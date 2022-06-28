@@ -10,8 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 
-namespace cr_fuchsia {
-
 // Adapts a base::OnceCallback<> to a fit::function<>, to allow //base callbacks
 // to be used directly as FIDL result callbacks.
 template <typename ReturnType, typename... ArgumentTypes>
@@ -21,7 +19,5 @@ fit::function<ReturnType(ArgumentTypes...)> CallbackToFitFunction(
     std::move(callback).Run(std::forward<ArgumentTypes>(args)...);
   };
 }
-
-}  // namespace cr_fuchsia
 
 #endif  // FUCHSIA_WEB_COMMON_TEST_FIT_ADAPTER_H_

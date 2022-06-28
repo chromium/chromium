@@ -17,7 +17,7 @@ namespace {
 
 // Defines a suite of tests that exercise browser-level configuration and
 // functionality.
-class ContextImplTest : public cr_fuchsia::WebEngineBrowserTest {
+class ContextImplTest : public WebEngineBrowserTest {
  public:
   ContextImplTest() = default;
   ~ContextImplTest() override = default;
@@ -86,14 +86,13 @@ const fuchsia::web::Cookie& ExpectedCookie() {
 // be retrieved via the CookieManager API.
 IN_PROC_BROWSER_TEST_F(ContextImplTest, PersistentCookieStore) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
   const GURL kSetCookieUrl(
       embedded_test_server()->GetURL("/set-cookie?foo=bar"));
-  cr_fuchsia::LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kSetCookieUrl.spec());
+  LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                           fuchsia::web::LoadUrlParams(), kSetCookieUrl.spec());
   frame.navigation_listener().RunUntilUrlEquals(kSetCookieUrl);
 
   std::vector<fuchsia::web::Cookie> cookies = GetCookies();
@@ -103,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ContextImplTest, PersistentCookieStore) {
 
   // Check that the cookie persists beyond the lifetime of the Frame by
   // releasing the Frame and re-querying the CookieStore.
-  frame = cr_fuchsia::FrameForTest();
+  frame = FrameForTest();
   base::RunLoop().RunUntilIdle();
 
   cookies = GetCookies();
@@ -131,26 +130,25 @@ class IncognitoContextImplTest : public ContextImplTest {
 // Verify that the browser can be initialized without a persistent data
 // directory.
 IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, NavigateFrame) {
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
-      url::kAboutBlankURL));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url::kAboutBlankURL));
   frame.navigation_listener().RunUntilUrlEquals(GURL(url::kAboutBlankURL));
 }
 
 // In-memory cookie store stores cookies, and is accessible via CookieManager.
 IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, InMemoryCookieStore) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  auto frame = cr_fuchsia::FrameForTest::Create(
-      context(), fuchsia::web::CreateFrameParams());
+  auto frame =
+      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
 
   const GURL kSetCookieUrl(
       embedded_test_server()->GetURL("/set-cookie?foo=bar"));
-  cr_fuchsia::LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kSetCookieUrl.spec());
+  LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                           fuchsia::web::LoadUrlParams(), kSetCookieUrl.spec());
   frame.navigation_listener().RunUntilUrlEquals(kSetCookieUrl);
 
   std::vector<fuchsia::web::Cookie> cookies = GetCookies();

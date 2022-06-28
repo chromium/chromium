@@ -114,7 +114,7 @@ TEST_F(ApplicationControllerImplTest, GetPrivateMemorySize) {
 
   base::test::TestFuture<uint64_t> result;
   application_ptr_->GetPrivateMemorySize(
-      cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
+      CallbackToFitFunction(result.GetCallback()));
   ASSERT_TRUE(result.Wait());
 
   EXPECT_EQ(result.Get(), kMockSize);
