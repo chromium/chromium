@@ -21,7 +21,6 @@
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/heuristics/commerce_heuristics_provider.h"
-#include "components/search/ntp_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -40,6 +39,11 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "v8/include/v8-isolate.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/commerce/core/commerce_feature_list.h"
+#else
+#include "components/search/ntp_features.h"
+#endif
 
 using base::UserMetricsAction;
 using blink::WebElement;
@@ -57,33 +61,58 @@ constexpr char kElectronicExpressDomain[] = "electronicexpress.com";
 constexpr char kGStoreHost[] = "store.google.com";
 
 constexpr base::FeatureParam<std::string> kSkipPattern{
-    &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
+#else
+  &commerce::kCommerceHintAndroid, "product-skip-pattern",
+#endif
+      // This regex does not match anything.
+      "\\b\\B"
+};
 
 // This is based on top 30 US shopping sites.
 // TODO(crbug/1164236): cover more shopping sites.
 constexpr base::FeatureParam<std::string> kAddToCartPattern{
-    &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
-    "(\\b|[^a-z])"
-    "((add(ed)?(-|_|(%20)|\\s)?(item)?(-|_|(%20)|\\s)?to(-|_|(%20)|\\s)?(cart|"
-    "basket|bag)"
-    ")|(cart\\/add)|(checkout\\/basket)|(cart_type)|(isquickaddtocartbutton))"
-    "(\\b|[^a-z])"};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
+#else
+  &commerce::kCommerceHintAndroid, "add-to-cart-pattern",
+#endif
+      "(\\b|[^a-z])"
+      "((add(ed)?(-|_|(%20)|\\s)?(item)?(-|_|(%20)|\\s)?to(-|_|(%20)|\\s)?("
+      "cart|"
+      "basket|bag)"
+      ")|(cart\\/add)|(checkout\\/basket)|(cart_type)|(isquickaddtocartbutton))"
+      "(\\b|[^a-z])"
+};
 
 constexpr base::FeatureParam<std::string> kSkipAddToCartMapping{
-    &ntp_features::kNtpChromeCartModule, "skip-add-to-cart-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "skip-add-to-cart-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "skip-add-to-cart-mapping",
+#endif
+      // Empty JSON string.
+      ""
+};
 
 constexpr base::FeatureParam<std::string> kPurchaseURLPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "purchase-url-pattern-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "purchase-url-pattern-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "purchase-url-pattern-mapping",
+#endif
+      // Empty JSON string.
+      ""
+};
 
 constexpr base::FeatureParam<std::string> kPurchaseButtonPattern{
-    &ntp_features::kNtpChromeCartModule, "purchase-button-pattern",
-    // clang-format off
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "purchase-button-pattern",
+#else
+  &commerce::kCommerceHintAndroid, "purchase-button-pattern",
+#endif
+      // clang-format off
     "^("
     "("
       "(place|submit|complete|confirm|finalize|make)(\\s(an|your|my|this))?"
@@ -98,36 +127,73 @@ constexpr base::FeatureParam<std::string> kPurchaseButtonPattern{
     "|"
     "((\\W)*(buy|purchase|order|pay|checkout)(\\W)*)"
     ")$"
-    // clang-format on
+  // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kPurchaseButtonPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "purchase-button-pattern-mapping",
-    // Empty JSON map.
-    "{}"};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "purchase-button-pattern-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "purchase-button-pattern-mapping",
+#endif
+      // Empty JSON map.
+      "{}"
+};
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionGapTime{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
-    base::Seconds(2)};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-gap-time",
+#endif
+      base::Seconds(2)
+};
 
 constexpr base::FeatureParam<int> kCartExtractionMaxCount{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-max-count", 20};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-max-count",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-max-count",
+#endif
+      20
+};
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionMinTaskTime{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-min-task-time",
-    base::Seconds(0.01)};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-min-task-time",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-min-task-time",
+#endif
+      base::Seconds(0.01)
+};
 
 constexpr base::FeatureParam<double> kCartExtractionDutyCycle{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-duty-cycle", 0.05};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-duty-cycle",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-duty-cycle",
+#endif
+      0.05
+};
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionTimeout{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-timeout",
-    base::Seconds(0.25)};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-timeout",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-timeout",
+#endif
+      base::Seconds(0.25)
+};
 
 constexpr base::FeatureParam<std::string> kProductIdPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "product-id-pattern-mapping",
+#endif
+      // Empty JSON string.
+      ""
+};
 
 constexpr base::FeatureParam<std::string> kCouponProductIdPatternMapping{
     &commerce::kRetailCoupons, "coupon-product-id-pattern-mapping",
@@ -140,9 +206,15 @@ std::string eTLDPlusOne(const GURL& url) {
 }
 
 bool IsCartHeuristicsImprovementEnabled() {
+#if !BUILDFLAG(IS_ANDROID)
   return base::GetFieldTrialParamByFeatureAsBool(
       ntp_features::kNtpChromeCartModule,
       ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, false);
+#else
+  return base::GetFieldTrialParamByFeatureAsBool(
+      commerce::kCommerceHintAndroid,
+      commerce::kCommerceHintAndroidHeuristicsImprovementParam, true);
+#endif
 }
 
 enum class CommerceEvent {

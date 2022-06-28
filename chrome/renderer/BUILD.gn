@@ -57,6 +57,8 @@ static_library("renderer") {
     "benchmarking_extension.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
+    "cart/commerce_hint_agent.cc",
+    "cart/commerce_hint_agent.h",
     "chrome_content_renderer_client.cc",
     "chrome_content_renderer_client.h",
     "chrome_content_settings_agent_delegate.cc",
@@ -124,6 +126,7 @@ static_library("renderer") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/common/cart:mojo_bindings",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
     "//chrome/services/speech/buildflags",
@@ -132,6 +135,9 @@ static_library("renderer") {
     "//components/autofill_assistant/content/renderer",
     "//components/base32",
     "//components/cdm/renderer",
+    "//components/commerce/core:commerce_heuristics_data",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:heuristics_provider",
     "//components/content_capture/common",
     "//components/content_capture/renderer",
     "//components/content_settings/common:mojom",
@@ -161,6 +167,7 @@ static_library("renderer") {
     "//components/safe_browsing/content/renderer:throttles",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
+    "//components/search:search",
     "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
     "//components/security_interstitials/core:",
     "//components/security_interstitials/core/common/mojom:",
@@ -372,8 +379,6 @@ static_library("renderer") {
 
   if (!is_android) {
     sources += [
-      "cart/commerce_hint_agent.cc",
-      "cart/commerce_hint_agent.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
@@ -382,16 +387,7 @@ static_library("renderer") {
       "searchbox/searchbox_extension.h",
     ]
 
-    deps += [
-      "//chrome/common/cart:mojo_bindings",
-      "//components/commerce/core:commerce_heuristics_data",
-      "//components/commerce/core:feature_list",
-      "//components/commerce/core:heuristics_provider",
-      "//components/crx_file",
-      "//components/search:search",
-      "//services/metrics/public/cpp:metrics_cpp",
-      "//services/metrics/public/cpp:ukm_builders",
-    ]
+    deps += [ "//components/crx_file" ]
   }
 
   if (is_android) {

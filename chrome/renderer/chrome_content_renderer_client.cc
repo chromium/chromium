@@ -45,6 +45,7 @@
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/benchmarking_extension.h"
 #include "chrome/renderer/browser_exposed_renderer_interfaces.h"
+#include "chrome/renderer/cart/commerce_hint_agent.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
@@ -166,8 +167,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #else
-#include "chrome/renderer/cart/commerce_hint_agent.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #include "components/search/ntp_features.h"  // nogncheck
@@ -701,15 +702,19 @@ void ChromeContentRendererClient::RenderFrameCreated(
       render_frame->IsMainFrame()) {
     new SearchBox(render_frame);
   }
+#endif
 
-  // We should create CommerceHintAgent only for a main frame except a fenced
-  // frame that is the main frame as well, so we should check if |render_frame|
-  // is the fenced frame.
+// We should create CommerceHintAgent only for a main frame except a fenced
+// frame that is the main frame as well, so we should check if |render_frame|
+// is the fenced frame.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+#else
+  if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid) &&
+#endif  // !BUILDFLAG(IS_ANDROID)
       render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree()) {
     new cart::CommerceHintAgent(render_frame);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   new SpellCheckProvider(render_frame, spellcheck_.get(), this);

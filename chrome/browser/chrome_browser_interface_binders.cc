@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/cart/commerce_hint_service.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
@@ -129,13 +130,13 @@
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #else
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
-#include "chrome/browser/cart/commerce_hint_service.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
@@ -372,7 +373,6 @@ void BindImageAnnotator(
       ->BindImageAnnotator(std::move(receiver));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void BindCommerceHintObserver(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<cart::mojom::CommerceHintObserver> receiver) {
@@ -385,7 +385,12 @@ void BindCommerceHintObserver(
     return;
   }
 
-  // Cart is not available for non-signin single-profile users.
+// On Android, commerce hint observer is enabled for all users with the feature
+// enabled since the observer is only used for collecting metrics for now, and
+// we want to maximize the user population exposed; on Desktop, ChromeCart is
+// not available for non-signin single-profile users and therefore neither does
+// commerce hint observer.
+#if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -395,6 +400,7 @@ void BindCommerceHintObserver(
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
       profile_manager->GetNumberOfProfiles() <= 1)
     return;
+#endif
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
   if (!web_contents)
     return;
@@ -411,7 +417,6 @@ void BindCommerceHintObserver(
     return;
   service->BindCommerceHintObserver(frame_host, std::move(receiver));
 }
-#endif
 
 void BindDistillabilityService(
     content::RenderFrameHost* const frame_host,
@@ -628,16 +633,18 @@ void PopulateChromeFrameBinders(
   map->Add<image_annotation::mojom::Annotator>(
       base::BindRepeating(&BindImageAnnotator));
 
-#if !BUILDFLAG(IS_ANDROID)
   // We should not request this mojo interface's binding for the subframes in
   // the renderer.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+#else
+  if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid) &&
+#endif
       !render_frame_host->GetParent() &&
       !render_frame_host->IsFencedFrameRoot()) {
     map->Add<cart::mojom::CommerceHintObserver>(
         base::BindRepeating(&BindCommerceHintObserver));
   }
-#endif
 
   map->Add<blink::mojom::AnchorElementMetricsHost>(
       base::BindRepeating(&NavigationPredictor::Create));

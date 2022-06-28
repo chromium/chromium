@@ -233,10 +233,8 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
                                   uint32_t all_call_count,
                                   uint32_t ng_call_count) {}
 
-#if !BUILDFLAG(IS_ANDROID)
   // Reports that a resource will be requested.
   virtual void WillSendRequest(const blink::WebURLRequest& request) {}
-#endif
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
