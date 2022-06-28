@@ -63,6 +63,9 @@ enum class MessageType {
   kInfo,
   // |kError| is the type for error message.
   kError,
+  // |kInfoLabelFocus| is the type for info message when the |ActionLabel| is
+  // focused.
+  kInfoLabelFocus,
 };
 
 }  // namespace input_overlay

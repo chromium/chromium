@@ -83,6 +83,11 @@ MessageView::MessageView(DisplayOverlayController* controller,
           gfx::CreateVectorIcon(gfx::IconDescription(
               vector_icons::kErrorOutlineIcon, kIconSize, kErrorIconColor)));
       break;
+    case MessageType::kInfoLabelFocus:
+      SetImage(views::Button::STATE_NORMAL,
+               gfx::CreateVectorIcon(gfx::IconDescription(
+                   vector_icons::kKeyboardIcon, kIconSize, kInfoIconColor)));
+      break;
     default:
       NOTREACHED();
       break;

@@ -267,8 +267,8 @@ void ActionLabel::OnFocus() {
     static_cast<ActionView*>(parent())->ShowErrorMsg(
         l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this);
   } else {
-    static_cast<ActionView*>(parent())->ShowInfoMsg(
-        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY), this);
+    static_cast<ActionView*>(parent())->ShowLabelFocusInfoMsg(
+        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY));
   }
 }
 

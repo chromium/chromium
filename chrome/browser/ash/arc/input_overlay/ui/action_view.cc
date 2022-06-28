@@ -109,6 +109,11 @@ void ActionView::ShowInfoMsg(const base::StringPiece& message,
   display_overlay_controller_->AddEditMessage(message, MessageType::kInfo);
 }
 
+void ActionView::ShowLabelFocusInfoMsg(const base::StringPiece& message) {
+  display_overlay_controller_->AddEditMessage(message,
+                                              MessageType::kInfoLabelFocus);
+}
+
 void ActionView::RemoveMessage() {
   display_overlay_controller_->RemoveEditMessage();
 }

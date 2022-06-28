@@ -65,6 +65,7 @@ class ActionView : public views::View {
   // Show info/edu message.
   void ShowInfoMsg(const base::StringPiece& message,
                    ActionLabel* editing_label);
+  void ShowLabelFocusInfoMsg(const base::StringPiece& message);
   void RemoveMessage();
   // Change binding for |action| binding to |input_element| and set
   // |kEditedSuccess| on |action_label| if |action_label| is not nullptr.
