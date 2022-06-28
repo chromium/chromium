@@ -758,11 +758,8 @@ suite('CrostiniPageTests', function() {
         await flushTasks();
         subpage = crostiniPage.shadowRoot.querySelector(
             'settings-crostini-port-forwarding');
-        subpage.shadowRoot.querySelector('#showRemoveSinglePortMenu0-0')
-            .click();
-        await flushTasks();
 
-        subpage.shadowRoot.querySelector('#removeSinglePortButton').click();
+        subpage.shadowRoot.querySelector('#removeSinglePortButton0-0').click();
         assertEquals(
             1, crostiniBrowserProxy.getCallCount('removeCrostiniPortForward'));
         const args =

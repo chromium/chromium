@@ -208,43 +208,21 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
    * @param {!Event} event
    * @private
    */
-  onShowRemoveSinglePortMenuClick_(event) {
+  onRemoveSinglePortClick_(event) {
     const dataSet = /** @type {{portNumber: string, protocolType: string}} */
         (event.currentTarget.dataset);
-    const id = /** @type {GuestId} */
+    const containerId = /** @type {GuestId} */
         (event.currentTarget['dataContainerId']);
-    this.lastMenuOpenedPort_ = {
-      port_number: Number(dataSet.portNumber),
-      protocol_type: /** @type {!CrostiniPortProtocol} */
-          (Number(dataSet.protocolType)),
-      container_id: id,
-    };
-    const menu = /** @type {!CrActionMenuElement} */
-        (this.$.removeSinglePortMenu.get());
-    menu.showAt(/** @type {!HTMLElement} */ (event.target));
-  }
+    const protocolType = /** @type {!CrostiniPortProtocol} */
+        (Number(dataSet.protocolType));
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onRemoveSinglePortClick_(event) {
-    const menu = /** @type {!CrActionMenuElement} */
-        (this.$.removeSinglePortMenu.get());
-    assert(
-        menu.open && this.lastMenuOpenedPort_.port_number != null &&
-        this.lastMenuOpenedPort_.protocol_type != null);
     this.browserProxy_
         .removeCrostiniPortForward(
-            this.lastMenuOpenedPort_.container_id,
-            this.lastMenuOpenedPort_.port_number,
-            this.lastMenuOpenedPort_.protocol_type)
+            containerId, Number(dataSet.portNumber), protocolType)
         .then(result => {
           // TODO(crbug.com/848127): Error handling for result
           recordSettingChange();
-          menu.close();
         });
-    this.lastMenuOpenedPort_ = null;
   }
 
   /**
