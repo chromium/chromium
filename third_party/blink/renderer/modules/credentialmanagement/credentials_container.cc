@@ -567,7 +567,6 @@ void AbortFederatedCredentialRequest(ScriptState* script_state) {
 void OnRequestIdToken(ScriptPromiseResolver* resolver,
                       const KURL& provider_url,
                       const String& client_id,
-                      const String& hint,
                       const CredentialRequestOptions* options,
                       RequestIdTokenStatus status,
                       const WTF::String& id_token) {
@@ -591,7 +590,7 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
     }
     case RequestIdTokenStatus::kSuccess: {
       FederatedCredential* credential = FederatedCredential::Create(
-          provider_url, client_id, hint, options, id_token);
+          provider_url, client_id, options, id_token);
       resolver->Resolve(credential);
       return;
     }
@@ -1252,8 +1251,7 @@ ScriptPromise CredentialsContainer::get(
         auth_request->RequestIdToken(
             provider_url, client_id, nonce, prefer_auto_sign_in,
             WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver), provider_url,
-                      client_id, federated_identity_provider->getHintOr(""),
-                      WrapPersistent(options)));
+                      client_id, WrapPersistent(options)));
 
         return promise;
       }

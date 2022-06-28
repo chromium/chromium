@@ -8,7 +8,5 @@ dictionary FederatedIdentityProvider {
   // URL for the Identity Provider.
   required USVString url;
   required USVString clientId;
-  // Optional hint for the account ID.
-  USVString hint;
   USVString nonce;
 };

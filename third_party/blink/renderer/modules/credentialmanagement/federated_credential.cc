@@ -95,11 +95,10 @@ FederatedCredential* FederatedCredential::Create(
 FederatedCredential* FederatedCredential::Create(
     const KURL& provider_url,
     const String& client_id,
-    const String& hint,
     const CredentialRequestOptions* options,
     const String& id_token) {
   return MakeGarbageCollected<FederatedCredential>(provider_url, client_id,
-                                                   hint, options, id_token);
+                                                   options, id_token);
 }
 
 bool FederatedCredential::IsRejectingPromiseDueToCSP(
@@ -154,10 +153,9 @@ FederatedCredential::FederatedCredential(
 FederatedCredential::FederatedCredential(
     const KURL& provider_url,
     const String& client_id,
-    const String& hint,
     const CredentialRequestOptions* options,
     const String& id_token)
-    : Credential(/* id = */ hint, kFederatedCredentialType),
+    : Credential(/* id = */ "", kFederatedCredentialType),
       provider_origin_(SecurityOrigin::Create(provider_url)),
       provider_url_(provider_url),
       client_id_(client_id),
