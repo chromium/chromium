@@ -73,8 +73,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
                    bool is_pixel_used) override;
 
  private:
-  bool CanImportGpuMemoryBufferToVulkan(
-      gfx::GpuMemoryBufferType memory_buffer_type);
+  bool CanImportNativePixmapToVulkan();
   bool CanImportNativePixmapToWebGPU();
 
   const raw_ptr<SharedContextState> shared_context_state_;
