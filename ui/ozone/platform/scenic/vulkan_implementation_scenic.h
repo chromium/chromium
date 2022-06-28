@@ -21,6 +21,7 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
  public:
   VulkanImplementationScenic(ScenicSurfaceFactory* scenic_surface_factory,
                              SysmemBufferManager* sysmem_buffer_manager,
+                             bool use_swiftshader,
                              bool allow_protected_memory);
 
   VulkanImplementationScenic(const VulkanImplementationScenic&) = delete;
@@ -73,6 +74,8 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
   SysmemBufferManager* const sysmem_buffer_manager_;
 
   gpu::VulkanInstance vulkan_instance_;
+
+  bool using_surface_ = false;
 };
 
 }  // namespace ui

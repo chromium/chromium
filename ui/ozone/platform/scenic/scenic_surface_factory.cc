@@ -221,7 +221,7 @@ std::unique_ptr<gpu::VulkanImplementation>
 ScenicSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                                  bool allow_protected_memory) {
   return std::make_unique<ui::VulkanImplementationScenic>(
-      this, &sysmem_buffer_manager_, allow_protected_memory);
+      this, &sysmem_buffer_manager_, use_swiftshader, allow_protected_memory);
 }
 #endif
 

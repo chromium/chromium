@@ -21,6 +21,7 @@ class VulkanImplementationFlatland : public gpu::VulkanImplementation {
   VulkanImplementationFlatland(
       FlatlandSurfaceFactory* flatland_surface_factory,
       FlatlandSysmemBufferManager* flatland_sysmem_buffer_manager,
+      bool use_swiftshader,
       bool allow_protected_memory);
   ~VulkanImplementationFlatland() override;
   VulkanImplementationFlatland(const VulkanImplementationFlatland&) = delete;

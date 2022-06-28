@@ -140,6 +140,10 @@ if (enable_vulkan) {
       sources += [ "vulkan_image_android.cc" ]
     }
 
+    if (is_fuchsia) {
+      sources += [ "vulkan_util_fuchsia.cc" ]
+    }
+
     if (is_win) {
       sources += [
         "vulkan_image_win.cc",

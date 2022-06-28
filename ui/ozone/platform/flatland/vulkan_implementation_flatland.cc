@@ -34,22 +34,23 @@ namespace ui {
 VulkanImplementationFlatland::VulkanImplementationFlatland(
     FlatlandSurfaceFactory* flatland_surface_factory,
     FlatlandSysmemBufferManager* flatland_sysmem_buffer_manager,
+    bool use_swiftshader,
     bool allow_protected_memory)
-    : VulkanImplementation(false /* use_swiftshader */, allow_protected_memory),
+    : VulkanImplementation(use_swiftshader, allow_protected_memory),
       flatland_sysmem_buffer_manager_(flatland_sysmem_buffer_manager) {}
 
 VulkanImplementationFlatland::~VulkanImplementationFlatland() = default;
 
 bool VulkanImplementationFlatland::InitializeVulkanInstance(
     bool using_surface) {
-  DCHECK(using_surface);
+  DCHECK(!using_surface);
 
-  std::vector<const char*> required_extensions = {
-      VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
-  };
+  base::FilePath path(use_swiftshader() ? "libvk_swiftshader.so"
+                                        : "libvulkan.so");
+  std::vector<const char*> required_extensions;
   std::vector<const char*> required_layers;
-  return vulkan_instance_.Initialize(base::FilePath("libvulkan.so"),
-                                     required_extensions, required_layers);
+  return vulkan_instance_.Initialize(path, required_extensions,
+                                     required_layers);
 }
 
 gpu::VulkanInstance* VulkanImplementationFlatland::GetVulkanInstance() {
@@ -114,60 +115,15 @@ VkSemaphore VulkanImplementationFlatland::CreateExternalSemaphore(
 VkSemaphore VulkanImplementationFlatland::ImportSemaphoreHandle(
     VkDevice vk_device,
     gpu::SemaphoreHandle handle) {
-  if (!handle.is_valid())
-    return VK_NULL_HANDLE;
-
-  if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
-    return VK_NULL_HANDLE;
-  }
-
-  VkSemaphore semaphore = VK_NULL_HANDLE;
-  VkSemaphoreCreateInfo info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-  VkResult result = vkCreateSemaphore(vk_device, &info, nullptr, &semaphore);
-  if (result != VK_SUCCESS)
-    return VK_NULL_HANDLE;
-
-  zx::event event = handle.TakeHandle();
-  VkImportSemaphoreZirconHandleInfoFUCHSIA import = {
-      VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
-  import.semaphore = semaphore;
-  import.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
-  import.zirconHandle = event.get();
-
-  result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
-  if (result != VK_SUCCESS) {
-    vkDestroySemaphore(vk_device, semaphore, nullptr);
-    return VK_NULL_HANDLE;
-  }
-
-  // Vulkan took ownership of the handle.
-  std::ignore = event.release();
-
-  return semaphore;
+  return gpu::ImportVkSemaphoreHandle(vk_device, std::move(handle));
 }
 
 gpu::SemaphoreHandle VulkanImplementationFlatland::GetSemaphoreHandle(
     VkDevice vk_device,
     VkSemaphore vk_semaphore) {
-  // Create VkSemaphoreGetFdInfoKHR structure.
-  VkSemaphoreGetZirconHandleInfoFUCHSIA info = {
-      VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
-  info.semaphore = vk_semaphore;
-  info.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
-
-  zx_handle_t handle;
-  VkResult result =
-      vkGetSemaphoreZirconHandleFUCHSIA(vk_device, &info, &handle);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "vkGetSemaphoreFuchsiaHandleKHR failed : " << result;
-    return gpu::SemaphoreHandle();
-  }
-
-  return gpu::SemaphoreHandle(
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
-      zx::event(handle));
+  return gpu::GetVkSemaphoreHandle(
+      vk_device, vk_semaphore,
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
 }
 
 VkExternalMemoryHandleTypeFlagBits
