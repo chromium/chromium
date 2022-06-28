@@ -296,7 +296,7 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
     ensure_verified = defaults.get_value("reclient_ensure_verified", ensure_verified)
     if ensure_verified:
         reclient["ensure_verified"] = True
-    return reclient or None
+    return reclient
 
 ################################################################################
 # Builder defaults and function                                                #
