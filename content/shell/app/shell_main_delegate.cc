@@ -35,6 +35,7 @@
 #include "content/shell/utility/shell_content_utility_client.h"
 #include "ipc/ipc_buildflags.h"
 #include "net/cookies/cookie_monster.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
@@ -187,7 +188,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
 }
 
 bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
-  return invoked_in == InvokedIn::kChildProcess;
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
 void ShellMainDelegate::PreSandboxStartup() {

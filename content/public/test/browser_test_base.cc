@@ -610,8 +610,6 @@ void BrowserTestBase::SetUp() {
   tracing::EnableStartupTracingIfNeeded();
 
   {
-    using InvokedIn = ContentMainDelegate::InvokedIn;
-
     SetBrowserClientForTesting(delegate->CreateContentBrowserClient());
     if (command_line->HasSwitch(switches::kSingleProcess))
       SetRendererClientForTesting(delegate->CreateContentRendererClient());
@@ -621,8 +619,10 @@ void BrowserTestBase::SetUp() {
 
     delegate->PreSandboxStartup();
 
+    const ContentMainDelegate::InvokedInBrowserProcess invoked_in_browser{
+        .is_running_test = true};
     DCHECK(!field_trial_list_);
-    if (delegate->ShouldCreateFeatureList(InvokedIn::kBrowserProcessUnderTest))
+    if (delegate->ShouldCreateFeatureList(invoked_in_browser))
       field_trial_list_ = SetUpFieldTrialsAndFeatureList();
 
     base::ThreadPoolInstance::Create("Browser");
@@ -636,7 +636,7 @@ void BrowserTestBase::SetUp() {
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    delegate->PostEarlyInitialization(InvokedIn::kBrowserProcessUnderTest);
+    delegate->PostEarlyInitialization(invoked_in_browser);
 
     StartBrowserThreadPool();
     BrowserTaskExecutor::PostFeatureListSetup();

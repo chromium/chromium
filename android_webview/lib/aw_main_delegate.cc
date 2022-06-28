@@ -62,6 +62,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -393,7 +394,7 @@ void AwMainDelegate::ProcessExiting(const std::string& process_type) {
 bool AwMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   // In the browser process the FeatureList is created in
   // AwMainDelegate::PostEarlyInitialization().
-  return invoked_in == InvokedIn::kChildProcess;
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
 variations::VariationsIdsProvider*
@@ -403,7 +404,8 @@ AwMainDelegate::CreateVariationsIdsProvider() {
 }
 
 void AwMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
-  const bool is_browser_process = invoked_in != InvokedIn::kChildProcess;
+  const bool is_browser_process =
+      absl::holds_alternative<InvokedInBrowserProcess>(invoked_in);
   if (is_browser_process) {
     InitIcuAndResourceBundleBrowserSide();
     aw_feature_list_creator_->CreateFeatureListAndFieldTrials();

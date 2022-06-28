@@ -35,6 +35,7 @@
 #include "headless/lib/renderer/headless_content_renderer_client.h"
 #include "headless/lib/utility/headless_content_utility_client.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -469,7 +470,7 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
 
 void HeadlessContentMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
-  if (invoked_in == InvokedIn::kChildProcess)
+  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in))
     return;
 
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {

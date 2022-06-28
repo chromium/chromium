@@ -10,6 +10,7 @@
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/shell/common/shell_switches.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
@@ -50,7 +51,7 @@ TestShellMainDelegate::~TestShellMainDelegate() {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TestShellMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
-  if (invoked_in != InvokedIn::kChildProcess) {
+  if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in)) {
     // Browser tests on Lacros requires a non-null LacrosService.
     lacros_service_ = std::make_unique<chromeos::LacrosService>();
   }

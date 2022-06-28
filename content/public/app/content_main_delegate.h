@@ -29,23 +29,23 @@ class ZygoteForkDelegate;
 
 class CONTENT_EXPORT ContentMainDelegate {
  public:
+  // Indicates the delegate is being invoked in the browser process. The
+  // `kProcessType` switch will be empty.
+  struct InvokedInBrowserProcess {
+    // True if running in a test harness.
+    bool is_running_test = false;
+  };
+
+  // Indicates the delegate is being invoked in a child process. The
+  // `kProcessType` switch will hold the precise child process type.
+  struct InvokedInChildProcess {};
+
   // The context in which a delegate method is invoked, including the process
   // type and whether it is in a test harness. Can distinguish between
   // the browser process and child processes; for more fine-grained process
   // types check the `switches::kProcessType` command-line switch.
-  enum class InvokedIn {
-    // Delegate is being invoked in the browser process. The `kProcessType`
-    // switch will be empty.
-    kBrowserProcess,
-
-    // Delegate is being invoked in the browser process, from a test harness.
-    // The `kProcessType` switch will be empty.
-    kBrowserProcessUnderTest,
-
-    // Delegate is being invoked in a child process. The `kProcessType` switch
-    // will hold the precise child process type.
-    kChildProcess,
-  };
+  using InvokedIn =
+      absl::variant<InvokedInBrowserProcess, InvokedInChildProcess>;
 
   virtual ~ContentMainDelegate() = default;
 

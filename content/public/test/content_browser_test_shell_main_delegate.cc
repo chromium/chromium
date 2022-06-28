@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -30,7 +31,7 @@ ContentBrowserTestShellMainDelegate::~ContentBrowserTestShellMainDelegate() =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ContentBrowserTestShellMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
-  if (invoked_in != InvokedIn::kChildProcess) {
+  if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in)) {
     // Browser tests on Lacros requires a non-null LacrosService.
     lacros_service_ = std::make_unique<chromeos::LacrosService>();
   }
