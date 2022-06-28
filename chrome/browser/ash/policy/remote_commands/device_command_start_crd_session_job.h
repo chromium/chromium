@@ -124,6 +124,14 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   const char* UserTypeToString(UserType value) const;
 
+  void FetchOAuthTokenASync(OAuthTokenCallback on_success,
+                            ErrorCallback on_error);
+  void StartCrdHostAndGetCode(const std::string& token);
+  void FinishWithSuccess(const std::string& access_code);
+  // Finishes command with error code and optional message.
+  void FinishWithError(ResultCode result_code, const std::string& message);
+  void FinishWithNotIdleError();
+
   // Check if all required system services (singletons) are ready.
   bool AreServicesReady() const;
   bool UserTypeSupportsCrd() const;
@@ -133,22 +141,9 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool IsDeviceIdle() const;
   base::TimeDelta GetDeviceIdlenessPeriod() const;
 
-  void FetchOAuthTokenASync(OAuthTokenCallback on_success,
-                            ErrorCallback on_error);
-
-  // Finishes command with error code and optional message.
-  void FinishWithError(ResultCode result_code, const std::string& message);
-  void FinishWithNotIdleError();
-  void FinishWithSuccess(const std::string& access_code);
-
-  void OnOAuthTokenReceived(const std::string& token);
-  void OnAccessCodeReceived(const std::string& access_code);
-
   std::string GetRobotAccountUserName() const;
-
   bool ShouldShowConfirmationDialog() const;
   bool ShouldTerminateUponInput() const;
-  bool ShouldUseEnterpriseUserDialog() const;
 
   DeviceOAuth2TokenService* oauth_service() const;
 
