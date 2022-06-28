@@ -1189,7 +1189,7 @@ void BrowserManager::OnBrowserServiceConnected(
     mojo::RemoteSetElementId mojo_id,
     mojom::BrowserService* browser_service,
     uint32_t browser_service_version) {
-  if (id != crosapi_id_ && id != legacy_crosapi_id_) {
+  if (id != crosapi_id_) {
     // This BrowserService is unrelated to this instance. Skipping.
     return;
   }
@@ -1256,7 +1256,6 @@ void BrowserManager::OnMojoDisconnected() {
 
   browser_service_.reset();
   crosapi_id_.reset();
-  legacy_crosapi_id_.reset();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_)),

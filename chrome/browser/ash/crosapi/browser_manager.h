@@ -560,7 +560,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // ID for the current Crosapi connection.
   // Available only when lacros-chrome is running.
   absl::optional<CrosapiId> crosapi_id_;
-  absl::optional<CrosapiId> legacy_crosapi_id_;
 
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.
