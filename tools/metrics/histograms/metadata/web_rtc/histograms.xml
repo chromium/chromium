@@ -1025,7 +1025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.RampUpTimeTo1000kbpsInMs" units="ms"
-    expires_after="2022-10-25">
+    expires_after="2022-12-25">
   <owner>holmer@chromium.org</owner>
   <summary>
     The time it takes the estimated bandwidth to reach 1000 kbps from the first
