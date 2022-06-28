@@ -78,6 +78,10 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "EmbedderTriggeredAndCrossOriginRedirected";
     case PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed:
       return "EmbedderTriggeredAndDestroyed";
+    case PrerenderHost::FinalStatus::kMemoryLimitExceeded:
+      return "MemoryLimitExceeded";
+    case PrerenderHost::FinalStatus::kFailToGetMemoryUsage:
+      return "FailToGetMemoryUsage";
   }
   NOTREACHED();
   return "";
