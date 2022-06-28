@@ -631,6 +631,8 @@ void VolumeManager::Initialize() {
 
   if (!fusebox_mounter_.get())
     fusebox_mounter_.reset(FuseBoxMounter::Create());
+  // The fusebox_mounter_ is enabled by a chrome flag: Create() will return
+  // nullptr if the flag is disabled. Check it before attempting to Mount.
   if (fusebox_mounter_.get())
     fusebox_mounter_->Mount(disk_mount_manager_);
 
