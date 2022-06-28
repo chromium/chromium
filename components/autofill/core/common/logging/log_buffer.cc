@@ -13,40 +13,40 @@ namespace autofill {
 
 namespace {
 
-bool IsElement(const base::Value& value) {
-  const std::string* type = value.FindStringKey("type");
+bool IsElement(const base::Value::Dict& value) {
+  const std::string* type = value.FindString("type");
   return type && *type == "element";
 }
 
-bool IsTextNode(const base::Value& value) {
-  const std::string* type = value.FindStringKey("type");
+bool IsTextNode(const base::Value::Dict& value) {
+  const std::string* type = value.FindString("type");
   return type && *type == "text";
 }
 
-bool IsFragment(const base::Value& value) {
-  const std::string* type = value.FindStringKey("type");
+bool IsFragment(const base::Value::Dict& value) {
+  const std::string* type = value.FindString("type");
   return type && *type == "fragment";
 }
 
-void AppendChildToLastNode(std::vector<base::Value>* buffer,
-                           base::Value&& new_child) {
+void AppendChildToLastNode(std::vector<base::Value::Dict>* buffer,
+                           base::Value::Dict&& new_child) {
   if (buffer->empty()) {
     buffer->push_back(std::move(new_child));
     return;
   }
 
-  base::Value& parent = buffer->back();
+  base::Value::Dict& parent = buffer->back();
   // Elements and Fragments can have children, but TextNodes cannot.
   DCHECK(!IsTextNode(parent));
 
-  if (auto* children = parent.FindListKey("children")) {
+  if (auto* children = parent.FindList("children")) {
     children->Append(std::move(new_child));
     return;
   }
 
   base::Value::List list;
   list.Append(std::move(new_child));
-  parent.SetKey("children", base::Value(std::move(list)));
+  parent.Set("children", std::move(list));
 }
 
 // This is an optimization to reduce the number of text nodes in the DOM.
@@ -57,27 +57,27 @@ void AppendChildToLastNode(std::vector<base::Value>* buffer,
 //
 // If the last child of the element in buffer is a text node, append |text| to
 // it and return true (successful coalescing). Otherwise return false.
-bool TryCoalesceString(std::vector<base::Value>* buffer,
+bool TryCoalesceString(std::vector<base::Value::Dict>* buffer,
                        base::StringPiece text) {
   if (buffer->empty())
     return false;
-  base::Value& parent = buffer->back();
-  auto* children = parent.FindListKey("children");
+  base::Value::Dict& parent = buffer->back();
+  auto* children = parent.FindList("children");
   if (!children)
     return false;
-  DCHECK(!children->GetListDeprecated().empty());
-  auto& last_child = children->GetListDeprecated().back();
+  DCHECK(!children->empty());
+  auto& last_child = children->back().GetDict();
   if (!IsTextNode(last_child))
     return false;
-  std::string* old_text = last_child.FindStringKey("value");
+  std::string* old_text = last_child.FindString("value");
   old_text->append(text.data(), text.size());
   return true;
 }
 
-base::Value CreateEmptyFragment() {
+base::Value::Dict CreateEmptyFragment() {
   base::Value::Dict dict;
   dict.Set("type", "fragment");
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace
@@ -99,17 +99,17 @@ base::Value LogBuffer::RetrieveResult() {
   while (buffer_.size() > 1)
     *this << CTag{};
 
-  auto* children = buffer_[0].FindListKey("children");
-  if (!children || children->GetListDeprecated().empty())
+  auto* children = buffer_[0].FindList("children");
+  if (!children || children->empty())
     return base::Value();
 
   // If the fragment has a single child, remove it from |children| and return
   // that directly.
-  if (children->GetListDeprecated().size() == 1) {
-    return std::move(std::move(*children).TakeListDeprecated().back());
+  if (children->size() == 1) {
+    return std::move(std::move(*children).back());
   }
 
-  return std::exchange(buffer_.back(), CreateEmptyFragment());
+  return base::Value(std::exchange(buffer_.back(), CreateEmptyFragment()));
 }
 
 LogBuffer& operator<<(LogBuffer& buf, Tag&& tag) {
@@ -130,7 +130,7 @@ LogBuffer& operator<<(LogBuffer& buf, CTag&& tag) {
   if (buf.buffer_.size() <= 1)
     return buf;
 
-  base::Value node_to_add = std::move(buf.buffer_.back());
+  base::Value::Dict node_to_add = std::move(buf.buffer_.back());
   buf.buffer_.pop_back();
 
   AppendChildToLastNode(&buf.buffer_, std::move(node_to_add));
@@ -141,16 +141,15 @@ LogBuffer& operator<<(LogBuffer& buf, Attrib&& attrib) {
   if (!buf.active())
     return buf;
 
-  base::Value& node = buf.buffer_.back();
+  base::Value::Dict& node = buf.buffer_.back();
   DCHECK(IsElement(node));
 
-  if (auto* attributes = node.FindDictKey("attributes")) {
-    attributes->SetKey(std::move(attrib.name),
-                       base::Value(std::move(attrib.value)));
+  if (auto* attributes = node.FindDict("attributes")) {
+    attributes->Set(attrib.name, std::move(attrib.value));
   } else {
     base::Value::Dict dict;
     dict.Set(attrib.name, std::move(attrib.value));
-    node.SetKey("attributes", base::Value(std::move(dict)));
+    node.Set("attributes", std::move(dict));
   }
 
   return buf;
@@ -172,12 +171,11 @@ LogBuffer& operator<<(LogBuffer& buf, base::StringPiece text) {
   if (TryCoalesceString(&buf.buffer_, text))
     return buf;
 
-  base::Value::Dict dict;
-  dict.Set("type", "text");
+  base::Value::Dict node_to_add;
+  node_to_add.Set("type", "text");
   // This text is not HTML escaped because the rest of the frame work takes care
   // of that and it must not be escaped twice.
-  dict.Set("value", text);
-  base::Value node_to_add(std::move(dict));
+  node_to_add.Set("value", text);
   AppendChildToLastNode(&buf.buffer_, std::move(node_to_add));
   return buf;
 }
@@ -194,15 +192,18 @@ LogBuffer& operator<<(LogBuffer& buf, LogBuffer&& buffer) {
   if (node_to_add.is_none())
     return buf;
 
-  if (IsFragment(node_to_add)) {
-    auto* children = node_to_add.FindListKey("children");
+  base::Value::Dict* node_to_add_dict = &node_to_add.GetDict();
+  if (IsFragment(*node_to_add_dict)) {
+    auto* children = node_to_add_dict->FindList("children");
     if (!children)
       return buf;
-    for (auto& child : children->GetListDeprecated())
-      AppendChildToLastNode(&buf.buffer_, std::exchange(child, base::Value()));
+    for (auto& child : *children) {
+      AppendChildToLastNode(
+          &buf.buffer_, std::exchange(child.GetDict(), base::Value::Dict()));
+    }
     return buf;
   }
-  AppendChildToLastNode(&buf.buffer_, std::move(node_to_add));
+  AppendChildToLastNode(&buf.buffer_, std::move(*node_to_add_dict));
   return buf;
 }
 

@@ -134,7 +134,7 @@ class LogBuffer {
   // constructed. Once it is read (i.e. closed via a CTag), it is popped from
   // the stack and attached as a child of the previously second last element.
   // Only the first element of buffer_ is a 'fragment' and it is never closed.
-  std::vector<base::Value> buffer_;
+  std::vector<base::Value::Dict> buffer_;
 
   bool active_ = true;
 };
