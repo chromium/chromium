@@ -36,6 +36,12 @@ source_set("base_unittests_filters") {
   ]
 }
 
+source_set("blink_platform_unittests") {
+  testonly = true
+
+  data = [ "//testing/buildbot/filters/android.emulator_n.blink_platform_unittests.filter" ]
+}
+
 source_set("blink_unittests_filters") {
   testonly = true
 

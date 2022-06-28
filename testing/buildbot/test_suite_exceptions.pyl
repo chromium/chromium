@@ -205,6 +205,12 @@
   },
   'blink_platform_unittests': {
     'modifications': {
+      # TODO(crbug.com/1303439): Remove this filter
+      'android-nougat-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.blink_platform_unittests.filter',
+        ],
+      },
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
