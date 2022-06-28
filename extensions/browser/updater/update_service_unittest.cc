@@ -87,10 +87,13 @@ class FakeUpdateClient : public update_client::UpdateClient {
       observers_.push_back(observer);
   }
   void RemoveObserver(Observer* observer) override {}
-  void Install(const std::string& id,
-               CrxDataCallback crx_data_callback,
-               CrxStateChangeCallback crx_state_change_callback,
-               update_client::Callback callback) override {}
+  base::RepeatingClosure Install(
+      const std::string& id,
+      CrxDataCallback crx_data_callback,
+      CrxStateChangeCallback crx_state_change_callback,
+      update_client::Callback callback) override {
+    return base::DoNothing();
+  }
   void Update(const std::vector<std::string>& ids,
               CrxDataCallback crx_data_callback,
               CrxStateChangeCallback crx_state_change_callback,

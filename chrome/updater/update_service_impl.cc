@@ -550,8 +550,8 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &update_client::UpdateClient::Install, update_client_,
-            app_install_data_index.begin()->first,
+            base::IgnoreResult(&update_client::UpdateClient::Install),
+            update_client_, app_install_data_index.begin()->first,
             base::BindOnce(&GetComponents, config_, persisted_data_,
                            app_install_data_index, false, update_blocked,
                            policy_same_version_update),

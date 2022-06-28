@@ -69,11 +69,12 @@ class MockUpdateClient : public UpdateClient {
 
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
-  MOCK_METHOD4(Install,
-               void(const std::string& id,
-                    CrxDataCallback crx_data_callback,
-                    CrxStateChangeCallback crx_state_change_callback,
-                    Callback callback));
+  MOCK_METHOD4(
+      Install,
+      base::RepeatingClosure(const std::string& id,
+                             CrxDataCallback crx_data_callback,
+                             CrxStateChangeCallback crx_state_change_callback,
+                             Callback callback));
   MOCK_METHOD5(Update,
                void(const std::vector<std::string>& ids,
                     CrxDataCallback crx_data_callback,
@@ -118,11 +119,12 @@ class LoopHandler {
   explicit LoopHandler(int max_cnt, base::OnceClosure quit_closure)
       : max_cnt_(max_cnt), quit_closure_(std::move(quit_closure)) {}
 
-  void OnInstall(const std::string&,
-                 UpdateClient::CrxDataCallback,
-                 UpdateClient::CrxStateChangeCallback,
-                 Callback callback) {
+  base::RepeatingClosure OnInstall(const std::string&,
+                                   UpdateClient::CrxDataCallback,
+                                   UpdateClient::CrxStateChangeCallback,
+                                   Callback callback) {
     Handle(std::move(callback));
+    return base::DoNothing();
   }
 
   void OnUpdate(const std::vector<std::string>&,

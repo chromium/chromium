@@ -79,15 +79,16 @@ UpdateClientImpl::~UpdateClientImpl() {
   config_ = nullptr;
 }
 
-void UpdateClientImpl::Install(const std::string& id,
-                               CrxDataCallback crx_data_callback,
-                               CrxStateChangeCallback crx_state_change_callback,
-                               Callback callback) {
+base::RepeatingClosure UpdateClientImpl::Install(
+    const std::string& id,
+    CrxDataCallback crx_data_callback,
+    CrxStateChangeCallback crx_state_change_callback,
+    Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (IsUpdating(id)) {
     std::move(callback).Run(Error::UPDATE_IN_PROGRESS);
-    return;
+    return base::DoNothing();
   }
 
   std::vector<std::string> ids = {id};
@@ -96,11 +97,13 @@ void UpdateClientImpl::Install(const std::string& id,
   // considered foreground tasks.
   constexpr bool kIsForeground = true;
   constexpr bool kIsInstall = true;
-  RunTask(base::MakeRefCounted<TaskUpdate>(
+  auto task = base::MakeRefCounted<TaskUpdate>(
       update_engine_.get(), kIsForeground, kIsInstall, ids,
       std::move(crx_data_callback), crx_state_change_callback,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
-                     std::move(callback))));
+                     std::move(callback)));
+  RunTask(task);
+  return base::BindRepeating(&Task::Cancel, task);
 }
 
 void UpdateClientImpl::Update(const std::vector<std::string>& ids,

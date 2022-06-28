@@ -96,6 +96,7 @@ enum class ServiceError {
   NONE = 0,
   SERVICE_WAIT_FAILED = 1,
   UPDATE_DISABLED = 2,
+  CANCELLED = 3,
 };
 
 // These errors are related to serialization, deserialization, and parsing of

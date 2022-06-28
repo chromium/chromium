@@ -22,13 +22,13 @@
 class BrowserUpdaterClientMac : public BrowserUpdaterClient {
  public:
   explicit BrowserUpdaterClientMac(updater::UpdaterScope scope);
+  explicit BrowserUpdaterClientMac(
+      base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client);
   void GetUpdaterVersion(
       base::OnceCallback<void(const std::string&)> callback) override;
 
  private:
   friend class UpdateClientMacTest;
-  explicit BrowserUpdaterClientMac(
-      base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client);
 
   ~BrowserUpdaterClientMac() override;
 
