@@ -258,8 +258,18 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Get the URL from the entry's cache key.
   static std::string GetResourceURLFromHttpCacheKey(const std::string& key);
 
-  // Function to generate cache key for testing.
-  static std::string GenerateCacheKeyForTest(const HttpRequestInfo* request);
+  // Generates the cache key for a request.
+  static std::string GenerateCacheKey(
+      const GURL& url,
+      int load_flags,
+      const NetworkIsolationKey& network_isolation_key,
+      int64_t upload_data_identifier,
+      bool is_subframe_document_resource,
+      bool use_single_keyed_cache,
+      const std::string& single_key_checksum);
+  static std::string GenerateCacheKeyForRequest(
+      const HttpRequestInfo* request,
+      bool use_single_keyed_cache = false);
 
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP
@@ -420,10 +430,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // ERR_IO_PENDING. The transaction is free to use the backend directly at any
   // time after receiving the notification.
   int GetBackendForTransaction(Transaction* transaction);
-
-  // Generates the cache key for this request.
-  static std::string GenerateCacheKey(const HttpRequestInfo*,
-                                      bool use_single_keyed_cache);
 
   // Dooms the entry selected by |key|, if it is currently in the list of active
   // entries.

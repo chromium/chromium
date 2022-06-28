@@ -522,7 +522,7 @@ class ResourceSchedulerTest : public testing::Test {
     request_info.network_isolation_key =
         net::IsolationInfo().network_isolation_key();
     request_info.is_subframe_document_resource = false;
-    std::string key = net::HttpCache::GenerateCacheKeyForTest(&request_info);
+    std::string key = net::HttpCache::GenerateCacheKeyForRequest(&request_info);
 
     TestEntryResultCompletionCallback create_entry_callback;
     disk_cache::EntryResult result = backend->OpenOrCreateEntry(

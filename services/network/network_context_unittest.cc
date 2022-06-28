@@ -1775,8 +1775,8 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
             is_subframe_document_resource;
         request_info.network_isolation_key = isolation_key;
         disk_cache::EntryResult result = backend->OpenOrCreateEntry(
-            net::HttpCache::GenerateCacheKeyForTest(&request_info), net::LOWEST,
-            base::BindOnce([](disk_cache::EntryResult) {}));
+            net::HttpCache::GenerateCacheKeyForRequest(&request_info),
+            net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));
         ASSERT_EQ(result.net_error(), net::OK);
 
         disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());

@@ -123,7 +123,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
     request_info.method = "GET";
     request_info.network_isolation_key =
         net::NetworkIsolationKey(kOrigin, kOrigin);
-    return cache_->GenerateCacheKeyForTest(&request_info);
+    return cache_->GenerateCacheKeyForRequest(&request_info);
   }
 
   void RemoveData(mojom::ClearDataFilterPtr filter,

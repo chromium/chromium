@@ -1042,7 +1042,7 @@ int HttpCache::Transaction::DoGetBackendComplete(int result) {
     // the entry was marked unusable and the transaction was restarted in
     //  DoCacheReadResponseComplete(), so it will no longer match the value in
     //  `request_`. So we pass it through explicitly.
-    cache_key_ = cache_->GenerateCacheKey(
+    cache_key_ = cache_->GenerateCacheKeyForRequest(
         request_, effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
 
     // Requested cache access mode.

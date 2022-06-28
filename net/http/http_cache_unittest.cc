@@ -825,7 +825,7 @@ class HttpSplitCacheKeyTest : public HttpCacheTest {
     request_info.method = "GET";
     request_info.network_isolation_key = net::NetworkIsolationKey(site, site);
     MockHttpCache cache;
-    return cache.http_cache()->GenerateCacheKeyForTest(&request_info);
+    return cache.http_cache()->GenerateCacheKeyForRequest(&request_info);
   }
 };
 
@@ -5336,7 +5336,8 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelFirst) {
   // Allow all requests to move from the Create queue to the active entry.
   // All would have been added to writers.
   base::RunLoop().RunUntilIdle();
-  std::string cache_key = cache.http_cache()->GenerateCacheKeyForTest(&request);
+  std::string cache_key =
+      cache.http_cache()->GenerateCacheKeyForRequest(&request);
   EXPECT_EQ(kNumTransactions, cache.GetCountWriterTransactions(cache_key));
 
   // The second transaction skipped validation, thus only one network
@@ -8305,7 +8306,8 @@ TEST_F(HttpCacheTest, Sparse_WaitForEntry) {
   // Simulate a previous transaction being cancelled.
   disk_cache::Entry* entry;
   MockHttpRequest request(transaction);
-  std::string cache_key = cache.http_cache()->GenerateCacheKeyForTest(&request);
+  std::string cache_key =
+      cache.http_cache()->GenerateCacheKeyForRequest(&request);
   ASSERT_TRUE(cache.OpenBackendEntry(cache_key, &entry));
   entry->CancelSparseIO();
 
