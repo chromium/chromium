@@ -8,6 +8,7 @@
     style="@style/AlertDialogContent">
 
     <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:indeterminate="true"/>

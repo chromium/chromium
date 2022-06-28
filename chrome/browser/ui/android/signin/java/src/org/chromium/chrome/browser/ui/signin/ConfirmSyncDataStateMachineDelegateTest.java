@@ -13,9 +13,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.verify;
 
-import android.support.test.InstrumentationRegistry;
+import android.graphics.drawable.ColorDrawable;
+import android.widget.ProgressBar;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.MediumTest;
 
@@ -32,9 +32,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for {@link ConfirmSyncDataStateMachineDelegate}. */
@@ -59,19 +58,19 @@ public class ConfirmSyncDataStateMachineDelegateTest {
     @Before
     public void setUp() {
         mActivityTestRule.launchActivity(null);
-        final FragmentActivity activity = mActivityTestRule.getActivity();
+        final BlankUiTestActivity activity = mActivityTestRule.getActivity();
         mFragmentManager = activity.getSupportFragmentManager();
-        mStateMachineDelegate = new ConfirmSyncDataStateMachineDelegate(activity, mFragmentManager,
-                new ModalDialogManager(new AppModalPresenter(activity), ModalDialogType.APP));
+        mStateMachineDelegate = new ConfirmSyncDataStateMachineDelegate(
+                activity, activity.getSupportFragmentManager(), activity.getModalDialogManager());
     }
 
     @Test
     @MediumTest
     public void testTimeoutDialogWhenPositiveButtonPressed() {
-        mStateMachineDelegate.showFetchManagementPolicyTimeoutDialog(mTimeoutDialogListenerMock);
-        // TODO(https://crbug.com/1197194): Remove all waitForIdleSync calls once the dialogs
-        // are modularized.
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mStateMachineDelegate.showFetchManagementPolicyTimeoutDialog(
+                                mTimeoutDialogListenerMock));
 
         onView(withText(R.string.try_again)).inRoot(isDialog()).perform(click());
 
@@ -81,8 +80,10 @@ public class ConfirmSyncDataStateMachineDelegateTest {
     @Test
     @MediumTest
     public void testTimeoutDialogWhenNegativeButtonPressed() {
-        mStateMachineDelegate.showFetchManagementPolicyTimeoutDialog(mTimeoutDialogListenerMock);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mStateMachineDelegate.showFetchManagementPolicyTimeoutDialog(
+                                mTimeoutDialogListenerMock));
 
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
 
@@ -91,15 +92,36 @@ public class ConfirmSyncDataStateMachineDelegateTest {
 
     @Test
     @MediumTest
+    public void testProgressDialogWhenNegativeButtonPressed() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mStateMachineDelegate.showFetchManagementPolicyProgressDialog(
+                                mProgressDialogListenerMock));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Replace the progress bar with a dummy. Currently the progress bar cannot be stopped
+            // otherwise due to some espresso issues (crbug/1115067).
+            ProgressBar progressBar = mStateMachineDelegate.getProgressBarViewForTesting();
+            progressBar.setIndeterminateDrawable(new ColorDrawable(
+                    SemanticColorUtils.getDefaultBgColor(mActivityTestRule.getActivity())));
+        });
+
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
+
+        verify(mProgressDialogListenerMock).onCancel();
+    }
+
+    @Test
+    @MediumTest
     public void testDismissAllDialogs() {
-        mStateMachineDelegate.showFetchManagementPolicyTimeoutDialog(mTimeoutDialogListenerMock);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mStateMachineDelegate.showFetchManagementPolicyTimeoutDialog(
+                                mTimeoutDialogListenerMock));
         onView(withText(R.string.sign_in_timeout_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
 
-        mStateMachineDelegate.dismissAllDialogs();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mStateMachineDelegate.dismissAllDialogs());
 
         onView(withText(R.string.sign_in_timeout_title)).check(doesNotExist());
     }

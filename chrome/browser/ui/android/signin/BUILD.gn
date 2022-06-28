@@ -224,6 +224,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/externalauth/android:java",
     "//components/prefs/android:java",
     "//components/signin/core/browser:signin_enums_java",
