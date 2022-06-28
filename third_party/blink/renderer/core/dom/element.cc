@@ -3795,6 +3795,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     ClearNeedsStyleRecalc();
   }
 
+  // We may need to update the internal CSSContainerValues of the
+  // ContainerQueryEvaluator if e.g. the value of the 'rem' unit or container-
+  // relative units changed. It are not guaranteed to reach RecalcOwnStyle for
+  // the container, so this update happens here instead.
+  if (ContainerQueryEvaluator* evaluator = GetContainerQueryEvaluator())
+    evaluator->UpdateValuesIfNeeded(GetDocument(), *this, child_change);
+
   // We're done with self style, notify the display lock.
   child_change = display_lock_style_scope.DidUpdateSelfStyle(child_change);
   if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
@@ -4247,13 +4254,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
       } else if (evaluator) {
         DCHECK(old_style);
         evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
-
-        if (child_change.RecalcDescendants()) {
-          // If we are recalculating all descendants, the root font *may*
-          // have changed. See call to `UpdateRemUnits` higher up in this
-          // function.
-          evaluator->RootFontChanged(GetDocument(), *this);
-        }
       }
     }
   }

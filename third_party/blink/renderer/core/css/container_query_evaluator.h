@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -65,7 +66,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
                           PhysicalSize,
                           PhysicalAxes contained_axes);
 
-  void RootFontChanged(Document&, Element& container);
+  // We may need to update the internal CSSContainerValues of this evaluator
+  // when e.g. the rem unit changes.
+  void UpdateValuesIfNeeded(Document&, Element& container, StyleRecalcChange);
+
   void MarkFontDirtyIfNeeded(const ComputedStyle& old_style,
                              const ComputedStyle& new_style);
 

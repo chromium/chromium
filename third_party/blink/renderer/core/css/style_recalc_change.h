@@ -128,6 +128,26 @@ class CORE_EXPORT StyleRecalcChange {
   bool ShouldUpdatePseudoElement(const PseudoElement&) const;
   bool IsSuppressed() const { return flags_ & kSuppressRecalc; }
 
+  // If true, the value of the 'rem' unit may have changed.
+  //
+  // We currently can't distinguish between kRecalcDescendants caused by
+  // root-font-size changes and kRecalcDescendants that happens for other
+  // reasons.
+  //
+  // See call to `UpdateRemUnits` in `Element::RecalcOwnStyle`.
+  bool RemUnitsMaybeChanged() const { return RecalcDescendants(); }
+
+  // If true, the values of container-relative units may have changed.
+  //
+  // Any ContainerQueryEvaluator that has been referenced by a unit will
+  // always cause kRecalcDescendantContainers (see
+  // ContainerQueryEvaluator::ComputeChange). Currently we can not distinguish
+  // between that and kRecalcDescendantContainers caused by other reasons
+  // (e.g. named lookups).
+  bool ContainerRelativeUnitsMaybeChanged() const {
+    return flags_ & kRecalcDescendantContainers;
+  }
+
   String ToString() const;
 
  private:

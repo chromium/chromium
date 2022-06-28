@@ -206,18 +206,23 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
   return change;
 }
 
-void ContainerQueryEvaluator::RootFontChanged(Document& document,
-                                              Element& container) {
-  if (!(unit_flags_ & MediaQueryExpValue::kRootFontRelative))
-    return;
+void ContainerQueryEvaluator::UpdateValuesIfNeeded(Document& document,
+                                                   Element& container,
+                                                   StyleRecalcChange change) {
   if (!media_query_evaluator_)
+    return;
+  unsigned changed_flags = 0;
+  if (change.RemUnitsMaybeChanged())
+    changed_flags |= MediaQueryExpValue::kRootFontRelative;
+  if (change.ContainerRelativeUnitsMaybeChanged())
+    changed_flags |= MediaQueryExpValue::kContainer;
+  if (!(unit_flags_ & changed_flags))
     return;
   const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       document, container, existing_values.Width(), existing_values.Height());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
-  font_dirty_ = true;
 }
 
 void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
