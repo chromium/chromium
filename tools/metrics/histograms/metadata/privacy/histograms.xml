@@ -195,7 +195,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.CookieAccessFilterResult{DIPSCookieMode}"
-    enum="Boolean" expires_after="2022-09-01">
+    enum="Boolean" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
@@ -207,7 +207,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
-    units="ms" expires_after="2022-07-01">
+    units="ms" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
@@ -235,7 +235,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
-    units="ms" expires_after="2022-07-01">
+    units="ms" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
