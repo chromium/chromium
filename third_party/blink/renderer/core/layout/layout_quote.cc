@@ -278,9 +278,8 @@ const QuotesData* QuotesDataForLanguage(const AtomicString& lang) {
 }
 
 static const QuotesData* BasicQuotesData() {
-  // FIXME: The default quotes should be the fancy quotes for "en".
   DEFINE_STATIC_REF(QuotesData, static_basic_quotes,
-                    (QuotesData::Create('"', '"', '\'', '\'')));
+                    (QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019)));
   return static_basic_quotes;
 }
 

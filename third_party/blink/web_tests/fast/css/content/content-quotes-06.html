@@ -25,19 +25,19 @@
         </script>
     </head>
 
-    <body onload="setTimeout('run()', 0);">
+    <body lang=en onload="setTimeout('run()', 0);">
         <p id="onlyInBrowser">The texts between the markers should be identical.</p>
         <p>========Marker1========</p>
         <table>
             <tr>
-                <td id="testContainer" class="noQuotes"><q>a<q class="initialQuotes">b</q>c</q></td>
+                <td id="testContainer" class="noQuotes"><q>a<span class="initialQuotes"><q>b</q></span>c</q></td>
                 <td>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</td>
             </tr>
         </table>
         <p>========Marker2========</p>
         <table>
             <tr>
-                <td id="reference">a'b'c</td>
+                <td id="reference">a‘b’c</td>
                 <td>1 1 1 1 1 1 1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</td>
             </tr>
         </table>

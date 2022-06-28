@@ -11,9 +11,9 @@ rootWebArea name='done'
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
-++++++++++++staticText name='"'
-++++++++++++++inlineTextBox name='"'
+++++++++++++staticText name='%E2%80%9C'
+++++++++++++++inlineTextBox name='%E2%80%9C'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
-++++++++++++staticText name='"'
-++++++++++++++inlineTextBox name='"'
+++++++++++++staticText name='%E2%80%9D'
+++++++++++++++inlineTextBox name='%E2%80%9D'

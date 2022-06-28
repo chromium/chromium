@@ -554,13 +554,13 @@ LayoutNGBlockFlow DIV id="root"
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 
@@ -574,11 +574,11 @@ LayoutBlockFlow DIV id="root"
   +--LayoutInline Q
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
   |  +--LayoutTextCombine #text "ab"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()))
       << "No more LayoutNGTextCombine";
@@ -1475,13 +1475,13 @@ LayoutNGBlockFlow DIV id="root"
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }

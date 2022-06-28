@@ -7,13 +7,13 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++++++++++staticText name='"'
-++++++++++++++++inlineTextBox name='"'
+++++++++++++++staticText name='%E2%80%9C'
+++++++++++++++++inlineTextBox name='%E2%80%9C'
 ++++++++++staticText name='Chromium Blink'
 ++++++++++++inlineTextBox name='Chromium Blink'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++++++++++staticText name='"'
-++++++++++++++++inlineTextBox name='"'
+++++++++++++++staticText name='%E2%80%9D'
+++++++++++++++++inlineTextBox name='%E2%80%9D'
 ++++++++staticText name=' based browser.'
 ++++++++++inlineTextBox name=' based browser.'
