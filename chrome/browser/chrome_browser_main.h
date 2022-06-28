@@ -13,13 +13,17 @@
 #include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_process_singleton.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/result_codes.h"
+
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#include "chrome/browser/chrome_process_singleton.h"
+#include "chrome/browser/process_singleton.h"
+#endif
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 #include "chrome/browser/downgrade/downgrade_manager.h"
@@ -57,7 +61,9 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // by InProcessBrowserTests to allow them to run until the BrowserProcess is
   // ready for the browser to exit.
   static std::unique_ptr<base::RunLoop> TakeRunLoopForTest();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // Handles notifications from other processes. The function receives the
   // command line and directory with which the other Chrome process was
   // launched. Return true if the command line will be handled within the
@@ -66,7 +72,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   static bool ProcessSingletonNotificationCallback(
       const base::CommandLine& command_line,
       const base::FilePath& current_directory);
-#endif
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
  protected:
   ChromeBrowserMainParts(bool is_integration_test, StartupData* startup_data);
@@ -188,14 +194,15 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #if !BUILDFLAG(IS_ANDROID)
   // Browser creation happens on the Java side in Android.
   std::unique_ptr<StartupBrowserCreator> browser_creator_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-  // Android doesn't support multiple browser processes, so it doesn't implement
-  // ProcessSingleton.
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   std::unique_ptr<ChromeProcessSingleton> process_singleton_;
-
   ProcessSingleton::NotifyResult notify_result_ =
       ProcessSingleton::PROCESS_NONE;
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
+#if !BUILDFLAG(IS_ANDROID)
   // Members needed across shutdown methods.
   bool restart_last_session_ = false;
 #endif  // !BUILDFLAG(IS_ANDROID)

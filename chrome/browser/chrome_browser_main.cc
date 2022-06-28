@@ -82,7 +82,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
-#include "chrome/browser/process_singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -283,6 +282,10 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#include "chrome/browser/process_singleton.h"
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/background_mode_manager.h"
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
@@ -456,7 +459,7 @@ OSStatus KeychainCallback(SecKeychainEvent keychain_event,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 void ProcessSingletonNotificationCallbackImpl(
     const base::CommandLine& command_line,
     const base::FilePath& current_directory) {
@@ -482,7 +485,9 @@ void ProcessSingletonNotificationCallbackImpl(
   if (ShouldRecordActiveUse(command_line))
     GoogleUpdateSettings::SetLastRunTime();
 }
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
+#if !BUILDFLAG(IS_ANDROID)
 bool ShouldInstallSodaDuringPostProfileInit(
     const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -492,7 +497,6 @@ bool ShouldInstallSodaDuringPostProfileInit(
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -966,16 +970,17 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   // Force MediaCaptureDevicesDispatcher to be created on UI thread.
   MediaCaptureDevicesDispatcher::GetInstance();
 
-  // Android's first run is done in Java instead of native.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   process_singleton_ = std::make_unique<ChromeProcessSingleton>(
       user_data_dir_,
       base::BindRepeating(
           &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
+  // Android's first run is done in Java instead of native.
+#if !BUILDFLAG(IS_ANDROID)
   // Cache first run state early.
   first_run::IsChromeFirstRun();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   PrefService* local_state = browser_process_->local_state();
@@ -1308,10 +1313,12 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostBrowserStart");
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostBrowserStart();
-#if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // Allow ProcessSingleton to process messages.
   process_singleton_->Unlock();
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+
   // Set up a task to delete old WebRTC log files for all profiles. Use a delay
   // to reduce the impact on startup time.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -1399,7 +1406,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   CHECK(aura::Env::GetInstance());
 #endif  // defined(USE_AURA)
 
-  // Android doesn't support extensions and doesn't implement ProcessSingleton.
+  // Android doesn't support extensions.
 #if !BUILDFLAG(IS_ANDROID)
   // If the command line specifies --pack-extension, attempt the pack extension
   // startup action and exit.
@@ -1411,7 +1418,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       return content::RESULT_CODE_NORMAL_EXIT;
     return chrome::RESULT_CODE_PACK_EXTENSION_ERROR;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // When another process is running, use that process instead of starting a
   // new one. NotifyOtherProcess will currently give the other process up to
   // 20 seconds to respond. Note that this needs to be done before we attempt
@@ -1453,6 +1462,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
                     "now to avoid profile corruption.";
       return chrome::RESULT_CODE_PROFILE_IN_USE;
   }
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if BUILDFLAG(IS_WIN)
   // We must call DoUpgradeTasks now that we own the browser singleton to
@@ -1461,7 +1471,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     return chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   // Begin relaunch processing immediately if User Data migration is required
   // to handle a version downgrade.
   if (downgrade_manager_.PrepareUserDataDirectoryForCurrentVersion(
@@ -1469,8 +1479,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     return chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH;
   }
   downgrade_manager_.UpdateLastVersion(user_data_dir_);
-#endif  // BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize the chrome browser cloud management controller after
@@ -1499,7 +1508,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // Handle special early return paths (which couldn't be processed even earlier
   // as they require the process singleton to be held) first.
 
@@ -1512,9 +1521,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // case, browser startup should continue without processing the original
   // command line (the one with --try-chrome-again), but rather with the command
   // line from the other process (handled in
-  // ProcessSingletonNotificationCallback thanks to the ProcessSingleton). This
-  // variable is cleared in that particular case, leading to a bypass of the
-  // StartupBrowserCreator.
+  // ProcessSingletonNotificationCallback thanks to the ProcessSingleton). The
+  // |process_command_line| variable is cleared in that particular case, leading
+  // to a bypass of the StartupBrowserCreator.
   bool process_command_line = true;
   if (!try_chrome.empty()) {
 #if BUILDFLAG(IS_WIN)
@@ -1546,7 +1555,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     return content::RESULT_CODE_NORMAL_EXIT;
 #endif  // BUILDFLAG(IS_WIN)
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if BUILDFLAG(IS_WIN)
   // Check if there is any machine level Chrome installed on the current
@@ -1580,7 +1589,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
 #if !BUILDFLAG(IS_ANDROID)
   // The first run sentinel must be created after the process singleton was
-  // grabbed and no early return paths were otherwise hit above.
+  // grabbed (where enabled) and no early return paths were otherwise hit above.
   first_run::CreateSentinelIfNeeded();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1754,7 +1763,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Startup.StartupBrowserCreator_Start.
   // See the comment above for an explanation of |process_command_line|.
   const bool started =
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
       !process_command_line ||
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
       browser_creator_->Start(*base::CommandLine::ForCurrentProcess(),
                               base::FilePath(), profile_info,
                               last_opened_profiles);
@@ -1892,8 +1903,10 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   TranslateService::Shutdown();
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   if (notify_result_ == ProcessSingleton::PROCESS_NONE)
     process_singleton_->Cleanup();
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   browser_process_->metrics_service()->Stop();
 
@@ -1957,7 +1970,10 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   master_prefs_.reset();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   process_singleton_.reset();
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+
   device_event_log::Shutdown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1982,7 +1998,9 @@ std::unique_ptr<base::RunLoop> ChromeBrowserMainParts::TakeRunLoopForTest() {
   DCHECK(GetMainRunLoopInstance());
   return std::move(GetMainRunLoopInstance());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 // static
 bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
     const base::CommandLine& command_line,
@@ -2005,5 +2023,4 @@ bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
       FROM_HERE, base::BindOnce(&ProcessSingletonNotificationCallbackImpl,
                                 command_line, current_directory));
 }
-
-#endif
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)

@@ -98,8 +98,17 @@ buildflag_header("buildflags") {
     "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
     "USE_THIN_LTO=$use_thin_lto",
   ]
+
   if (is_win) {
     flags += [ "ENABLE_SEGMENT_HEAP=$enable_segment_heap" ]
+  }
+
+  # Android and ChromeOS don't support multiple browser processes, so they don't
+  # employ ProcessSingleton.
+  if (is_android || is_chromeos_ash || is_chromeos_lacros) {
+    flags += [ "ENABLE_PROCESS_SINGLETON=0" ]
+  } else {
+    flags += [ "ENABLE_PROCESS_SINGLETON=1" ]
   }
 }
 

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,9 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/base/filename_util.h"
 
-// These tests don't apply to Mac or Lacros; see GetCommandLineForRelaunch
-// for details.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #error Not supported on this platform.
 #endif
 
