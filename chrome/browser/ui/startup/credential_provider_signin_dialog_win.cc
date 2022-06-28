@@ -161,7 +161,7 @@ class CredentialProviderWebUIMessageHandler
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kLSTFetchResultsMessage,
         base::BindRepeating(
             &CredentialProviderWebUIMessageHandler::OnSigninComplete,
@@ -170,9 +170,9 @@ class CredentialProviderWebUIMessageHandler
     // This message is always sent as part of the SAML flow but we don't really
     // need to process it. We do however have to handle the message or else
     // there will be a DCHECK failure in web_ui about an unhandled message.
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "updatePasswordAttributes",
-        base::BindRepeating([](const base::ListValue* args) {}));
+        base::BindRepeating([](const base::Value::List& args) {}));
   }
 
   void AbortIfPossible() {
@@ -182,23 +182,23 @@ class CredentialProviderWebUIMessageHandler
 
     // Build a result for the credential provider that includes only the abort
     // exit code.
-    base::Value result(base::Value::Type::DICTIONARY);
-    result.SetKey(credential_provider::kKeyExitCode,
-                  base::Value(credential_provider::kUiecAbort));
-    base::ListValue args;
-    args.GetList().Append(std::move(result));
-    OnSigninComplete(&args);
+    base::Value::Dict result;
+    result.Set(credential_provider::kKeyExitCode,
+               base::Value(credential_provider::kUiecAbort));
+    base::Value::List args;
+    args.Append(std::move(result));
+    OnSigninComplete(args);
   }
 
  private:
-  base::Value ParseArgs(const base::ListValue* args, int* out_exit_code) {
+  base::Value ParseArgs(const base::Value::List& args, int* out_exit_code) {
     DCHECK(out_exit_code);
 
-    if (!args || args->GetListDeprecated().empty()) {
+    if (args.empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);
     }
-    const base::Value& dict_result = args->GetListDeprecated()[0];
+    const base::Value& dict_result = args[0];
     if (!dict_result.is_dict()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);
@@ -234,7 +234,7 @@ class CredentialProviderWebUIMessageHandler
     return dict_result.Clone();
   }
 
-  void OnSigninComplete(const base::ListValue* args) {
+  void OnSigninComplete(const base::Value::List& args) {
     // If the callback was already called, ignore.  This may happen if the
     // user presses Escape right after finishing the signin process, the
     // Escape is processed first by AbortIfPossible(), and the signin then
