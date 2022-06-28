@@ -11946,6 +11946,13 @@
       {}
      ]
     ],
+    "local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html": [
+     "30503fdb22c53599cb7d8cecf6480f9d4a7f9203",
+     [
+      null,
+      {}
+     ]
+    ],
     "local_FileSystemDirectoryHandle-removeEntry-manual.https.html": [
      "cf97b9d1bb153d82f3346f221a044b709398420c",
      [
@@ -11976,6 +11983,13 @@
     ],
     "local_FileSystemFileHandle-move-manual.https.html": [
      "360b09c3b7aad39bb37037383163def662517d31",
+     [
+      null,
+      {}
+     ]
+    ],
+    "local_FileSystemFileHandle-partitioned-manual.https.tentative.html": [
+     "c153b0c6afa7f900198f444965e04cf56c89b17f",
      [
       null,
       {}
@@ -301524,7 +301538,7 @@
       ]
      },
      "local-fs-test-helpers.js": [
-      "143c8231ab62fc048b81b81f9d1fc9a924a87b0e",
+      "9d96e587f64e9573c4c076965e9e2dbedf6b2258",
       []
      ],
      "message-target-dedicated-worker.js": [
@@ -464385,7 +464399,7 @@
        ]
       ],
       "structured-cloning-error-stack-optional.sub.window.js": [
-       "2fb2f7d266096fe58f2e8de9c9311b6d5a611278",
+       "3427db657472812a83eed286f78bdaf9ba7a6c05",
        [
         "html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.html",
         {

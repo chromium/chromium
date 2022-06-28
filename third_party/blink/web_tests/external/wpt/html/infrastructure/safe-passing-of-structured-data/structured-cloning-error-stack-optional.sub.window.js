@@ -37,6 +37,18 @@ stackTests(() => {
 }, 'web API-created DOMException');
 
 function stackTests(errorFactory, description) {
+  test(t => {
+    const error = errorFactory();
+    const originalStack = error.stack;
+
+    if (!originalStack) {
+      return;
+    }
+
+    const clonedError = structuredClone(error);
+    assert_equals(clonedError.stack, originalStack);
+  }, description + ' (structuredClone())');
+
   async_test(t => {
     const error = errorFactory();
     const originalStack = error.stack;

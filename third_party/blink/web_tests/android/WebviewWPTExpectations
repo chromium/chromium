@@ -2667,7 +2667,6 @@ crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-da
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-serviceworker-failure.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-sharedworker-failure.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-simple-success.https.html [ Failure ]
-crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/structured-cloning-error-stack-optional.sub.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/transfer-errors.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/attributes.sub.html?encoding=windows-1252 [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/attributes.sub.html?encoding=x-cp1251 [ Failure Pass ]
