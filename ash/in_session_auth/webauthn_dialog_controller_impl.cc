@@ -163,9 +163,18 @@ void WebAuthNDialogControllerImpl::AuthenticateUserWithFingerprint(
 void WebAuthNDialogControllerImpl::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
-  std::move(callback).Run(success);
-  if (success)
+  if (success) {
+    std::move(callback).Run(/*success=*/true, /*can_use_pin=*/true);
     OnAuthSuccess();
+    return;
+  }
+
+  // PIN might be locked out after an unsuccessful authentication, check if it's
+  // still available so the UI can be updated.
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  client_->CheckPinAuthAvailability(
+      account_id, base::BindOnce(std::move(callback), /*success=*/false));
 }
 
 void WebAuthNDialogControllerImpl::OnFingerprintAuthComplete(
