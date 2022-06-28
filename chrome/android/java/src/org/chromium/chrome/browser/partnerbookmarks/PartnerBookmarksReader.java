@@ -6,20 +6,20 @@ package org.chromium.chrome.browser.partnerbookmarks;
 
 import android.content.Context;
 
-import androidx.annotation.GuardedBy;
-
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Reads bookmarks from the partner content provider (if any).
@@ -37,9 +37,6 @@ public class PartnerBookmarksReader {
 
     /** ID used to indicate an invalid bookmark node. */
     static final long INVALID_BOOKMARK_ID = -1;
-
-    /** Injected dependency. */
-    private final Supplier<PartnerBookmark.BookmarkIterator> mBookmarkIteratorSupplier;
 
     /** Storage for failed favicon retrieval attempts to throttle future requests. **/
     private PartnerBookmarksFaviconThrottle mFaviconThrottle;
@@ -96,14 +93,10 @@ public class PartnerBookmarksReader {
      * Creates the instance of the reader.
      * @param context A Context object.
      * @param browserCustomizations Provides status of partner customizations.
-     * @param bookmarkIteratorSupplier Source of the {@link PartnerBookmarkIterator}. This argument
-     *         should be removed once {@link PartnerBookmarksDelegate} can be used instead.
      */
-    public PartnerBookmarksReader(Context context,
-            PartnerBrowserCustomizations browserCustomizations,
-            Supplier<PartnerBookmark.BookmarkIterator> bookmarkIteratorSupplier) {
+    public PartnerBookmarksReader(
+            Context context, PartnerBrowserCustomizations browserCustomizations) {
         mContext = context;
-        mBookmarkIteratorSupplier = bookmarkIteratorSupplier;
         mNativePartnerBookmarksReader =
                 PartnerBookmarksReaderJni.get().init(PartnerBookmarksReader.this);
         if (!browserCustomizations.isInitialized()) {
@@ -260,7 +253,8 @@ public class PartnerBookmarksReader {
                 // background thread as well.
                 mFaviconThrottle = new PartnerBookmarksFaviconThrottle();
             }
-            PartnerBookmark.BookmarkIterator bookmarkIterator = mBookmarkIteratorSupplier.get();
+            PartnerBookmark.BookmarkIterator bookmarkIterator =
+                    AppHooks.get().getPartnerBookmarkIterator();
             if (bookmarkIterator == null) return null;
 
             // Get a snapshot of the bookmarks.
@@ -283,7 +277,7 @@ public class PartnerBookmarksReader {
                 // Check for duplicate URLs.
                 if (!bookmark.mIsFolder && urlSet.contains(bookmark.mUrl)) {
                     Log.i(TAG,
-                            "More than one bookmark pointing to " + bookmark.mUrl + " "
+                            "More than one bookmark pointing to " + bookmark.mUrl + ". "
                                     + "Keeping only the first one for consistency with Chromium.");
                     continue;
                 }

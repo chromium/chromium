@@ -57,7 +57,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations, Mockito.never()).initializeAsync(mContextMock);
 
@@ -72,7 +72,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations).initializeAsync(mContextMock);
 
@@ -87,7 +87,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations, Mockito.never()).initializeAsync(mContextMock);
 
@@ -102,7 +102,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations).initializeAsync(mContextMock);
 
@@ -117,7 +117,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
         reader.onBookmarksRead();
 
         Mockito.verify(mJniMock, Mockito.never())
@@ -130,7 +130,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
 
@@ -144,7 +144,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
         reader.onBookmarksRead();
@@ -159,7 +159,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations, null);
+                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         reader.onBookmarksRead();
         mBrowserCustomizationsInitCallback.getValue().run();

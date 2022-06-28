@@ -662,6 +662,7 @@ android_library("chrome_java") {
     "//chrome:assist_ranker_prediction_enum_javagen",
     "//chrome:instant_apps_reasons_enum_javagen",
     "//chrome:offline_pages_enum_javagen",
+    "//chrome:partner_bookmarks_javagen",
     "//chrome:quick_action_category_enum_javagen",
     "//chrome:supervised_user_url_filter_enum_javagen",
     "//chrome/browser:screenshot_mode_enum",
@@ -1015,7 +1016,6 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/test/android:junit",
-    "//chrome/browser/partnerbookmarks:junit",
     "//chrome/browser/partnercustomizations:java",
     "//chrome/browser/password_edit_dialog/android:junit",
     "//chrome/browser/password_entry_edit/android/internal:junit",
@@ -1845,17 +1845,16 @@ if (enable_vr || enable_arcore) {
           chrome_test_xr_java_deps + [
             ":chrome_test_util_java",
             "//chrome/android:chrome_test_xr_java",
-            "//components/module_installer/android:module_installer_java",
+            "//chrome/browser/profiles/android:java",
+            "//chrome/browser/settings:java",
+            "//chrome/browser/tabmodel:java",
             "//components/browser_ui/site_settings/android:java",
             "//components/content_settings/android:content_settings_enums_java",
             "//components/infobars/android:java",
             "//components/messages/android:java",
             "//components/messages/android/internal:java",
             "//components/messages/android/test:test_support_java",
-            "//chrome/browser/profiles/android:java",
-            "//chrome/browser/settings:java",
-            "//chrome/browser/tabmodel:java",
-
+            "//components/module_installer/android:module_installer_java",
             "//third_party/gvr-android-sdk:controller_test_api_java",
             "//third_party/gvr-android-sdk:gvr_common_java",
             "//ui/android:ui_java_test_support",
@@ -3008,10 +3007,10 @@ template("chrome_test_apk_tmpl") {
     deps = _chrome_public_shared_deps + invoker.deps + [
              ":chrome_apk_pak_assets",
              ":chrome_public_base_module_java_for_test",
-             "//third_party/android_support_test_runner:runner_java",
              "//third_party/android_sdk:android_test_base_java",
              "//third_party/android_sdk:android_test_mock_java",
              "//third_party/android_sdk:android_test_runner_java",
+             "//third_party/android_support_test_runner:runner_java",
            ]
     if (enable_vr) {
       # Contains VrFirstRunActivity, which is referenced by AndroidManifest.xml.
@@ -3060,13 +3059,13 @@ template("monochrome_test_apk_tmpl") {
     add_unwind_tables_in_apk = false
 
     deps = _chrome_public_shared_deps + invoker.deps + [
-             "//android_webview:platform_service_bridge_upstream_implementation_java",
-             ":monochrome_apk_pak_assets",
              ":chrome_public_base_module_java_for_test",
-             "//third_party/android_support_test_runner:runner_java",
+             ":monochrome_apk_pak_assets",
+             "//android_webview:platform_service_bridge_upstream_implementation_java",
              "//third_party/android_sdk:android_test_base_java",
              "//third_party/android_sdk:android_test_mock_java",
              "//third_party/android_sdk:android_test_runner_java",
+             "//third_party/android_support_test_runner:runner_java",
            ]
 
     if (webview_includes_weblayer) {
@@ -3972,6 +3971,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
+    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
     "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",
