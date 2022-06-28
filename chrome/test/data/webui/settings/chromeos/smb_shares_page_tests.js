@@ -73,14 +73,14 @@ suite('AddSmbShareDialogTests', function() {
     assertTrue(!!url);
     url.value = 'smb://192.168.1.1/testshare';
 
-    const addButton = addDialog.$$('.action-button');
+    const addButton = addDialog.shadowRoot.querySelector('.action-button');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
   });
 
   test('AddDisabledWithInvalidUrl', function() {
     const url = addDialog.$.address;
-    const addButton = addDialog.$$('.action-button');
+    const addButton = addDialog.shadowRoot.querySelector('.action-button');
 
     url.value = '';
     assertTrue(addButton.disabled);
@@ -124,23 +124,23 @@ suite('AddSmbShareDialogTests', function() {
     const expectedAuthMethod = 'credentials';
     const expectedShouldOpenFileManager = false;
 
-    const url = addDialog.$$('#address');
+    const url = addDialog.shadowRoot.querySelector('#address');
     assertTrue(!!url);
     url.value = expectedSmbUrl;
 
-    const name = addDialog.$$('#name');
+    const name = addDialog.shadowRoot.querySelector('#name');
     assertTrue(!!name);
     name.value = expectedSmbName;
 
-    const un = addDialog.$$('#username');
+    const un = addDialog.shadowRoot.querySelector('#username');
     assertTrue(!!un);
     un.value = expectedUsername;
 
-    const pw = addDialog.$$('#password');
+    const pw = addDialog.shadowRoot.querySelector('#password');
     assertTrue(!!pw);
     pw.value = expectedPassword;
 
-    const addButton = addDialog.$$('.action-button');
+    const addButton = addDialog.shadowRoot.querySelector('.action-button');
     assertTrue(!!addButton);
 
     addDialog.authenticationMethod_ = expectedAuthMethod;
@@ -178,7 +178,8 @@ suite('AddSmbShareDialogTests', function() {
   });
 
   test('AuthenticationSelectorVisibility', function() {
-    const authenticationMethod = addDialog.$$('#authentication-method');
+    const authenticationMethod =
+        addDialog.shadowRoot.querySelector('#authentication-method');
     assertTrue(!!authenticationMethod);
 
     assertTrue(authenticationMethod.hidden);
@@ -191,12 +192,13 @@ suite('AddSmbShareDialogTests', function() {
   test('AuthenticationSelectorControlsCredentialFields', function() {
     addDialog.isActiveDirectory_ = true;
 
-    assertFalse(addDialog.$$('#authentication-method').hidden);
+    assertFalse(
+        addDialog.shadowRoot.querySelector('#authentication-method').hidden);
 
-    const dropDown = addDialog.$$('.md-select');
+    const dropDown = addDialog.shadowRoot.querySelector('.md-select');
     assertTrue(!!dropDown);
 
-    const credentials = addDialog.$$('#credentials');
+    const credentials = addDialog.shadowRoot.querySelector('#credentials');
     assertTrue(!!credentials);
 
     dropDown.value = 'kerberos';
@@ -247,7 +249,7 @@ suite('AddSmbShareDialogTests', function() {
 
   test('InvalidUrlErrorDisablesAddButton', function() {
     const url = addDialog.$.address;
-    const addButton = addDialog.$$('.action-button');
+    const addButton = addDialog.shadowRoot.querySelector('.action-button');
 
     // Invalid URL, but passes regex test.
     url.value = 'smb://foo\\\\/bar';

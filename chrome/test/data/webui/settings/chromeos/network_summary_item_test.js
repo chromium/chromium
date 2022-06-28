@@ -14,7 +14,7 @@ suite('NetworkSummaryItem', function() {
   // Returns true if the element exists and has not been 'removed' by the
   // Polymer template system.
   function doesElementExist(selector) {
-    const el = netSummaryItem.$$(selector);
+    const el = netSummaryItem.shadowRoot.querySelector(selector);
     return (el !== null) && (el.style.display !== 'none');
   }
 
@@ -150,8 +150,10 @@ suite('NetworkSummaryItem', function() {
     });
 
     flush();
-    assertTrue(netSummaryItem.$$('#deviceEnabledButton').checked);
-    assertTrue(netSummaryItem.$$('#deviceEnabledButton').disabled);
+    assertTrue(netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                   .checked);
+    assertTrue(netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                   .disabled);
     assertEquals(
         netSummaryItem.getNetworkStateText_(),
         netSummaryItem.i18n('internetDeviceBusy'));
@@ -176,43 +178,46 @@ suite('NetworkSummaryItem', function() {
     });
 
     flush();
-    assertFalse(netSummaryItem.$$('#deviceEnabledButton').checked);
-    assertFalse(netSummaryItem.$$('#deviceEnabledButton').disabled);
+    assertFalse(netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                    .checked);
+    assertFalse(netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                    .disabled);
   });
 
   test('Mobile data toggle shown on locked device', function() {
     initWithESimLocked();
-    assertNotEquals(netSummaryItem.$$('#deviceEnabledButton'), null);
+    assertNotEquals(
+        netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton'), null);
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
   test('pSIM-only locked device, show SIM locked UI', function() {
     initWithPSimOnly(/*isLocked=*/ true);
     assertTrue(doesElementExist('network-siminfo'));
-    assertTrue(netSummaryItem.$$('#networkState')
+    assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
                    .classList.contains('locked-warning-message'));
-    assertFalse(
-        netSummaryItem.$$('#networkState').classList.contains('network-state'));
+    assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                    .classList.contains('network-state'));
     assertFalse(doesElementExist('#deviceEnabledButton'));
   });
 
   test('pSIM-only locked device, no SIM locked UI', function() {
     initWithPSimOnly(/*isLocked=*/ false);
     assertFalse(doesElementExist('network-siminfo'));
-    assertFalse(netSummaryItem.$$('#networkState')
+    assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
                     .classList.contains('locked-warning-message'));
-    assertTrue(
-        netSummaryItem.$$('#networkState').classList.contains('network-state'));
+    assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                   .classList.contains('network-state'));
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
   test('eSIM enabled locked device, show SIM locked UI', function() {
     initWithESimLocked();
     assertFalse(doesElementExist('network-siminfo'));
-    assertFalse(netSummaryItem.$$('#networkState')
+    assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
                     .classList.contains('locked-warning-message'));
-    assertTrue(
-        netSummaryItem.$$('#networkState').classList.contains('network-state'));
+    assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                   .classList.contains('network-state'));
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
@@ -244,7 +249,8 @@ suite('NetworkSummaryItem', function() {
           },
         });
         flush();
-        const networkState = netSummaryItem.$$('#networkState');
+        const networkState =
+            netSummaryItem.shadowRoot.querySelector('#networkState');
         assertTrue(!!networkState);
         networkState.click();
         flush();

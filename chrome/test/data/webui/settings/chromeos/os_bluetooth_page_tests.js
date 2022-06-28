@@ -33,11 +33,13 @@ suite('OsBluetoothPageTest', function() {
   });
 
   test('Show bluetooth pairing UI', async function() {
-    const getBluetoothPairingUi = () =>
-        bluetoothPage.$$('os-settings-bluetooth-pairing-dialog');
-    const bluetoothSummary = bluetoothPage.$$('os-settings-bluetooth-summary');
+    const getBluetoothPairingUi = () => bluetoothPage.shadowRoot.querySelector(
+        'os-settings-bluetooth-pairing-dialog');
+    const bluetoothSummary =
+        bluetoothPage.shadowRoot.querySelector('os-settings-bluetooth-summary');
 
-    const getPairNewDevice = () => bluetoothPage.$$('#pairNewDevice');
+    const getPairNewDevice = () =>
+        bluetoothPage.shadowRoot.querySelector('#pairNewDevice');
 
     assertTrue(!!bluetoothSummary);
     assertFalse(!!getBluetoothPairingUi());
@@ -76,6 +78,5 @@ suite('OsBluetoothPageTest', function() {
 
     await flushAsync();
     assertTrue(!!getBluetoothPairingUi());
-
   });
 });

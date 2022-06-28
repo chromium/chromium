@@ -68,7 +68,7 @@ suite('NetworkProxySection', function() {
 
   test('Disabled UI state', function() {
     const allowSharedToggle = proxySection.$.allowShared;
-    const networkProxy = proxySection.$$('network-proxy');
+    const networkProxy = proxySection.shadowRoot.querySelector('network-proxy');
 
     assertFalse(allowSharedToggle.disabled);
     assertTrue(networkProxy.editable);

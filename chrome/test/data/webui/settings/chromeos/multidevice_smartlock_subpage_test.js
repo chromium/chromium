@@ -45,7 +45,8 @@ suite('Multidevice', function() {
 
   function getSmartLockFeatureToggleControl() {
     const smartLockFeatureToggle = getSmartLockFeatureToggle();
-    const toggleControl = smartLockFeatureToggle.$$('#toggle');
+    const toggleControl =
+        smartLockFeatureToggle.shadowRoot.querySelector('#toggle');
     assertTrue(!!toggleControl);
     return toggleControl;
   }

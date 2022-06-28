@@ -70,9 +70,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         const windowPopstatePromise = eventToPromise('popstate', window);
 
         const getBluetoothConnectDisconnectBtn = () =>
-            bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#connectDisconnectBtn');
         const getConnectionFailedText = () =>
-            bluetoothDeviceDetailPage.$$('#connectionFailed');
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#connectionFailed');
 
         const id = '12345/6789&';
         const device1 = createDefaultBluetoothDevice(
@@ -117,7 +119,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
     const getManagedIcon = () => {
-      return bluetoothDeviceDetailPage.$$('#managedIcon');
+      return bluetoothDeviceDetailPage.shadowRoot.querySelector('#managedIcon');
     };
 
     const navigateToDeviceDetailPage = () => {
@@ -156,7 +158,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
     const getTrueWirelessImages = () =>
-        bluetoothDeviceDetailPage.$$('#trueWirelessImages');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#trueWirelessImages');
 
     const navigateToDeviceDetailPage = () => {
       const params = new URLSearchParams();
@@ -240,9 +243,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
     const getChangeMouseSettings = () =>
-        bluetoothDeviceDetailPage.$$('#changeMouseSettings');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#changeMouseSettings');
     const getChangeKeyboardSettings = () =>
-        bluetoothDeviceDetailPage.$$('#changeKeyboardSettings');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#changeKeyboardSettings');
 
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '12//345&6789',
@@ -414,19 +419,23 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
   test('Device UI states test', async function() {
     init();
     const getBluetoothStatusIcon = () =>
-        bluetoothDeviceDetailPage.$$('#statusIcon');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#statusIcon');
     const getBluetoothStateText = () =>
-        bluetoothDeviceDetailPage.$$('#bluetoothStateText');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#bluetoothStateText');
     const getBluetoothForgetBtn = () =>
-        bluetoothDeviceDetailPage.$$('#forgetBtn');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#forgetBtn');
     const getBluetoothStateBtn = () =>
-        bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#connectDisconnectBtn');
     const getBluetoothDeviceNameLabel = () =>
-        bluetoothDeviceDetailPage.$$('#bluetoothDeviceNameLabel');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#bluetoothDeviceNameLabel');
     const getBluetoothDeviceBatteryInfo = () =>
-        bluetoothDeviceDetailPage.$$('#batteryInfo');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#batteryInfo');
     const getNonAudioOutputDeviceMessage = () =>
-        bluetoothDeviceDetailPage.$$('#nonAudioOutputDeviceMessage');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#nonAudioOutputDeviceMessage');
 
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -539,7 +548,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
         const getChangeDeviceNameDialog = () =>
-            bluetoothDeviceDetailPage.$$('#changeDeviceNameDialog');
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#changeDeviceNameDialog');
 
         const device1 = createDefaultBluetoothDevice(
             /*id=*/ '12//345&6789',
@@ -562,7 +572,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
         assertFalse(!!getChangeDeviceNameDialog());
 
-        const changeNameBtn = bluetoothDeviceDetailPage.$$('#changeNameBtn');
+        const changeNameBtn =
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#changeNameBtn');
         assertTrue(!!changeNameBtn);
         changeNameBtn.click();
 
@@ -575,11 +587,13 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
     const getBluetoothConnectDisconnectBtn = () =>
-        bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#connectDisconnectBtn');
     const getBluetoothStateText = () =>
-        bluetoothDeviceDetailPage.$$('#bluetoothStateText');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#bluetoothStateText');
     const getConnectionFailedText = () =>
-        bluetoothDeviceDetailPage.$$('#connectionFailed');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#connectionFailed');
 
     const id = '12//345&6789';
 
@@ -620,14 +634,16 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const windowPopstatePromise = eventToPromise('popstate', window);
 
     const getBluetoothForgetBtn = () =>
-        bluetoothDeviceDetailPage.$$('#forgetBtn');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#forgetBtn');
     const getBluetoothConnectDisconnectBtn = () =>
-        bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#connectDisconnectBtn');
 
     const getBluetoothStateText = () =>
-        bluetoothDeviceDetailPage.$$('#bluetoothStateText');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector(
+            '#bluetoothStateText');
     const getConnectionFailedText = () =>
-        bluetoothDeviceDetailPage.$$('#connectionFailed');
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#connectionFailed');
 
     const assertUIState =
         (isShowingConnectionFailed, isConnectDisconnectBtnDisabled,

@@ -249,9 +249,12 @@ suite('AppsPageTests', function() {
       appsPage.prefs = getFakePrefs();
     });
 
-    const AndroidAppsShown = () => !!appsPage.$$('#android-apps');
-    const AppManagementShown = () => !!appsPage.$$('#appManagement');
-    const RestoreAppsOnStartupShown = () => !!appsPage.$$('#onStartupDropdown');
+    const AndroidAppsShown = () =>
+        !!appsPage.shadowRoot.querySelector('#android-apps');
+    const AppManagementShown = () =>
+        !!appsPage.shadowRoot.querySelector('#appManagement');
+    const RestoreAppsOnStartupShown = () =>
+        !!appsPage.shadowRoot.querySelector('#onStartupDropdown');
 
     test('Only App Management Shown', function() {
       appsPage.showAndroidApps = false;
@@ -289,7 +292,7 @@ suite('AppsPageTests', function() {
       appsPage.showStartup = true;
       flush();
 
-      const rowLink = appsPage.$$('#appNotifications');
+      const rowLink = appsPage.shadowRoot.querySelector('#appNotifications');
       assertTrue(!!rowLink);
       // Test default is to have 0 apps.
       assertEquals('0 apps', rowLink.subLabel);
@@ -333,9 +336,9 @@ suite('AppsPageTests', function() {
     });
 
     test('Clicking enable button enables ARC', function() {
-      const button = appsPage.$$('#enable');
+      const button = appsPage.shadowRoot.querySelector('#enable');
       assertTrue(!!button);
-      assertFalse(!!appsPage.$$('.subpage-arrow'));
+      assertFalse(!!appsPage.shadowRoot.querySelector('.subpage-arrow'));
 
       button.click();
       flush();
@@ -346,21 +349,27 @@ suite('AppsPageTests', function() {
         settingsAppAvailable: false,
       };
       flush();
-      assertTrue(!!appsPage.$$('.subpage-arrow'));
+      assertTrue(!!appsPage.shadowRoot.querySelector('.subpage-arrow'));
     });
 
     test('On startup dropdown menu', async () => {
       appsPage.prefs = setPrefs(1);
       flush();
-      assertEquals(1, appsPage.$$('#onStartupDropdown').pref.value);
+      assertEquals(
+          1,
+          appsPage.shadowRoot.querySelector('#onStartupDropdown').pref.value);
 
       appsPage.prefs = setPrefs(2);
       flush();
-      assertEquals(2, appsPage.$$('#onStartupDropdown').pref.value);
+      assertEquals(
+          2,
+          appsPage.shadowRoot.querySelector('#onStartupDropdown').pref.value);
 
       appsPage.prefs = setPrefs(3);
       flush();
-      assertEquals(3, appsPage.$$('#onStartupDropdown').pref.value);
+      assertEquals(
+          3,
+          appsPage.shadowRoot.querySelector('#onStartupDropdown').pref.value);
     });
 
     test('Deep link to On startup dropdown menu', async () => {
@@ -370,8 +379,9 @@ suite('AppsPageTests', function() {
       params.append('settingId', '703');
       Router.getInstance().navigateTo(routes.APPS, params);
 
-      const deepLinkElement = appsPage.$$('#onStartupDropdown')
-                                  .shadowRoot.querySelector('#dropdownMenu');
+      const deepLinkElement =
+          appsPage.shadowRoot.querySelector('#onStartupDropdown')
+              .shadowRoot.querySelector('#dropdownMenu');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -386,8 +396,8 @@ suite('AppsPageTests', function() {
       params.append('settingId', '700');
       Router.getInstance().navigateTo(routes.APPS, params);
 
-      const deepLinkElement =
-          appsPage.$$('#manageApps').shadowRoot.querySelector('cr-icon-button');
+      const deepLinkElement = appsPage.shadowRoot.querySelector('#manageApps')
+                                  .shadowRoot.querySelector('cr-icon-button');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -399,7 +409,7 @@ suite('AppsPageTests', function() {
       params.append('settingId', '702');
       Router.getInstance().navigateTo(routes.APPS, params);
 
-      const deepLinkElement = appsPage.$$('#enable');
+      const deepLinkElement = appsPage.shadowRoot.querySelector('#enable');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -443,25 +453,25 @@ suite('AppsPageTests', function() {
     });
 
     test('Sanity', function() {
-      assertTrue(!!subpage.$$('#remove'));
-      assertTrue(!subpage.$$('#manageApps'));
+      assertTrue(!!subpage.shadowRoot.querySelector('#remove'));
+      assertTrue(!subpage.shadowRoot.querySelector('#manageApps'));
     });
 
     test('ManageAppsUpdate', function() {
-      assertTrue(!subpage.$$('#manageApps'));
+      assertTrue(!subpage.shadowRoot.querySelector('#manageApps'));
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: true,
       };
       flush();
-      assertTrue(!!subpage.$$('#manageApps'));
+      assertTrue(!!subpage.shadowRoot.querySelector('#manageApps'));
 
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: false,
       };
       flush();
-      assertTrue(!subpage.$$('#manageApps'));
+      assertTrue(!subpage.shadowRoot.querySelector('#manageApps'));
     });
 
     test('ManageAppsOpenRequest', function() {
@@ -470,7 +480,7 @@ suite('AppsPageTests', function() {
         settingsAppAvailable: true,
       };
       flush();
-      const button = subpage.$$('#manageApps');
+      const button = subpage.shadowRoot.querySelector('#manageApps');
       assertTrue(!!button);
       const promise =
           androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
@@ -480,11 +490,11 @@ suite('AppsPageTests', function() {
     });
 
     test('Disable', function() {
-      const dialog = subpage.$$('#confirmDisableDialog');
+      const dialog = subpage.shadowRoot.querySelector('#confirmDisableDialog');
       assertTrue(!!dialog);
       assertFalse(dialog.open);
 
-      const remove = subpage.$$('#remove');
+      const remove = subpage.shadowRoot.querySelector('#remove');
       assertTrue(!!remove);
 
       subpage.onRemoveTap_();
@@ -508,8 +518,8 @@ suite('AppsPageTests', function() {
       };
       flush();
 
-      assertFalse(!!subpage.$$('#remove'));
-      assertTrue(!!subpage.$$('#manageApps'));
+      assertFalse(!!subpage.shadowRoot.querySelector('#remove'));
+      assertTrue(!!subpage.shadowRoot.querySelector('#manageApps'));
     });
 
     test('Can open app settings without Play Store', function() {
@@ -520,7 +530,7 @@ suite('AppsPageTests', function() {
       };
       flush();
 
-      const button = subpage.$$('#manageApps');
+      const button = subpage.shadowRoot.querySelector('#manageApps');
       assertTrue(!!button);
       const promise =
           androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
@@ -540,8 +550,8 @@ suite('AppsPageTests', function() {
       params.append('settingId', '700');
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 
-      const deepLinkElement =
-          subpage.$$('#manageApps').shadowRoot.querySelector('cr-icon-button');
+      const deepLinkElement = subpage.shadowRoot.querySelector('#manageApps')
+                                  .shadowRoot.querySelector('cr-icon-button');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -553,7 +563,8 @@ suite('AppsPageTests', function() {
       params.append('settingId', '701');
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 
-      const deepLinkElement = subpage.$$('#remove cr-button');
+      const deepLinkElement =
+          subpage.shadowRoot.querySelector('#remove cr-button');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -564,12 +575,14 @@ suite('AppsPageTests', function() {
       // ARCVM is not enabled
       subpage.showArcvmManageUsb = false;
       flush();
-      assertFalse(!!subpage.$$('#manageArcvmShareUsbDevices'));
+      assertFalse(
+          !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
 
       // ARCMV is enabled
       subpage.showArcvmManageUsb = true;
       flush();
-      assertTrue(!!subpage.$$('#manageArcvmShareUsbDevices'));
+      assertTrue(
+          !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
     });
   });
 });

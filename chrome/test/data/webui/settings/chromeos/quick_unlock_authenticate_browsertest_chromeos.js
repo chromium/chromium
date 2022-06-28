@@ -46,7 +46,7 @@ function assertHasClass(element, className) {
 function getFromElement(selector) {
   let childElement = testElement.shadowRoot.querySelector(selector);
   if (!childElement && testElement.$.pinKeyboard) {
-    childElement = testElement.$.pinKeyboard.$$(selector);
+    childElement = testElement.$.pinKeyboard.shadowRoot.querySelector(selector);
   }
 
   assertTrue(!!childElement);
@@ -840,14 +840,15 @@ function registerSetupPinDialogTests() {
     // Verify that the backspace button is disabled when there is nothing
     // entered.
     test('BackspaceDisabledWhenNothingEntered', function() {
-      const backspaceButton = pinKeyboard.$$('#backspaceButton');
+      const backspaceButton =
+          pinKeyboard.shadowRoot.querySelector('#backspaceButton');
       assertTrue(!!backspaceButton);
       assertTrue(backspaceButton.disabled);
 
-      pinKeyboard.$$('cr-input').value = '11';
+      pinKeyboard.shadowRoot.querySelector('cr-input').value = '11';
       assertFalse(backspaceButton.disabled);
 
-      pinKeyboard.$$('cr-input').value = '';
+      pinKeyboard.shadowRoot.querySelector('cr-input').value = '';
       assertTrue(backspaceButton.disabled);
     });
   });

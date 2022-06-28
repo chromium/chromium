@@ -1306,7 +1306,7 @@ suite('SettingsDevicePage', function() {
 
       const deepLinkElement =
           displayPage.shadowRoot.querySelector('#displayMirrorCheckbox')
-              .$$('#checkbox');
+              .shadowRoot.querySelector('#checkbox');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

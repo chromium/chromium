@@ -931,9 +931,11 @@ suite('Multidevice', () => {
         // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
         assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 3);
 
-        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
         buttonContainer.querySelector('#doneButton').click();
-        assertFalse(permissionsSetupDialog.$$('#dialog').open);
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
       });
 
 
@@ -1023,9 +1025,11 @@ suite('Multidevice', () => {
         // Should not enabled phone hub apps feature
         assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
 
-        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
         buttonContainer.querySelector('#doneButton').click();
-        assertFalse(permissionsSetupDialog.$$('#dialog').open);
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
       });
 
   test(
@@ -1114,9 +1118,11 @@ suite('Multidevice', () => {
         // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
         assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
 
-        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
         buttonContainer.querySelector('#doneButton').click();
-        assertFalse(permissionsSetupDialog.$$('#dialog').open);
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
       });
 
   test('Test all setup flow, operation failed or cancelled', async () => {
@@ -1176,9 +1182,10 @@ suite('Multidevice', () => {
     // Should not continue setup apps
     assertEquals(browserProxy.getCallCount('attemptAppsSetup'), 0);
 
-    assertTrue(permissionsSetupDialog.$$('#dialog').open);
+    assertTrue(permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
     buttonContainer.querySelector('#doneButton').click();
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test(
@@ -1207,7 +1214,8 @@ suite('Multidevice', () => {
         });
         flush();
 
-        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
 
         permissionsSetupDialog.setProperties({
           showCameraRoll: false,
@@ -1217,7 +1225,8 @@ suite('Multidevice', () => {
         });
         flush();
 
-        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
 
         permissionsSetupDialog.setProperties({
           showCameraRoll: false,
@@ -1227,6 +1236,7 @@ suite('Multidevice', () => {
         });
         flush();
 
-        assertFalse(permissionsSetupDialog.$$('#dialog').open);
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
       });
 });

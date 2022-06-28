@@ -104,7 +104,8 @@ suite('TextToSpeechSubpageTests', function() {
     flush();
 
     const deepLinkElement =
-        ttsPage.$$('#textToSpeechRate').shadowRoot.querySelector('cr-slider');
+        ttsPage.shadowRoot.querySelector('#textToSpeechRate')
+            .shadowRoot.querySelector('cr-slider');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -124,7 +125,8 @@ suite('TextToSpeechSubpageTests', function() {
     Router.getInstance().navigateTo(
         routes.MANAGE_TTS_SETTINGS, params);
 
-    const deepLinkElement = ttsPage.$$('#extensionOptionsButton_0');
+    const deepLinkElement =
+        ttsPage.shadowRoot.querySelector('#extensionOptionsButton_0');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

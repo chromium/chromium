@@ -32,8 +32,9 @@ suite('LockScreenPage', function() {
 
     flush();
 
-    const deepLinkElement = lockScreenPage.$$('#enableLockScreen')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        lockScreenPage.shadowRoot.querySelector('#enableLockScreen')
+            .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -42,7 +43,8 @@ suite('LockScreenPage', function() {
   });
 
   test('Lock screen options disabled by policy', async () => {
-    const unlockTypeRadioGroup = lockScreenPage.$$('#unlockType');
+    const unlockTypeRadioGroup =
+        lockScreenPage.shadowRoot.querySelector('#unlockType');
     assertTrue(!!unlockTypeRadioGroup, 'Unlock type radio group not found');
 
     await flushTasks();

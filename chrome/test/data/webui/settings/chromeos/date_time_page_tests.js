@@ -198,27 +198,27 @@ function initializeDateTime(prefs, hasPolicy, opt_autoDetectPolicyValue) {
 function clickDisableAutoDetect(dateTime) {
   if (dateTime.prefs.cros.flags.fine_grained_time_zone_detection_enabled
           .value) {
-    dateTime.$$('#timeZoneAutoDetectOff').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOff').click();
   } else {
-    dateTime.$$('#timeZoneAutoDetect').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetect').click();
   }
 }
 
 function clickEnableAutoDetect(dateTime) {
   if (dateTime.prefs.cros.flags.fine_grained_time_zone_detection_enabled
           .value) {
-    dateTime.$$('#timeZoneAutoDetectOn').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn').click();
   } else {
-    dateTime.$$('#timeZoneAutoDetect').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetect').click();
   }
 }
 
 function getAutodetectOnButton(dateTime) {
   if (dateTime.prefs.cros.flags.fine_grained_time_zone_detection_enabled
           .value) {
-    return dateTime.$$('#timeZoneAutoDetectOn');
+    return dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn');
   }
-  return dateTime.$$('#timeZoneAutoDetect');
+  return dateTime.shadowRoot.querySelector('#timeZoneAutoDetect');
 }
 
 // CrOS sends time zones as [id, friendly name] pairs.
@@ -255,7 +255,8 @@ suite('settings-date-time-page', function() {
   });
 
   function getTimeZoneSelector(id) {
-    return dateTime.$$('timezone-selector').shadowRoot.querySelector(id);
+    return dateTime.shadowRoot.querySelector('timezone-selector')
+        .shadowRoot.querySelector(id);
   }
 
   function verifyAutoDetectSetting(autoDetect, managed) {
@@ -295,7 +296,8 @@ suite('settings-date-time-page', function() {
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, false);
     flush();
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
 
@@ -316,7 +318,8 @@ suite('settings-date-time-page', function() {
   test('auto-detect off', async function() {
     testBrowserProxy.setTimeZones(fakeTimeZones);
     dateTime = initializeDateTime(getFakePrefs(), false);
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     dateTime.set(
         'prefs.generated.resolve_timezone_by_geolocation_on_off.value', false);
@@ -348,8 +351,9 @@ suite('settings-date-time-page', function() {
 
     flush();
 
-    const deepLinkElement = dateTime.$$('#timeZoneAutoDetect')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetect')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -361,7 +365,8 @@ suite('settings-date-time-page', function() {
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, true, true);
     flush();
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
 
@@ -390,7 +395,8 @@ suite('settings-date-time-page', function() {
     testBrowserProxy.setTimeZones(fakeTimeZones);
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, true, false);
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     await testBrowserProxy.whenCalled('getTimeZones');
 
@@ -427,10 +433,13 @@ suite('settings-date-time-page', function() {
 
     await Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
 
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
     const timezoneSelector = getTimeZoneSelector('#userTimeZoneSelector');
-    const timeZoneAutoDetectOn = dateTime.$$('#timeZoneAutoDetectOn');
-    const timeZoneAutoDetectOff = dateTime.$$('#timeZoneAutoDetectOff');
+    const timeZoneAutoDetectOn =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn');
+    const timeZoneAutoDetectOff =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOff');
 
     // Verify elements are disabled for child account.
     assertTrue(resolveMethodDropdown.disabled);
@@ -467,10 +476,13 @@ suite('settings-date-time-page', function() {
 
     await Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
 
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
     const timezoneSelector = getTimeZoneSelector('#userTimeZoneSelector');
-    const timeZoneAutoDetectOn = dateTime.$$('#timeZoneAutoDetectOn');
-    const timeZoneAutoDetectOff = dateTime.$$('#timeZoneAutoDetectOff');
+    const timeZoneAutoDetectOn =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn');
+    const timeZoneAutoDetectOff =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOff');
 
     // Verify elements are disabled for child account.
     assertTrue(resolveMethodDropdown.disabled);
@@ -496,7 +508,7 @@ suite('settings-date-time-page', function() {
     prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;
     dateTime = initializeDateTime(prefs, false);
 
-    const setDateTimeButton = dateTime.$$('#setDateTime');
+    const setDateTimeButton = dateTime.shadowRoot.querySelector('#setDateTime');
     assertEquals(0, setDateTimeButton.offsetHeight);
 
     // Make the date and time editable.

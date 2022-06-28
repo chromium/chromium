@@ -625,13 +625,15 @@ suite('AboutPageTest', function() {
       // Wait for overrides + response values.
       await aboutBrowserProxy.whenCalled('isManagedAutoUpdateEnabled');
 
-      const mau_toggle = buildInfoPage.$$('#managedAutoUpdateToggle');
+      const mau_toggle =
+          buildInfoPage.shadowRoot.querySelector('#managedAutoUpdateToggle');
       assertTrue(!!mau_toggle);
       // Managed auto update toggle should always be disabled to toggle.
       assertTrue(!!mau_toggle.hasAttribute('disabled'));
       assertEquals(isToggleEnabled, mau_toggle.checked);
       // Consumer auto update toggle should not exist.
-      assertFalse(!!buildInfoPage.$$('#consumerAutoUpdateToggle'));
+      assertFalse(!!buildInfoPage.shadowRoot.querySelector(
+          '#consumerAutoUpdateToggle'));
     }
 
     await checkManagedAutoUpdateToggle(true);
@@ -672,8 +674,10 @@ suite('AboutPageTest', function() {
       ]);
 
       // Managed auto update toggle should not exist.
-      assertFalse(!!buildInfoPage.$$('#managedAutoUpdateToggle'));
-      const cauToggle = buildInfoPage.$$('#consumerAutoUpdateToggle');
+      assertFalse(
+          !!buildInfoPage.shadowRoot.querySelector('#managedAutoUpdateToggle'));
+      const cauToggle =
+          buildInfoPage.shadowRoot.querySelector('#consumerAutoUpdateToggle');
       if (showToggle) {
         assertTrue(!!cauToggle);
         assertEquals(isTogglingAllowed, !cauToggle.disabled);
