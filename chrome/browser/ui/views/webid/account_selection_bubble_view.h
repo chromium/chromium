@@ -128,7 +128,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
 
   // The list of accounts to select from. Not updated when the user selects an
   // account and navigates to the privacy policy / terms of service page.
-  const std::vector<const content::IdentityRequestAccount> account_list_;
+  const std::vector<content::IdentityRequestAccount> account_list_;
 
   // The TabStripModel of the current browser. We need this in order to show the
   // privacy policy and terms of service urls when the user clicks on the links.
