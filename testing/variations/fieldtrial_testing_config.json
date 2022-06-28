@@ -9548,6 +9548,32 @@
             ]
         }
     ],
+    "WebRTC-ZeroPlayoutDelay": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "min_pacing:0ms,max_decode_queue_size:8,",
+                    "params": {
+                        "max_post_decode_queue_size": "10",
+                        "reduce_steady_state_queue_size_threshold": "20"
+                    },
+                    "enable_features": [
+                        "LowLatencyVideoRendererAlgorithm"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRtcAllowWgcDesktopCapturer": [
         {
             "platforms": [
