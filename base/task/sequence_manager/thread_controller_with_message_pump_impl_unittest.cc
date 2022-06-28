@@ -1039,49 +1039,50 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
         task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
 
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([]() {
-          // C1:
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          // C:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          EXPECT_CALL(*message_pump_, Run(_))
+              .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+                // D:
+                EXPECT_CALL(tasks[1], Run());
+                EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                          TimeTicks::Max());
+                testing::Mock::VerifyAndClearExpectations(
+                    &*thread_controller_.trace_observer);
+
+                // E:
+                EXPECT_CALL(*thread_controller_.trace_observer,
+                            OnThreadControllerActiveEnd);
+                EXPECT_FALSE(thread_controller_.DoIdleWork());
+                testing::Mock::VerifyAndClearExpectations(
+                    &*thread_controller_.trace_observer);
+
+                // F:
+                task_source_.AddTask(FROM_HERE, tasks[2].Get(), TimeTicks());
+                task_source_.AddTask(FROM_HERE, tasks[3].Get(), TimeTicks());
+
+                EXPECT_CALL(*thread_controller_.trace_observer,
+                            OnThreadControllerActiveBegin);
+
+                // G:
+                EXPECT_CALL(tasks[2], Run());
+                EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                          TimeTicks());
+                testing::Mock::VerifyAndClearExpectations(
+                    &*thread_controller_.trace_observer);
+
+                // H:
+                EXPECT_CALL(*thread_controller_.trace_observer,
+                            OnThreadControllerActiveEnd);
+              }));
           RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
         }));
-        EXPECT_CALL(*thread_controller_.trace_observer,
-                    OnThreadControllerActiveBegin);
-        // C2:
-        EXPECT_CALL(*message_pump_, Run(_))
-            .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-              // D:
-              EXPECT_CALL(tasks[1], Run());
-              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
-                        TimeTicks::Max());
-              testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
-
-              // E:
-              EXPECT_CALL(*thread_controller_.trace_observer,
-                          OnThreadControllerActiveEnd);
-              EXPECT_FALSE(thread_controller_.DoIdleWork());
-              testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
-
-              // F:
-              task_source_.AddTask(FROM_HERE, tasks[2].Get(), TimeTicks());
-              task_source_.AddTask(FROM_HERE, tasks[3].Get(), TimeTicks());
-
-              EXPECT_CALL(*thread_controller_.trace_observer,
-                          OnThreadControllerActiveBegin);
-
-              // G:
-              EXPECT_CALL(tasks[2], Run());
-              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
-                        TimeTicks());
-              testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
-
-              // H
-              EXPECT_CALL(*thread_controller_.trace_observer,
-                          OnThreadControllerActiveEnd);
-            }));
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // I:
         EXPECT_CALL(tasks[3], Run());
@@ -1194,6 +1195,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // I:
         EXPECT_CALL(*thread_controller_.trace_observer,
@@ -1244,11 +1247,15 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // E:
         EXPECT_CALL(tasks[1], Run());
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // F:
         EXPECT_CALL(*thread_controller_.trace_observer,
@@ -1306,6 +1313,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // F:
         EXPECT_CALL(tasks[1], Run());
@@ -1383,6 +1392,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // J:
         EXPECT_CALL(*thread_controller_.trace_observer,
@@ -1471,6 +1482,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // I:
         EXPECT_CALL(*thread_controller_.trace_observer,
@@ -1543,6 +1556,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // I:
         EXPECT_CALL(*thread_controller_.trace_observer,
@@ -1610,6 +1625,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         // B:
         thread_controller_.OnBeginWorkItem();
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // E:
         EXPECT_CALL(*thread_controller_.trace_observer,
@@ -1695,6 +1712,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         // B:
         thread_controller_.OnBeginWorkItem();
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
 
         // G:
         EXPECT_CALL(*thread_controller_.trace_observer,
