@@ -921,10 +921,9 @@ suite('CookiesFragmentNavigations', function() {
   });
 });
 
-suite('PrivacyGuideFragmentMetrics', function() {
+suite('MsbbFragmentMetricsTests', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
@@ -935,9 +934,6 @@ suite('PrivacyGuideFragmentMetrics', function() {
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
-    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
 
@@ -985,6 +981,69 @@ suite('PrivacyGuideFragmentMetrics', function() {
     assertEquals(result, expectedMetric);
   }
 
+  test('msbbMetricsOnToOn', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: true,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON
+    });
+  });
+
+  test('msbbMetricsOnToOff', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF
+    });
+  });
+
+  test('msbbMetricsOffToOn', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON
+    });
+  });
+
+  test('msbbMetricsOffToOff', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF
+    });
+  });
+});
+
+suite('HistorySyncFragmentMetricsTests', function() {
+  let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let syncBrowserProxy: TestSyncBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = null;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
   async function assertHistorySyncMetrics({
     historySyncStartOn,
     changeSetting,
@@ -1021,6 +1080,65 @@ suite('PrivacyGuideFragmentMetrics', function() {
         'recordPrivacyGuideSettingsStatesHistogram');
     assertEquals(result, expectedMetric);
   }
+
+  test('historySyncOnToOn', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: true,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON
+    });
+  });
+
+  test('historySyncOnToOff', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF
+    });
+  });
+
+  test('historySyncOffToOn', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON
+    });
+  });
+
+  test('historySyncOffToOff', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF
+    });
+  });
+});
+
+suite('SafeBrowsingFragmentMetricsTests', function() {
+  let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
 
   async function assertSafeBrowsingMetrics({
     safeBrowsingStartsEnhanced,
@@ -1062,6 +1180,69 @@ suite('PrivacyGuideFragmentMetrics', function() {
     assertEquals(result, expectedMetric);
   }
 
+  test('safeBrowsingMetricsEnhancedToStandard', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: true,
+      changeSetting: true,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD,
+    });
+  });
+
+  test('safeBrowsingMetricsStandardToEnhanced', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: false,
+      changeSetting: true,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED,
+    });
+  });
+
+  test('safeBrowsingMetricsStandardToStandard', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: false,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD,
+    });
+  });
+
+  test('safeBrowsingMetricsEnhancedToEnhanced', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: true,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED,
+    });
+  });
+});
+
+suite('CookiesFragmentMetricsTests', function() {
+  let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
   async function assertCookieMetrics({
     cookieStartsBlock3PIncognito,
     changeSetting,
@@ -1100,106 +1281,6 @@ suite('PrivacyGuideFragmentMetrics', function() {
         'recordPrivacyGuideSettingsStatesHistogram');
     assertEquals(result, expectedMetric);
   }
-
-  test('msbbMetricsOnToOn', function() {
-    return assertMsbbMetrics({
-      msbbStartOn: true,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON
-    });
-  });
-
-  test('msbbMetricsOnToOff', function() {
-    return assertMsbbMetrics({
-      msbbStartOn: true,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF
-    });
-  });
-
-  test('msbbMetricsOffToOn', function() {
-    return assertMsbbMetrics({
-      msbbStartOn: false,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON
-    });
-  });
-
-  test('msbbMetricsOffToOff', function() {
-    return assertMsbbMetrics({
-      msbbStartOn: false,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF
-    });
-  });
-
-  test('historySyncOnToOn', function() {
-    return assertHistorySyncMetrics({
-      historySyncStartOn: true,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON
-    });
-  });
-
-  test('historySyncOnToOff', function() {
-    return assertHistorySyncMetrics({
-      historySyncStartOn: true,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF
-    });
-  });
-
-  test('historySyncOffToOn', function() {
-    return assertHistorySyncMetrics({
-      historySyncStartOn: false,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON
-    });
-  });
-
-  test('historySyncOffToOff', function() {
-    return assertHistorySyncMetrics({
-      historySyncStartOn: false,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF
-    });
-  });
-
-  test('safeBrowsingMetricsEnhancedToEnhanced', function() {
-    return assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: true,
-      changeSetting: false,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED,
-    });
-  });
-
-  test('safeBrowsingMetricsEnhancedToStandard', function() {
-    return assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: true,
-      changeSetting: true,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD,
-    });
-  });
-
-  test('safeBrowsingMetricsStandardToEnhanced', function() {
-    return assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: false,
-      changeSetting: true,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED,
-    });
-  });
-
-  test('safeBrowsingMetricsStandardToStandard', function() {
-    return assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: false,
-      changeSetting: false,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD,
-    });
-  });
 
   test('cookiesMetrics3PIncognitoTo3PIncognito', function() {
     return assertCookieMetrics({

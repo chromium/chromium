@@ -514,18 +514,27 @@ TEST_F(
       runMochaSuite('CookiesFragmentNavigations');
     });
 
-// TODO(crbug.com/1328037): Flaky on Linux Tests(dbg).
-GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
-GEN('#define MAYBE_PrivacyGuideFragmentMetricsTests \\');
-GEN('  DISABLED_PrivacyGuideFragmentMetricsTests');
-GEN('#else');
-GEN('#define MAYBE_PrivacyGuideFragmentMetricsTests \\');
-GEN('  PrivacyGuideFragmentMetricsTests');
-GEN('#endif');
 TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'MAYBE_PrivacyGuideFragmentMetricsTests',
+    'CrSettingsPrivacyGuidePageTest', 'MsbbFragmentMetricsTests', function() {
+      runMochaSuite('MsbbFragmentMetricsTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'HistorySyncFragmentMetricsTests',
     function() {
-      runMochaSuite('PrivacyGuideFragmentMetrics');
+      runMochaSuite('HistorySyncFragmentMetricsTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'SafeBrowsingFragmentMetricsTests',
+    function() {
+      runMochaSuite('SafeBrowsingFragmentMetricsTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'CookiesFragmentMetricsTests',
+    function() {
+      runMochaSuite('CookiesFragmentMetricsTests');
     });
 
 TEST_F(
