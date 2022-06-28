@@ -90,24 +90,19 @@ bool ShouldHideScrim(const ThemeService* theme_service) {
     return false;
   }
 
-  static constexpr auto kPrideThemeExtensionIdsNoScrim =
-      base::MakeFixedFlatSet<base::StringPiece>({
-          "kkdpcclippggiadgghfmkggpemadbfcj",
-          "jogkmkalhlbppkpmjdpncmpdcinbkekh",
-          "gfkcjfbbpmldkajnebkophpelmcimglf",
-          "mchijkgkaabamaokgcnbmjpfoagkpjfc",
-          "cdabkdaechplopdfoahhjgkbjgillcme",
-          "depfhkphmnoonikdokgpejilanmcdonk",
-          "efiamifmcbajfehbkjemggiafognbljk",
-          "iclkbhippclhfamkdoigedgnnfbhefpl",
-          "ckfehdejjppobbllbkjgcpaockgdigen",
-          "figmdifbokklifinmmjcjdkkopjflhnj",
-          "nkgiaofmleojhehacfognclpmoolihko",
-          "npkdokffjmnleabnfihminmikibdhmfa",
-          "klnkeldihpjnjoopojllmnpepbpljico",
-          "iffdmpenldeofnlfjmbjcdmafhoekmka",
-          "mckialangcdpcdcflekinnpamfkmkobo",
-      });
+  static constexpr auto kPrideThemeExtensionIdsNoScrim = base::MakeFixedFlatSet<
+      base::StringPiece>({
+      "kkdpcclippggiadgghfmkggpemadbfcj", "jogkmkalhlbppkpmjdpncmpdcinbkekh",
+      "gfkcjfbbpmldkajnebkophpelmcimglf", "mchijkgkaabamaokgcnbmjpfoagkpjfc",
+      "cdabkdaechplopdfoahhjgkbjgillcme", "depfhkphmnoonikdokgpejilanmcdonk",
+      "efiamifmcbajfehbkjemggiafognbljk", "iclkbhippclhfamkdoigedgnnfbhefpl",
+      "ckfehdejjppobbllbkjgcpaockgdigen", "figmdifbokklifinmmjcjdkkopjflhnj",
+      "nkgiaofmleojhehacfognclpmoolihko", "npkdokffjmnleabnfihminmikibdhmfa",
+      "klnkeldihpjnjoopojllmnpepbpljico", "iffdmpenldeofnlfjmbjcdmafhoekmka",
+      "mckialangcdpcdcflekinnpamfkmkobo", "gpgkmnadnanefkpfkmdeijfiobhjagfk",
+      "hhdddgombcggoeedkgelollagijjgnmo", "inneonpkbfaipkmpldnhnpefjkacjlcl",
+      "inmnnmkfonobaklbnnfgekapnhnhlnnk",
+  });
 
   const std::string& extension_id = theme_supplier->extension_id();
   return base::Contains(kPrideThemeExtensionIdsNoScrim, extension_id);
