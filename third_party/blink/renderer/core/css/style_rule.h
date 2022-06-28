@@ -24,6 +24,7 @@
 
 #include <limits>
 
+#include "base/bits.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -140,23 +141,29 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
 // for us.) StyleRule provides an API that is a subset of CSSSelectorList,
 // partially implemented using its static member functions.
 class CORE_EXPORT StyleRule : public StyleRuleBase {
+  static AdditionalBytes AdditionalBytesForSelectors(size_t flattened_size) {
+    constexpr size_t padding_bytes =
+        base::bits::AlignUp(sizeof(StyleRule), alignof(CSSSelector)) -
+        sizeof(StyleRule);
+    return AdditionalBytes{(sizeof(CSSSelector) * flattened_size) +
+                           padding_bytes};
+  }
+
  public:
   // Use these to allocate the right amount of memory for the StyleRule.
   static StyleRule* Create(CSSSelectorVector& selector_vector,
                            CSSPropertyValueSet* properties) {
     size_t flattened_size = CSSSelectorList::FlattenedSize(selector_vector);
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytes(sizeof(CSSSelector) * flattened_size),
-        base::PassKey<StyleRule>(), selector_vector, flattened_size,
-        properties);
+        AdditionalBytesForSelectors(flattened_size), base::PassKey<StyleRule>(),
+        selector_vector, flattened_size, properties);
   }
   static StyleRule* Create(CSSSelectorVector& selector_vector,
                            CSSLazyPropertyParser* lazy_property_parser) {
     size_t flattened_size = CSSSelectorList::FlattenedSize(selector_vector);
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytes(sizeof(CSSSelector) * flattened_size),
-        base::PassKey<StyleRule>(), selector_vector, flattened_size,
-        lazy_property_parser);
+        AdditionalBytesForSelectors(flattened_size), base::PassKey<StyleRule>(),
+        selector_vector, flattened_size, lazy_property_parser);
   }
 
   // Creates a StyleRule with the selectors changed (used by setSelectorText()).
@@ -164,9 +171,8 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
                            StyleRule&& other) {
     size_t flattened_size = CSSSelectorList::FlattenedSize(selector_vector);
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytes(sizeof(CSSSelector) * flattened_size),
-        base::PassKey<StyleRule>(), selector_vector, flattened_size,
-        std::move(other));
+        AdditionalBytesForSelectors(flattened_size), base::PassKey<StyleRule>(),
+        selector_vector, flattened_size, std::move(other));
   }
 
   // Constructors. Note that these expect that the StyleRule has been
@@ -220,8 +226,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
       ++flattened_size;
     }
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytes(sizeof(CSSSelector) * flattened_size), *this,
-        flattened_size);
+        AdditionalBytesForSelectors(flattened_size), *this, flattened_size);
   }
 
   static unsigned AverageSizeInBytes();
@@ -236,12 +241,11 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   bool HasParsedProperties() const;
 
   CSSSelector* SelectorArray() {
-    static_assert(alignof(StyleRule) >= alignof(CSSSelector));
-    return reinterpret_cast<CSSSelector*>(this + 1);
+    return reinterpret_cast<CSSSelector*>(base::bits::AlignUp(
+        reinterpret_cast<uint8_t*>(this + 1), alignof(CSSSelector)));
   }
   const CSSSelector* SelectorArray() const {
-    static_assert(alignof(StyleRule) >= alignof(CSSSelector));
-    return reinterpret_cast<const CSSSelector*>(this + 1);
+    return const_cast<StyleRule*>(this)->SelectorArray();
   }
 
   mutable Member<CSSPropertyValueSet> properties_;
