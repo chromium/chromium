@@ -1055,17 +1055,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Evacuate" units="ms"
-    expires_after="2022-08-09">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>hpayer@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in the evacuation phase of incremental latency-optimized
-    Mark-Compact GC.
-  </summary>
-</histogram>
-
 <histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="M106">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
