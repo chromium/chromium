@@ -93,5 +93,5 @@ crbug.com/1339051 virtual/backface-visibility-interop/external/wpt/css/css-trans
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/content-with-transform-new-image.html [ Failure ]
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/object-view-box-old-image.html [ Failure ]
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
-crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.https.html [ Failure ]
+crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.tentative.https.html [ Failure ]
 crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-filter.https.html [ Failure ]

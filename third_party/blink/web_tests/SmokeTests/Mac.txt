@@ -1607,7 +1607,7 @@ virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation
 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint-arguments.https.html
 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint-function-arguments-var.https.html
 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint-function-arguments.https.html
-virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.https.html
+virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.tentative.https.html
 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-conicGradient.https.html
 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-gradient.https.html
 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-image.https.html

@@ -32,7 +32,7 @@
     ctx.filter = 'blur(  5px)';
     assert_equals(ctx.filter, 'blur(  5px)');
 
-- name: 2d.filter.canvasFilterObject
+- name: 2d.filter.canvasFilterObject.tentative
   desc: Test CanvasFilter() object
   canvasType:
     ['HTMLCanvas']
@@ -59,7 +59,7 @@
     ctx.filter = "this string is not a filter and should do nothing";
     @assert ctx.filter.toString() == '[object CanvasFilter]';
 
-- name: 2d.filter.canvasFilterObject
+- name: 2d.filter.canvasFilterObject.tentative
   desc: Test CanvasFilter() object
   canvasType: ['OffscreenCanvas']
   code: |
@@ -85,7 +85,7 @@
     ctx.filter = "this string is not a filter and should do nothing";
     @assert ctx.filter.toString() == '[object CanvasFilter]';
 
-- name: 2d.filter.canvasFilterObject.blur.exceptions
+- name: 2d.filter.canvasFilterObject.blur.exceptions.tentative
   desc: Test exceptions on CanvasFilter() blur.object
   code: |
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur"});
@@ -95,7 +95,7 @@
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: NaN});
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: {}});
 
-- name: 2d.filter.canvasFilterObject.colorMatrix
+- name: 2d.filter.canvasFilterObject.colorMatrix.tentative
   desc: Test the functionality of ColorMatrix filters in CanvasFilter objects
   code: |
     @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: undefined});
@@ -142,7 +142,7 @@
     @assert pixel 10,30 ==~ 0,255,0,255;
     @assert pixel 60,30 ==~ 0,255,0,255;
 
-- name: 2d.filter.canvasFilterObject.convolveMatrix.exceptions
+- name: 2d.filter.canvasFilterObject.convolveMatrix.exceptions.tentative
   desc: Test exceptions on CanvasFilter() convolveMatrix
   code: |
     @assert throws TypeError new CanvasFilter({filter: "convolveMatrix"});
@@ -157,7 +157,7 @@
     // This should not throw an error
     ctx.filter = new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[]]});
 
-- name: 2d.filter.canvasFilterObject.componentTransfer.linear
+- name: 2d.filter.canvasFilterObject.componentTransfer.linear.tentative
   desc: Test pixels on CanvasFilter() componentTransfer with linear type
   code: |
     // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
@@ -192,7 +192,7 @@
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
 
-- name: 2d.filter.canvasFilterObject.componentTransfer.identity
+- name: 2d.filter.canvasFilterObject.componentTransfer.identity.tentative
   desc: Test pixels on CanvasFilter() componentTransfer with identity type
   code: |
     ctx.filter = new CanvasFilter({filter: "componentTransfer",
@@ -215,7 +215,7 @@
         _assertPixel(canvas, 5, 5, color[0],color[1],color[2],255, "5,5", `${color[0]},${color[1]},${color[2]}`);
     }
 
-- name: 2d.filter.canvasFilterObject.componentTransfer.gamma
+- name: 2d.filter.canvasFilterObject.componentTransfer.gamma.tentative
   desc: Test pixels on CanvasFilter() componentTransfer with gamma type
   code: |
     // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
@@ -251,7 +251,7 @@
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
 
-- name: 2d.filter.canvasFilterObject.componentTransfer.table
+- name: 2d.filter.canvasFilterObject.componentTransfer.table.tentative
   desc: Test pixels on CanvasFilter() componentTransfer with table type
   code: |
     // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
@@ -296,7 +296,7 @@
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
 
-- name: 2d.filter.canvasFilterObject.componentTransfer.discrete
+- name: 2d.filter.canvasFilterObject.componentTransfer.discrete.tentative
   desc: Test pixels on CanvasFilter() componentTransfer with discrete type
   code: |
     // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
@@ -341,7 +341,7 @@
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
 
-- name: 2d.filter.canvasFilterObject.turbulence.inputTypes
+- name: 2d.filter.canvasFilterObject.turbulence.inputTypes.tentative
   desc: Test exceptions on CanvasFilter() turbulence object
   code: |
     const errorTestCases = [
@@ -448,4 +448,3 @@
       const filterOptions = {...{filter: "turbulence"}, ...testCase};
       @assert new CanvasFilter(filterOptions) != null;
     }
-
