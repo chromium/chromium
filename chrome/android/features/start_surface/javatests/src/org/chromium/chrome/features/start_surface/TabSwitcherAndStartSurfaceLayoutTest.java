@@ -1436,7 +1436,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     // clang-format off
-    @DisabledTest(message = "https://crbug.com/1335780")
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
