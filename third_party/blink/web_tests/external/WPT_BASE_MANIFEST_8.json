@@ -99284,7 +99284,7 @@
       ]
      ],
      "quotes-034.html": [
-      "fae1b2474c0a8ad9593086344e900a7540f8f43a",
+      "1c0c744c308c80344d98372418a5a7f52b685d17",
       [
        null,
        [
@@ -146468,7 +146468,7 @@
        {}
       ]
      ],
-     "paint2d-canvasFilter.https.html": [
+     "paint2d-canvasFilter.tentative.https.html": [
       "a4d50712be510c20729181c23c63d21a4ef572be",
       [
        null,
@@ -231394,85 +231394,87 @@
         ]
        },
        "filters": {
-        "canvas-filter-object-blur.html": [
-         "957d73de2fcb649771d92b1770330a3ec56eff3f",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/filters/canvas-filter-object-blur-expected.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas-filter-object-component-transfer.html": [
-         "76da185d1361f033f26cd050f9d14312ef9958c7",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/filters/canvas-filter-object-component-transfer-expected.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas-filter-object-convolve-matrix.html": [
-         "c02f77b7f91873dfbc43c4f430bd7591697f3655",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/filters/canvas-filter-object-convolve-matrix-expected.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas-filter-object-turbulence.html": [
-         "8e1eaf54bc9dc58277552f2e46826e75c23aab3c",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/filters/canvas-filter-object-blur-expected.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "idl-conversions": {
-         "canvas-filter-boolean-conversion.html": [
-          "16c40e4162feeb3dc783da3e9a2261dee94afbaf",
+        "tentative": {
+         "canvas-filter-object-blur.html": [
+          "957d73de2fcb649771d92b1770330a3ec56eff3f",
           [
            null,
            [
             [
-             "/html/canvas/element/manual/filters/idl-conversions/canvas-filter-boolean-conversion-expected.html",
+             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-blur-expected.html",
              "=="
             ]
            ],
            {}
           ]
          ],
-         "canvas-filter-long-conversion.html": [
-          "c742633224c13e53f47875852017e069f2b69af6",
+         "canvas-filter-object-component-transfer.html": [
+          "76da185d1361f033f26cd050f9d14312ef9958c7",
           [
            null,
            [
             [
-             "/html/canvas/element/manual/filters/idl-conversions/canvas-filter-long-conversion-expected.html",
+             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-component-transfer-expected.html",
              "=="
             ]
            ],
            {}
           ]
-         ]
+         ],
+         "canvas-filter-object-convolve-matrix.html": [
+          "c02f77b7f91873dfbc43c4f430bd7591697f3655",
+          [
+           null,
+           [
+            [
+             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-convolve-matrix-expected.html",
+             "=="
+            ]
+           ],
+           {}
+          ]
+         ],
+         "canvas-filter-object-turbulence.html": [
+          "8e1eaf54bc9dc58277552f2e46826e75c23aab3c",
+          [
+           null,
+           [
+            [
+             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-blur-expected.html",
+             "=="
+            ]
+           ],
+           {}
+          ]
+         ],
+         "idl-conversions": {
+          "canvas-filter-boolean-conversion.html": [
+           "16c40e4162feeb3dc783da3e9a2261dee94afbaf",
+           [
+            null,
+            [
+             [
+              "/html/canvas/element/manual/filters/tentative/idl-conversions/canvas-filter-boolean-conversion-expected.html",
+              "=="
+             ]
+            ],
+            {}
+           ]
+          ],
+          "canvas-filter-long-conversion.html": [
+           "c742633224c13e53f47875852017e069f2b69af6",
+           [
+            null,
+            [
+             [
+              "/html/canvas/element/manual/filters/tentative/idl-conversions/canvas-filter-long-conversion-expected.html",
+              "=="
+             ]
+            ],
+            {}
+           ]
+          ]
+         }
         }
        },
        "imagebitmap": {
@@ -265025,7 +265027,7 @@
        []
       ],
       "quotes-034-ref.html": [
-       "8c049e9623d5bcc950219206b855de30d0255c48",
+       "7ec4cd8e3690cabd531bc4fde5f9549e46ba8340",
        []
       ]
      },
@@ -305784,31 +305786,33 @@
         ]
        },
        "filters": {
-        "canvas-filter-object-blur-expected.html": [
-         "ae8911b2de39e593c2ef262ed9cd5eaa70b5bf0c",
-         []
-        ],
-        "canvas-filter-object-component-transfer-expected.html": [
-         "a2351cbcf2aca7aa49e1e61b0dda78d991df8764",
-         []
-        ],
-        "canvas-filter-object-convolve-matrix-expected.html": [
-         "896a93542ec507f1873866f47c77051e7d08a0e3",
-         []
-        ],
-        "canvas-filter-object-turbulence-expected.html": [
-         "ff0eebe2e043c77beb0a5ea98d465b091ec6b33e",
-         []
-        ],
-        "idl-conversions": {
-         "canvas-filter-boolean-conversion-expected.html": [
-          "f79cdd1eeb75dd291ba558089a1210ab814fdbff",
+        "tentative": {
+         "canvas-filter-object-blur-expected.html": [
+          "ae8911b2de39e593c2ef262ed9cd5eaa70b5bf0c",
           []
          ],
-         "canvas-filter-long-conversion-expected.html": [
-          "8b4262ed0418d75aab9854de4d14d4f4534508e7",
+         "canvas-filter-object-component-transfer-expected.html": [
+          "a2351cbcf2aca7aa49e1e61b0dda78d991df8764",
           []
-         ]
+         ],
+         "canvas-filter-object-convolve-matrix-expected.html": [
+          "896a93542ec507f1873866f47c77051e7d08a0e3",
+          []
+         ],
+         "canvas-filter-object-turbulence-expected.html": [
+          "ff0eebe2e043c77beb0a5ea98d465b091ec6b33e",
+          []
+         ],
+         "idl-conversions": {
+          "canvas-filter-boolean-conversion-expected.html": [
+           "f79cdd1eeb75dd291ba558089a1210ab814fdbff",
+           []
+          ],
+          "canvas-filter-long-conversion-expected.html": [
+           "8b4262ed0418d75aab9854de4d14d4f4534508e7",
+           []
+          ]
+         }
         }
        },
        "imagebitmap": {
@@ -306616,7 +306620,7 @@
         []
        ],
        "filters.yaml": [
-        "e9776e74f4a777ced82c4f9c9b99813f55538b7d",
+        "6bc759bf8d3cebde610424bbb7d6cd9cef1dda4f",
         []
        ],
        "reset.yaml": [
@@ -318166,6 +318170,16 @@
      "6772c2c460e79993979688ddf46e2045b14f7d71",
      []
     ],
+    "resources": {
+     "ok.txt": [
+      "a0aba9318addb41b4e58e43cb96b41ae7694d312",
+      []
+     ],
+     "ok.txt.headers": [
+      "23de552c1a40a8276d43e1f99e26acb0dbfc3986",
+      []
+     ]
+    },
     "server": {
      "resources": {
       "expect-global.js": [
@@ -318178,6 +318192,10 @@
       ],
       "expect-title-meta.js": [
        "d17588a18f053ec2b6b257f2785b0effb553d190",
+       []
+      ],
+      "proxy.sub.pac": [
+       "78ce023448597ab4296c4e3ac8fae13655f3959c",
        []
       ]
      }
@@ -374378,7 +374396,7 @@
        ]
       ],
       "font-relative-units-dynamic.html": [
-       "63e17c9a540175edba5083f7ecab9ea9011738d5",
+       "e9f2e1157f3d79b1866ab96e91e2b9b961c39699",
        [
         null,
         {}
@@ -399624,6 +399642,13 @@
      ],
      "mq-invalid-media-type-layer-002.html": [
       "3f8b719bfab8eb29483ff94c271b30eced5abece",
+      [
+       null,
+       {}
+      ]
+     ],
+     "mq-unknown-feature-custom-property.html": [
+      "48ad5b4f51449bf90c5375c27ec1c1a13e88a5d1",
       [
        null,
        {}
@@ -444020,71 +444045,71 @@
        ]
       },
       "filters": {
-       "2d.filter.canvasFilterObject.blur.exceptions.html": [
-        "e0c939328b1dcdd32ebb21f29fb624ff4de14d78",
+       "2d.filter.canvasFilterObject.blur.exceptions.tentative.html": [
+        "d64b81026ad5f60494b2df0db50b11fb01bfb255",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.colorMatrix.html": [
-        "23beed933458f5e86c2cf86cdafe295e2675a6f9",
+       "2d.filter.canvasFilterObject.colorMatrix.tentative.html": [
+        "71233a2d0047e716cc53bbfb146b77dbd08fa2e6",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.discrete.html": [
-        "52875f374dc68722e4539c76a61ac6dcd8ad5b24",
+       "2d.filter.canvasFilterObject.componentTransfer.discrete.tentative.html": [
+        "d622c135a0504f75ab268dab9c6d3059bf7a2ea8",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.gamma.html": [
-        "7ded85872123500725a82e8d55f0e7b0be1c56da",
+       "2d.filter.canvasFilterObject.componentTransfer.gamma.tentative.html": [
+        "aea335bb4b29476e8c7fc9ce05dba3aa170ab8eb",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.identity.html": [
-        "5f5229c2f421f7c96f2f3c6b3bddcc81fd86bff7",
+       "2d.filter.canvasFilterObject.componentTransfer.identity.tentative.html": [
+        "666ac083e93fad38ccf5d37e5131743c0a0b27f4",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.linear.html": [
-        "2ce24aaae023c98819dd2cadf9807d1b8fe5d2e9",
+       "2d.filter.canvasFilterObject.componentTransfer.linear.tentative.html": [
+        "dde65c16feae7f0de752032e33b9f3fc6f632cb1",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.table.html": [
-        "764e09033b9e0f37f5b4148fd265ad36045f125f",
+       "2d.filter.canvasFilterObject.componentTransfer.table.tentative.html": [
+        "66922fb00dc36a0e40b54f9d20b58124243e35cc",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.convolveMatrix.exceptions.html": [
-        "2183a7700fde3d491c57f454601b024282eeb77c",
+       "2d.filter.canvasFilterObject.convolveMatrix.exceptions.tentative.html": [
+        "5cfbbf588a0f56b5564a70459f178ecd1b215cd8",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.html": [
-        "771bbfecf9f2e2b660f4023a6a06961c6a5dd52a",
+       "2d.filter.canvasFilterObject.tentative.html": [
+        "3a32eb6a55a2487449b982cb0dda11815e782218",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.turbulence.inputTypes.html": [
-        "acb5804c8dcfcb8f2065cadb1cde1dbcbe77cd82",
+       "2d.filter.canvasFilterObject.turbulence.inputTypes.tentative.html": [
+        "c5df23f93def000a96df7a1ce8d29c29e008904e",
         [
          null,
          {}
@@ -444439,14 +444464,16 @@
         ]
        },
        "filters": {
-        "idl-conversions": {
-         "canvas-filter-sequence-conversion.html": [
-          "7774f3aa4fa5d7e3448a6b938d79d2246b67b98f",
-          [
-           null,
-           {}
+        "tentative": {
+         "idl-conversions": {
+          "canvas-filter-sequence-conversion.html": [
+           "7774f3aa4fa5d7e3448a6b938d79d2246b67b98f",
+           [
+            null,
+            {}
+           ]
           ]
-         ]
+         }
         }
        },
        "image-smoothing": {
@@ -453122,143 +453149,143 @@
        ]
       },
       "filters": {
-       "2d.filter.canvasFilterObject.blur.exceptions.html": [
-        "f36184ed2f6582eaaa765aa20311415c6cd8788e",
+       "2d.filter.canvasFilterObject.blur.exceptions.tentative.html": [
+        "bc476476e478c7e7e3654628f388fc284be4ac74",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.blur.exceptions.worker.js": [
-        "88d774cb2750613ae5ac464fabbd5b2f122fd97a",
+       "2d.filter.canvasFilterObject.blur.exceptions.tentative.worker.js": [
+        "a44868f585c67ccee883b06bc6681b4c88bb4f7f",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.blur.exceptions.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.blur.exceptions.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.colorMatrix.html": [
-        "cf6ea35b8ad026c5d9a9ae060286bfb9a95b0168",
+       "2d.filter.canvasFilterObject.colorMatrix.tentative.html": [
+        "c772b2fa8c44b1ff16a6c820fc2e8863b230ad09",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.colorMatrix.worker.js": [
-        "a7b29d45a8d771e375fc49c7033f7cd0685df678",
+       "2d.filter.canvasFilterObject.colorMatrix.tentative.worker.js": [
+        "f3bfced9dd09d3359b9c368a12d4783f7657ee03",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.colorMatrix.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.colorMatrix.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.discrete.html": [
-        "2254e684f4c54fa52d1415043e17cf6ebb3af08d",
+       "2d.filter.canvasFilterObject.componentTransfer.discrete.tentative.html": [
+        "a9e77c22176198049556cd32d11da2e8fba74ba1",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.discrete.worker.js": [
-        "3f5aafe0bc1cd36c0829756453ae8dfead88a97a",
+       "2d.filter.canvasFilterObject.componentTransfer.discrete.tentative.worker.js": [
+        "56ffa5ae8a4f1b892076d22e310b3a075a2cc322",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.discrete.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.discrete.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.gamma.html": [
-        "fbc49079c08115f2a8ea75f80b4ef3d550ab8688",
+       "2d.filter.canvasFilterObject.componentTransfer.gamma.tentative.html": [
+        "36c0ca0583d8af8061cfb527c500630bbd6e48d8",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.gamma.worker.js": [
-        "89d04df675bf8cbc1fddca287b3fc35c692e316e",
+       "2d.filter.canvasFilterObject.componentTransfer.gamma.tentative.worker.js": [
+        "3d1fca79b5b36a1d7fa55e646c67a3b48bfac525",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.gamma.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.gamma.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.identity.html": [
-        "d698b8a21a1ec73f33c0f9470ab5511449974ebb",
+       "2d.filter.canvasFilterObject.componentTransfer.identity.tentative.html": [
+        "7e8670ed6f3e127870dd081d4b834ea74ab26604",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.identity.worker.js": [
-        "18dfef038d70d52dc00868802e753f32c9731f91",
+       "2d.filter.canvasFilterObject.componentTransfer.identity.tentative.worker.js": [
+        "299b5b385a731c70fe35cb15fedb89e5695f0b47",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.identity.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.identity.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.linear.html": [
-        "96b0960af410e9d5d33d8e5f58b86d023f8cae38",
+       "2d.filter.canvasFilterObject.componentTransfer.linear.tentative.html": [
+        "66c85e7f879a155135f896146c5e7dd71f29dff2",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.linear.worker.js": [
-        "1f3f9d85b014bc48f998c5c1f592bddfc44d6b08",
+       "2d.filter.canvasFilterObject.componentTransfer.linear.tentative.worker.js": [
+        "aaca12b36946db7f6c268bdc873d298750e691a6",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.linear.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.linear.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.table.html": [
-        "1283213714e5d42eadeb5821a58ac97cf556a544",
+       "2d.filter.canvasFilterObject.componentTransfer.table.tentative.html": [
+        "8fe0f2c35f3583a2588198d3504d6b2ce7f0a0c0",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.componentTransfer.table.worker.js": [
-        "2641d06be12c5e56617ddd123631c8a2368cf07d",
+       "2d.filter.canvasFilterObject.componentTransfer.table.tentative.worker.js": [
+        "590f4f4dbf0d1dae3f2fdb74050e058a7e6809c4",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.table.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.table.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.convolveMatrix.exceptions.html": [
-        "949b6d7947416b0cdfd7dcb8b098b97331e3ed25",
+       "2d.filter.canvasFilterObject.convolveMatrix.exceptions.tentative.html": [
+        "b44b074af1b40c386c53345c9d0ead2e2f959fce",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.convolveMatrix.exceptions.worker.js": [
-        "169a26c6d96470b177976b57e4e77f123f046782",
+       "2d.filter.canvasFilterObject.convolveMatrix.exceptions.tentative.worker.js": [
+        "be361ee7aae7e96ba2c3f3784d53d2630131e251",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.convolveMatrix.exceptions.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.convolveMatrix.exceptions.tentative.worker.html",
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.html": [
-        "93b046d55b081bc96b5e3b7e0db60836f319ae5a",
+       "2d.filter.canvasFilterObject.tentative.html": [
+        "e4e06f27d24a8f4e8657499d50ea3a33a2a2c2c0",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.turbulence.inputTypes.html": [
-        "2b04e6f0e56eddb5a5a79bdb86eb68370fa0f2b0",
+       "2d.filter.canvasFilterObject.tentative.worker.js": [
+        "30772a39d102169cc5d04b79fe83c037f66085a4",
+        [
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.tentative.worker.html",
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.turbulence.inputTypes.tentative.html": [
+        "d5123476b5ebf54ddb343a0da8face7e350f1cfc",
         [
          null,
          {}
         ]
        ],
-       "2d.filter.canvasFilterObject.turbulence.inputTypes.worker.js": [
-        "c34709b72654f8b50e397238d5d821f072f13e03",
+       "2d.filter.canvasFilterObject.turbulence.inputTypes.tentative.worker.js": [
+        "bd1cd162fe16b08f55a16441798f889f2f93f7fe",
         [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.turbulence.inputTypes.worker.html",
-         {}
-        ]
-       ],
-       "2d.filter.canvasFilterObject.worker.js": [
-        "3a38f8f0a79cabbccb6420487ff5e643f94ae91c",
-        [
-         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.worker.html",
+         "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.turbulence.inputTypes.tentative.worker.html",
          {}
         ]
        ],
@@ -484960,6 +484987,13 @@
       "9b4140340a416200d8b0362a68284f813f1e6c96",
       [
        "infrastructure/server/subdomain-flag.www.sub.window.html",
+       {}
+      ]
+     ],
+     "test-pac.html": [
+      "598836d376813b754366d49616b39a4183cd3753",
+      [
+       null,
        {}
       ]
      ],
