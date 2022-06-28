@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -126,6 +127,8 @@ void AnimatedImageView::RemovedFromWidget() {
 }
 
 void AnimatedImageView::OnAnimationStep(base::TimeTicks timestamp) {
+  TRACE_EVENT1("views", "AnimatedImageView::OnAnimationStep", "timestamp",
+               timestamp);
   previous_timestamp_ = timestamp;
   SchedulePaint();
 }
