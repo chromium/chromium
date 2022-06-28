@@ -408,10 +408,9 @@ TEST_F(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
 
 TEST_F(CookieSettingsTest, LegacyCookieAccessDefault) {
   CookieSettings settings;
-  ContentSetting setting;
 
-  settings.GetSettingForLegacyCookieAccess(kDomain, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(settings.GetSettingForLegacyCookieAccess(kDomain),
+            CONTENT_SETTING_BLOCK);
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             settings.GetCookieAccessSemanticsForDomain(kDomain));
 }

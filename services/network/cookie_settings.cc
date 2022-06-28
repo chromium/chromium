@@ -66,16 +66,13 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
                              std::cref(content_settings_));
 }
 
-void CookieSettings::GetSettingForLegacyCookieAccess(
-    const std::string& cookie_domain,
-    ContentSetting* setting) const {
-  DCHECK(setting);
-
+ContentSetting CookieSettings::GetSettingForLegacyCookieAccess(
+    const std::string& cookie_domain) const {
   // Default to match what was registered in the ContentSettingsRegistry.
-  *setting = CONTENT_SETTING_BLOCK;
+  ContentSetting setting = CONTENT_SETTING_BLOCK;
 
   if (settings_for_legacy_cookie_access_.empty())
-    return;
+    return setting;
 
   // If there are no domain-specific settings, return early to avoid the cost of
   // constructing a GURL to match against.
@@ -84,9 +81,9 @@ void CookieSettings::GetSettingForLegacyCookieAccess(
                              return entry.primary_pattern.MatchesAllHosts();
                            })) {
     // Take the first entry because we know all entries match any host.
-    *setting = settings_for_legacy_cookie_access_[0].GetContentSetting();
-    DCHECK(IsValidSettingForLegacyAccess(*setting));
-    return;
+    setting = settings_for_legacy_cookie_access_[0].GetContentSetting();
+    DCHECK(IsValidSettingForLegacyAccess(setting));
+    return setting;
   }
 
   // The content setting patterns are treated as domains, not URLs, so the
@@ -100,11 +97,12 @@ void CookieSettings::GetSettingForLegacyCookieAccess(
     // specifying a scheme or port in the pattern may lead to undefined
     // behavior, but this is not ideal.
     if (entry.primary_pattern.Matches(cookie_domain_url)) {
-      *setting = entry.GetContentSetting();
-      DCHECK(IsValidSettingForLegacyAccess(*setting));
-      return;
+      DCHECK(IsValidSettingForLegacyAccess(entry.GetContentSetting()));
+      return entry.GetContentSetting();
     }
   }
+
+  return setting;
 }
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(

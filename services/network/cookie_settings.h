@@ -94,8 +94,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   DeleteCookiePredicate CreateDeleteCookieOnExitPredicate() const;
 
   // content_settings::CookieSettingsBase:
-  void GetSettingForLegacyCookieAccess(const std::string& cookie_domain,
-                                       ContentSetting* setting) const override;
+  ContentSetting GetSettingForLegacyCookieAccess(
+      const std::string& cookie_domain) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override;

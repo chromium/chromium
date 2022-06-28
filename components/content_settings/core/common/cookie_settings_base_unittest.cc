@@ -46,11 +46,11 @@ class CallbackCookieSettings : public CookieSettingsBase {
       content_settings::SettingSource* source) const override {
     return callback_.Run(url);
   }
-  void GetSettingForLegacyCookieAccess(const std::string& cookie_domain,
-                                       ContentSetting* setting) const override {
+  ContentSetting GetSettingForLegacyCookieAccess(
+      const std::string& cookie_domain) const override {
     GURL cookie_domain_url =
         net::cookie_util::CookieOriginToURL(cookie_domain, false);
-    *setting = callback_.Run(cookie_domain_url);
+    return callback_.Run(cookie_domain_url);
   }
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
