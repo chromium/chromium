@@ -694,6 +694,13 @@ IN_PROC_BROWSER_TEST_P(DictationTest, NoExtraSpaceForPunctuation) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWait("cancel");
+  WaitForRecognitionStopped();
+}
+
 class DictationCommandsTest : public DictationTest {
  protected:
   DictationCommandsTest() {}
@@ -858,11 +865,6 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, Help) {
       .Wait();
 
   // Opening a new tab with the help center article toggles Dictation off.
-  WaitForRecognitionStopped();
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, StopListening) {
-  SendFinalResultAndWait("cancel");
   WaitForRecognitionStopped();
 }
 
