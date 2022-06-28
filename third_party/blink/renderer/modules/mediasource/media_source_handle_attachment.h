@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
+#include "third_party/blink/renderer/modules/mediasource/handle_attachment_provider.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -18,7 +18,7 @@ class MODULES_EXPORT MediaSourceHandleAttachment
  public:
   // Internals of a MediaSourceHandle that are included in serialization.
   struct HandleInternals {
-    scoped_refptr<MediaSourceAttachment> attachment;
+    scoped_refptr<HandleAttachmentProvider> attachment_provider;
     String internal_blob_url;
   };
 

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/modules/mediasource/cross_thread_media_source_attachment.h"
+#include "third_party/blink/renderer/modules/mediasource/handle_attachment_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_handle_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
@@ -1258,6 +1259,8 @@ MediaSourceHandleImpl* MediaSource::getHandle(ExceptionState& exception_state) {
   scoped_refptr<CrossThreadMediaSourceAttachment> attachment =
       base::MakeRefCounted<CrossThreadMediaSourceAttachment>(
           this, AttachmentCreationPassKeyProvider::GetPassKey());
+  scoped_refptr<HandleAttachmentProvider> attachment_provider =
+      base::MakeRefCounted<HandleAttachmentProvider>(std::move(attachment));
   handle_already_retrieved_ = true;
 
   // Create, but don't "register" an internal blob URL with the security origin
@@ -1268,7 +1271,7 @@ MediaSourceHandleImpl* MediaSource::getHandle(ExceptionState& exception_state) {
   String internal_blob_url = BlobURL::CreatePublicURL(origin).GetString();
   DCHECK(!internal_blob_url.IsEmpty());
   return MakeGarbageCollected<MediaSourceHandleImpl>(
-      std::move(attachment), std::move(internal_blob_url));
+      std::move(attachment_provider), std::move(internal_blob_url));
 }
 
 bool MediaSource::IsOpen() const {

@@ -606,7 +606,7 @@ V8ScriptValueDeserializerForModules::ReadMediaSourceHandle() {
 
   auto& handle_internals = attachments[index];
   return MakeGarbageCollected<MediaSourceHandleImpl>(
-      std::move(handle_internals.attachment),
+      std::move(handle_internals.attachment_provider),
       std::move(handle_internals.internal_blob_url));
 }
 
