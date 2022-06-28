@@ -103,8 +103,11 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   StyleRuleBase* Copy() const;
 
   // FIXME: There shouldn't be any need for the null parent version.
-  CSSRule* CreateCSSOMWrapper(CSSStyleSheet* parent_sheet = nullptr) const;
-  CSSRule* CreateCSSOMWrapper(CSSRule* parent_rule) const;
+  CSSRule* CreateCSSOMWrapper(
+      wtf_size_t position_hint = std::numeric_limits<wtf_size_t>::max(),
+      CSSStyleSheet* parent_sheet = nullptr) const;
+  CSSRule* CreateCSSOMWrapper(wtf_size_t position_hint,
+                              CSSRule* parent_rule) const;
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
@@ -115,7 +118,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   StyleRuleBase(const StyleRuleBase& rule) : type_(rule.type_) {}
 
  private:
-  CSSRule* CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
+  CSSRule* CreateCSSOMWrapper(wtf_size_t position_hint,
+                              CSSStyleSheet* parent_sheet,
                               CSSRule* parent_rule) const;
 
   const uint8_t type_;

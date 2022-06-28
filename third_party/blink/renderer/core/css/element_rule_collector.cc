@@ -755,7 +755,8 @@ CSSRule* ElementRuleCollector::FindStyleRule(CSSRuleCollection* css_rules,
 
 void ElementRuleCollector::AppendCSSOMWrapperForRule(
     CSSStyleSheet* parent_style_sheet,
-    const RuleData* rule_data) {
+    const RuleData* rule_data,
+    wtf_size_t position) {
   // |parentStyleSheet| is 0 if and only if the |rule| is coming from User
   // Agent. In this case, it is safe to create CSSOM wrappers without
   // parentStyleSheets as they will be used only by inspector which will not try
@@ -774,7 +775,7 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   if (parent_style_sheet)
     css_rule = FindStyleRule(parent_style_sheet, rule);
   else
-    css_rule = rule->CreateCSSOMWrapper();
+    css_rule = rule->CreateCSSOMWrapper(position);
   DCHECK(!parent_style_sheet || css_rule);
   EnsureRuleList()->emplace_back(css_rule, rule_data->SelectorIndex());
 }
@@ -796,7 +797,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
     for (unsigned i = 0; i < matched_rules_.size(); ++i) {
       AppendCSSOMWrapperForRule(
           const_cast<CSSStyleSheet*>(matched_rules_[i].ParentStyleSheet()),
-          matched_rules_[i].GetRuleData());
+          matched_rules_[i].GetRuleData(), i);
     }
     return;
   }

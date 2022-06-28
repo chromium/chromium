@@ -44,10 +44,13 @@ static SelectorTextCache& GetSelectorTextCache() {
   return *cache;
 }
 
-CSSStyleRule::CSSStyleRule(StyleRule* style_rule, CSSStyleSheet* parent)
+CSSStyleRule::CSSStyleRule(StyleRule* style_rule,
+                           CSSStyleSheet* parent,
+                           wtf_size_t position_hint)
     : CSSRule(parent),
       style_rule_(style_rule),
-      style_map_(MakeGarbageCollected<DeclaredStylePropertyMap>(this)) {}
+      style_map_(MakeGarbageCollected<DeclaredStylePropertyMap>(this)),
+      position_hint_(position_hint) {}
 
 CSSStyleRule::~CSSStyleRule() = default;
 
@@ -89,7 +92,8 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   Member<StyleRule> new_style_rule =
       StyleRule::Create(selector_vector, std::move(*style_rule_));
   if (parent_contents) {
-    parent_contents->ReplaceRuleIfExists(style_rule_, new_style_rule);
+    position_hint_ = parent_contents->ReplaceRuleIfExists(
+        style_rule_, new_style_rule, position_hint_);
   }
   style_rule_ = new_style_rule;
 

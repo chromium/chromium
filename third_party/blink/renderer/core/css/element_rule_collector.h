@@ -241,7 +241,7 @@ class CORE_EXPORT ElementRuleCollector {
 
   template <class CSSRuleCollection>
   CSSRule* FindStyleRule(CSSRuleCollection*, StyleRule*);
-  void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*);
+  void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*, wtf_size_t);
 
   void SortMatchedRules();
 

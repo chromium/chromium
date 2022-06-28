@@ -64,12 +64,14 @@ struct SameSizeAsStyleRuleBase final
 
 ASSERT_SIZE(StyleRuleBase, SameSizeAsStyleRuleBase);
 
-CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet) const {
-  return CreateCSSOMWrapper(parent_sheet, nullptr);
+CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
+                                           CSSStyleSheet* parent_sheet) const {
+  return CreateCSSOMWrapper(position_hint, parent_sheet, nullptr);
 }
 
-CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSRule* parent_rule) const {
-  return CreateCSSOMWrapper(nullptr, parent_rule);
+CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
+                                           CSSRule* parent_rule) const {
+  return CreateCSSOMWrapper(position_hint, nullptr, parent_rule);
 }
 
 void StyleRuleBase::Trace(Visitor* visitor) const {
@@ -262,14 +264,15 @@ StyleRuleBase* StyleRuleBase::Copy() const {
   return nullptr;
 }
 
-CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
+CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
+                                           CSSStyleSheet* parent_sheet,
                                            CSSRule* parent_rule) const {
   CSSRule* rule = nullptr;
   StyleRuleBase* self = const_cast<StyleRuleBase*>(this);
   switch (GetType()) {
     case kStyle:
-      rule =
-          MakeGarbageCollected<CSSStyleRule>(To<StyleRule>(self), parent_sheet);
+      rule = MakeGarbageCollected<CSSStyleRule>(To<StyleRule>(self),
+                                                parent_sheet, position_hint);
       break;
     case kPage:
       rule = MakeGarbageCollected<CSSPageRule>(To<StyleRulePage>(self),

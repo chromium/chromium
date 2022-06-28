@@ -266,8 +266,8 @@ TEST_F(ContainerQueryTest, RuleParsing) {
   ASSERT_TRUE(container);
 
   CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
-  auto* rule =
-      DynamicTo<CSSContainerRule>(container->CreateCSSOMWrapper(sheet));
+  auto* rule = DynamicTo<CSSContainerRule>(
+      container->CreateCSSOMWrapper(/*position_hint=*/0, sheet));
   ASSERT_TRUE(rule);
   ASSERT_EQ(2u, rule->length());
 

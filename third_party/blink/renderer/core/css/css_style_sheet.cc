@@ -328,7 +328,7 @@ CSSRule* CSSStyleSheet::item(unsigned index) {
 
   Member<CSSRule>& css_rule = child_rule_cssom_wrappers_[index];
   if (!css_rule)
-    css_rule = contents_->RuleAt(index)->CreateCSSOMWrapper(this);
+    css_rule = contents_->RuleAt(index)->CreateCSSOMWrapper(index, this);
   return css_rule.Get();
 }
 
