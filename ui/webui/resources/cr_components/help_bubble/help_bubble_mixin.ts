@@ -80,7 +80,7 @@ export const HelpBubbleMixin = dedupingMixin(
           for (const listenerId of this.listenerIds_) {
             this.helpBubbleCallbackRouter_.removeListener(listenerId);
           }
-          this.listenerIds_ = new Array();
+          this.listenerIds_ = [];
           if (this.helpBubbleHostDisplayObserver_) {
             this.helpBubbleHostDisplayObserver_.disconnect();
             this.helpBubbleHostDisplayObserver_ = null;
