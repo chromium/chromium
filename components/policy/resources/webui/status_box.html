@@ -1,4 +1,32 @@
-<link rel="stylesheet" href="./policy.css">
+<style>
+:host(:not([hidden])) {
+  display: block;
+}
+
+fieldset {
+  border: 1px solid rgb(217, 217, 217);
+  display: inline;
+  margin: 0;
+  padding: 7px;
+}
+
+fieldset + fieldset {
+  margin-inline-start: 20px;
+}
+
+div.status-entry * {
+  white-space: pre-wrap
+}
+
+div.status-entry:not([hidden]) {
+  display: flex;
+  margin-bottom: .8em;
+}
+
+div.status-entry:last-child {
+  margin-bottom: 0;
+}
+</style>
 <fieldset>
   <legend class="legend"></legend>
   <div class="status-entry" hidden>

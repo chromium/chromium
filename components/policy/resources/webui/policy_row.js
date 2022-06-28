@@ -86,8 +86,9 @@ export class PolicyRowElement extends CustomElement {
       const link = this.shadowRoot.querySelector('.name .link');
       link.href = policy.link;
       link.title = loadTimeData.getStringF('policyLearnMore', policy.name);
+      this.toggleAttribute('no-help-link', false);
     } else {
-      this.classList.add('no-help-link');
+      this.toggleAttribute('no-help-link', true);
     }
 
     // Populate the remaining columns with policy scope, level and value if a

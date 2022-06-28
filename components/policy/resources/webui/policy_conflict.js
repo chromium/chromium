@@ -24,6 +24,7 @@ export class PolicyConflictElement extends CustomElement {
   }
 
   connectedCallback() {
+    this.toggleAttribute('hidden', true);
     this.setAttribute('role', 'rowgroup');
   }
 
