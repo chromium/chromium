@@ -52,7 +52,10 @@ namespace blink {
 TransferredMediaStreamTrack::TransferredMediaStreamTrack(
     ExecutionContext* execution_context,
     const TransferredValues& data)
-    : execution_context_(execution_context), data_(data) {}
+    : transferred_component_(
+          MakeGarbageCollected<TransferredMediaStreamComponent>()),
+      execution_context_(execution_context),
+      data_(data) {}
 
 String TransferredMediaStreamTrack::kind() const {
   if (track_) {
@@ -190,6 +193,7 @@ void TransferredMediaStreamTrack::applyConstraints(
 
 void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   track_ = track;
+  transferred_component_.Clear();
 
   // Replaying mutations which happened before this point.
   for (auto it : constraints_list_) {
@@ -231,8 +235,7 @@ MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
   if (track_) {
     return track_->Component();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return nullptr;
+  return transferred_component_;
 }
 
 bool TransferredMediaStreamTrack::Ended() const {
@@ -355,6 +358,7 @@ void TransferredMediaStreamTrack::EventPropagator::Trace(
 
 void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
   MediaStreamTrack::Trace(visitor);
+  visitor->Trace(transferred_component_);
   visitor->Trace(track_);
   visitor->Trace(execution_context_);
   visitor->Trace(event_propagator_);

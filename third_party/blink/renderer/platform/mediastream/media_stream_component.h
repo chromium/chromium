@@ -56,8 +56,6 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
       std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track =
           nullptr) const = 0;
 
-  virtual void Dispose() = 0;
-
   virtual MediaStreamSource* Source() const = 0;
 
   // This is the same as the id of the |MediaStreamTrack|. It is unique in most

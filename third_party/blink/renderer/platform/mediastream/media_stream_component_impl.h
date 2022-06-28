@@ -78,7 +78,7 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   // |m_trackData| may hold pointers to GC objects indirectly, and it may touch
   // eagerly finalized objects in destruction.
   // So this class runs pre-finalizer to finalize |m_trackData| promptly.
-  void Dispose() override;
+  void Dispose();
 
   MediaStreamSource* Source() const override { return source_.Get(); }
 
