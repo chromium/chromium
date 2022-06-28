@@ -45,6 +45,17 @@ function createLocalSource(key) {
   `;
 }
 
+// These are used in tests that rely on URLs containing dangling markup. See
+// https://github.com/whatwg/fetch/pull/519.
+const kDanglingMarkupSubstrings = [
+  "blo\nck<ed",
+  "blo\rck<ed",
+  "blo\tck<ed",
+  "blo<ck\ned",
+  "blo<ck\red",
+  "blo<ck\ted",
+];
+
 // These are just baseline tests asserting that this test's machinery to load
 // blob:, data:, and javascript: URLs work properly in contexts where they are
 // expected to.
@@ -72,17 +83,18 @@ promise_test(async () => {
   });
 }, "iframe javascript: URL");
 
+function getTimeoutPromise(t) {
+  return new Promise(resolve =>
+      t.step_timeout(() => resolve("NOT LOADED"), 2000));
+}
+
 // The following tests ensure that an embedder cannot navigate a fenced frame
 // (with different modes) to:
 //   - data: URLs
 //   - blob: URLs
 //   - javascript: URLs
 //   - http: URLs
-function getTimeoutPromise(t) {
-  return new Promise(resolve =>
-      t.step_timeout(() => resolve("NOT LOADED"), 2000));
-}
-
+//   - https: URLs with dangling markup
 for (const mode of ['opaque-ads', 'default']) {
 
   promise_test(async t => {
@@ -126,6 +138,19 @@ for (const mode of ['opaque-ads', 'default']) {
     assert_equals(result, "NOT LOADED");
   }, `fenced frame mode=${mode} http: URL`);
 
+  // These tests assert that fenced frames cannot be navigated to HTTPs URLs
+  // with dangling markup.
+  for (substring of kDanglingMarkupSubstrings) {
+    promise_test(async t => {
+      const key = token();
+      let url_string = generateURL("resources/embeddee.html?blocked", [key]).toString();
+      url_string = url_string.replace("blocked", substring);
+      const fencedframe = attachFencedFrame(url_string, /*mode=*/mode);
+      const loaded_promise = nextValueFromServer(key);
+      const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
+      assert_equals(result, "NOT LOADED");
+    }, `fenced frame mode=${mode} dangling-markup URL with '${substring}'`);
+  }
 } // end for.
 
 // The following tests ensure that an embedder cannot navigate a
@@ -134,6 +159,7 @@ for (const mode of ['opaque-ads', 'default']) {
 //   - blob: URL
 //   - javascript: URL
 //   - http: URL
+//   - https: URL with dangling markup
 promise_test(async t => {
   const key = token();
   const urn = await generateURN(`data:text/html,${createLocalSource(key)}`);
@@ -175,6 +201,36 @@ promise_test(async t => {
   const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
   assert_equals(result, "NOT LOADED");
 }, "fenced frame opaque URN => http: URL");
+
+// These tests assert that fenced frames cannot be navigated to a urn:uuid URL
+// that represents an HTTPS URLs with dangling markup.
+for (substring of kDanglingMarkupSubstrings) {
+  promise_test(async t => {
+    const key = token();
+
+    // Copied from from `generateURN()`, since we have to modify the final URL
+    // that goes into `selectURL`.
+    try {
+      await sharedStorage.worklet.addModule(
+        "/wpt_internal/shared_storage/resources/simple-module.js");
+    } catch (e) {
+      // See documentation in `generateURN()`.
+    }
+
+    let url_string = generateURL("resources/report-url.html?blocked", [key]).toString();
+    url_string = url_string.replace("blocked", substring);
+
+    const urn = await sharedStorage.selectURL(
+      "test-url-selection-operation", [{url: url_string}], {data: {'mockResult': 0}}
+    );
+
+    const fencedframe = attachFencedFrame(urn, /*mode=*/'opaque-ads');
+    const loaded_promise = nextValueFromServer(key);
+    const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
+    assert_equals(result, "NOT LOADED");
+  }, `fenced frame opaque URN => https: URL with dangling markup '${substring}'`);
+}
+
 </script>
 
 </body>
