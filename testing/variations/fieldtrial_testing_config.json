@@ -3711,6 +3711,21 @@
             ]
         }
     ],
+    "EnableCbdSignOut": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCbdSignOut"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableNewDownloadAPI": [
         {
             "platforms": [
