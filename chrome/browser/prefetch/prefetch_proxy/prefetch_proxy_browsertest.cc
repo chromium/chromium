@@ -2431,7 +2431,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestPrefetchProxyBrowserTest,
 // A negative test where the only thing missing is the policy change from
 // default, ensure that predictions are getting used.
 IN_PROC_BROWSER_TEST_F(PolicyTestPrefetchProxyBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(PrefetchingWithDefault)) {
+                       DISABLED_PrefetchingWithDefault) {
   PrefetchProxyTabHelper* tab_helper =
       PrefetchProxyTabHelper::FromWebContents(GetWebContents());
 
