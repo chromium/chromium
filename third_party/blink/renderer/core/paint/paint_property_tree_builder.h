@@ -279,13 +279,16 @@ struct NGPrePaintInfo {
                  wtf_size_t fragmentainer_idx,
                  bool is_first_for_node,
                  bool is_last_for_node,
-                 bool is_inside_fragment_child)
+                 bool is_inside_fragment_child,
+                 bool fragmentainer_is_oof_containing_block)
       : box_fragment(box_fragment),
         paint_offset(paint_offset),
         fragmentainer_idx(fragmentainer_idx),
         is_first_for_node(is_first_for_node),
         is_last_for_node(is_last_for_node),
-        is_inside_fragment_child(is_inside_fragment_child) {}
+        is_inside_fragment_child(is_inside_fragment_child),
+        fragmentainer_is_oof_containing_block(
+            fragmentainer_is_oof_containing_block) {}
 
   // The fragment for the LayoutObject currently being processed, or, in the
   // case of text and non-atomic inlines: the fragment of the containing block.
@@ -301,6 +304,14 @@ struct NGPrePaintInfo {
   // currently being processed. Otherwise, |box_fragment| is a fragment for the
   // LayoutObject itself.
   bool is_inside_fragment_child;
+
+  // Due to how out-of-flow layout inside fragmentation works, if an out-of-flow
+  // positioned element is contained by something that's part of a fragmentation
+  // context (e.g. abspos in relpos in multicol) the containing block (as far as
+  // NG layout is concerned) is a fragmentainer, not the relpos. Then this flag
+  // is true. It's false if the containing block doesn't participate in block
+  // fragmentation, e.g. if we're inside monolithic content.
+  bool fragmentainer_is_oof_containing_block;
 };
 
 struct PaintPropertiesChangeInfo {
