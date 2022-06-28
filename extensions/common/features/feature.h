@@ -42,6 +42,7 @@ class Feature {
     WEBUI_CONTEXT,
     WEBUI_UNTRUSTED_CONTEXT,
     LOCK_SCREEN_EXTENSION_CONTEXT,
+    OFFSCREEN_EXTENSION_CONTEXT,
   };
 
   // The platforms the feature is supported in.

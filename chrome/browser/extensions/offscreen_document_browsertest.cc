@@ -15,8 +15,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
@@ -28,6 +30,35 @@ class OffscreenDocumentBrowserTest : public ExtensionApiTest {
         extensions_features::kExtensionsOffscreenDocuments);
   }
   ~OffscreenDocumentBrowserTest() override = default;
+
+  // Creates a new OffscreenDocumentHost and waits for it to load.
+  std::unique_ptr<OffscreenDocumentHost> CreateOffscreenDocument(
+      const Extension& extension,
+      const GURL& url) {
+    scoped_refptr<content::SiteInstance> site_instance =
+        ProcessManager::Get(profile())->GetSiteInstanceForURL(url);
+
+    content::TestNavigationObserver navigation_observer(url);
+    navigation_observer.StartWatchingNewWebContents();
+    auto offscreen_document = std::make_unique<OffscreenDocumentHost>(
+        extension, site_instance.get(), url);
+    offscreen_document->CreateRendererSoon();
+    navigation_observer.Wait();
+    EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+
+    return offscreen_document;
+  }
+
+  // Executes a script in `web_contents` and extracts a string from the
+  // result.
+  std::string ExecuteScriptSync(content::WebContents* web_contents,
+                                const std::string& script) {
+    std::string result;
+    EXPECT_TRUE(
+        content::ExecuteScriptAndExtractString(web_contents, script, &result))
+        << script;
+    return result;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -60,17 +91,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
   ProcessManager* const process_manager = ProcessManager::Get(profile());
 
-  scoped_refptr<content::SiteInstance> site_instance =
-      process_manager->GetSiteInstanceForURL(offscreen_url);
-
-  // Create a new offscreen document and wait for it to load.
-  content::TestNavigationObserver navigation_observer(offscreen_url);
-  navigation_observer.StartWatchingNewWebContents();
-  auto offscreen_document = std::make_unique<OffscreenDocumentHost>(
-      *extension, site_instance.get(), offscreen_url);
-  offscreen_document->CreateRendererSoon();
-  navigation_observer.Wait();
-  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
 
   // Check basic properties:
   content::WebContents* contents = offscreen_document->host_contents();
@@ -99,17 +121,30 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   }
 
   {
+    Feature::Context context_type =
+        ProcessMap::Get(profile())->GetMostLikelyContextType(
+            extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            &offscreen_url);
+    // TODO(https://crbug.com/1339382): The following check should be:
+    //   EXPECT_EQ(Feature::OFFSCREEN_EXTENSION_CONTEXT, context_type);
+    // However, currently the ProcessMap can't differentiate between a
+    // blessed extension context and an offscreen document, as both run in the
+    // primary extension process and have committed to the extension origin.
+    // This is okay (this boundary isn't a security boundary), but is
+    // technically incorrect.
+    // See also comment in ProcessMap::GetMostLikelyContextType().
+    EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT, context_type);
+  }
+
+  {
     // Check the document loaded properly (and, implicitly check that it does,
     // in fact, have a DOM).
-    std::string div_text;
     static constexpr char kScript[] =
         R"({
              let div = document.getElementById('signal');
              domAutomationController.send(div ? div.innerText : '<no div>');
            })";
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractString(contents, kScript, &div_text));
-    EXPECT_EQ("Hello, World", div_text);
+    EXPECT_EQ("Hello, World", ExecuteScriptSync(contents, kScript));
   }
 
   {
@@ -122,6 +157,59 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(tab_contents->GetPrimaryMainFrame()->GetProcess(),
               contents->GetPrimaryMainFrame()->GetProcess());
+  }
+}
+
+// Tests that extension API access in offscreen documents is extremely limited.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["storage", "tabs"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>Offscreen</html>");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
+  content::WebContents* contents = offscreen_document->host_contents();
+
+  {
+    // Offscreen documents have very limited API access. Even though the
+    // extension has the storage and tabs permissions, the only extension API
+    // exposed should be `runtime`.
+    constexpr char kScript[] =
+        R"({
+             let keys = Object.keys(chrome);
+             domAutomationController.send(JSON.stringify(keys.sort()));
+           })";
+    EXPECT_EQ(R"(["csi","loadTimes","runtime"])",
+              ExecuteScriptSync(contents, kScript));
+  }
+
+  {
+    // Even runtime should be fairly restricted. Enums are always exposed, and
+    // offscreen documents have access to message passing capabilities and their
+    // own extension ID and URL. Intentionally absent are methods like
+    // `runtime.getViews()`.
+    constexpr char kScript[] =
+        R"({
+             let keys = Object.keys(chrome.runtime);
+             domAutomationController.send(JSON.stringify(keys.sort()));
+           })";
+    static constexpr char kExpectedProperties[] =
+        R"(["OnInstalledReason","OnRestartRequiredReason","PlatformArch",)"
+        R"("PlatformNaclArch","PlatformOs","RequestUpdateCheckStatus",)"
+        R"("connect","getURL","id","onConnect","onMessage","sendMessage"])";
+    EXPECT_EQ(kExpectedProperties, ExecuteScriptSync(contents, kScript));
   }
 }
 

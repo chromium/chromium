@@ -137,6 +137,8 @@ std::string GetContextTypeDescriptionString(Feature::Context context_type) {
       return "WEBUI_UNTRUSTED";
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       return "LOCK_SCREEN_EXTENSION";
+    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+      return "OFFSCREEN_EXTENSION_CONTEXT";
   }
   NOTREACHED();
   return std::string();

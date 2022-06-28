@@ -526,6 +526,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       break;
     case Feature::BLESSED_EXTENSION_CONTEXT:
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case Feature::UNBLESSED_EXTENSION_CONTEXT:
     case Feature::CONTENT_SCRIPT_CONTEXT:
     case Feature::WEBUI_CONTEXT:

@@ -186,6 +186,7 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
     case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
     case extensions::Feature::WEBUI_CONTEXT:
     case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       return false;
     case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
@@ -210,6 +211,7 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
     case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
     case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
     case extensions::Feature::UNSPECIFIED_CONTEXT:
     case extensions::Feature::WEBUI_CONTEXT:

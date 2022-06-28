@@ -441,6 +441,11 @@ void Dispatcher::DidCreateScriptContext(
       UMA_HISTOGRAM_TIMES(
           "Extensions.DidCreateScriptContext_LockScreenExtension", elapsed);
       break;
+    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+      // We don't really care about offscreen extension context initialization
+      // time at the moment - it's a strict subset (and very similar to)
+      // blessed extension context time.
+      break;
   }
 
   VLOG(1) << "Num tracked contexts: " << script_context_set_->size();

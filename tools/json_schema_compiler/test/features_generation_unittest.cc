@@ -218,7 +218,8 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     comparator.contexts = std::vector<Feature::Context>(
         {Feature::BLESSED_EXTENSION_CONTEXT, Feature::BLESSED_WEB_PAGE_CONTEXT,
          Feature::CONTENT_SCRIPT_CONTEXT,
-         Feature::LOCK_SCREEN_EXTENSION_CONTEXT, Feature::WEB_PAGE_CONTEXT,
+         Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
+         Feature::OFFSCREEN_EXTENSION_CONTEXT, Feature::WEB_PAGE_CONTEXT,
          Feature::WEBUI_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT,
          Feature::UNBLESSED_EXTENSION_CONTEXT});
     comparator.extension_types = {Manifest::TYPE_EXTENSION,

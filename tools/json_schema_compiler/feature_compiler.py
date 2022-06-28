@@ -174,6 +174,7 @@ FEATURE_GRAMMAR = ({
                 'content_script': 'Feature::CONTENT_SCRIPT_CONTEXT',
                 'lock_screen_extension':
                 'Feature::LOCK_SCREEN_EXTENSION_CONTEXT',
+                'offscreen_extension': 'Feature::OFFSCREEN_EXTENSION_CONTEXT',
                 'web_page': 'Feature::WEB_PAGE_CONTEXT',
                 'webui': 'Feature::WEBUI_CONTEXT',
                 'webui_untrusted': 'Feature::WEBUI_UNTRUSTED_CONTEXT',
