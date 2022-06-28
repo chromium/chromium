@@ -816,8 +816,19 @@ void AshNotificationView::PopulateGroupNotifications(
 
 void AshNotificationView::RemoveGroupNotification(
     const std::string& notification_id) {
-  AshNotificationView* to_be_removed = static_cast<AshNotificationView*>(
-      FindGroupNotificationView(notification_id));
+  auto* child_view = FindGroupNotificationView(notification_id);
+  if (!child_view)
+    return;
+
+  base::WeakPtr<AshNotificationView> to_be_removed =
+      static_cast<AshNotificationView*>(child_view)->weak_factory_.GetWeakPtr();
+  if (to_be_removed) {
+    // Abort any previously queued animations, if a remove animation was in
+    // progress this will cause `to_be_removed` to be deleted. Because of this
+    // we need to use a weakptr to ensure we do not try to animate an already
+    // deleted view.
+    to_be_removed->layer()->GetAnimator()->AbortAllAnimations();
+  }
 
   if (!to_be_removed)
     return;
@@ -841,12 +852,32 @@ void AshNotificationView::RemoveGroupNotification(
       },
       weak_factory_.GetWeakPtr(), notification_id);
 
+  auto on_animation_aborted = base::BindRepeating(
+      [](base::WeakPtr<AshNotificationView> self,
+         const std::string& notification_id) {
+        if (!self)
+          return;
+
+        views::View* to_be_removed =
+            self->FindGroupNotificationView(notification_id);
+        if (!to_be_removed)
+          return;
+
+        self->total_grouped_notifications_--;
+        self->expand_button_->UpdateGroupedNotificationsCount(
+            self->total_grouped_notifications_);
+
+        self->grouped_notifications_container_->RemoveChildViewT(to_be_removed);
+        self->PreferredSizeChanged();
+      },
+      weak_factory_.GetWeakPtr(), notification_id);
+
   // If the removed notification has a layer transform it has already been slid
   // out (For example user swiped it by dragging). We only need to animate a
   // slide out if there is no transform.
-  if (to_be_removed->layer()->transform().IsIdentity()) {
+  if (to_be_removed && to_be_removed->layer()->transform().IsIdentity()) {
     message_center_utils::SlideOutView(
-        to_be_removed, on_notification_slid_out,
+        to_be_removed.get(), on_notification_slid_out, on_animation_aborted,
         /*delay_in_ms=*/0,
         /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
         gfx::Tween::LINEAR,
@@ -1488,6 +1519,7 @@ void AshNotificationView::AnimateResizeAfterRemoval(
       grouped_notifications_container_->height();
   int removed_index =
       grouped_notifications_container_->GetIndexOf(to_be_removed);
+  LOG(ERROR) << "Removed after animation";
   grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
 
   auto* notification_view_controller = message_center_utils::
