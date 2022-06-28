@@ -9,22 +9,22 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-@keyframes fade-in {
+@keyframes blink-page-transition-fade-in {
   from {
     opacity: 0;
   }
 }
 
 html::page-transition-incoming-image(*) {
-  animation: fade-in 0.25s both;
+  animation: blink-page-transition-fade-in 0.25s both;
 }
 
-@keyframes fade-out {
+@keyframes blink-page-transition-fade-out {
   to {
     opacity: 0;
   }
 }
 
 html::page-transition-outgoing-image(*) {
-  animation: fade-out 0.25s both;
+  animation: blink-page-transition-fade-out 0.25s both;
 }
