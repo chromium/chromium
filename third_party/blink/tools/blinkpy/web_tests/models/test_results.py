@@ -26,47 +26,27 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from six.moves import cPickle
-
 from blinkpy.web_tests.models import test_failures, test_expectations
-from blinkpy.web_tests.models.typ_types import ResultType, Artifacts
+from blinkpy.web_tests.models.typ_types import (
+    Artifacts,
+    ResultType,
+    SerializableTypHost,
+)
 from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
 
 
-def build_test_result(driver_output,
-                      test_name,
-                      retry_attempt=0,
-                      failures=None,
-                      test_run_time=None,
-                      reftest_type=None,
-                      pid=None,
-                      references=None,
-                      device_failed=False,
-                      crash_site=None):
+def build_test_result(driver_output, test_name, failures=None, **kwargs):
     failures = failures or []
     if not failures and driver_output.error:
         failures.append(test_failures.PassWithStderr(driver_output))
-    return TestResult(test_name,
-                      retry_attempt=retry_attempt,
-                      failures=failures,
-                      test_run_time=test_run_time,
-                      reftest_type=reftest_type,
-                      pid=pid,
-                      references=references,
-                      device_failed=device_failed,
-                      crash_site=crash_site,
-                      command=driver_output.command)
+    kwargs.setdefault('command', driver_output.command)
+    return TestResult(test_name, failures=failures, **kwargs)
 
 
 class TestResult(object):
     """Data object containing the results of a single test."""
     repeat_tests = True
     results_directory = ''
-    filesystem = None
-
-    @staticmethod
-    def loads(string):
-        return cPickle.loads(string)
 
     def __init__(self,
                  test_name,
@@ -78,7 +58,8 @@ class TestResult(object):
                  references=None,
                  device_failed=False,
                  crash_site=None,
-                 command=None):
+                 command=None,
+                 typ_host=None):
         self.test_name = test_name
         self.failures = failures or []
         self.test_run_time = test_run_time or 0  # The time taken to execute the test itself.
@@ -129,12 +110,11 @@ class TestResult(object):
         self.shard_name = ''
         self.total_run_time = 0  # The time taken to run the test plus any references, compute diffs, etc.
         self.test_number = None
-        self.artifacts = Artifacts(
-            self.results_directory,
-            self.filesystem,
-            retry_attempt,
-            ARTIFACTS_SUB_DIR,
-            repeat_tests=self.repeat_tests)
+        self.artifacts = Artifacts(self.results_directory,
+                                   typ_host or SerializableTypHost(),
+                                   retry_attempt,
+                                   ARTIFACTS_SUB_DIR,
+                                   repeat_tests=self.repeat_tests)
 
     def create_artifacts(self):
         for failure in self.failures:
@@ -149,6 +129,3 @@ class TestResult(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-    def dumps(self):
-        return cPickle.dumps(self)

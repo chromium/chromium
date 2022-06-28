@@ -31,9 +31,8 @@ import logging
 import re
 
 from blinkpy.web_tests.port.driver import DeviceFailure, DriverInput, DriverOutput
-from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_results import TestResult, build_test_result
-from blinkpy.web_tests.models import testharness_results
 
 _log = logging.getLogger(__name__)
 
@@ -78,7 +77,6 @@ class SingleTestRunner(object):
                                    or self._options.repeat_each > 1
                                    or self._options.iterations > 1)
         TestResult.results_directory = self._results_directory
-        TestResult.filesystem = port.host.filesystem
 
     def _expected_driver_output(self):
         return DriverOutput(
@@ -125,31 +123,14 @@ class SingleTestRunner(object):
         driver_output = self._driver.run_test(self._driver_input())
         expected_driver_output = self._expected_driver_output()
         failures = self._handle_error(driver_output)
-
-        test_result = build_test_result(
-            driver_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=failures,
-            test_run_time=driver_output.test_time,
-            pid=driver_output.pid,
-            crash_site=driver_output.crash_site)
-        return test_result
+        return self._build_test_result(driver_output, failures)
 
     def _run_compare_test(self):
         """Runs the single test and returns test result."""
         driver_output = self._driver.run_test(self._driver_input())
         expected_driver_output = self._expected_driver_output()
         failures = self._compare_output(expected_driver_output, driver_output)
-
-        return build_test_result(
-            driver_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=failures,
-            test_run_time=driver_output.test_time,
-            pid=driver_output.pid,
-            crash_site=driver_output.crash_site)
+        return self._build_test_result(driver_output, failures)
 
     def _run_rebaseline(self):
         """Similar to _run_compare_test(), but has the side effect of updating
@@ -172,15 +153,18 @@ class SingleTestRunner(object):
             reported_failures = all_failures
 
         self._update_or_add_new_baselines(driver_output, all_failures)
+        return self._build_test_result(driver_output, reported_failures)
 
-        return build_test_result(
-            driver_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=reported_failures,
-            test_run_time=driver_output.test_time,
-            pid=driver_output.pid,
-            crash_site=driver_output.crash_site)
+    def _build_test_result(self, driver_output, failures, **kwargs):
+        kwargs.setdefault('test_run_time', driver_output.test_time)
+        kwargs.setdefault('pid', driver_output.pid)
+        kwargs.setdefault('crash_site', driver_output.crash_site)
+        return build_test_result(driver_output,
+                                 self._test_name,
+                                 retry_attempt=self._retry_attempt,
+                                 failures=failures,
+                                 typ_host=self._port.typ_host(),
+                                 **kwargs)
 
     def _convert_to_str(self, data):
         if data:
@@ -680,14 +664,7 @@ class SingleTestRunner(object):
         # in running the reference at all. This can save a lot of execution time if we
         # have a lot of crashes or timeouts.
         if test_output.crash or test_output.timeout or test_output.leak:
-            return build_test_result(
-                test_output,
-                self._test_name,
-                retry_attempt=self._retry_attempt,
-                failures=compare_text_failures,
-                test_run_time=test_output.test_time,
-                pid=test_output.pid,
-                crash_site=test_output.crash_site)
+            return self._build_test_result(test_output, compare_text_failures)
 
         # A reftest can have multiple match references and multiple mismatch references;
         # the test fails if any mismatch matches and all of the matches don't match.
@@ -733,16 +710,11 @@ class SingleTestRunner(object):
                 reference_file[0] for reference_file in self._reference_files
             ]))
 
-        return build_test_result(
-            test_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=failures,
-            test_run_time=total_test_time,
-            reftest_type=reftest_type,
-            pid=test_output.pid,
-            crash_site=test_output.crash_site,
-            references=reference_test_names)
+        return self._build_test_result(test_output,
+                                       failures,
+                                       test_run_time=total_test_time,
+                                       reftest_type=reftest_type,
+                                       references=reference_test_names)
 
     def _compare_output_with_reference(self, reference_driver_output,
                                        actual_driver_output,

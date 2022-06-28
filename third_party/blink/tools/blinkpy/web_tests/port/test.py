@@ -31,8 +31,10 @@ import json
 import time
 
 from blinkpy.common import exit_codes
+from blinkpy.common.memoized import memoized
 from blinkpy.common.system.crash_logs import CrashLogs
 from blinkpy.web_tests.models.test_configuration import TestConfiguration
+from blinkpy.web_tests.models.typ_types import FileSystemForwardingTypHost
 from blinkpy.web_tests.port.base import Port, VirtualTestSuite
 from blinkpy.web_tests.port.driver import DeviceFailure, Driver, DriverOutput
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
@@ -779,6 +781,10 @@ class TestPort(Port):
 
     def default_results_directory(self):
         return '/tmp'
+
+    @memoized
+    def typ_host(self):
+        return FileSystemForwardingTypHost(self._filesystem)
 
     def setup_test_run(self):
         pass

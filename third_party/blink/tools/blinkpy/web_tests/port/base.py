@@ -55,7 +55,11 @@ from blinkpy.w3c.wpt_manifest import WPTManifest, MANIFEST_NAME
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
 from blinkpy.web_tests.models.test_configuration import TestConfiguration
 from blinkpy.web_tests.models.test_run_results import TestRunException
-from blinkpy.web_tests.models.typ_types import TestExpectations, ResultType
+from blinkpy.web_tests.models.typ_types import (
+    TestExpectations,
+    ResultType,
+    SerializableTypHost,
+)
 from blinkpy.web_tests.port import driver
 from blinkpy.web_tests.port import server_process
 from blinkpy.web_tests.port.factory import PortFactory
@@ -1493,6 +1497,10 @@ class Port(object):
     def default_results_directory(self):
         """Returns the absolute path to the build directory."""
         return self._build_path()
+
+    @memoized
+    def typ_host(self):
+        return SerializableTypHost()
 
     def setup_test_run(self):
         """Performs port-specific work at the beginning of a test run."""

@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import pickle
 import unittest
 
 from blinkpy.web_tests.models.test_results import TestResult
@@ -40,16 +41,21 @@ class TestResultsTest(unittest.TestCase):
         self.assertEqual(result.failures, [])
         self.assertEqual(result.test_run_time, 0)
 
-    def test_loads(self):
+    def test_pickling(self):
+        """Verify `pickle` can serialize and unserialize a test result.
+
+        `multiprocessing` uses `pickle` to transport test results between
+        processes over a queue.
+        """
         result = TestResult(test_name='foo', failures=[], test_run_time=1.1)
-        s = result.dumps()
-        new_result = TestResult.loads(s)
-        self.assertIsInstance(new_result, TestResult)
+        buf = pickle.dumps(result)
+        unpickled_result = pickle.loads(buf)
 
-        self.assertEqual(new_result, result)
-
-        # Also check that != is implemented.
-        self.assertFalse(new_result != result)
+        self.assertIsInstance(unpickled_result, TestResult)
+        self.assertEqual(unpickled_result, result)
+        # Logically the same as the previous assertion, but checks that the `!=`
+        # operator is implemented.
+        self.assertFalse(unpickled_result != result)
 
     def test_results_has_stderr(self):
         driver_output = DriverOutput(None, None, None, None, error=b'error')
