@@ -82,23 +82,6 @@ source_set("test_helpers") {
   }
 }
 
-static_library("video_player_thumbnail_renderer") {
-  testonly = true
-  sources = [
-    "video_player/frame_renderer.h",
-    "video_player/frame_renderer_thumbnail.cc",
-    "video_player/frame_renderer_thumbnail.h",
-  ]
-  deps = [
-    ":test_helpers",
-    "//gpu/command_buffer/common",
-    "//media/gpu",
-    "//ui/gfx/codec:codec",
-    "//ui/gl:gl",
-    "//ui/gl/init:init",
-  ]
-}
-
 static_library("video_player") {
   testonly = true
   sources = [

@@ -607,7 +607,6 @@ if (use_v4l2_codec || use_vaapi) {
       "test:test_helpers",
       "test:video_player",
       "test:video_player_test_environment",
-      "test:video_player_thumbnail_renderer",
       "//media:test_support",
       "//testing/gtest",
     ]
