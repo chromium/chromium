@@ -79,6 +79,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"anonymousUser", IDS_FEEDBACK_TOOL_ANONYMOUS_EMAIL_OPTION},
       {"thankYouNoteOffline", IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_OFFLINE},
       {"thankYouNoteOnline", IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_ONLINE},
+      {"helpResourcesLabel", IDS_FEEDBACK_TOOL_HELP_RESOURCES_LABEL},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

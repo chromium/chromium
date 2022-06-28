@@ -98,6 +98,7 @@ export function confirmationPageTest() {
     assertEquals(
         'Here are some other helpful resources:',
         getElementContent(page, '#helpResourcesLabel'));
+    assertTrue(page.i18nExists('helpResourcesLabel'));
     const helpLinks = helpResourcesSection.querySelectorAll('cr-link-row');
     assertTrue(!!helpLinks);
     assertEquals(3, helpLinks.length);
