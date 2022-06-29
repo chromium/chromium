@@ -174,7 +174,6 @@ class WebTestRunnerTests(unittest.TestCase):
         self.assertEqual(0, run_results.expected)
         self.assertEqual(1, run_results.unexpected)
 
-    @unittest.skipIf(six.PY3, "This is stuck in python3. See crbug.com/926841")
     def test_skipped_tests_are_sinked(self):
         runner = self._runner()
         runner._options.derived_batch_size = 1
