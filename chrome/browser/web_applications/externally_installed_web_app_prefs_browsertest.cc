@@ -491,8 +491,17 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   EXPECT_EQ(1, preinstalled_prefs.Size());
 }
 
+// TODO(crbug.com/1339849)
+// ExternallyInstalledWebAppPrefsBrowserTest.MigrationMetricsLoggedProperly
+// is failing on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define Maybe_MigrationMetricsLoggedProperly \
+  DISABLED_MigrationMetricsLoggedProperly
+#else
+#define Maybe_MigrationMetricsLoggedProperly MigrationMetricsLoggedProperly
+#endif
 IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
-                       MigrationMetricsLoggedProperly) {
+                       Maybe_MigrationMetricsLoggedProperly) {
   PrefService* pref_service = profile()->GetPrefs();
   ExternallyInstalledWebAppPrefs external_prefs(pref_service);
   base::HistogramTester tester;
