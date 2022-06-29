@@ -90,6 +90,8 @@ public class AccountSelectionControllerTest {
             JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
     private static final GURL TEST_URL_PRIVACY_POLICY =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
+    private static final GURL TEST_IDP_BRAND_ICON_URL =
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_3);
 
     private static final Account ANA = new Account(
             "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, /*isSignIn=*/true);
@@ -124,8 +126,8 @@ public class AccountSelectionControllerTest {
 
     public AccountSelectionControllerTest() {
         MockitoAnnotations.initMocks(this);
-        IDP_METADATA =
-                new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "https://icon-url.example");
+        IDP_METADATA = new IdentityProviderMetadata(
+                Color.BLACK, Color.BLACK, TEST_IDP_BRAND_ICON_URL.getSpec());
     }
 
     @Before

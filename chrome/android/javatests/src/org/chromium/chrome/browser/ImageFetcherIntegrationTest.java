@@ -29,6 +29,7 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
@@ -46,7 +47,8 @@ public class ImageFetcherIntegrationTest {
     @ClassRule
     public static final EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
-    private class TestImageFetcherCallback extends CallbackHelper implements Callback<Bitmap> {
+    private static class TestImageFetcherCallback
+            extends CallbackHelper implements Callback<Bitmap> {
         public Bitmap mBitmap;
 
         @Override
@@ -59,21 +61,25 @@ public class ImageFetcherIntegrationTest {
     /**
      * Fetches image from ImageFetcher and waits for callback.
      */
-    private static void fetchImageAndWait(
-            String imageUrl, int size, TestImageFetcherCallback callbackWaiter) throws Exception {
+    private static Bitmap fetchImageAndWait(String url, int desiredWidth, int desiredHeight,
+            boolean shouldResize) throws Exception {
+        TestImageFetcherCallback callbackWaiter = new TestImageFetcherCallback();
         TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
             @Override
             public Void call() throws TimeoutException {
+                ImageFetcher.Params params = shouldResize
+                        ? ImageFetcher.Params.create(url, "random", desiredWidth, desiredHeight)
+                        : ImageFetcher.Params.createNoResizing(
+                                new GURL(url), "random", desiredWidth, desiredHeight);
                 ImageFetcher imageFetcher =
                         ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.NETWORK_ONLY,
                                 Profile.getLastUsedRegularProfile().getProfileKey());
-                ImageFetcher.Params params =
-                        ImageFetcher.Params.create(imageUrl, "random", size, size);
                 imageFetcher.fetchImage(params, callbackWaiter);
                 return null;
             }
         });
         callbackWaiter.waitForFirst();
+        return callbackWaiter.mBitmap;
     }
 
     /**
@@ -85,18 +91,20 @@ public class ImageFetcherIntegrationTest {
     public void testDesiredFrameSizeFavicon() throws Exception {
         String icoUrl = sTestServerRule.getServer().getURL(
                 "/chrome/test/data/android/image_fetcher/icon.ico");
-        {
-            TestImageFetcherCallback imageFetcherCallback = new TestImageFetcherCallback();
-            fetchImageAndWait(icoUrl, 60, imageFetcherCallback);
-            assertNotNull(imageFetcherCallback.mBitmap);
-            assertEquals(Color.RED, imageFetcherCallback.mBitmap.getPixel(0, 0));
-        }
 
-        {
-            TestImageFetcherCallback imageFetcherCallback = new TestImageFetcherCallback();
-            fetchImageAndWait(icoUrl, 120, imageFetcherCallback);
-            assertNotNull(imageFetcherCallback.mBitmap);
-            assertEquals(Color.GREEN, imageFetcherCallback.mBitmap.getPixel(0, 0));
-        }
+        Bitmap bitmap = fetchImageAndWait(icoUrl, 59, 59, /*shouldResize=*/false);
+        assertNotNull(bitmap);
+        assertEquals(Color.RED, bitmap.getPixel(0, 0));
+        assertEquals(60, bitmap.getWidth());
+
+        bitmap = fetchImageAndWait(icoUrl, 59, 59, /*shouldResize=*/true);
+        assertNotNull(bitmap);
+        assertEquals(Color.RED, bitmap.getPixel(0, 0));
+        assertEquals(59, bitmap.getWidth());
+
+        bitmap = fetchImageAndWait(icoUrl, 120, 120, /*shouldResize=*/false);
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+        assertEquals(120, bitmap.getWidth());
     }
 }

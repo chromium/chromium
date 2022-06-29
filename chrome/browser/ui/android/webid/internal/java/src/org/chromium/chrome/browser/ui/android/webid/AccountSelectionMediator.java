@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -183,9 +184,10 @@ class AccountSelectionMediator {
 
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
             int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
-            ImageFetcher.Params params = ImageFetcher.Params.create(idpMetadata.getBrandIconUrl(),
-                    ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, brandIconIdealSize,
-                    brandIconIdealSize);
+            ImageFetcher.Params params =
+                    ImageFetcher.Params.createNoResizing(new GURL(idpMetadata.getBrandIconUrl()),
+                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
+                            brandIconIdealSize, brandIconIdealSize);
 
             mImageFetcher.fetchImage(params, bitmap -> {
                 if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()

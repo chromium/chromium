@@ -92,8 +92,12 @@ public class ImageFetcherBridge {
         ImageFetcherBridgeJni.get().fetchImage(mSimpleFactoryKeyHandle, config, params.url,
                 params.clientName, params.width, params.height, params.expirationIntervalMinutes,
                 (bitmap) -> {
-                    callback.onResult(
-                            ImageFetcher.resizeImage(bitmap, params.width, params.height));
+                    if (params.shouldResize) {
+                        callback.onResult(
+                                ImageFetcher.resizeImage(bitmap, params.width, params.height));
+                    } else {
+                        callback.onResult(bitmap);
+                    }
                 });
     }
 
