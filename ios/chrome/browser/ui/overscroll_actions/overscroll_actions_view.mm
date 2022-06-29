@@ -225,7 +225,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // Returns a newly allocated and configured selection circle shape.
 - (CAShapeLayer*)newSelectionCircleLayer;
 // Returns an autoreleased circular bezier path horizontally deformed according
-// to |dx|.
+// to `dx`.
 - (UIBezierPath*)circlePath:(CGFloat)dx;
 // Returns the action at the given location in the view.
 - (OverscrollAction)actionAtLocation:(CGPoint)location;
@@ -234,9 +234,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // Clear the direct touch interaction after a small delay to prevent graphic
 // glitch with pan gesture selection deformation animations.
 - (void)clearDirectTouchInteraction;
-// Returns the tooltip label for |action|.
+// Returns the tooltip label for `action`.
 - (UILabel*)labelForAction:(OverscrollAction)action;
-// Fades out |previousLabel| and fades in |actionLabel|.
+// Fades out `previousLabel` and fades in `actionLabel`.
 - (void)fadeInActionLabel:(UILabel*)actionLabel
       previousActionLabel:(UILabel*)previousLabel;
 @end
@@ -334,7 +334,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     if (UseRTLLayout()) {
       // Handle RTL using transforms since this class is CALayer-based.
       [self setTransform:CGAffineTransformMakeScale(-1, 1)];
-      // Reverse labels again because they are subview of |self|, otherwise they
+      // Reverse labels again because they are subview of `self`, otherwise they
       // will be rendered backwards.
       [_addTabLabel setTransform:CGAffineTransformMakeScale(-1, 1)];
       [_reloadLabel setTransform:CGAffineTransformMakeScale(-1, 1)];
@@ -560,8 +560,8 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   CGSize boundingSize = self.bounds.size;
   boundingSize.width /= 2.0;
 
-  // The UILabels in |labels| are laid out according to the location of their
-  // corresponding UIImageView in |images|.
+  // The UILabels in `labels` are laid out according to the location of their
+  // corresponding UIImageView in `images`.
   NSArray* labels = @[ self.addTabLabel, self.reloadLabel, self.closeTabLabel ];
   NSArray* images = @[
     self.addTabActionImageView, self.reloadActionImageView,

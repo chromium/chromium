@@ -30,7 +30,7 @@
 
 namespace {
 // This enum is used to record the overscroll actions performed by the user on
-// the histogram named |OverscrollActions|.
+// the histogram named `OverscrollActions`.
 enum {
   // Records each time the user selects the new tab action.
   OVERSCROLL_ACTION_NEW_TAB,
@@ -41,7 +41,7 @@ enum {
   // Records each time the user cancels the overscroll action.
   OVERSCROLL_ACTION_CANCELED,
   // NOTE: Add new actions in sources only immediately above this line.
-  // Also, make sure the enum list for histogram |OverscrollActions| in
+  // Also, make sure the enum list for histogram `OverscrollActions` in
   // tools/histogram/histograms.xml is updated with any change in here.
   OVERSCROLL_ACTION_COUNT
 };
@@ -109,7 +109,7 @@ CGFloat Clamp(CGFloat value, CGFloat min, CGFloat max) {
   return value;
 }
 
-// Returns |scrollView|.contentInset with an updated |topInset|.
+// Returns `scrollView`.contentInset with an updated `topInset`.
 UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   UIEdgeInsets insets = scrollView.contentInset;
   insets.top = topInset;
@@ -158,7 +158,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   // when playing the bounce back animation if no actions has been triggered.
   BOOL _forceStateUpdate;
   // Instructs the controller to ignore the scroll event resulting from setting
-  // |disablingFullscreen| to YES.
+  // `disablingFullscreen` to YES.
   BOOL _ignoreScrollForDisabledFullscreen;
   // True when the overscroll actions are disabled for loading.
   BOOL _isOverscrollActionsDisabledForLoading;
@@ -235,7 +235,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 // Setup/tearDown methods are used to register values when the delegate is set.
 - (void)tearDown;
 - (void)setup;
-// Resets scroll view's top content inset to |self.initialContentInset|.
+// Resets scroll view's top content inset to `self.initialContentInset`.
 - (void)resetScrollViewTopContentInset;
 // Locking/unlocking methods used to disable/enable the overscroll actions
 // with a reference count.
@@ -864,7 +864,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 
 - (CGFloat)initialContentInset {
   // Content inset is not used for displaying header if the web view's
-  // |self.viewportAdjustsContentInset| is NO, instead the whole web view frame
+  // `self.viewportAdjustsContentInset` is NO, instead the whole web view frame
   // is changed.
   if (!_scrollview && !self.viewportAdjustsContentInset)
     return 0;
@@ -900,8 +900,8 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
     return;
 
   // Disabling fullscreen will show the toolbars, which may potentially produce
-  // a |-scrollViewDidScroll| event if the browser viewport insets need to be
-  // updated.  |_ignoreScrollForDisabledFullscreen| is set to YES while the
+  // a `-scrollViewDidScroll` event if the browser viewport insets need to be
+  // updated.  `_ignoreScrollForDisabledFullscreen` is set to YES while the
   // viewport insets are being updated for the disabled state so that this
   // scroll event can be ignored.
   _ignoreScrollForDisabledFullscreen = YES;
@@ -939,8 +939,8 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 
   if (fabs(_bounceState.yInset - _bounceState.headerInset) < 0.5) {
     // If no bounce is required, then clear state, as the necessary
-    // |-scrollViewDidScroll| callback will not be triggered to reset
-    // |overscrollState| to NO_PULL_STARTED.
+    // `-scrollViewDidScroll` callback will not be triggered to reset
+    // `overscrollState` to NO_PULL_STARTED.
     [self stopBounce];
     [self clear];
   } else {

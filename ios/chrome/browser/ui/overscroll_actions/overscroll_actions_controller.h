@@ -121,9 +121,9 @@ extern NSString* const kOverscrollActionsDidEnd;
 // notifications. After this call the controller ceases to function and will
 // clear its delegate.
 - (void)invalidate;
-// Schedules call to |invalidate| at the end of the current action. This lets
+// Schedules call to `invalidate` at the end of the current action. This lets
 // the animation finish before invalidating the controller.
-// If no action is running, calls |invalidate| immediately.
+// If no action is running, calls `invalidate` immediately.
 - (void)scheduleInvalidate;
 // Force the controller to switch to NO_PULL_STARTED state.
 - (void)clear;
