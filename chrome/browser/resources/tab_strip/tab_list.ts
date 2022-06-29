@@ -6,6 +6,7 @@ import './strings.m.js';
 import './tab.js';
 import './tab_group.js';
 
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
@@ -248,8 +249,7 @@ export class TabListElement extends CustomElement implements
         () => this.onReceivedKeyboardFocus_());
 
     callbackRouter.themeChanged.addListener(() => {
-      // Refetch theme colors, group color and tab favicons on theme change.
-      this.fetchAndUpdateColors_();
+      // Refetch theme group color and tab favicons on theme change.
       this.fetchAndUpdateGroupData_();
       this.fetchAndUpdateTabs_();
     });
@@ -273,6 +273,8 @@ export class TabListElement extends CustomElement implements
 
     const dragManager = new DragManager(this);
     dragManager.startObserving();
+
+    startColorChangeUpdater();
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -336,7 +338,6 @@ export class TabListElement extends CustomElement implements
   connectedCallback() {
     this.tabsApi_.getLayout().then(
         ({layout}) => this.applyCSSDictionary_(layout));
-    this.fetchAndUpdateColors_();
 
     const getTabsStartTimestamp = Date.now();
     this.tabsApi_.getTabs().then(({tabs}) => {
@@ -393,11 +394,6 @@ export class TabListElement extends CustomElement implements
   private findTabGroupElement_(groupId: string): TabGroupElement|null {
     return this.$<TabGroupElement>(
         `tabstrip-tab-group[data-group-id="${groupId}"]`);
-  }
-
-  private fetchAndUpdateColors_() {
-    this.tabsApi_.getColors().then(
-        ({colors}) => this.applyCSSDictionary_(colors));
   }
 
   private fetchAndUpdateGroupData_() {

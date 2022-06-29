@@ -130,4 +130,28 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       mixer[entry.color_id] = {kBgColorMap.at(entry.color_id)};
     }
   }
+
+  /* WebUI Tab Strip colors. */
+  // TODO(https://crbug.com/1060398): Update the tab strip color to respond
+  // appopriately to activation changes.
+  mixer[kColorWebUiTabStripBackground] = {ui::kColorFrameActive};
+  mixer[kColorWebUiTabStripFocusOutline] = {ui::kColorFocusableBorderFocused};
+  mixer[kColorWebUiTabStripIndicatorRecording] = {ui::kColorAlertHighSeverity};
+  mixer[kColorWebUiTabStripIndicatorPip] = {kColorTabThrobber};
+  mixer[kColorWebUiTabStripIndicatorCapturing] = {kColorTabThrobber};
+  mixer[kColorWebUiTabStripScrollbarThumb] =
+      ui::SetAlpha(ui::GetColorWithMaxContrast(ui::kColorFrameActive),
+                   /* 70% opacity */ 0.7 * 255);
+  mixer[kColorWebUiTabStripTabActiveTitleBackground] = {
+      kColorThumbnailTabBackground};
+  mixer[kColorWebUiTabStripTabActiveTitleContent] = {
+      kColorThumbnailTabForeground};
+  mixer[kColorWebUiTabStripTabBackground] = {kColorToolbar};
+  mixer[kColorWebUiTabStripTabBlocked] = {ui::kColorButtonBackgroundProminent};
+  mixer[kColorWebUiTabStripTabLoadingSpinning] = {kColorTabThrobber};
+  mixer[kColorWebUiTabStripTabSeparator] =
+      ui::SetAlpha(kColorTabForegroundActiveFrameActive,
+                   /* 16% opacity */ 0.16 * 255);
+  mixer[kColorWebUiTabStripTabText] = {kColorTabForegroundActiveFrameActive};
+  mixer[kColorWebUiTabStripTabWaitingSpinning] = {kColorTabThrobberPreconnect};
 }

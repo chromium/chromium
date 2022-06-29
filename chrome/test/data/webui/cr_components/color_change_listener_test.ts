@@ -22,12 +22,23 @@ suite('ColorChangeListenerTest', () => {
     // refreshColorCss() should append search params to the colors CSS href.
     assertTrue(refreshColorCss());
 
-    const finalHref = colorCssNode.getAttribute('href');
-    assertTrue(!!finalHref);
-    assertTrue(finalHref.startsWith('chrome://theme/colors.css'));
-    assertTrue(!!new URL(finalHref).search);
+    const secondHref = colorCssNode.getAttribute('href');
+    assertTrue(!!secondHref);
+    assertTrue(secondHref.startsWith('chrome://theme/colors.css'));
+    assertTrue(!!new URL(secondHref).search);
 
-    assertNotEquals(initialHref, finalHref);
+    assertNotEquals(initialHref, secondHref);
+
+    // refreshColorCss() should append search params to the colors CSS href.
+    assertTrue(refreshColorCss());
+
+    const thirdHref = colorCssNode.getAttribute('href');
+    assertTrue(!!thirdHref);
+    assertTrue(thirdHref.startsWith('chrome://theme/colors.css'));
+    assertTrue(!!new URL(thirdHref).search);
+
+    assertNotEquals(initialHref, thirdHref);
+    assertNotEquals(secondHref, thirdHref);
   });
 
   test('HandlesCasesWhereColorsStylesheetIsNotSetCorrectly', () => {

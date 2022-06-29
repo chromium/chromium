@@ -216,12 +216,12 @@ suite('Tab', function() {
     }
 
     tabElement.style.setProperty(
-        '--tabstrip-tab-loading-spinning-color', 'rgb(255, 0, 0)');
+        '--color-web-ui-tab-strip-tab-loading-spinning', 'rgb(255, 0, 0)');
     tabElement.tab = createTabData({networkState: TabNetworkState.kLoading});
     assertSpinnerVisible('rgb(255, 0, 0)');
 
     tabElement.style.setProperty(
-        '--tabstrip-tab-waiting-spinning-color', 'rgb(0, 255, 0)');
+        '--color-web-ui-tab-strip-tab-waiting-spinning', 'rgb(0, 255, 0)');
     tabElement.tab = createTabData({networkState: TabNetworkState.kWaiting});
     assertSpinnerVisible('rgb(0, 255, 0)');
   });
