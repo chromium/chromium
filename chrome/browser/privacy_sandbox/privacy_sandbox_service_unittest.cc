@@ -823,7 +823,17 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
       },
       {"192.168.1.2", "192.168.1.3"}};
 
-  std::vector<TestCase> test_cases = {test_case_1, test_case_2, test_case_3};
+  // Results should be alphabetically ordered.
+  TestCase test_case_4 = {{
+                              url::Origin::Create(GURL("https://d.com")),
+                              url::Origin::Create(GURL("https://b.com")),
+                              url::Origin::Create(GURL("https://a.com")),
+                              url::Origin::Create(GURL("https://c.com")),
+                          },
+                          {"a.com", "b.com", "c.com", "d.com"}};
+
+  std::vector<TestCase> test_cases = {test_case_1, test_case_2, test_case_3,
+                                      test_case_4};
 
   for (const auto& origins_to_expected : test_cases) {
     test_interest_group_manager()->SetInterestGroupJoiningOrigins(

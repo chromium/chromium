@@ -670,8 +670,9 @@ void PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay(
     // Other types of top-frame origins (file, opaque) do not support FLEDGE.
     NOTREACHED();
   }
-  // TODO(crbug.com/1286276): Enforce a friendlier ordering instead of just
-  // whatever the database gives back.
+
+  // Entries should be displayed alphabetically, as |display_entries| is a
+  // std::set<std::string>, entries are already ordered correctly.
   std::move(callback).Run(
       std::vector<std::string>{display_entries.begin(), display_entries.end()});
 }
