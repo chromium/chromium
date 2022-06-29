@@ -27,12 +27,6 @@ FederatedIdentitySharingPermissionContext::
 FederatedIdentitySharingPermissionContext::
     ~FederatedIdentitySharingPermissionContext() = default;
 
-bool FederatedIdentitySharingPermissionContext::
-    HasSharingPermissionForAnyAccount(const url::Origin& relying_party,
-                                      const url::Origin& identity_provider) {
-  return HasPermission(relying_party, identity_provider, absl::nullopt);
-}
-
 bool FederatedIdentitySharingPermissionContext::HasSharingPermission(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,

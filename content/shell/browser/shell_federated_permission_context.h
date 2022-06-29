@@ -33,9 +33,6 @@ class ShellFederatedPermissionContext
   void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) override;
 
   // FederatedIdentitySharingPermissionContextDelegate
-  bool HasSharingPermissionForAnyAccount(
-      const url::Origin& relying_party,
-      const url::Origin& identity_provider) override;
   bool HasSharingPermission(const url::Origin& relying_party,
                             const url::Origin& identity_provider,
                             const std::string& account_id) override;

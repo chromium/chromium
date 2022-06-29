@@ -28,18 +28,6 @@ void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
 void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
     const url::Origin& rp_origin) {}
 
-bool ShellFederatedPermissionContext::HasSharingPermissionForAnyAccount(
-    const url::Origin& relying_party,
-    const url::Origin& identity_provider) {
-  for (const std::tuple<std::string, std::string, std::string>& permission :
-       sharing_permissions_) {
-    if (std::get<0>(permission) == relying_party.Serialize() &&
-        std::get<1>(permission) == identity_provider.Serialize())
-      return true;
-  }
-  return false;
-}
-
 bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
