@@ -124,7 +124,7 @@ const int kAnimationDelay = 5;
 using ViewRevealingVerticalPanHandlerTest = PlatformTest;
 
 // Simulates a fake vertical pan gesture from beginning, to change, to end.
-// |translation_y| is by how much the gesture translates vertically
+// `translation_y` is by how much the gesture translates vertically
 void SimulatePanGesture(ViewRevealingVerticalPanHandler* pan_handler,
                         double translation_y) {
   // A small offset in the same direction as the translation to guarantee that
