@@ -274,11 +274,23 @@ LibLouis.Translator = class {
       'cells': LibLouis.Translator.encodeHexString_(cells)
     };
     this.instance_.rpc_('BackTranslate', message, reply => {
-      if (reply['success'] && goog.isString(reply['text'])) {
-        callback(reply['text']);
-      } else {
+      if (!reply['success'] || !goog.isString(reply['text'])) {
         callback(null /* text */);
+        return;
       }
+
+      let text = reply['text'];
+
+      // TODO(https://crbug.com/1340087): LibLouis has bugs in backtranslation.
+      const view = new Uint8Array(cells);
+      if (view.length > 0 && view[view.length - 1] === 0 &&
+          !text.endsWith(' ')) {
+        // LibLouis omits spaces for some backtranslated contractions even
+        // though it is passed a blank cell. This is a workaround until LibLouis
+        // fixes this issue.
+        text += ' ';
+      }
+      callback(text);
     });
   }
 

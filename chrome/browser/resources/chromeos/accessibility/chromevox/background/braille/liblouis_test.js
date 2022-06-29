@@ -123,6 +123,20 @@ LIBLOUIS_TEST_F('testBackTranslateGermanComputerBraille', function(liblouis) {
   });
 });
 
+LIBLOUIS_TEST_F(
+    'testBackTranslateUSEnglishGrade2PreservesTrailingSpace',
+    function(liblouis) {
+      this.withTranslator(liblouis, 'en-ueb-g2.ctb', function(translator) {
+        translator.backTranslate(
+            // A full braille cell (dots 1-6) is 'for' when backtranslated.
+            new Uint8Array([0b111111, 0]).buffer,
+            this.newCallback(function(text) {
+              assertNotEquals(null, text);
+              assertEquals('for ', text);
+            }));
+      });
+    });
+
 LIBLOUIS_TEST_F('testBackTranslateEmptyCells', function(liblouis) {
   this.withTranslator(liblouis, 'de-de-comp8.ctb', function(translator) {
     translator.backTranslate(
