@@ -620,20 +620,32 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
       << message_;
 }
 
-// Note: this is flaky on multiple platforms (crbug.com/1003598). Temporarily
-// enabled to find flakiness cause.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
-                       DISABLED_WebRequestAuthRequiredAsync) {
+                       WebRequestAuthRequiredAsync) {
   CancelLoginDialog login_dialog_helper;
 
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  // Pass "debug" as a custom arg to debug test flakiness.
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_auth_required_async.html",
-                                .custom_arg = R"({"debug": true})",
-                                .open_in_incognito = GetEnableIncognito()},
-                               {.allow_in_incognito = GetEnableIncognito()}))
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required_async.html",
+       .custom_arg = R"({"testName": "authRequiredAsyncNoAction"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
+      << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required_async.html",
+       .custom_arg = R"({"testName": "authRequiredAsyncCancelAuth"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
+      << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required_async.html",
+       .custom_arg = R"({"testName": "authRequiredAsyncSetAuth"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
       << message_;
 }
 
