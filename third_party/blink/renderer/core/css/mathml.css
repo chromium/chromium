@@ -73,7 +73,9 @@ mspace {
 semantics > :not(:first-child) {
   display: none;
 }
-
+maction > :not(:first-child) {
+  display: none;
+}
 merror {
   border: 1px solid red;
   background-color: lightYellow;
