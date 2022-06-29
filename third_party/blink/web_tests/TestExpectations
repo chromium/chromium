@@ -6510,7 +6510,6 @@ crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Fai
 
 # Flaky on multiple platforms
 crbug.com/1300772 http/tests/devtools/oopif/oopif-elements-nesting-error-page.js [ Failure Pass ]
-crbug.com/1300772 http/tests/devtools/coverage/coverage-view-unused.js [ Failure Pass ]
 
 # Flaky on mac
 crbug.com/1263709 [ Mac ] http/tests/devtools/elements/node-xpath.js [ Failure ]
