@@ -76,12 +76,12 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -128,7 +128,7 @@ public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
 
-    private static final int RENDER_TEST_REVISION = 4;
+    private static final int RENDER_TEST_REVISION = 5;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -213,6 +213,8 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
+    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRender_FocusFakeBoxT(boolean isScrollableMVTEnabled) throws Exception {
         ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
                                                     .getRootUiCoordinatorForTesting()
@@ -225,43 +227,6 @@ public class NewTabPageTest {
                         + (mEnableScrollableMVT ? "_with_scrollable_mvt"
                                                 : "_with_non_scrollable_mvt"));
         scrimCoordinator.disableAnimationForTesting(false);
-    }
-
-    // TODO(crbug.com/1334912): This sync promos tests should be removed, since we have a similar tests in
-    // SigninPromoControllerRenderTest.
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_SignInPromoNoAccounts() throws Exception {
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(
-                mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sign_in_promo");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_SignInPromoWithAccount() throws Exception {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
-                "sign_in_promo_with_account");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_SyncPromo() throws Exception {
-        mSigninTestRule.addTestAccountThenSignin();
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(
-                mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sync_promo");
     }
 
     @Test

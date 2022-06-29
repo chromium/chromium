@@ -39,9 +39,15 @@ public class SettingsActivityTest {
 
     @Test
     @SmallTest
-    @Policies.Add({ @Policies.Item(key = "PasswordManagerEnabled", string = "false") })
+    // Setting BrowserSignin suppresses the sync promo so the password settings preference
+    // is visible without scrolling.
+    @Policies.Add({
+        @Policies.Item(key = "PasswordManagerEnabled", string = "false")
+        , @Policies.Item(key = "BrowserSignin", string = "0")
+    })
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testPasswordSettings_ManagedAndDisabled() {
+    public void
+    testPasswordSettings_ManagedAndDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
 

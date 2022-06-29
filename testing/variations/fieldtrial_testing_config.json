@@ -8091,6 +8091,26 @@
             ]
         }
     ],
+    "SyncAndroidPromosRevamp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSingleButtonIllustrationAndTitle",
+                    "enable_features": [
+                        "SyncAndroidPromosWithIllustration",
+                        "SyncAndroidPromosWithSingleButton",
+                        "SyncAndroidPromosWithTitle"
+                    ],
+                    "disable_features": [
+                        "SyncAndroidPromosWithAlternativeTitle"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncTrustedVaultPassphraseOptInUI": [
         {
             "platforms": [

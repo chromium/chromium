@@ -39,10 +39,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -71,7 +73,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(6)
+                    .setRevision(7)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
@@ -136,6 +138,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
+    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
@@ -170,6 +174,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
+    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
         mPage = loadRecentTabsPage();
         long time = 904881600000L;
@@ -205,6 +211,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE})
+    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedBulkEvent() throws Exception {
         mPage = loadRecentTabsPage();
         long time = 904881600000L;
@@ -244,7 +252,14 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
+    @DisableFeatures({
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
+    })
+    public void
+    testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
@@ -261,7 +276,14 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
+    @DisableFeatures({
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
+    })
+    public void
+    testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
