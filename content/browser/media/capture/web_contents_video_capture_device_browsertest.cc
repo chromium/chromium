@@ -45,8 +45,36 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
+#include "content/browser/compositor/image_transport_factory.h"
+#endif
+
 namespace content {
 namespace {
+
+scoped_refptr<viz::ContextProvider> GetContextProvider() {
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
+  auto* image_transport_factory = ImageTransportFactory::GetInstance();
+  DCHECK(image_transport_factory);
+
+  auto* ui_context_factory = image_transport_factory->GetContextFactory();
+  if (!ui_context_factory) {
+    return nullptr;
+  }
+
+  return ui_context_factory->SharedMainThreadContextProvider();
+#else
+  return nullptr;
+#endif
+}
+
+bool IsGpuRastrizationEnabled() {
+  auto context_provider = GetContextProvider();
+  if (!context_provider)
+    return false;
+
+  return context_provider->ContextCapabilities().gpu_rasterization;
+}
 
 class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
@@ -517,7 +545,8 @@ INSTANTIATE_TEST_SUITE_P(
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
                         true /* page contains a cross-site iframe */),
-        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)));
+        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)),
+    &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
 #elif BUILDFLAG(IS_MAC)
 // On MacOS, there is a newly added support for NV12-in-GMB. It relies on GPU
 // acceleration, but has a feature detection built-in if the format is
@@ -533,7 +562,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false /* page has only a main frame */,
                         true /* page contains a cross-site iframe */),
         testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420,
-                        media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)));
+                        media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)),
+    &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -545,25 +575,20 @@ INSTANTIATE_TEST_SUITE_P(
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
                         true /* page contains a cross-site iframe */),
-        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)));
+        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)),
+    &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
 #endif
 
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
-// Flaky on Mac https://crbug.com/1337765.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
-#else
-#define MAYBE_CapturesContentChanges CapturesContentChanges
-#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       MAYBE_CapturesContentChanges) {
+                       CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
   if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
-    if (IsSoftwareCompositingTest()) {
+    if (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled()) {
       expected_format = media::VideoPixelFormat::PIXEL_FORMAT_I420;
     } else {
       expected_format = media::VideoPixelFormat::PIXEL_FORMAT_NV12;

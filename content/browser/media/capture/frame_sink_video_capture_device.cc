@@ -120,7 +120,7 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
 
   // If present, GPU capabilities should already be up to date (this is ensured
   // by subscribing to context lost events on the |context_provider_|):
-  return gpu_capabilities_->texture_rg;
+  return gpu_capabilities_->texture_rg && gpu_capabilities_->gpu_rasterization;
 }
 
 media::VideoPixelFormat
