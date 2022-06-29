@@ -102,6 +102,7 @@
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
+#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
 #include "chromeos/system/statistics_provider.h"
@@ -115,6 +116,7 @@
 #include "components/ukm/ukm_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/version_info.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -515,6 +517,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->is_ondevice_speech_supported =
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
+
+  params->ash_chrome_version = version_info::GetVersionNumber();
 
   return params;
 }

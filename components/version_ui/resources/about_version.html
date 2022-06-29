@@ -92,6 +92,9 @@ about:version template page
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
             <span>$i18n{os_type}</span>
+<if expr="chromeos_lacros">
+            (Ash <span>$i18n{ash_chrome_version}</span>)
+</if>
 <if expr="is_android">
             <span>$i18n{os_version}</span>
 </if>
@@ -109,6 +112,7 @@ about:version template page
           </td>
         </tr>
 </if>
+<!-- TODO(crbug.com/1339120): Unify and reuse between Ash and Lacros -->
 <if expr="chromeos_ash">
         <tr>
           <td class="label">$i18n{platform}</td>

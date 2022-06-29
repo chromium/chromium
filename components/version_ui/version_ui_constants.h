@@ -53,6 +53,9 @@ extern const char kExecutablePathName[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kFirmwareVersion[];
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kAshChromeVersion[];
+#endif
 #if !BUILDFLAG(IS_IOS)
 extern const char kJSEngine[];
 extern const char kJSVersion[];

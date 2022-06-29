@@ -50,6 +50,9 @@ const char kExecutablePathName[] = "executable_path_name";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kFirmwareVersion[] = "firmware_version";
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kAshChromeVersion[] = "ash_chrome_version";
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if !BUILDFLAG(IS_IOS)
 const char kJSEngine[] = "js_engine";
 const char kJSVersion[] = "js_version";

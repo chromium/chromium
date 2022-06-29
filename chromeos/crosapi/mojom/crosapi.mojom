@@ -1102,6 +1102,11 @@ struct BrowserInitParams {
   // value for that extension.
   [MinVersion=43]
   map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value>? device_account_component_policy@43;
+
+  // Ash-chrome versioning information
+  // Example: 105.0.5124.0
+  [MinVersion=44]
+  string? ash_chrome_version@44;
 };
 
 // Parameters to specify OpenUrl behavior.

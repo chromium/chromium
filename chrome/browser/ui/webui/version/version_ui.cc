@@ -53,6 +53,10 @@
 #include "chrome/browser/ui/webui/version/version_util_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using content::WebUIDataSource;
 
 namespace {
@@ -187,6 +191,11 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
       version_ui::kVersionModifier,
       chrome::GetChannelName(chrome::WithExtendedStable(true)));
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* init_params = chromeos::BrowserInitParams::Get();
+  html_source->AddString(version_ui::kAshChromeVersion,
+                         init_params->ash_chrome_version.value_or("0.0.0.0"));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddString(version_ui::kJSEngine, "V8");
   html_source->AddString(version_ui::kJSVersion, V8_VERSION_STRING);
   html_source->AddString(
