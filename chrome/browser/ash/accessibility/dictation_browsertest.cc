@@ -816,8 +816,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, UndoAndRedo) {
   SendFinalResultAndWaitForTextAreaValue("redo", "The constellation Lyra");
 }
 
-// Flaky, https://crbug.com/1296811
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_SelectAllAndUnselect) {
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectAllAndUnselect) {
   SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
   SendFinalResultAndWaitForSelectionChanged("Select all");
@@ -1246,9 +1245,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_StandbyHints) {
 // Ensures that Search + D can be used to toggle Dictation when ChromeVox is
 // active. Also verifies that ChromeVox announces hints when they are shown in
 // the Dictation UI.
-
-// TODO(crbug.com/1296810): DictationUITest.ChromeVoxAnnouncesHints is flaky.
-IN_PROC_BROWSER_TEST_P(DictationUITest, DISABLED_ChromeVoxAnnouncesHints) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   // Setup ChromeVox first.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
