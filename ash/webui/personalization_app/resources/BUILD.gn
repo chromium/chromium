@@ -155,7 +155,6 @@ static_resource_files = [
 
   "common/ambient_mode_disabled.svg",
   "common/ambient_mode_disabled_dark.svg",
-  "common/base.css",
   "common/feel_the_breeze.png",
   "common/float_on_by.png",
   "common/google_photos.svg",
@@ -163,6 +162,8 @@ static_resource_files = [
   "common/no_google_photos_images.svg",
   "common/no_google_photos_images_dark.svg",
   "common/slideshow.png",
+
+  "css/base.css",
 
   "trusted/index.html",
 ]
