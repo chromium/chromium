@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "sql/database.h"
@@ -57,7 +58,7 @@ class AggregationServiceStorageSqlTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_directory_;
-  std::unique_ptr<AggregationServiceKeyStorage> storage_;
+  std::unique_ptr<AggregationServiceStorage> storage_;
   base::SimpleTestClock clock_;
 };
 
@@ -75,7 +76,7 @@ class AggregationServiceStorageSqlInMemoryTest : public testing::Test {
   void CloseDatabase() { storage_.reset(); }
 
  protected:
-  std::unique_ptr<AggregationServiceKeyStorage> storage_;
+  std::unique_ptr<AggregationServiceStorage> storage_;
   base::SimpleTestClock clock_;
 };
 

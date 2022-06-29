@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,16 +61,16 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   }
 
   void SetPublicKeysInStorage(const GURL& url, PublicKeyset keyset) {
-    storage_context_.GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
+    storage_context_.GetStorage()
+        .AsyncCall(&AggregationServiceStorage::SetPublicKeys)
         .WithArgs(url, std::move(keyset));
   }
 
   void ExpectPublicKeysInStorage(const GURL& url,
                                  const std::vector<PublicKey>& expected_keys) {
     base::RunLoop run_loop;
-    storage_context_.GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
+    storage_context_.GetStorage()
+        .AsyncCall(&AggregationServiceStorage::GetPublicKeys)
         .WithArgs(url)
         .Then(
             base::BindLambdaForTesting([&](std::vector<PublicKey> actual_keys) {

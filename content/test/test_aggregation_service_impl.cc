@@ -21,6 +21,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -89,8 +90,8 @@ TestAggregationServiceImpl::TestAggregationServiceImpl(
 
 TestAggregationServiceImpl::~TestAggregationServiceImpl() = default;
 
-const base::SequenceBound<AggregationServiceKeyStorage>&
-TestAggregationServiceImpl::GetKeyStorage() {
+const base::SequenceBound<AggregationServiceStorage>&
+TestAggregationServiceImpl::GetStorage() {
   return storage_;
 }
 
@@ -114,7 +115,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
     return;
   }
 
-  storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
+  storage_.AsyncCall(&AggregationServiceStorage::SetPublicKeys)
       .WithArgs(url, std::move(*keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
@@ -170,7 +171,7 @@ void TestAggregationServiceImpl::SendReport(
 void TestAggregationServiceImpl::GetPublicKeys(
     const GURL& url,
     base::OnceCallback<void(std::vector<PublicKey>)> callback) const {
-  storage_.AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
+  storage_.AsyncCall(&AggregationServiceStorage::GetPublicKeys)
       .WithArgs(url)
       .Then(std::move(callback));
 }

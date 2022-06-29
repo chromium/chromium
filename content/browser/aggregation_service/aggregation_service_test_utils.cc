@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
@@ -361,8 +362,8 @@ TestAggregationServiceStorageContext::TestAggregationServiceStorageContext(
 TestAggregationServiceStorageContext::~TestAggregationServiceStorageContext() =
     default;
 
-const base::SequenceBound<content::AggregationServiceKeyStorage>&
-TestAggregationServiceStorageContext::GetKeyStorage() {
+const base::SequenceBound<content::AggregationServiceStorage>&
+TestAggregationServiceStorageContext::GetStorage() {
   return storage_;
 }
 

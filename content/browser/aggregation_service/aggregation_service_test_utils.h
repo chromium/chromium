@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/aggregatable_report.mojom.h"
@@ -29,6 +28,8 @@ class Time;
 }  // namespace base
 
 namespace content {
+
+class AggregationServiceStorage;
 
 namespace aggregation_service {
 
@@ -100,11 +101,11 @@ class TestAggregationServiceStorageContext
   ~TestAggregationServiceStorageContext() override;
 
   // AggregationServiceStorageContext:
-  const base::SequenceBound<content::AggregationServiceKeyStorage>&
-  GetKeyStorage() override;
+  const base::SequenceBound<content::AggregationServiceStorage>& GetStorage()
+      override;
 
  private:
-  base::SequenceBound<content::AggregationServiceKeyStorage> storage_;
+  base::SequenceBound<content::AggregationServiceStorage> storage_;
 };
 
 // Only used for logging in tests.

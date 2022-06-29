@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "content/browser/aggregation_service/aggregation_service_key_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/common/content_export.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -33,13 +33,13 @@ namespace content {
 struct PublicKey;
 struct PublicKeyset;
 
-// AggregationServiceKeyStorage implementation backed by a SQLite database.
+// AggregationServiceStorage implementation backed by a SQLite database.
 // Instances may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence.
 
 // TODO(crbug.com/1232608): Support public key protocol versioning.
 class CONTENT_EXPORT AggregationServiceStorageSql
-    : public AggregationServiceKeyStorage {
+    : public AggregationServiceStorage {
  public:
   // `clock` must be a non-null pointer that is valid as long as this object.
   AggregationServiceStorageSql(bool run_in_memory,
@@ -51,7 +51,7 @@ class CONTENT_EXPORT AggregationServiceStorageSql
       const AggregationServiceStorageSql& other) = delete;
   ~AggregationServiceStorageSql() override;
 
-  // AggregationServiceKeyStorage:
+  // AggregationServiceStorage:
   std::vector<PublicKey> GetPublicKeys(const GURL& url) override;
   void SetPublicKeys(const GURL& url, const PublicKeyset& keyset) override;
   void ClearPublicKeys(const GURL& url) override;

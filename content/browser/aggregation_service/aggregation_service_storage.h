@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_STORAGE_H_
-#define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_STORAGE_H_
+#ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
+#define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
 
 #include <vector>
 
@@ -20,9 +20,9 @@ struct PublicKeyset;
 
 // This class provides an interface for persisting helper server public keys
 // and performing queries on it.
-class AggregationServiceKeyStorage {
+class AggregationServiceStorage {
  public:
-  virtual ~AggregationServiceKeyStorage() = default;
+  virtual ~AggregationServiceStorage() = default;
 
   // Returns the public keys for `url` that are currently valid. The returned
   // value should not be stored for future operations as it may expire soon.
@@ -47,4 +47,4 @@ class AggregationServiceKeyStorage {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_STORAGE_H_
+#endif  // CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
