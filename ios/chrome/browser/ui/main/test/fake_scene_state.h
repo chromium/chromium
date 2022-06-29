@@ -16,7 +16,7 @@ class ChromeBrowserState;
 // because of the embedded test browser state.
 @interface FakeSceneState : SceneState
 
-// Creates an array of |count| instances, without any associated AppState.
+// Creates an array of `count` instances, without any associated AppState.
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
                                     browserState:
                                         (ChromeBrowserState*)browserState;
@@ -36,7 +36,7 @@ class ChromeBrowserState;
 // Append a suitable web state test double to the receiver's main interface.
 - (void)appendWebStateWithURL:(const GURL)URL;
 
-// Append |count| web states, all with |url| as the current URL, to the
+// Append `count` web states, all with `url` as the current URL, to the
 - (void)appendWebStatesWithURL:(const GURL)URL count:(int)count;
 
 @end

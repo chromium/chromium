@@ -33,7 +33,7 @@ enum class ContentVisibility {
   kIncognito,
 };
 
-// Returns the value of ContentVisibility depending on |isIncognito| boolean.
+// Returns the value of ContentVisibility depending on `isIncognito` boolean.
 ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return isIncognito ? ContentVisibility::kIncognito
                      : ContentVisibility::kRegular;

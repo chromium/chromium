@@ -13,9 +13,9 @@
 // Test double for BrowserInterfaceProvider implementors. All properties are
 // writeable. It behaves as follows:
 // - It creates two StubBrowserInterfaces on init.
-// - |currentInterface| is settable and defaults to the main interface.
-// - The current interface is has |current| set to YES on init.
-// - The incoignito interface has |incognito| set to YES on init.
+// - `currentInterface` is settable and defaults to the main interface.
+// - The current interface is has `current` set to YES on init.
+// - The incoignito interface has `incognito` set to YES on init.
 // - All other methods are no-ops, and there is no control logic to update the
 //   interfaces in any way after init.
 @interface StubBrowserInterfaceProvider : NSObject <BrowserInterfaceProvider>

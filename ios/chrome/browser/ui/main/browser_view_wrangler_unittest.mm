@@ -108,7 +108,7 @@ class BrowserViewWranglerTest : public PlatformTest {
 };
 
 TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
-  // |task_environment_| must outlive all objects created by BVC, because those
+  // `task_environment_` must outlive all objects created by BVC, because those
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
     BrowserViewWrangler* wrangler = [[BrowserViewWrangler alloc]
@@ -172,7 +172,7 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
 
   Browser* prior_otr_browser = observer.GetLastAddedIncognitoBrowser();
 
-  // WARNING: after the following call, |last_otr_browser| is unsafe.
+  // WARNING: after the following call, `last_otr_browser` is unsafe.
   [wrangler willDestroyIncognitoBrowserState];
   chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
   chrome_browser_state_->GetOffTheRecordChromeBrowserState();

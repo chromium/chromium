@@ -177,7 +177,7 @@ enum class EnterTabSwitcherSnapshotResult {
 
 // Used to update the current BVC mode if a new tab is added while the tab
 // switcher view is being dismissed.  This is different than ApplicationMode in
-// that it can be set to |NONE| when not in use.
+// that it can be set to `NONE` when not in use.
 enum class TabSwitcherDismissalMode { NONE, NORMAL, INCOGNITO };
 
 // Key of the UMA IOS.MultiWindow.OpenInNewWindow histogram.
@@ -391,7 +391,7 @@ bool IsSigninForcedByPolicy() {
     return;
   }
   // Handle URL opening from
-  // |UIWindowSceneDelegate scene:willConnectToSession:options:|.
+  // `UIWindowSceneDelegate scene:willConnectToSession:options:`.
   for (UIOpenURLContext* context in self.sceneState.connectionOptions
            .URLContexts) {
     URLOpenerParams* params =
@@ -488,7 +488,7 @@ bool IsSigninForcedByPolicy() {
 
   id<BrowserInterface> interface = self.interfaceProvider.currentInterface;
 
-  // It's expected that the current interface matches |incognito|.
+  // It's expected that the current interface matches `incognito`.
   DCHECK(interface.incognito == incognito);
 
   // Move the tab to the current interface's browser.
@@ -509,7 +509,7 @@ bool IsSigninForcedByPolicy() {
   }
 
   // If there is no active tab, a NTP will be added, and since there is no
-  // recent tab, there is not need to mark |modifytVisibleNTPForStartSurface|.
+  // recent tab, there is not need to mark `modifytVisibleNTPForStartSurface`.
   // Keep showing the last active NTP tab no matter whether the Start Surface is
   // enabled or not by design.
   // Note that currentWebState could only be nullptr when the Tab grid is active
@@ -979,7 +979,7 @@ bool IsSigninForcedByPolicy() {
   return ApplicationMode::NORMAL;
 }
 
-// Creates and displays the initial UI in |launchMode|, performing other
+// Creates and displays the initial UI in `launchMode`, performing other
 // setup and configuration as needed.
 - (void)createInitialUI:(ApplicationMode)launchMode {
   DCHECK(self.sceneState.appState.mainBrowserState);
@@ -1018,9 +1018,9 @@ bool IsSigninForcedByPolicy() {
     [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];
   }
 
-  // Call this right after |setCurrentInterfaceForMode:| to ensure the
+  // Call this right after `setCurrentInterfaceForMode:` to ensure the
   // currentInterface is set in case a new tab needs to be opened. Since this is
-  // synchronous with |setActivePage:| above, then the user should not see the
+  // synchronous with `setActivePage:` above, then the user should not see the
   // last tab if the Start Surface is opened.
   if (!IsStartSurfaceSplashStartupEnabled()) {
     [self handleShowStartSurfaceIfNecessary];
@@ -1050,7 +1050,7 @@ bool IsSigninForcedByPolicy() {
   [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
 }
 
-// |YES| if Chrome is not the default browser, the app did not crash recently,
+// `YES` if Chrome is not the default browser, the app did not crash recently,
 // the user never saw the promo UI and is in the correct experiment groups.
 - (BOOL)potentiallyInterestedUser {
   // If skipping first run, not in Safe Mode, no post opening action and the
@@ -1140,7 +1140,7 @@ bool IsSigninForcedByPolicy() {
   }
 
   // The UI should be stopped before the models they observe are stopped.
-  // SigninCoordinator teardown is performed by the |signinCompletion| on
+  // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
   [self.signinCoordinator
       interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
@@ -1343,14 +1343,14 @@ bool IsSigninForcedByPolicy() {
   if (IsSigninForcedByPolicy()) {
     if (self.signinCoordinator) {
       // Return NO because intents cannot be handled when using
-      // |self.signinCoordinator| for the forced sign-in prompt.
+      // `self.signinCoordinator` for the forced sign-in prompt.
       return NO;
     }
     if (![self isSignedIn]) {
       // Return NO if the forced sign-in policy is enabled while the browser is
       // signed out because intent can only be processed when the browser is
       // signed-in in that case. This condition may be reached at startup before
-      // |self.signinCoordinator| is set to show the forced sign-in prompt.
+      // `self.signinCoordinator` is set to show the forced sign-in prompt.
       return NO;
     }
   }
@@ -1550,7 +1550,7 @@ bool IsSigninForcedByPolicy() {
   self.sceneURLLoadingService->LoadUrlInNewTab(params);
 }
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator)
@@ -2111,11 +2111,11 @@ bool IsSigninForcedByPolicy() {
 }
 
 // Begins the process of activating the given current model, switching which BVC
-// is suspended if necessary. If |dismissTabSwitcher| is set, the tab switcher
+// is suspended if necessary. If `dismissTabSwitcher` is set, the tab switcher
 // will also be dismissed. Note that this means that a browser can be activated
 // without closing the tab switcher (e.g. thumb strip), but dismissing the tab
 // switcher requires activating a browser. The omnibox will be focused after the
-// tab switcher dismissal is completed if |focusOmnibox| is YES.
+// tab switcher dismissal is completed if `focusOmnibox` is YES.
 - (void)beginActivatingBrowser:(Browser*)browser
             dismissTabSwitcher:(BOOL)dismissTabSwitcher
                   focusOmnibox:(BOOL)focusOmnibox {
@@ -2428,7 +2428,7 @@ bool IsSigninForcedByPolicy() {
 
 #pragma mark - SceneURLLoadingServiceDelegate
 
-// Note that the current tab of |browserCoordinator|'s BVC will normally be
+// Note that the current tab of `browserCoordinator`'s BVC will normally be
 // reloaded by this method. If a new tab is about to be added, call
 // expectNewForegroundTab on the BVC first to avoid extra work and possible page
 // load side-effects for the tab being replaced.
@@ -2488,7 +2488,7 @@ bool IsSigninForcedByPolicy() {
                            dismissOmnibox:dismissOmnibox];
   };
   ProceduralBlock completionWithoutBVC = ^{
-    // |self.currentInterface.bvc| may exist but tab switcher should be
+    // `self.currentInterface.bvc` may exist but tab switcher should be
     // active.
     DCHECK(self.mainCoordinator.isTabGridActive);
     DCHECK(!self.signinCoordinator)
@@ -2522,9 +2522,9 @@ bool IsSigninForcedByPolicy() {
                completion:completion];
 }
 
-// Call |dismissModalsAndOpenSelectedTabInMode| recursively to open the list of
-// URLs contained in |URLs|. Achieved through chaining
-// |dismissModalsAndOpenSelectedTabInMode| in its completion handler.
+// Call `dismissModalsAndOpenSelectedTabInMode` recursively to open the list of
+// URLs contained in `URLs`. Achieved through chaining
+// `dismissModalsAndOpenSelectedTabInMode` in its completion handler.
 - (void)recursiveOpenURLs:(const std::vector<GURL>&)URLs
                    inMode:(ApplicationModeForTabOpening)mode
              currentIndex:(size_t)currentIndex
@@ -2567,14 +2567,14 @@ bool IsSigninForcedByPolicy() {
 }
 
 // Opens a tab in the target BVC, and switches to it in a way that's appropriate
-// to the current UI, based on the |dismissModals| flag:
-// - If a modal dialog is showing and |dismissModals| is NO, the selected tab of
+// to the current UI, based on the `dismissModals` flag:
+// - If a modal dialog is showing and `dismissModals` is NO, the selected tab of
 // the main tab model will change in the background, but the view won't change.
 // - Otherwise, any modal view will be dismissed, the tab switcher will animate
 // out if it is showing, the target BVC will become active, and the new tab will
 // be shown.
-// If the current tab in |targetMode| is a NTP, it can be reused to open URL.
-// |completion| is executed after the tab is opened. After Tab is open the
+// If the current tab in `targetMode` is a NTP, it can be reused to open URL.
+// `completion` is executed after the tab is opened. After Tab is open the
 // virtual URL is set to the pending navigation item.
 - (void)openSelectedTabInMode:(ApplicationModeForTabOpening)tabOpeningTargetMode
             withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
@@ -2606,8 +2606,8 @@ bool IsSigninForcedByPolicy() {
   ProceduralBlock tabOpenedCompletion = nil;
   if (startupCompletion && completion) {
     tabOpenedCompletion = ^{
-      // Order is important here. |completion| may do cleaning tasks that will
-      // invalidate |startupCompletion|.
+      // Order is important here. `completion` may do cleaning tasks that will
+      // invalidate `startupCompletion`.
       startupCompletion();
       completion();
     };
@@ -2706,8 +2706,8 @@ bool IsSigninForcedByPolicy() {
 }
 
 // Checks the target BVC's current tab's URL. If this URL is chrome://newtab,
-// loads |urlLoadParams| in this tab. Otherwise, open |urlLoadParams| in a new
-// tab in the target BVC. |tabDisplayedCompletion| will be called on the new tab
+// loads `urlLoadParams` in this tab. Otherwise, open `urlLoadParams` in a new
+// tab in the target BVC. `tabDisplayedCompletion` will be called on the new tab
 // (if not nil).
 - (void)openOrReuseTabInMode:(ApplicationMode)targetMode
            withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
@@ -2749,7 +2749,7 @@ bool IsSigninForcedByPolicy() {
         ->Load(newTabParams);
     return;
   }
-  // Otherwise, load |urlLoadParams| in the current tab.
+  // Otherwise, load `urlLoadParams` in the current tab.
   UrlLoadParams sameTabParams = urlLoadParams;
   sameTabParams.disposition = WindowOpenDisposition::CURRENT_TAB;
   UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
@@ -2760,8 +2760,8 @@ bool IsSigninForcedByPolicy() {
 }
 
 // Displays current (incognito/normal) BVC and optionally focuses the omnibox.
-// If |dismissTabSwitcher| is NO, then the tab switcher is not dismissed,
-// although the BVC will be visible. |dismissTabSwitcher| is only used in the
+// If `dismissTabSwitcher` is NO, then the tab switcher is not dismissed,
+// although the BVC will be visible. `dismissTabSwitcher` is only used in the
 // thumb strip feature.
 - (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox
                       dismissTabSwitcher:(BOOL)dismissTabSwitcher {
@@ -2786,8 +2786,8 @@ bool IsSigninForcedByPolicy() {
 #pragma mark - Sign In UI presentation
 
 // Show trusted vault dialog.
-// |intent| Dialog to present.
-// |trigger| UI elements where the trusted vault reauth has been triggered.
+// `intent` Dialog to present.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)
     showTrustedVaultDialogFromViewController:(UIViewController*)viewController
                                       intent:
@@ -2852,8 +2852,8 @@ bool IsSigninForcedByPolicy() {
                                                    completion:completion];
       self.settingsNavigationController = nil;
     };
-    // |self.signinCoordinator| can be presented on top of the settings, to
-    // present the Trusted Vault reauthentication |self.signinCoordinator| has
+    // `self.signinCoordinator` can be presented on top of the settings, to
+    // present the Trusted Vault reauthentication `self.signinCoordinator` has
     // to be closed first.
     if (self.signinCoordinator) {
       [self interruptSigninCoordinatorAnimated:animated
@@ -2862,7 +2862,7 @@ bool IsSigninForcedByPolicy() {
       dismissSettings();
     }
   } else if (self.signinCoordinator) {
-    // |self.signinCoordinator| can be presented without settings, from the
+    // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
     [self interruptSigninCoordinatorAnimated:animated completion:completion];
   } else {
@@ -2930,8 +2930,8 @@ bool IsSigninForcedByPolicy() {
           // If the coordinator isn't stopped by an external trigger, sign-in
           // is done. Otherwise, there might be extra steps to be done before
           // considering sign-in as done. This is up to the handler that sets
-          // |self.dismissingSigninPromptFromExternalTrigger| to YES to set
-          // back |signinInProgress| to NO.
+          // `self.dismissingSigninPromptFromExternalTrigger` to YES to set
+          // back `signinInProgress` to NO.
           weakSelf.sceneState.signinInProgress = NO;
         }
 
@@ -3141,7 +3141,7 @@ bool IsSigninForcedByPolicy() {
   return TabGridPageRegularTabs;
 }
 
-// Adds a new tab to the |browser| based on |urlLoadParams| and then presents
+// Adds a new tab to the `browser` based on `urlLoadParams` and then presents
 // it.
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams {
