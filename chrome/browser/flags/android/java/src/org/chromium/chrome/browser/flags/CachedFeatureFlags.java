@@ -143,7 +143,6 @@ public class CachedFeatureFlags {
      * @param featureName the feature name from ChromeFeatureList.
      * @return whether the cached feature should be considered enabled.
      */
-    @CalledByNative
     public static boolean isEnabled(String featureName) {
         // All cached feature flags should have a default value.
         if (!sDefaults.containsKey(featureName)) {
@@ -163,6 +162,7 @@ public class CachedFeatureFlags {
      *    it is returned.
      * 5. The default value passed as a parameter is returned.
      */
+    @CalledByNative
     @AnyThread
     static boolean isEnabled(String featureName, boolean defaultValue) {
         sSafeMode.onFlagChecked();
