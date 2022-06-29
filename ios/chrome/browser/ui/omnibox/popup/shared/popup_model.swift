@@ -69,7 +69,7 @@ import UIKit
     rtlContentAttribute = semanticContentAttribute
   }
 
-  public func computeSizeAndRequestUpdate() {
+  public func newResultsAvailable() {
     dataSource?.requestResults(visibleSuggestionCount: visibleSuggestionCount)
   }
 }

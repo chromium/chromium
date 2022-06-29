@@ -69,7 +69,7 @@ const CGFloat kOmniboxIconSize = 16;
 
   self.hasResults = !_currentResult.empty();
   if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
-    [self.consumer computeSizeAndRequestUpdate];
+    [self.consumer newResultsAvailable];
   } else {
     // Avoid calling consumer visible size and set all suggestions as visible to
     // get only one grouping.

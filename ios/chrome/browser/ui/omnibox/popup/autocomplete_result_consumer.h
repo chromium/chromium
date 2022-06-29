@@ -58,9 +58,9 @@
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute;
 
-// Tells the consumer to compute the number of suggestions it can show. And to
-// request new results from its data source `AutocompleteResultDataSource`.
-- (void)computeSizeAndRequestUpdate;
+// Informs consumer that new result are available. Consumer can request new
+// results from its data source `AutocompleteResultDataSource`.
+- (void)newResultsAvailable;
 
 @end
 
