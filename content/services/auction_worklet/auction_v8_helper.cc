@@ -22,9 +22,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/services/auction_worklet/auction_v8_devtools_agent.h"
 #include "content/services/auction_worklet/debug_command_queue.h"
@@ -96,6 +98,14 @@ class DebugContextScope {
   const v8::Local<v8::Context> context_;
   const raw_ptr<const AuctionV8Helper::DebugId> debug_id_;
 };
+
+void TraceTopLevel(const std::string& url,
+                   perfetto::TracedValue trace_context) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  dict.Add("url", url);
+  dict.Add("lineNumber", 1);
+  dict.Add("columnNumber", 1);
+}
 
 }  // namespace
 
@@ -287,10 +297,15 @@ scoped_refptr<base::SingleThreadTaskRunner>
 AuctionV8Helper::CreateTaskRunner() {
   // We want a dedicated thread for V8 execution since it may block indefinitely
   // if breakpointed in a debugger.
-  return base::ThreadPool::CreateSingleThreadTaskRunner(
+  auto task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::WithBaseSyncPrimitives(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce([] {
+        base::PlatformThread::SetName("AuctionV8HelperThread");
+      }));
+  return task_runner;
 }
 
 void AuctionV8Helper::SetDestroyedCallback(base::OnceClosure callback) {
@@ -411,6 +426,8 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const DebugId* debug_id,
     absl::optional<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
+
   v8::Isolate* v8_isolate = isolate();
 
   DebugContextScope maybe_debug(inspector(), v8_isolate->GetCurrentContext(),
@@ -420,6 +437,9 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   v8::MaybeLocal<v8::String> origin_string = CreateUtf8String(src_url.spec());
   if (src_string.IsEmpty() || origin_string.IsEmpty())
     return v8::MaybeLocal<v8::UnboundScript>();
+
+  TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.compile", "fileName",
+                     src_url.spec());
 
   // Compile script.
   v8::TryCatch try_catch(isolate());
@@ -433,6 +453,15 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     error_out = FormatExceptionMessage(v8_isolate->GetCurrentContext(),
                                        try_catch.Message());
   }
+
+  TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compile", "data",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     dict.Add("url", src_url.spec());
+                     dict.Add("lineNumber", 1);
+                     dict.Add("columnNumber", 1);
+                   });
+
   return result;
 }
 
@@ -489,13 +518,23 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   if (!CreateUtf8String(function_name).ToLocal(&v8_function_name))
     return v8::MaybeLocal<v8::Value>();
 
-  v8::Local<v8::Script> local_script = script->BindToCurrentContext();
-
-  // Run script.
+  v8::Local<v8::Script> local_script;
+  v8::MaybeLocal<v8::Value> result;
   v8::TryCatch try_catch(isolate());
   ScriptTimeoutHelper timeout_helper(this, timer_task_runner_,
                                      script_timeout.value_or(script_timeout_));
-  auto result = local_script->Run(context);
+
+  {
+    TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
+                 [&](perfetto::TracedValue trace_context) {
+                   TraceTopLevel(script_name, std::move(trace_context));
+                 });
+
+    local_script = script->BindToCurrentContext();
+
+    // Run script.
+    result = local_script->Run(context);
+  }
 
   if (try_catch.HasTerminated()) {
     error_out.push_back(
@@ -524,8 +563,23 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     return v8::MaybeLocal<v8::Value>();
   }
 
-  v8::MaybeLocal<v8::Value> func_result = v8::Function::Cast(*function)->Call(
-      context, context->Global(), args.size(), args.data());
+  v8::Function* func_ptr = v8::Function::Cast(*function);
+  v8::MaybeLocal<v8::Value> func_result;
+  {
+    TRACE_EVENT1(
+        "devtools.timeline", "FunctionCall", "data",
+        [&](perfetto::TracedValue trace_context) {
+          auto dict = std::move(trace_context).WriteDictionary();
+          dict.Add("functionName", function_name);
+          dict.Add("scriptId", base::NumberToString(func_ptr->ScriptId()));
+          dict.Add("url", script_name);
+          dict.Add("lineNumber", func_ptr->GetScriptLineNumber() + 1);
+          dict.Add("columnNumber", func_ptr->GetScriptColumnNumber() + 1);
+        });
+    func_result =
+        func_ptr->Call(context, context->Global(), args.size(), args.data());
+  }
+
   if (try_catch.HasTerminated()) {
     error_out.push_back(base::StrCat(
         {script_name, " execution of `", function_name, "` timed out."}));

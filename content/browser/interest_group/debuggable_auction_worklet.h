@@ -20,6 +20,10 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "url/gurl.h"
 
+namespace perfetto {
+class TracedValue;
+}  // namespace perfetto
+
 namespace content {
 
 class RenderFrameHostImpl;
@@ -29,6 +33,11 @@ class RenderFrameHostImpl;
 // DebuggableAuctionWorkletTracker will notify of creation/destruction of these.
 class CONTENT_EXPORT DebuggableAuctionWorklet {
  public:
+  enum class WorkletType {
+    kBidder,
+    kSeller,
+  };
+
   using PidCallback = base::OnceCallback<void(base::ProcessId)>;
 
   explicit DebuggableAuctionWorklet(const DebuggableAuctionWorklet&) = delete;
@@ -40,6 +49,11 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // Human-readable description of the worklet. (For English-speaking humans,
   // anyway).
   std::string Title() const;
+
+  // Returns a random GUID associated with this worklet.
+  const std::string& UniqueId() const { return unique_id_; }
+
+  WorkletType Type() const;
 
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
@@ -75,10 +89,15 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   void RequestPid();
   void OnHavePid(base::ProcessId process_id);
 
+  // Records parameter data for auction process assignment events.
+  void TraceProcessData(perfetto::TracedValue trace_context);
+
   const raw_ptr<RenderFrameHostImpl> owning_frame_ = nullptr;
   const raw_ptr<AuctionProcessManager::ProcessHandle> process_handle_ = nullptr;
   const GURL url_;
+  const std::string unique_id_;
 
+  absl::optional<base::ProcessId> pid_;
   bool should_pause_on_start_ = false;
 
   absl::variant<auction_worklet::mojom::BidderWorklet*,
