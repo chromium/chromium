@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2177831236093724629">发现了<ph name="LINK_BEGIN" />不支持的组件<ph name="LINK_END" />。为确保系统能识别所有受支持的组件，请将您的 Chrome 操作系统更新到最新版本。</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
+<translation id="2182088270354640012">感谢您提供反馈。您的反馈将有助于我们改进 Chrome OS，并将由 Chrome OS 团队审核。由于我们收到的举报数量众多，您无法收到直接回复。</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
 <translation id="2217935453350629363">当前速度</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">正在重启…</translation>
 <translation id="2533048460510040082">推荐的帮助内容</translation>
 <translation id="2536159006530886390">无法连接到互联网。</translation>
+<translation id="256360469103926202">您的反馈将有助于我们改进 ChromeOS，并将由我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2619761439309613843">每日刷新</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
+<translation id="3275729367986477355">头像图片</translation>
 <translation id="3283504360622356314">{0,plural, =1{修改文件}other{修改文件}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">密钥方向</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">如需更多帮助，请访问<ph name="BEGIN_LINK" />帮助中心<ph name="END_LINK" />。</translation>
 <translation id="4793756956024303490">压缩算法</translation>
 <translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
+<translation id="4800589996161293643">Chromebook 社区</translation>
 <translation id="4804818685124855865">断开连接</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
 <translation id="4809927044794281115">浅色主题</translation>
@@ -488,6 +492,7 @@
 请尝试通过点按麦克风图标向我提问。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">退出</translation>
+<translation id="522307662484862935">不附加电子邮件地址</translation>
 <translation id="5227902338748591677">深色主题时间表</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5252456968953390977">漫游</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">开启深色主题</translation>
 <translation id="6295178529664209245">继续修复？</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
+<translation id="631063167932043783">“探索”应用</translation>
 <translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="6321407676395378991">开启屏保功能</translation>
 <translation id="6325525973963619867">失败</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">无法通过防火墙连接到 HTTPS 网站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">在 Chromebook 帮助论坛中向专家提问</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按搜索键 + 空格键即可查看“Google 搜索”中的结果。</translation>
 <translation id="7343649194310845056">网络设备</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">循环计数</translation>
 <translation id="7747039790905080783">预共享的密钥</translation>
 <translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>
+<translation id="7762839321248874531">发送<ph name="BEGIN_LINK1" />系统和应用信息<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7784116172884276937">未设置 DNS 服务器</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">白标签</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
+<translation id="8420955526972171689">运行硬件测试以排查硬件问题</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">内部键盘</translation>
 <translation id="8431300646573772016">Chrome 操作系统的新变化</translation>

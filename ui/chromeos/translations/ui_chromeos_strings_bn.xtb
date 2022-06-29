@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" />টি নেটওয়ার্কের মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
 <translation id="2142680004883808240">রাশিয়ান ভাষায় ফোনেটিক ইয়াজহার্ট (YaZHert) কীবোর্ড</translation>
 <translation id="2143778271340628265">ম্যানুয়াল প্রক্সি কনফিগারেশন</translation>
+<translation id="2148716181193084225">আজ</translation>
 <translation id="2163152940313951844">ভুল অক্ষর: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">পর্তুগিজ ভাষায় ইউএস ইন্টারন্যাশনাল পিসি কীবোর্ড</translation>
 <translation id="2198315389084035571">সরলীকৃত চীনা</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংরেজি (যুক্তরাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফোনেটিক</translation>
+<translation id="3991446849494482687">এর ফলে, ডিভাইসের সিম লক সেটিং বন্ধ হয়ে যাবে।</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4017788180641807848">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ওয়ার্কম্যান কীবোর্ড</translation>
 <translation id="4040753847560036377">ভুল PUK দিয়েছেন</translation>
@@ -703,6 +705,7 @@
 <translation id="7075931588889865715">থাই ভাষায় টিআইএস (TIS) ৮২০-২৫৩১ কীবোর্ড</translation>
 <translation id="708278670402572152">স্ক্যানিং সক্রিয় করতে সংযোগ বিচ্ছিন্ন করুন</translation>
 <translation id="7086590977277044826">তামিল ভাষায় ইনস্ক্রিপ্ট কীবোর্ড</translation>
+<translation id="7088615885725309056">পূর্বতর</translation>
 <translation id="7103992300314999525">ম্যাসিডোনিয়ান</translation>
 <translation id="7106346894903675391">আরও সঞ্চয়স্থান কিনুন...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ড্রাইভে খুঁজুন&lt;/em&gt;</translation>
@@ -777,6 +780,7 @@
 <translation id="7760449188139285140">চীনা উবি</translation>
 <translation id="7765158879357617694">সরান</translation>
 <translation id="7774365994322694683">পাখি</translation>
+<translation id="7781829728241885113">গতকাল</translation>
 <translation id="7788080748068240085">এই <ph name="FILE_NAME" /> অফলাইনে সেভ করতে হলে আপনাকে অবশ্যই অতিরিক্ত <ph name="TOTAL_FILE_SIZE" /> স্পেশ খালি করতে হবে:<ph name="MARKUP_1" />
        <ph name="MARKUP_2" />যে সমস্ত ফাইলের আপনার আর অফলাইনে ব্যবহার করার দরকার নেই সেগুলিকে আনপিন করুন<ph name="MARKUP_3" />
        <ph name="MARKUP_4" />আপনার ডাউনলোড ফোল্ডার থেকে ফাইল মুছুন<ph name="MARKUP_5" /></translation>

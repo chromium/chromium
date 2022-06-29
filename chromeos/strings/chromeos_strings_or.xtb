@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />ଅଯୋଗ୍ୟ କମ୍ପୋନେଣ୍ଟଗୁଡ଼ିକ<ph name="LINK_END" /> ମିଳିଛି। ସମସ୍ତ ଯୋଗ୍ୟ କମ୍ପୋନେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇଥିବା ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ, ଆପଣଙ୍କ Chrome OSକୁ ନବୀନତମ ସଂସ୍କରଣରେ ଅପଡେଟ କରନ୍ତୁ।</translation>
 <translation id="2180197493692062006">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପକୁ ପୁଣି ଖୋଲିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="2182088270354640012">ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ। Chrome OSକୁ ଉନ୍ନତ କରିବାରେ ଆପଣଙ୍କ ମତାମତ ସାହାଯ୍ୟ କରେ ଏବଂ ଏହାକୁ Chrome OS ଟିମ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯିବ। ଅଧିକ ସଂଖ୍ୟକ ରିପୋର୍ଟ ଦାଖଲ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏକ ସିଧାସଳଖ ପ୍ରତ୍ୟୁତ୍ତର ପାଇବେ ନାହିଁ।</translation>
 <translation id="2209788852729124853">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରଗୁଡ଼ିକୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2212733584906323460">ନାମ ରିଜୋଲ୍ୟୁସନ</translation>
 <translation id="2217935453350629363">ବର୍ତ୍ତମାନର ସ୍ପିଡ୍</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି...</translation>
 <translation id="2533048460510040082">ପ୍ରସ୍ତାବିତ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
+<translation id="256360469103926202">ChromeOSକୁ ଉନ୍ନତ କରିବାରେ ଆପଣଙ୍କ ମତାମତ ସାହାଯ୍ୟ କରେ ଏବଂ ଏହାକୁ ଆମ ଟିମ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯିବ। ବହୁ ସଂଖ୍ୟକ ରିପୋର୍ଟ ଯୋଗୁଁ ଆମେ ଏକ ପ୍ରତ୍ୟୁତ୍ତର ପଠାଇବାକୁ ସକ୍ଷମ ହେବୁ ନାହିଁ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
+<translation id="3275729367986477355">ଅବତାର ଇମେଜ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ଫାଇଲକୁ ଏଡିଟ୍ କରନ୍ତୁ}other{ଫାଇଲଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">ଅଧିକ ସହାୟତା ପାଇଁ, <ph name="BEGIN_LINK" />ସହାୟତା କେନ୍ଦ୍ର<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4793756956024303490">କମ୍ପ୍ରେସନ ଆଲଗୋରିଦମ</translation>
 <translation id="4794140124556169553">ଏକ CPU ଟେଷ୍ଟ ଚଲାଇବା ଫଳରେ ଏହା ଆପଣଙ୍କ ସିଷ୍ଟମର ପରଫରମାନ୍ସକୁ ପ୍ରଭାବିତ କରିପାରେ</translation>
+<translation id="4800589996161293643">Chromebook କମ୍ୟୁନିଟୀ</translation>
 <translation id="4804818685124855865">ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="4808449224298348341">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ <ph name="DOCUMENT_TITLE" /> ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="4809927044794281115">ହାଲୁକା ଥିମ୍</translation>
@@ -488,6 +492,7 @@
 ମୋତେ ଯାହା କିଛି ପଚାରିବା ପାଇଁ ମାଇକ୍‌ ଟାପ୍‌ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5212593641110061691">ଟାବଲଏଡ୍</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
+<translation id="522307662484862935">ଇମେଲ ଠିକଣା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="5227902338748591677">ଗାଢ଼ା ଥିମ୍ ସିଡୁଲ୍</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="5252456968953390977">ରୋମିଂ</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">ଗାଢ଼ା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6295178529664209245">ମରାମତି କରିବା ଜାରି ରଖିବେ?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
+<translation id="631063167932043783">ଆପ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6321407676395378991">ସ୍କ୍ରିନ୍ ସେଭର୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6325525973963619867">ବିଫଳ ହୋଇଛି</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook ସହାୟତା ଫୋରମରେ ବିଶେଷଜ୍ଞମାନଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">ସାଇକଲ୍ ଗଣନା</translation>
 <translation id="7747039790905080783">ପୂର୍ବରୁ ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="7762130827864645708">ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ସଫଳ ହୋଇଛି। ଦୟାକରି ବର୍ତ୍ତମାନଠାରୁ ନୂଆ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />ସିଷ୍ଟମ ଓ ଆପ ସୂଚନା <ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />ମେଟ୍ରିକ୍ସ<ph name="END_LINK2" /> ପଠାନ୍ତୁ</translation>
 <translation id="7763470514545477072">ଡୋମେନ୍ ସଫିକ୍ସ ସହ ମେଳ</translation>
 <translation id="7769672763586021400">ମଡେଲ୍ ID</translation>
 <translation id="7784116172884276937">କୌଣସି DNS ସର୍ଭର ସେଟ ଅପ କରାଯାଇନାହିଁ</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">ହ୍ୱାଇଟ-ଲେବଲ</translation>
 <translation id="8395584934117017006">ଏହି <ph name="DEVICE_TYPE" /> ଏଣ୍ଟରପ୍ରାଇଜ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
+<translation id="8420955526972171689">ହାର୍ଡୱେର ସମସ୍ୟାଗୁଡ଼ିକ ପାଇଁ ପରୀକ୍ଷା ଏବଂ ଟ୍ରବୁଲସୁଟିଂ ଚଲାନ୍ତୁ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ଇଣ୍ଟର୍ନଲ କୀବୋର୍ଡ</translation>
 <translation id="8431300646573772016">ChromeOSରେ ନୂଆ କଣ ଅଛି</translation>

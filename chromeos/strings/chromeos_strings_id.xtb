@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
 <translation id="2177831236093724629">Ditemukan <ph name="LINK_BEGIN" />komponen yang tidak memenuhi syarat<ph name="LINK_END" />. Untuk memastikan semua komponen yang memenuhi syarat teridentifikasi, update Chrome OS ke versi terbaru.</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
+<translation id="2182088270354640012">Terima kasih atas masukan Anda. Masukan Anda membantu meningkatkan Chrome OS dan akan ditinjau oleh tim Chrome OS. Karena banyaknya laporan yang dikirim, Anda tidak akan menerima balasan langsung.</translation>
 <translation id="2209788852729124853">Reset Penghitung Traffic</translation>
 <translation id="2212733584906323460">Resolusi Nama</translation>
 <translation id="2217935453350629363">Kecepatan saat ini</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Memulai ulang ...</translation>
 <translation id="2533048460510040082">Konten bantuan yang disarankan</translation>
 <translation id="2536159006530886390">Tidak dapat terhubung ke internet.</translation>
+<translation id="256360469103926202">Masukan Anda membantu meningkatkan ChromeOS dan akan ditinjau oleh tim kami. Karena banyaknya jumlah laporan, kami tidak dapat mengirim balasan.</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
+<translation id="3275729367986477355">Gambar avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Arah kunci</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lebih lanjut, buka <ph name="BEGIN_LINK" />Pusat Bantuan<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme kompresi</translation>
 <translation id="4794140124556169553">Menjalankan pengujian CPU dapat memengaruhi performa sistem Anda</translation>
+<translation id="4800589996161293643">Komunitas Chromebook</translation>
 <translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="4808449224298348341">Tugas pencetakan <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
 <translation id="4809927044794281115">Tema terang</translation>
@@ -488,6 +492,7 @@
 Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logout</translation>
+<translation id="522307662484862935">Jangan sertakan alamat email</translation>
 <translation id="5227902338748591677">Jadwal tema gelap</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5252456968953390977">Jelajah</translation>
@@ -614,6 +619,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6284632978374966585">Aktifkan tema gelap</translation>
 <translation id="6295178529664209245">Lanjutkan perbaikan?</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
+<translation id="631063167932043783">Aplikasi Jelajahi</translation>
 <translation id="6319207335391420837">Update firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Nyalakan screen saver</translation>
 <translation id="6325525973963619867">Gagal</translation>
@@ -720,6 +726,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Tanya pakar di forum bantuan Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
@@ -762,6 +769,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="773153675489693198">Jumlah siklus</translation>
 <translation id="7747039790905080783">Kunci yang dibagikan sebelumnya</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>
+<translation id="7762839321248874531">Kirim <ph name="BEGIN_LINK1" />info aplikasi dan sistem<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Kecocokan suffix domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
 <translation id="7784116172884276937">Tidak ada server DNS yang disiapkan</translation>
@@ -831,6 +839,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8382302752385457774">White-label</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
+<translation id="8420955526972171689">Jalankan pengujian dan pemecahan masalah untuk masalah hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Keyboard internal</translation>
 <translation id="8431300646573772016">Yang baru di ChromeOS</translation>

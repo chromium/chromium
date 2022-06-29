@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Bật chế độ tối</translation>
 <translation id="2177831236093724629">Tìm thấy <ph name="LINK_BEGIN" />thành phần không hợp lệ<ph name="LINK_END" />. Để đảm bảo xác định được tất cả thành phần hợp lệ, hãy cập nhật Chrome OS lên phiên bản mới nhất.</translation>
 <translation id="2180197493692062006">Đã xảy ra lỗi. Hãy thử mở lại ứng dụng.</translation>
+<translation id="2182088270354640012">Cảm ơn bạn đã phản hồi. Ý kiến phản hồi của bạn giúp cải thiện Chrome OS và sẽ được nhóm Chrome OS xem xét. Do số lượng báo cáo được gửi đến là rất lớn, nên bạn sẽ không nhận được thư trả lời trực tiếp.</translation>
 <translation id="2209788852729124853">Đặt lại Bộ đếm lưu lượng truy cập</translation>
 <translation id="2212733584906323460">Độ phân giải tên</translation>
 <translation id="2217935453350629363">Tốc độ hiện tại</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Đang khởi động lại…</translation>
 <translation id="2533048460510040082">Nội dung trợ giúp đề xuất</translation>
 <translation id="2536159006530886390">Không thể kết nối Internet.</translation>
+<translation id="256360469103926202">Ý kiến phản hồi của bạn giúp cải thiện Chrome OS và sẽ được nhóm của chúng tôi xem xét. Do nhận được số lượng lớn báo cáo nên chúng tôi sẽ không thể gửi thư trả lời cho bạn.</translation>
 <translation id="2570743873672969996">Đang chạy kiểm tra <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Để thiết lập, hãy chuyển tới phần Cài đặt</translation>
 <translation id="2619761439309613843">Làm mới hàng ngày</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
+<translation id="3275729367986477355">Hình đại diện</translation>
 <translation id="3283504360622356314">{0,plural, =1{Chỉnh sửa tệp}other{Chỉnh sửa các tệp}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Hướng khoá</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Để được trợ giúp thêm, hãy truy cập <ph name="BEGIN_LINK" />Trung tâm trợ giúp<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Thuật toán nén</translation>
 <translation id="4794140124556169553">Việc chạy quá trình kiểm tra CPU có thể ảnh hưởng đến hiệu suất của hệ thống</translation>
+<translation id="4800589996161293643">Cộng đồng Chromebook</translation>
 <translation id="4804818685124855865">Ngắt kết nối</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Giao diện sáng</translation>
@@ -488,6 +492,7 @@
 Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>
 <translation id="5212593641110061691">Tin vắn tắt</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
+<translation id="522307662484862935">Không bao gồm địa chỉ email</translation>
 <translation id="5227902338748591677">Lịch áp dụng giao diện tối</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5252456968953390977">Đang chuyển vùng</translation>
@@ -614,6 +619,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6284632978374966585">Bật giao diện tối</translation>
 <translation id="6295178529664209245">Tiếp tục sửa chữa?</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
+<translation id="631063167932043783">Ứng dụng Explore</translation>
 <translation id="6319207335391420837">Cập nhật chương trình cơ sở cho <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Bật trình bảo vệ màn hình</translation>
 <translation id="6325525973963619867">Lỗi</translation>
@@ -720,6 +726,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7297226631177386107">Không thể kết nối với các trang web HTTPS qua tường lửa</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Hỏi chuyên gia trong diễn đàn trợ giúp Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Google Tìm kiếm.</translation>
 <translation id="7343649194310845056">Thiết bị mạng</translation>
@@ -762,6 +769,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="773153675489693198">Số chu kỳ</translation>
 <translation id="7747039790905080783">Khóa được chia sẻ trước</translation>
 <translation id="7762130827864645708">Bạn đã thay đổi mật khẩu thành công. Hãy sử dụng mật khẩu mới từ giờ trở đi.</translation>
+<translation id="7762839321248874531">Gửi <ph name="BEGIN_LINK1" />thông tin về hệ thống và ứng dụng<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />các chỉ số<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Khớp hậu tố tên miền</translation>
 <translation id="7769672763586021400">ID kiểu máy</translation>
 <translation id="7784116172884276937">Không có máy chủ DNS nào được thiết lập</translation>
@@ -831,6 +839,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8382302752385457774">Nhãn trắng</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
 <translation id="8398927464629426868">Tốc độ sạc hoặc xả pin hiện tại của thiết bị</translation>
+<translation id="8420955526972171689">Chạy các bài kiểm tra và khắc phục sự cố phần cứng</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Bàn phím tích hợp sẵn</translation>
 <translation id="8431300646573772016">ChromeOS có gì mới</translation>

@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Activează modul întunecat</translation>
 <translation id="2177831236093724629">S-au detectat <ph name="LINK_BEGIN" />componente neautorizate<ph name="LINK_END" />. Pentru a te asigura că toate componentele autorizate sunt identificate, actualizează sistemul de operare Chrome la cea mai recentă versiune.</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
+<translation id="2182088270354640012">Mulțumim pentru feedback. Feedbackul tău ne ajută să îmbunătățim sistemul de operare Chrome și va fi examinat de echipa noastră. Din cauza numărului de rapoarte trimise, nu vei primi un răspuns direct.</translation>
 <translation id="2209788852729124853">Resetează contoarele de trafic</translation>
 <translation id="2212733584906323460">Rezolvarea pentru nume</translation>
 <translation id="2217935453350629363">Viteza actuală</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Se repornește…</translation>
 <translation id="2533048460510040082">Conținut de ajutor sugerat</translation>
 <translation id="2536159006530886390">Nu ne putem conecta la internet.</translation>
+<translation id="256360469103926202">Feedbackul tău ne ajută să îmbunătățim sistemul de operare Chrome și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
+<translation id="3275729367986477355">Imagine avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direcția cheii</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Pentru mai mult ajutor, accesează <ph name="BEGIN_LINK" />Centrul de ajutor<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">Algoritm de comprimare</translation>
 <translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
+<translation id="4800589996161293643">Comunitatea Chromebook</translation>
 <translation id="4804818685124855865">Deconectează-te</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Temă luminoasă</translation>
@@ -488,6 +492,7 @@
 Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
+<translation id="522307662484862935">Nu include adresa de e-mail</translation>
 <translation id="5227902338748591677">Programul temei întunecate</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -614,6 +619,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6284632978374966585">Activează tema întunecată</translation>
 <translation id="6295178529664209245">Continui repararea?</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
+<translation id="631063167932043783">Explorează aplicația</translation>
 <translation id="6319207335391420837">Actualizează firmware-ul pentru <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activează screensaverul</translation>
 <translation id="6325525973963619867">Eșuat</translation>
@@ -720,6 +726,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7297226631177386107">Nu se poate conecta la site-uri HTTPS prin firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Întreabă experții din forumul de ajutor pentru Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
@@ -762,6 +769,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="773153675489693198">Numărul de cicluri</translation>
 <translation id="7747039790905080783">Cheie predistribuită</translation>
 <translation id="7762130827864645708">Parola a fost schimbată. Folosește noua parolă de acum înainte.</translation>
+<translation id="7762839321248874531">Trimite <ph name="BEGIN_LINK1" />informații despre sistem și aplicații<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
@@ -831,6 +839,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8382302752385457774">Etichetă albă</translation>
 <translation id="8395584934117017006">Acest <ph name="DEVICE_TYPE" /> este gestionat de companie</translation>
 <translation id="8398927464629426868">Rata de încărcare sau de descărcare a dispozitivului</translation>
+<translation id="8420955526972171689">Rulează teste și remediază erorile hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Tastatură internă</translation>
 <translation id="8431300646573772016">Noutăți în SO Chrome</translation>

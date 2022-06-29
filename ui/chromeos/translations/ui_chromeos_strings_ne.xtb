@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
 <translation id="2142680004883808240">रसियाली फोनेटिक YaZHert किबोर्ड</translation>
 <translation id="2143778271340628265">म्यानुअल प्रोक्सी कन्फिगरेसन</translation>
+<translation id="2148716181193084225">आज</translation>
 <translation id="2163152940313951844">अमान्य वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">सं. रा. अमेरिकी अन्तर्राष्ट्रिय PC ढाँचाको पोर्तुगाली किबोर्ड</translation>
 <translation id="2198315389084035571">सरल गरिएको चिनीया</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">अङ्ग्रेजी (संयुक्त अधिराज्य)</translation>
 <translation id="3975895378829046965">बङ्गाली फोनेटिक</translation>
+<translation id="3991446849494482687">तपाईंले यसो गर्नुभयो भने डिभाइसमा SIM लक गर्ने सेटिङ पनि अफ हुने छ।</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">अङ्ग्रेजी (सं. रा. अमेरिकी) वर्कमेन किबोर्ड</translation>
 <translation id="4040753847560036377">PUK मिलेन</translation>
@@ -703,6 +705,7 @@
 <translation id="7075931588889865715">थाई TIS 820-2531 किबोर्ड</translation>
 <translation id="708278670402572152">स्क्यान गर्ने कार्यलाई सक्षम पार्न जडान विच्छेद गर्नुहोस्</translation>
 <translation id="7086590977277044826">तमिल InScript किबोर्ड</translation>
+<translation id="7088615885725309056">पुरानो</translation>
 <translation id="7103992300314999525">म्यासेडोनियाली</translation>
 <translation id="7106346894903675391">थप भण्डारण खरिद गर्नुहोस्...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइभमा खोज्नुहोस्&lt;/em&gt;</translation>
@@ -777,6 +780,7 @@
 <translation id="7760449188139285140">चिनियाँ वुबी</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7774365994322694683">चरो</translation>
+<translation id="7781829728241885113">हिजो</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" अफलाइन बचत गर्नको लागि तपााइँले थप <ph name="TOTAL_FILE_SIZE" /> स्थान खालि गर्नुपर्छ:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />तपाइँलाई अफलाइन उप्रान्त पहुँच गर्न अनावश्यक फाइलहरू अनपिन गर्नुहोस्<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />तपाइँको डाउनलोड फोल्डरबाट फाइलहरू हटाउनुहोस्<ph name="MARKUP_5" /></translation>

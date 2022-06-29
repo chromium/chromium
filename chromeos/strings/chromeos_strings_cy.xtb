@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
 <translation id="2177831236093724629">Canfuwyd <ph name="LINK_BEGIN" />cydrannau anghymwys<ph name="LINK_END" />. I wneud yn siŵr bod yr holl gydrannau cymwys yn cael eu hadnabod, diweddarwch eich Chrome OS i'r fersiwn diweddaraf.</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
+<translation id="2182088270354640012">Diolch am yr adborth. Mae eich adborth yn helpu i wella Chrome OS a bydd yn cael ei adolygu gan dîm Chrome OS. Oherwydd nifer yr adroddiadau a gyflwynwyd, ni fyddwch yn derbyn ateb uniongyrchol.</translation>
 <translation id="2209788852729124853">Ailosod Rhifyddion Traffig</translation>
 <translation id="2212733584906323460">Cydraniad Enw</translation>
 <translation id="2217935453350629363">Cyflymder presennol</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Wrthi'n ailgychwyn...</translation>
 <translation id="2533048460510040082">Cynnwys cymorth a awgrymir</translation>
 <translation id="2536159006530886390">Ni ellir cysylltu â'r we.</translation>
+<translation id="256360469103926202">Mae eich adborth yn helpu i wella ChromeOS a bydd yn cael ei adolygu gan ein tîm. Oherwydd y nifer fawr o adroddiadau, ni fyddwn yn gallu anfon ateb.</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
 <translation id="2619761439309613843">Ail-lwytho'n Ddyddiol</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
 <translation id="3268178239013324452">Wedi methu - Drws ar agor</translation>
+<translation id="3275729367986477355">Llun rhithffurf</translation>
 <translation id="3283504360622356314">{0,plural, =1{Golygu'r ffeil}zero{Golygu ffeiliau}two{Golygu ffeiliau}few{Golygu ffeiliau}many{Golygu ffeiliau}other{Golygu ffeiliau}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">Cyfeiriad allwedd</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Am ragor o help, ewch i'r <ph name="BEGIN_LINK" />Ganolfan Gymorth<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm cywasgu</translation>
 <translation id="4794140124556169553">Gall cynnal arbrawf CPU effeithio ar berfformiad eich system</translation>
+<translation id="4800589996161293643">Cymuned Chromebook</translation>
 <translation id="4804818685124855865">Datgysylltu</translation>
 <translation id="4808449224298348341">Wedi canslo'r dasg argraffu <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Thema olau</translation>
@@ -488,6 +492,7 @@
 Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
+<translation id="522307662484862935">Peidio â chynnwys cyfeiriad e-bost</translation>
 <translation id="5227902338748591677">Amserlen thema dywyll</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="5252456968953390977">Trawsrwydweithio</translation>
@@ -614,6 +619,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6284632978374966585">Troi'r thema dywyll ymlaen</translation>
 <translation id="6295178529664209245">Parhau i atgyweirio?</translation>
 <translation id="6302401976930124515">Mae'r prawf <ph name="TEST_NAME" /> wedi'i ganslo</translation>
+<translation id="631063167932043783">Ap Explore</translation>
 <translation id="6319207335391420837">Diweddaru'r gadarnwedd ar <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Troi'r arbedydd sgrîn ymlaen</translation>
 <translation id="6325525973963619867">Wedi methu</translation>
@@ -720,6 +726,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7297226631177386107">Methu â chysylltu â gwefannau HTTPS drwy fur cadarn</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Gofyn i'r arbenigwyr yn y fforwm cymorth Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pwyswch Search a Space i weld y canlyniad yn Google Search.</translation>
 <translation id="7343649194310845056">Dyfeisiau Rhwydwaith</translation>
@@ -762,6 +769,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="773153675489693198">Cyfrif cylch gwefru</translation>
 <translation id="7747039790905080783">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="7762130827864645708">Gwnaethoch newid eich cyfrinair yn llwyddiannus. Defnyddiwch y cyfrinair newydd o hyn ymlaen.</translation>
+<translation id="7762839321248874531">Anfon <ph name="BEGIN_LINK1" />gwybodaeth system ac ap<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metrigau<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Cyfateb ôl-ddodiad parth</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
 <translation id="7784116172884276937">Nid oes unrhyw weinyddion DNS wedi'u gosod</translation>
@@ -831,6 +839,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8382302752385457774">Label gwyn</translation>
 <translation id="8395584934117017006">Mae'r <ph name="DEVICE_TYPE" /> wedi'i reoli gan y sefydliad</translation>
 <translation id="8398927464629426868">Y gyfradd y mae'r ddyfais yn gwefru neu'n dadwefru</translation>
+<translation id="8420955526972171689">Rhedeg profion a datrys problemau ar gyfer problemau caledwedd</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Bysellfwrdd mewnol</translation>
 <translation id="8431300646573772016">Diweddariadau ChromeOS</translation>

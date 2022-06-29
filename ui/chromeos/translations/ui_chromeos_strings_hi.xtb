@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
 <translation id="2142680004883808240">फ़ोनेटिक YaZHert कीबोर्ड के साथ रशियन</translation>
 <translation id="2143778271340628265">मैन्‍युअल प्रॉक्सी कॉन्फ़िगरेशन</translation>
+<translation id="2148716181193084225">आज</translation>
 <translation id="2163152940313951844">अमान्य वर्ण : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ पॉर्चुगीज़</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">मोबाइल प्रोफ़ाइल डाउनलोड करें. यह <ph name="NETWORK_PROVIDER_NAME" /> के <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="3973925058222872294">अंग्रेज़ी (यूके)</translation>
 <translation id="3975895378829046965">बांग्ला फ़ोनेटिक</translation>
+<translation id="3991446849494482687">ऐसा करने से, डिवाइस पर सिम लॉक करने की सेटिंग भी बंद हो जाएगी.</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">वर्कमैन कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
 <translation id="4040753847560036377">PUK गलत है</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">टीआईएस 820-2531 कीबोर्ड के साथ थाई</translation>
 <translation id="708278670402572152">स्कैन करना चालू करने के लिए डिसकनेक्ट करें</translation>
 <translation id="7086590977277044826">इनस्क्रिप्ट कीबोर्ड के साथ तमिल</translation>
+<translation id="7088615885725309056">इससे पुराने</translation>
 <translation id="7103992300314999525">मेसिडोनियन</translation>
 <translation id="7106346894903675391">ज़्यादा स्टोरेज खरीदें...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;खोज डिस्क&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">चाइनीज़ वुबी</translation>
 <translation id="7765158879357617694">ले जाएं</translation>
 <translation id="7774365994322694683">पक्षी</translation>
+<translation id="7781829728241885113">बीता कल</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" को ऑफ़लाइन सेव करने के लिए आपको <ph name="TOTAL_FILE_SIZE" /> की और ज़्यादा जगह खाली करनी होगी :<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />उन फ़ाइलों को अनपिन करें जिन्हें अब आप ऑफ़लाइन एक्सेस नहीं करना चाहते हैं<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />अपने डाउनलोड फ़ोल्डर से फ़ाइलें मिटाएं<ph name="MARKUP_5" /></translation>

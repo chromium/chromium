@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Kuvinjelwe Umphathi wakho, Imininingwane</translation>
 <translation id="2142680004883808240">Isi-Russian esinekhibhodi ye-Phonetic YaZHert</translation>
 <translation id="2143778271340628265">Ukulungiselelwa okwenziwa ngesandla kommeleli</translation>
+<translation id="2148716181193084225">Namhlanje</translation>
 <translation id="2163152940313951844">Inhlamvu engavumelekile: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguese nge-US International PC keyboard</translation>
 <translation id="2198315389084035571">isi-Sipmlified Chinese</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Thai esinekhibhodi ye-TIS 820-2531</translation>
 <translation id="708278670402572152">Nqamula ukuze unike amandla ukuskena</translation>
 <translation id="7086590977277044826">Isi-Tamil esinekhibhodi ye-InScript</translation>
+<translation id="7088615885725309056">Endala</translation>
 <translation id="7103992300314999525"> Macedonian</translation>
 <translation id="7106346894903675391">Thenga isitoreji esiningi...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;iDrayivu yokusesha&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Hambisa</translation>
 <translation id="7774365994322694683">Inyoni</translation>
+<translation id="7781829728241885113">Izolo</translation>
 <translation id="7788080748068240085">Ukuze ulondoloze i-"<ph name="FILE_NAME" />" ngokungaxhunyiwe ku-inthanethi kuzomele ukhulule ngokungeziwe okungu-<ph name="TOTAL_FILE_SIZE" /> kwesikhala:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ukhiphe ukuphina amafayela ongasadingi ukufinyelela kuwo ngokungaxhunyiwe ku-inthanethi<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ususe amafayela kusuka kufolda yakho yokulandiwe<ph name="MARKUP_5" /></translation>

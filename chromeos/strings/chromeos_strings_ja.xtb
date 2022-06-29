@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />資格を満たしていないコンポーネント<ph name="LINK_END" />が見つかりました。資格を満たすコンポーネントがすべて認識されるように、Chrome OS を最新バージョンに更新してください。</translation>
 <translation id="2180197493692062006">エラーが発生しました。アプリをもう一度開いてください。</translation>
+<translation id="2182088270354640012">ご報告ありがとうございました。お寄せいただいたフィードバックは Chrome OS チームが内容を確認したうえで、Chrome OS の改善に役立てられます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2217935453350629363">現在の速度</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">再起動中…</translation>
 <translation id="2533048460510040082">ヘルプ コンテンツの候補</translation>
 <translation id="2536159006530886390">インターネットに接続できません。</translation>
+<translation id="256360469103926202">お寄せいただいたフィードバックは担当チームが内容を確認したうえで、ChromeOS の改善に役立てられます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
+<translation id="3275729367986477355">アバターの画像</translation>
 <translation id="3283504360622356314">{0,plural, =1{ファイルを編集}other{ファイルを編集}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">鍵の方向</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">その他ご不明な点がある場合は、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="4793756956024303490">圧縮アルゴリズム</translation>
 <translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
+<translation id="4800589996161293643">Chromebook コミュニティ</translation>
 <translation id="4804818685124855865">切断</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">ライトモード</translation>
@@ -488,6 +492,7 @@
 マイクをタップして質問してみてください。</translation>
 <translation id="5212593641110061691">タブロイド</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="522307662484862935">メールアドレスは入力しないでください</translation>
 <translation id="5227902338748591677">ダークモードのスケジュールを設定する</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5252456968953390977">ローミング</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">ダークモードをオンにする</translation>
 <translation id="6295178529664209245">修復を続行しますか？</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
+<translation id="631063167932043783">アプリについてもっと知る</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6321407676395378991">スクリーン セーバーをオンにする</translation>
 <translation id="6325525973963619867">失敗しました</translation>
@@ -642,6 +648,7 @@
 <translation id="6516990319416533844">バッテリーの充電速度をテストするには、短時間で電池を消耗してください</translation>
 <translation id="6517239166834772319">使い方・ヒント</translation>
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
+<translation id="6535178685492749208">オフラインです。フィードバックは後で送信されます。</translation>
 <translation id="65587193855025101">フラットベッド</translation>
 <translation id="6564646048574748301">失敗 - プリンタにアクセスできません</translation>
 <translation id="6566314079205407217">複数のページをスキャン</translation>
@@ -720,6 +727,7 @@
 <translation id="7297226631177386107">ファイアウォールを介して HTTPS ウェブサイトに接続できません</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook ヘルプ フォーラムのエキスパートに問い合わせる</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
@@ -762,6 +770,7 @@
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7747039790905080783">事前共有キー</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
@@ -831,6 +840,7 @@
 <translation id="8382302752385457774">ホワイトラベル</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
+<translation id="8420955526972171689">ハードウェアの問題に関するテストとトラブルシューティングを行う</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">内部キーボード</translation>
 <translation id="8431300646573772016">Chrome OS の最新情報</translation>

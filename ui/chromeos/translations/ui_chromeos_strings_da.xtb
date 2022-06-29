@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
 <translation id="2142680004883808240">Russisk med fonetisk YaZHert-tastatur</translation>
 <translation id="2143778271340628265">Manuel proxykonfiguration</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2163152940313951844">Ugyldigt tegn: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugisisk med amerikansk internationalt computertastatur</translation>
 <translation id="2198315389084035571">Kinesisk (forenklet)</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Thai med TIS 820-2531-tastatur</translation>
 <translation id="708278670402572152">Afbryd forbindelsen for at aktivere scanning</translation>
 <translation id="7086590977277044826">Tamil med InScript-tastatur</translation>
+<translation id="7088615885725309056">Ældre</translation>
 <translation id="7103992300314999525">Makedonisk</translation>
 <translation id="7106346894903675391">Køb mere lagerplads...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;søg i Drev&lt;/em&gt;</translation>
@@ -779,6 +781,7 @@
 <translation id="7760449188139285140">Kinesisk wubi</translation>
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7774365994322694683">Fugl</translation>
+<translation id="7781829728241885113">I går</translation>
 <translation id="7788080748068240085">Hvis du vil gemme "<ph name="FILE_NAME" />" offline, skal du frigøre yderligere <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />frigør filer, som du ikke længere har brug for offlineadgang til<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />slet filer fra mappen Downloads<ph name="MARKUP_5" /></translation>

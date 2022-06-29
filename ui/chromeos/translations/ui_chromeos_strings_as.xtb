@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="2142680004883808240">ফ’নেটিক YaZHert কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
 <translation id="2143778271340628265">মেনুৱেল প্ৰ’ক্সি কনফিগাৰেশ্বন</translation>
+<translation id="2148716181193084225">আজি</translation>
 <translation id="2163152940313951844">অমান্য বৰ্ণ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় PC কীব’ৰ্ডৰ সৈতে পৰ্টুগীজ</translation>
 <translation id="2198315389084035571">সৰলীকৰণ কৰা চীনা</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফ’নেটিক</translation>
+<translation id="3991446849494482687">এইটোৱে ডিভাইচটোত ছিম লকৰ ছেটিঙো অক্ষম কৰিব।</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4017788180641807848">Workman কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="4040753847560036377">ভুল PUK</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">চীনা উবি</translation>
 <translation id="7765158879357617694">আঁতৰাওক</translation>
 <translation id="7774365994322694683">চৰাই</translation>
+<translation id="7781829728241885113">কালি</translation>
 <translation id="7788080748068240085">অফলাইনত "<ph name="FILE_NAME" />" ছেভ কৰিবলৈ আপুনি অতিৰিক্ত <ph name="TOTAL_FILE_SIZE" /> ঠাই খালী কৰিবই লাগিব:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />আপুনি অফলাইনত আৰু এক্সেছ কৰিব নলগীয়া ফাইলসমূহ আনপিন কৰক<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ডাউনল’ড ফ‘ল্ডাৰত থকা ফাইল মচক<ph name="MARKUP_5" /></translation>

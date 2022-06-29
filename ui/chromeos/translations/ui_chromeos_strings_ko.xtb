@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
 <translation id="2142680004883808240">러시아어(표음 YaZHert 키보드)</translation>
 <translation id="2143778271340628265">수동 프록시 설정</translation>
+<translation id="2148716181193084225">오늘</translation>
 <translation id="2163152940313951844">잘못된 문자: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">포르투갈어(미국 국제 PC 키보드)</translation>
 <translation id="2198315389084035571">중국어(간체)</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">영어(영국)</translation>
 <translation id="3975895378829046965">벵골어(표음)</translation>
+<translation id="3991446849494482687">이렇게 하면 기기의 SIM 잠금 설정도 사용 중지됩니다.</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4017788180641807848">영어(미국, 워크맨 키보드)</translation>
 <translation id="4040753847560036377">잘못된 PUK</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">태국어(TIS 820-2531 키보드)</translation>
 <translation id="708278670402572152">검색하려면 연결 해제하세요</translation>
 <translation id="7086590977277044826">타밀어(인스크립트 키보드)</translation>
+<translation id="7088615885725309056">다음</translation>
 <translation id="7103992300314999525">마케도니아어</translation>
 <translation id="7106346894903675391">추가 저장용량 구입...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;드라이브 검색&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">중국어(오필화수입법)</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7774365994322694683">새</translation>
+<translation id="7781829728241885113">어제</translation>
 <translation id="7788080748068240085">'<ph name="FILE_NAME" />'을(를) 오프라인에 저장하려면 다음 방법을 통해 <ph name="TOTAL_FILE_SIZE" />의 추가 여유 공간을 확보해야 합니다.<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />더 이상 오프라인 액세스가 필요하지 않은 파일을 고정 해제합니다.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />다운로드 폴더에서 파일을 삭제합니다.<ph name="MARKUP_5" /></translation>

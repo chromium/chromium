@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Yöneticiniz tarafından engellenmiş, Ayrıntılar</translation>
 <translation id="2142680004883808240">Fonetik YaZHert klavye ile Rusça</translation>
 <translation id="2143778271340628265">El ile proxy yapılandırması</translation>
+<translation id="2148716181193084225">Bugün</translation>
 <translation id="2163152940313951844">Geçersiz karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ABD Uluslararası PC klavyesi ile Portekizce</translation>
 <translation id="2198315389084035571">Basitleştirilmiş Çince</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">TIS 820-2531 klavye ile Tayca</translation>
 <translation id="708278670402572152">Taramayı etkinleştirmek için bağlantıyı kesin</translation>
 <translation id="7086590977277044826">Alfabetik klavye ile Tamilce</translation>
+<translation id="7088615885725309056">Daha eski</translation>
 <translation id="7103992300314999525">Makedonca</translation>
 <translation id="7106346894903675391">Daha fazla depolama alanı satın alın...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;Drive'da ara&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Çince Wubi</translation>
 <translation id="7765158879357617694">Taşı</translation>
 <translation id="7774365994322694683">Kuş</translation>
+<translation id="7781829728241885113">Dün</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" dosyasını çevrimdışı olarak kaydetmek için fazladan <ph name="TOTAL_FILE_SIZE" /> alan boşaltmanız gerekiyor:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />artık çevrimdışı olarak erişmeniz gerekmeyen dosyaların sabitlemesini kaldırın<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />İndirilenler klasörünüzdeki dosyaları silin<ph name="MARKUP_5" /></translation>

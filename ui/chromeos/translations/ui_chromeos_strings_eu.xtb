@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
 <translation id="2142680004883808240">Errusiarra, YaZHert teklatu fonetikoarekin</translation>
 <translation id="2143778271340628265">Eskuzko proxy-konfigurazioa</translation>
+<translation id="2148716181193084225">Gaur</translation>
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugaldarra, nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Thailandiarra, TIS 820-2531 teklatuarekin</translation>
 <translation id="708278670402572152">Sareak bilatu ahal izateko, deskonektatu</translation>
 <translation id="7086590977277044826">Tamildarra, InScript teklatuarekin</translation>
+<translation id="7088615885725309056">Zaharragoa</translation>
 <translation id="7103992300314999525">Mazedoniarra</translation>
 <translation id="7106346894903675391">Erosi memoria gehiago…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;bilatu Drive-n&lt;/em&gt;</translation>
@@ -767,6 +769,7 @@
 <translation id="7663224033570512922">Hindia</translation>
 <translation id="7693909743393669729">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira, eta partizio guztiak kendu, ikusgai ez daudenak barne. Ezin da desegin ekintza.</translation>
 <translation id="7695430100978772476">Ezin izan da formateatu <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Ezin izan da hustu zaborrontzia.</translation>
 <translation id="770015031906360009">Greziarra</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopiatu da.</translation>
 <translation id="7711920809702896782">Irudiari buruzko informazioa</translation>
@@ -777,6 +780,7 @@
 <translation id="7760449188139285140">Txinatarra (wubi)</translation>
 <translation id="7765158879357617694">Eraman</translation>
 <translation id="7774365994322694683">Txoria</translation>
+<translation id="7781829728241885113">Atzo</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" konexiorik gabe erabiltzeko gorde ahal izateko, <ph name="TOTAL_FILE_SIZE" /> izan behar dituzu libre:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />kendu aingura konexiorik gabe gehiago erabiliko ez dituzun fitxategiei<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ezabatu Deskargak karpetako fitxategiak<ph name="MARKUP_5" /></translation>

@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, блокирано од вашиот администратор, детали</translation>
 <translation id="2142680004883808240">руски со фонетска тастатура YaZHert</translation>
 <translation id="2143778271340628265">Рачна конфигурација на прокси</translation>
+<translation id="2148716181193084225">Денес</translation>
 <translation id="2163152940313951844">Неважечки знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">португалски со американска меѓународна компјутерска тастатура</translation>
 <translation id="2198315389084035571">поедноставен кинески</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">тајландски со тастатура TIS 820-2531</translation>
 <translation id="708278670402572152">Прекинете ја врската со мрежата за да го овозможите скенирањето</translation>
 <translation id="7086590977277044826">тамилски со тастатура InScript</translation>
+<translation id="7088615885725309056">Постара</translation>
 <translation id="7103992300314999525">македонски</translation>
 <translation id="7106346894903675391">Купете поголем простор за складирање...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;пребарај Диск&lt;/em&gt;</translation>
@@ -768,6 +770,7 @@
 <translation id="7663224033570512922">хинди</translation>
 <translation id="7693909743393669729">Форматирањето на дискот ќе ги избрише сите податоци што се зачувани на него и ќе ги отстрани сите постојни партиции, вклучително и партициите што можеби не се видливи. Дејството не може да се врати.</translation>
 <translation id="7695430100978772476">Не може да се форматира <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Не успеа да се испразни корпата за отпадоци.</translation>
 <translation id="770015031906360009">Грчки</translation>
 <translation id="7705251383879779343">Копирано: <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">Информации за сликата</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">кинески вуби</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7774365994322694683">Птица</translation>
+<translation id="7781829728241885113">Вчера</translation>
 <translation id="7788080748068240085">За да зачувате „<ph name="FILE_NAME" />“ локално, мора да ослободите дополнителни <ph name="TOTAL_FILE_SIZE" /> простор:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />да откачите датотеки кои веќе не ви требаат за да пристапувате локално<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />да избришете датотеки од папката Преземања<ph name="MARKUP_5" /></translation>

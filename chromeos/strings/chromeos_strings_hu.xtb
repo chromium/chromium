@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
 <translation id="2177831236093724629">A rendszer <ph name="LINK_BEGIN" />nem jóváhagyott komponenseket<ph name="LINK_END" /> talált. Az összes jóváhagyott komponens azonosításának biztosítása érdekében frissítse Chrome OS verzióját a legújabbra.</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
+<translation id="2182088270354640012">Köszönjük a visszajelzést! A Chrome OS csapata átnézi a visszajelzését, így Ön is segíthet a Chrome OS fejlesztésében. A beküldött jelentések nagy száma miatt nem tudunk közvetlenül válaszolni.</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Újraindítás…</translation>
 <translation id="2533048460510040082">Javasolt súgótartalmak</translation>
 <translation id="2536159006530886390">Nem lehet csatlakozni az internethez.</translation>
+<translation id="256360469103926202">Csapatunk átnézi a visszajelzését, így Ön is segíthet a Chrome OS fejlesztésében. A jelentések nagy száma miatt nem tudunk válaszolni.</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
 <translation id="2619761439309613843">Napi frissítés</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
+<translation id="3275729367986477355">Avatarkép</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Kulcs iránya</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Ha további segítségére van szüksége, látogasson el a <ph name="BEGIN_LINK" />Súgó oldalára<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Tömörítési algoritmus</translation>
 <translation id="4794140124556169553">CPU-teszt futtatása befolyásolhatja a rendszer teljesítményét.</translation>
+<translation id="4800589996161293643">Chromebook-közösség</translation>
 <translation id="4804818685124855865">Kapcsolat bontása</translation>
 <translation id="4808449224298348341">Nyomtatási feladat (<ph name="DOCUMENT_TITLE" />) megszakítva</translation>
 <translation id="4809927044794281115">Világos téma</translation>
@@ -488,6 +492,7 @@
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5212593641110061691">„Tabloid” méret</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
+<translation id="522307662484862935">Ne tartalmazzon e-mail-címet</translation>
 <translation id="5227902338748591677">Sötét téma ütemezése</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -614,6 +619,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6284632978374966585">Sötét téma bekapcsolása</translation>
 <translation id="6295178529664209245">Folytatja a javítást?</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
+<translation id="631063167932043783">Felfedezés alkalmazás</translation>
 <translation id="6319207335391420837">Firmware telepítése a következőre: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Képernyővédő bekapcsolása</translation>
 <translation id="6325525973963619867">Nem sikerült</translation>
@@ -642,6 +648,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6516990319416533844">Az akkumulátor töltési sebességének teszteléséhez egy kis ideig hagyja merülni az akkumulátort</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
+<translation id="6535178685492749208">Offline állapotban van. A visszajelzést később küldi majd el a rendszer.</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
 <translation id="6566314079205407217">Többoldalas keresés</translation>
@@ -720,6 +727,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7297226631177386107">Nem lehet a tűzfalon keresztül HTTPS-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Kérdezze a Chromebook súgófórumának szakértőit</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; A Keresés és a szóköz billentyűkombináció lenyomásával megtekintheti a találatot a Google Keresőben.</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
@@ -762,6 +770,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="773153675489693198">Ciklusok száma</translation>
 <translation id="7747039790905080783">Előre megosztott kulcs</translation>
 <translation id="7762130827864645708">A jelszómódosítás sikeres volt. Mostantól használja az új jelszót.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Rendszer- és alkalmazásadatok<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />mutatók<ph name="END_LINK2" /> küldése</translation>
 <translation id="7763470514545477072">Domainvégződés – egyezés</translation>
 <translation id="7769672763586021400">Modellazonosító</translation>
 <translation id="7784116172884276937">Nincsenek beállítva DNS-szerverek</translation>
@@ -831,6 +840,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8382302752385457774">Fehér címke</translation>
 <translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
+<translation id="8420955526972171689">Tesztek futtatása és problémamegoldás hardveres problémák esetén</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Belső billentyűzet</translation>
 <translation id="8431300646573772016">A ChromeOS újdonságai</translation>

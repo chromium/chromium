@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />अमान्य कॉम्पोनेंट<ph name="LINK_END" /> मिले. यह पक्का करने के लिए कि सभी मान्य कॉम्पोनेंट को पहचाना जाए, अपने Chrome OS को सबसे नए वर्शन में अपडेट करें.</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
+<translation id="2182088270354640012">शिकायत, सुझाव या राय देने के लिए, आपका धन्यवाद. Chrome OS की टीम आपकी शिकायत, सुझाव या राय की समीक्षा करेगी. इससे, हमें इस प्रॉडक्ट को बेहतर बनाने में मदद मिलती है. हमें बहुत सारी रिपोर्ट मिलती हैं. इसलिए, आपको सीधे जवाब नहीं मिल पाएगा.</translation>
 <translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
 <translation id="2212733584906323460">होस्ट के नाम से आईपी पता बनाएं</translation>
 <translation id="2217935453350629363">मौजूदा स्पीड</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">रीस्टार्ट हो रहा है…</translation>
 <translation id="2533048460510040082">सुझाया गया सहायता कॉन्टेंट</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
+<translation id="256360469103926202">हमारी टीम आपकी शिकायत, सुझाव या राय की समीक्षा करेगी. इससे, हमें Chrome OS को बेहतर बनाने में मदद मिलती है. हमें बहुत सारी रिपोर्ट मिलती हैं. इसलिए, हम जवाब नहीं दे पाएंगे.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
 <translation id="2619761439309613843">हर दिन रीफ़्रेश करें</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
+<translation id="3275729367986477355">अवतार इमेज की सेटिंग पर जाएं</translation>
 <translation id="3283504360622356314">{0,plural, =1{फ़ाइल में बदलाव करें}one{फ़ाइल में बदलाव करें}other{फ़ाइलों में बदलाव करें}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />गीगाहर्ट्ज़</translation>
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">ज़्यादा मदद के लिए, <ph name="BEGIN_LINK" />सहायता केंद्र<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
+<translation id="4800589996161293643">Chromebook समुदाय</translation>
 <translation id="4804818685124855865">डिसकनेक्ट करें</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
@@ -488,6 +492,7 @@
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>
 <translation id="5212593641110061691">टैबलॉइड</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="522307662484862935">ईमेल पता शामिल न करें</translation>
 <translation id="5227902338748591677">गहरे रंग वाली थीम शेड्यूल करें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="6295178529664209245">क्या आपको रिपेयर की प्रोसेस जारी रखनी है?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
+<translation id="631063167932043783">Explore ऐप्लिकेशन</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> के लिए फ़र्मवेयर अपडेट करें</translation>
 <translation id="6321407676395378991">स्क्रीन सेवर चालू करें</translation>
 <translation id="6325525973963619867">विफल</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook के सहायता फ़ोरम पर विशेषज्ञों से सवाल पूछें</translation>
 <translation id="7319430975418800333">ए3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search में नतीजा देखने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">साइकल काउंट</translation>
 <translation id="7747039790905080783">पहले से शेयर की गई कुंजी</translation>
 <translation id="7762130827864645708">आपने अपना पासवर्ड बदल लिया है. कृपया अपना नया पासवर्ड इस्तेमाल करना शुरू करें.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="7763470514545477072">डोमेन सफ़िक्स से मिलते-जुलते</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
 <translation id="7784116172884276937">कोई भी डीएनएस सर्वर सेट अप नहीं है</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">व्हाइट-लेबल</translation>
 <translation id="8395584934117017006">इस <ph name="DEVICE_TYPE" /> को एंटरप्राइज़ मैनेज करता है</translation>
 <translation id="8398927464629426868">वह दर जिस पर डिवाइस अभी चार्ज या डिस्चार्ज हो रहा है</translation>
+<translation id="8420955526972171689">गड़बड़ी की जानकारी देने वाले टेस्ट करके, हार्डवेयर से जुड़ी समस्याओं को हल करता है</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">डिवाइस में पहले से मौजूद कीबोर्ड</translation>
 <translation id="8431300646573772016">ChromeOS में नया क्या है</translation>

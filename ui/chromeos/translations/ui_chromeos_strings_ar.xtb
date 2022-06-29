@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، حجب المشرف هذه الشبكة، التفاصيل</translation>
 <translation id="2142680004883808240">‏الروسية باستخدام لوحة مفاتيح YaZHert الصوتية</translation>
 <translation id="2143778271340628265">إعداد الخادم الوكيل يدويًّا</translation>
+<translation id="2148716181193084225">اليوم</translation>
 <translation id="2163152940313951844">حرف غير صالح: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">البرتغالية باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="2198315389084035571">الصينية المبسطة</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">‏التايلاندية باستخدام لوحة مفاتيح TIS 820-2531</translation>
 <translation id="708278670402572152">قطع الاتصال لتفعيل الفحص</translation>
 <translation id="7086590977277044826">‏التاميلية باستخدام لوحة مفاتيح InScript</translation>
+<translation id="7088615885725309056">أقدم</translation>
 <translation id="7103992300314999525">المقدونية</translation>
 <translation id="7106346894903675391">شراء المزيد من مساحة التخزين...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;البحث في Drive&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">الهندية</translation>
 <translation id="7693909743393669729">ستؤدي تهيئة محرك أقراص إلى محو جميع البيانات المخزَّنة عليه وإزالة جميع الأقسام الحالية، بما فيها الأقسام التي قد تكون غير مرئية. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7695430100978772476">تعذّر ضبط <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">تعذّر إفراغ المهملات.</translation>
 <translation id="770015031906360009">اليونانية</translation>
 <translation id="7705251383879779343">تم نسخ <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">معلومات الصورة</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">‏الصينية باستخدام لوحة مفاتيح Wubi</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7774365994322694683">طائر</translation>
+<translation id="7781829728241885113">أمس</translation>
 <translation id="7788080748068240085">لحفظ "<ph name="FILE_NAME" />" بلا إنترنت، يجب توفير مساحة إضافية تبلغ <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />احرص على إزالة الملفات التي لم تعد بحاجة إلى الدخول إليها بلا إنترنت<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />احذف الملفات من مجلد "المحتوى الذي تم تنزيله"<ph name="MARKUP_5" /></translation>

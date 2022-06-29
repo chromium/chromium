@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">開啟深色模式</translation>
 <translation id="2177831236093724629">已偵測到<ph name="LINK_BEGIN" />不合格元件<ph name="LINK_END" />。為確保系統可偵測到所有合格元件，請將 Chrome OS 更新至最新版本。</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
+<translation id="2182088270354640012">感謝你提供意見！你的寶貴意見有助於改善 Chrome OS，而且提交的內容會由 Google 團隊進行審查。由於回報數量眾多，我們將不會直接回覆你。</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2217935453350629363">目前速度</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">正在重新啟動…</translation>
 <translation id="2533048460510040082">建議的說明內容</translation>
 <translation id="2536159006530886390">無法連線至網際網路。</translation>
+<translation id="256360469103926202">你的寶貴意見有助於改善 ChromeOS，而且提交的內容會由 Google 團隊進行審查。由於回報數量眾多，我們將不會逐一回覆。</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
 <translation id="2584559707064218956">如要設定，請前往「設定」頁面</translation>
 <translation id="2619761439309613843">每日變換新桌布</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">正在尋找掃描器</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
 <translation id="3268178239013324452">失敗 - 蓋子處於開啟狀態</translation>
+<translation id="3275729367986477355">顯示圖片</translation>
 <translation id="3283504360622356314">{0,plural, =1{編輯檔案}other{編輯檔案}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">金鑰方向</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">如需其他協助，請前往<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />。</translation>
 <translation id="4793756956024303490">壓縮演算法</translation>
 <translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
+<translation id="4800589996161293643">Chromebook 社群</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4808449224298348341">已取消列印工作「<ph name="DOCUMENT_TITLE" />」</translation>
 <translation id="4809927044794281115">淺色主題</translation>
@@ -488,6 +492,7 @@
 請輕觸麥克風圖示，直接說出你的問題。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">登出</translation>
+<translation id="522307662484862935">請勿輸入電子郵件地址</translation>
 <translation id="5227902338748591677">深色主題時間表</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5252456968953390977">漫遊中</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">開啟深色主題</translation>
 <translation id="6295178529664209245">要繼續維修嗎？</translation>
 <translation id="6302401976930124515">已取消<ph name="TEST_NAME" />測試</translation>
+<translation id="631063167932043783">探索應用程式</translation>
 <translation id="6319207335391420837">更新「<ph name="DEVICE_NAME" />」的韌體</translation>
 <translation id="6321407676395378991">開啟螢幕保護程式</translation>
 <translation id="6325525973963619867">失敗</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">無法透過防火牆連線到 HTTPS 網站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">在 Chromebook 說明論壇中詢問專家</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 搜尋中查看結果。</translation>
 <translation id="7343649194310845056">網路裝置</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">週期數</translation>
 <translation id="7747039790905080783">預先共用金鑰</translation>
 <translation id="7762130827864645708">已成功變更你的密碼。請從現在開始改用新的密碼。</translation>
+<translation id="7762839321248874531">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">網域字尾比對</translation>
 <translation id="7769672763586021400">型號 ID</translation>
 <translation id="7784116172884276937">尚未設定任何 DNS 伺服器</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">白標</translation>
 <translation id="8395584934117017006">這部 <ph name="DEVICE_TYPE" /> 是由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電速率</translation>
+<translation id="8420955526972171689">針對硬體問題進行測試及疑難排解</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">內部鍵盤</translation>
 <translation id="8431300646573772016">Chrome OS 新功能</translation>

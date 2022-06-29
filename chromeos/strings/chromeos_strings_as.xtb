@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />অযোগ্য উপাদান<ph name="LINK_END" /> পোৱা গৈছে। যোগ্য আটাইবোৰ উপাদান চিনাক্ত কৰা হোৱা বুলি নিশ্চিত কৰিবলৈ আপোনাৰ Chrome OS শেহতীয়া সংস্কৰণটোলৈ আপডে’ট কৰক।</translation>
 <translation id="2180197493692062006">কিবা ভুল হ’ল। এপ্‌টো পুনৰ খুলিবলৈ চেষ্টা কৰক।</translation>
+<translation id="2182088270354640012">মতামত জনোৱাৰ বাবে ধন্যবাদ। আপোনাৰ মতামতে Chrome OS উন্নত কৰাত সহায় কৰে আৰু আমাৰ Chrome OS দলে সেয়া পৰ্যালোচনা কৰিব। দাখিল কৰা ৰিপ’ৰ্টৰ সংখ্যা বেছি হোৱাৰ বাবে আপুনি পোনপটীয়া উত্তৰ নাপাব।</translation>
 <translation id="2209788852729124853">ট্ৰেফিক কাউণ্টাৰ ৰিছেট কৰক</translation>
 <translation id="2212733584906323460">নামৰ ৰিজ’লিউশ্বন</translation>
 <translation id="2217935453350629363">বৰ্তমানৰ গতিবেগ</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">ৰিষ্টাৰ্ট কৰি থকা হৈছে…</translation>
 <translation id="2533048460510040082">পৰামৰ্শ হিচাপে আগবঢ়োৱা সহায়ক সমল</translation>
 <translation id="2536159006530886390">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি।</translation>
+<translation id="256360469103926202">আপোনাৰ মতামতে ChromeOS উন্নত কৰাত সহায় কৰে আৰু আমাৰ দলে সেয়া পৰ্যালোচনা কৰিব। ৰিপ’ৰ্টৰ সংখ্যা বেছি হোৱাৰ বাবে আমি সঁহাৰি পঠিয়াব নোৱাৰিম।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2584559707064218956">ছেট আপ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="2619761439309613843">দৈনিক নতুন ৱালপেপাৰ</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
+<translation id="3275729367986477355">অৱতাৰৰ প্ৰতিচ্ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইল সম্পাদনা কৰক}one{ফাইলসমূহ সম্পাদনা কৰক}other{ফাইলসমূহ সম্পাদনা কৰক}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> গিগাহাৰ্টজ</translation>
 <translation id="3291996639387199448">চাবিৰ নির্দেশনা</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">অধিক সহায়ৰ বাবে <ph name="BEGIN_LINK" />সহায় কেন্দ্ৰ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="4793756956024303490">সংকোচনৰ এলগ’ৰিডম</translation>
 <translation id="4794140124556169553">CPUৰ পৰীক্ষা চলালে আপোনাৰ ছিষ্টেমৰ পাৰদৰ্শিতাত প্ৰভাৱ পৰিব পাৰে</translation>
+<translation id="4800589996161293643">Chromebook সম্প্ৰদায়</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="4808449224298348341">বাতিল কৰা প্ৰিণ্টিঙৰ কাৰ্য <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">পাতল ৰঙৰ থীম</translation>
@@ -488,6 +492,7 @@
 মোক কিবা সুধিবলৈ মাইকটো টিপক।</translation>
 <translation id="5212593641110061691">টেব্‌লইড</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
+<translation id="522307662484862935">ইমেইল ঠিকনা অন্তৰ্ভুক্ত নকৰিব</translation>
 <translation id="5227902338748591677">গাঢ় ৰঙৰ থীম সময়সূচী</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5252456968953390977">ৰ’মিং</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">গাঢ় ৰঙৰ থীম অন কৰক</translation>
 <translation id="6295178529664209245">মেৰামতি কৰাটো অব্যাহত ৰাখিবনে?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
+<translation id="631063167932043783">Explore এপ্‌</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ত ফাৰ্মৱেৰ আপডে’ট কৰক</translation>
 <translation id="6321407676395378991">স্ক্ৰীন ছেভাৰ অন কৰক</translation>
 <translation id="6325525973963619867">বিফল হৈছে</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebookৰ সহায়ক ফ’ৰামত বিশেষজ্ঞসকলক সোধক</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchত ফলাফল চাবলৈ ছাৰ্চ আৰু স্পেচ টিপক।</translation>
 <translation id="7343649194310845056">নেটৱৰ্ক ডিভাইচ</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">চক্ৰৰ গণনা</translation>
 <translation id="7747039790905080783">পূৰ্বতে শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="7762130827864645708">আপোনাৰ পাছৱৰ্ড সলনি কৰাৰ প্ৰক্ৰিয়াটো সফল হৈছে। অনুগ্ৰহ কৰি এতিয়াৰ পৰা নতুন পাছৱৰ্ডটো ব্যৱহাৰ কৰক।</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />ছিষ্টেম আৰু এপৰ তথ্য<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />মেট্ৰিক্স<ph name="END_LINK2" /> পঠিয়াওক</translation>
 <translation id="7763470514545477072">ডমেইন চাফিক্সৰ সৈতে মিলা</translation>
 <translation id="7769672763586021400">ম’ডেল আইডি:</translation>
 <translation id="7784116172884276937">কোনো DNS ছাৰ্ভাৰ ছেট আপ কৰা হোৱা নাই</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">বগা-লেবেল</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" />টো এণ্টাৰপ্ৰাইজে পৰিচালনা কৰে</translation>
 <translation id="8398927464629426868">বৰ্তমান ডিভাইচটো চাৰ্জ অথবা ডিছচাৰ্জ হৈ থকাৰ হাৰ</translation>
+<translation id="8420955526972171689">হাৰ্ডৱেৰ সম্পৰ্কীয় সমস্যাৰ বাবে পৰীক্ষা কৰাৰ আৰু সমস্যা নিবাৰণৰ সুবিধা চলাওক</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">অভ্যন্তৰীণ কীব’ৰ্ড</translation>
 <translation id="8431300646573772016">ChromeOSত নতুন কি আছে</translation>

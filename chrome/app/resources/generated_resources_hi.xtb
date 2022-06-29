@@ -159,6 +159,7 @@
 <translation id="1148063863818152153">आपके डिवाइस का ईआईडी नंबर</translation>
 <translation id="1148624853678088576">आप बिल्कुल तैयार हैं!</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
+<translation id="1149483087970735785">सहायक टेक्नोलॉजी की सेटिंग पर जाएं</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कैन हो रही है</translation>
 <translation id="1150490752229770117">इस <ph name="DEVICE_TYPE" /> के लिए अपने-आप होने वाला यह आखिरी साॅफ़्टवेयर और सुरक्षा अपडेट था. आने वाले समय में अपडेट पाने के लिए, नए माॅडल पर अपग्रेड करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">धूप के चश्मे</translation>
@@ -733,6 +734,7 @@
 <translation id="1680849702532889074">आपका Linux ऐप्लिकेशन इंस्टॉल करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="16815041330799488">साइटों को क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज न देखने दें</translation>
 <translation id="1682548588986054654">नई &amp;गुप्त विंडो</translation>
+<translation id="1682696837763999627">माउस का कर्सर बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="1682867089915960590">क्या आप कैरेट ब्राउज़िंग चालू करना चाहते हैं?</translation>
 <translation id="1686550358074589746">ग्लाइड करके लिखने की सुविधा चालू करें</translation>
 <translation id="168715261339224929">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, सिंक चालू करें.</translation>
@@ -844,6 +846,7 @@
 <translation id="178092663238929451">अपने आस-पास के लोगों से फ़ाइलें पाने और भेजने के लिए, 'आस-पास शेयर करना' सेट अप करें</translation>
 <translation id="1781291988450150470">मौजूदा पिन</translation>
 <translation id="1781502536226964113">'नया टैब' पेज खोलें</translation>
+<translation id="1781553166608855614">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="1781771911845953849">खाते और सिंक</translation>
 <translation id="1781979858217752599">विंडो ऑडियो शेयर करें</translation>
 <translation id="1782101999402987960">आपके एडमिन ने अपडेट ब्लॉक कर दिए हैं</translation>
@@ -1572,6 +1575,7 @@
 <translation id="244475495405467108">बाईं ओर के टैब बंद करें</translation>
 <translation id="2445081178310039857">एक्‍सटेंशन मूल निर्देशिका आवश्यक है.</translation>
 <translation id="2445484935443597917">नई प्रोफ़ाइल बनाएं</translation>
+<translation id="2445726032315793326">स्क्रीन पर मौजूद कॉन्टेंट के किसी हिस्से को बड़ा करके दिखाने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="244641233057214044">आपकी खोज से मिलता-जुलता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2448810255793562605">अपने-आप स्कैन करने की सुविधा को ऐक्सेस करने का तरीका बदलें</translation>
@@ -1863,6 +1867,7 @@
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">यूनिट कन्वर्ज़न</translation>
 <translation id="2725200716980197196">नेटवर्क कनेक्टिविटी पुनर्स्थापित हो गई</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="2727633948226935816">मुझे फिर से याद न दिलाएं</translation>
 <translation id="2727712005121231835">वास्तविक आकार</translation>
 <translation id="2729314457178420145">ब्राउज़िंग डेटा (<ph name="URL" />) भी मिटाएं, इससे आप Google.com से साइन आउट हो सकते हैं. <ph name="LEARN_MORE" /></translation>
@@ -2204,6 +2209,7 @@
 <translation id="3030967311408872958">सूर्यास्त से सूर्योदय तक</translation>
 <translation id="3031417829280473749">एजेंट X</translation>
 <translation id="3031557471081358569">आयात करने के लिए आइटम को चुनें:</translation>
+<translation id="3032204772252313646">खुद सबटाइटल बनने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3033348223765101500">अपना डेटा कंट्रोल करें</translation>
 <translation id="3034627908241330765">Steam का कोई दूसरा सेट अप इंस्टॉल हो रहा है. सेट अप को दोबारा इंस्टॉल करने से पहले, कृपया इसके पूरा होने तक इंतज़ार करें.</translation>
 <translation id="3036327949511794916">इस <ph name="DEVICE_TYPE" /> को वापस करने की समयसीमा खत्म हो चुकी है.</translation>
@@ -2636,6 +2642,7 @@
 <translation id="3480612136143976912">लाइव कैप्शन के लिए, कैप्शन के साइज़ और स्टाइल को पसंद के मुताबिक बनाएं. कुछ ऐप्लिकेशन और साइटें भी इस सेटिंग का इस्तेमाल करेंगी.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> टैब मिले</translation>
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> पर <ph name="COUNTDOWN_SECONDS" /> सेकंड में खाेला जा रहा है</translation>
+<translation id="348268549820508141">बोली पहचानने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों काे देख सकती है</translation>
 <translation id="3484273680291419129">नुकसान पहुंचाने वाला सॉफ़्टवेयर निकाला जा रहा है...</translation>
 <translation id="3484869148456018791">नया प्रमाणपत्र पाएं</translation>
@@ -2794,6 +2801,7 @@
 <translation id="3640214691812501263"><ph name="USER_NAME" /> के लिए "<ph name="EXTENSION_NAME" />" को जोड़ें?</translation>
 <translation id="3640613767643722554">अपनी Assistant को आपकी आवाज़ पहचानना सिखाएं</translation>
 <translation id="3641456520301071208">साइटें आपकी जगह की जानकारी मांग सकती हैं</translation>
+<translation id="3642070413432681490">कर्सर को हाइलाइट करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3642699533549879077">जब कोई और आपकी स्क्रीन की तरफ़ देखता है, तब आपको इसकी चेतावनी मिलती है. साथ ही, सूचना का कॉन्टेंट छिपा दिया जाता है.</translation>
 <translation id="3645372836428131288">फ़िंगरप्रिंट के अलग हिस्से को कैप्चर करने के लिए उंगली धीरे से हिलाएं</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिले}}</translation>
@@ -2828,6 +2836,7 @@
 <translation id="368019053277764111">साइड पैनल में सर्च टूलबार चालू करें</translation>
 <translation id="3680683624079082902">लिखाई को बोली में बदलने के लिए आवाज़ की सेटिंग</translation>
 <translation id="3681311097828166361">आपके फ़ीडबैक के लिए धन्यवाद. आप अब ऑफ़लाइन हैं और आपकी रिपोर्ट बाद में भेज दी जाएगी.</translation>
+<translation id="3681548574519135185">फ़ोकस रिंग की सेटिंग पर जाएं</translation>
 <translation id="3682824389861648626">माउस की गति की सीमा</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> स्क्रीन शेयर करने का अनुरोध</translation>
 <translation id="3685598397738512288">Linux में यूएसबी से जुड़ी प्राथमिकताएं</translation>
@@ -3126,6 +3135,7 @@
 <translation id="3948507072814225786"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="394984172568887996">IE से आयात किया गया</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
+<translation id="3950841222883198950">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3953834000574892725">मेरे खाते</translation>
 <translation id="3954354850384043518">जारी है</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़)</translation>
@@ -3186,6 +3196,7 @@
 <translation id="3994878504415702912">&amp;ज़ूम</translation>
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
 <translation id="3995963973192100066">ऐनिमेशन चलाएं</translation>
+<translation id="4001540981461989979">माउस के कर्सर को इधर-उधर ले जाते समय, उसे हाइलाइट की सेटिंग पर जाएं</translation>
 <translation id="4002329649066944389">किसी साइट के खास अपवाद प्रबंधित करें</translation>
 <translation id="4002440992267487163">पिन सेटअप</translation>
 <translation id="4005817994523282006">समय क्षेत्र की पहचान विधि</translation>
@@ -3419,6 +3430,7 @@
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - टैब सामग्री शेयर की गई</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="4253183225471855471">कोई भी नेटवर्क नहीं मिला. दोबारा कोशिश करने से पहले, कृपया अपना सिम कार्ड डालें और अपने डिवाइस को फिर से चालू करें.</translation>
+<translation id="4254414375763576535">कर्सर का साइज़ बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4254813446494774748">अनुवाद की भाषा:</translation>
 <translation id="425573743389990240">बैटरी डिस्चार्ज दर वॉट में (ऋणात्मक मान का अर्थ है कि बैटरी चार्ज हो रही है)</translation>
 <translation id="4256316378292851214">इस रूप में वीडियो स&amp;हेजें...</translation>
@@ -3569,6 +3581,7 @@
 <translation id="4400963414856942668">टैब को बुकमार्क करने के लिए आप स्टार के निशान पर क्लिक कर सकते हैं</translation>
 <translation id="4401912261345737180">डिवाइस को कास्ट करने के लिए, ऐक्सेस कोड का इस्तेमाल करें.</translation>
 <translation id="4402755511846832236">साइटों को यह जानने से रोकें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
+<translation id="4403012369005671154">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4403266582403435904">जब चाहें, आसानी से अपना डेटा वापस लाएं या डिवाइस बदलें. बच्चे के डिवाइस के डेटा का बैक अप Google पर अपलोड किया जाता है और उसे आपके बच्चे के Google खाते के पासवर्ड से सुरक्षित किया जाता है.</translation>
 <translation id="4403775189117163360">कोई दूसरा फ़ोल्डर चुनें</translation>
 <translation id="4404136731284211429">फिर से स्कैन करें</translation>
@@ -3912,6 +3925,7 @@
 <translation id="4733161265940833579">बाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="4733793249294335256">स्थान</translation>
 <translation id="473546211690256853">यह खाता <ph name="DOMAIN" /> द्वारा प्रबंधित किया जाता है</translation>
+<translation id="4735506354605317060">माउस का कर्सर हाइलाइट करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4735803855089279419">सिस्‍टम इस डिवाइस के लिए डिवाइस पहचानकर्ताओं को तय नहीं कर सका.</translation>
 <translation id="4736292055110123391">अपने बुकमार्क, पासवर्ड, इतिहास, और दूसरी कई चीज़ें अपने सभी डिवाइस पर सिंक करना</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
@@ -3932,6 +3946,7 @@
 <translation id="4759202969060787081">न खोलें</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
+<translation id="4762489666082647806">कर्सर का रंग बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
 <translation id="4763408175235639573">जब आपने इस पेज को देखा था, तब इन कुकी को सेट किया गया था</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{इस डिवाइस की पहचान को 1 महीने के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}one{इस डिवाइस की पहचान को {MONTHS} महीने के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}other{इस डिवाइस की पहचान को {MONTHS} महीनों के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}}</translation>
@@ -4027,6 +4042,7 @@
 <translation id="485053257961878904">सूचनाओं को सिंक करने की सुविधा सेट अप नहीं की जा सकी</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485088796993065002">साइटें संगीत, वीडियो और अन्य मीडिया से जुड़े ऑडियो देने के लिए साउंड चला सकती हैं</translation>
+<translation id="4852916668365817106">माउस का रंग बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4853020600495124913">&amp;नई विंडो में खोलें</translation>
 <translation id="4854317507773910281">मंज़ूरी के लिए माता-पिता का खाता चुनें</translation>
 <translation id="485480310608090163">ज़्यादा सेटिंग और अनुमतियां</translation>
@@ -4080,6 +4096,7 @@
 <translation id="4893522937062257019">लॉक स्क्रीन पर</translation>
 <translation id="4897496410259333978">ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="4898011734382862273">प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" किसी प्रमाणन प्राधिकरण का प्रतिनिधित्व करता है</translation>
+<translation id="4899052647152077033">रंग उलटा करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4899696330053002588">ऐप्लिकेशन में विज्ञापन शामिल हैं</translation>
 <translation id="489985760463306091">नुकसान पहुंचाने वाला सॉफ़्टवेयर निकालने की प्रक्रिया पूरी करने के लिए, अपना कंप्यूटर फिर से चालू करें</translation>
 <translation id="4900392736118574277">आपका स्टार्टअप पेज<ph name="URL" /> में बदल दिया गया था.</translation>
@@ -4571,6 +4588,7 @@
 <translation id="5414566801737831689">आप जिन वेबसाइट पर जाते हैं, उनके आइकॉन पढ़ें</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
 <translation id="5417312524372586921">ब्राउज़र थीम</translation>
+<translation id="541737483547792035">स्क्रीन ज़ूम करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420274697768050645">डिवाइस को अनलॉक करने के लिए पासवर्ड डालना होगा. इससे डिवाइस ज़्यादा सुरक्षित रहता है</translation>
 <translation id="5420438158931847627">लेख और इमेज का पैनापन तय करता है</translation>
@@ -4616,6 +4634,7 @@
 <translation id="5459864179070366255">इंस्टॉल करना जारी रखें</translation>
 <translation id="5461050611724244538">डिवाइस आपके फ़ोन से डिसकनेक्ट हो गया</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> का इंडेक्स</translation>
+<translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> से जुड़े ईमेल पाने के लिए साइन अप करें</translation>
 <translation id="5463625433003343978">डिवाइस ढूंढे जा रहे हैं...</translation>
 <translation id="5463845647891602726">स्टोरेज की जगह बढ़ाने के लिए, डिवाइस से फ़ाइलें मिटाएं</translation>
 <translation id="5463856536939868464">मेन्यू में बुकमार्क छुपे हुए हैं</translation>
@@ -4764,6 +4783,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ऐप्लिकेशन लोड हो रहे हैं...</translation>
 <translation id="5592595402373377407">अभी काफ़ी डेटा उपलब्ध नहीं है.</translation>
+<translation id="5595307023264033512">साइटों ने कुल इतना स्टोरेज इस्तेमाल किया है: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5600348067066185292">कुछ आसान तरीकों से इंस्टॉल करें. आपके कंप्यूटर में बदलाव किए जाने से पहले, आपको पुष्टि करने का एक मौका और मिलेगा.</translation>
@@ -4966,6 +4986,7 @@
 <translation id="5801568494490449797">प्राथमिकताएं</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5805697420284793859">विंडो मैनेजर</translation>
+<translation id="5806447147478173900">दिखाई गई साइटों ने कुल इतना स्टोरेज इस्तेमाल किया है: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (डिफ़ॉल्ट)</translation>
 <translation id="5810809306422959727">इस खाते पर माता-पिता के कंट्रोल की सुविधा का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="5811614940486072060">यह फ़ाइल आम तौर पर डाउनलोड नहीं की जाती है और यह खतरनाक हो सकती है</translation>
@@ -5642,6 +5663,7 @@
 <translation id="6474884162850599008">Google डिस्‍क खाता डिस्‍कनेक्‍ट करें</translation>
 <translation id="6475294023568239942">डिस्क में जगह खाली करें या सेटिंग में जाकर, Linux डिस्क का साइज़ बदलें</translation>
 <translation id="6476138569087741884">फ़ुलस्क्रीन ज़ूम लेवल</translation>
+<translation id="6476482583633999078">टेक्स्ट पढ़े जाने की रफ़्तार से जुड़ी सेटिंग से जाएं</translation>
 <translation id="6477822444490674459">फ़ोन में वर्क प्रोफ़ाइल होने पर, सूचनाओं को सिंक करने की सुविधा काम नहीं करती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">खतरनाक फ़ाइल रखें?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> मैनेज करता है</translation>
@@ -5920,6 +5942,7 @@
 <translation id="6750757184909117990">सेल्युलर नेटवर्क बंद करें</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (गुप्त)</translation>
 <translation id="6756157672127672536">Files ऐप्लिकेशन में आपको उन फ़ाइलों का तुरंत ऐक्सेस मिलता है जिन्हें आपने Google Drive, बाहरी मेमोरी या अपने ChromeOS डिवाइस पर सेव किया है.</translation>
+<translation id="6756643207511618722">लिखाई को बोली में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="6758056191028427665">हमें बताएं कि हम कैसा प्रदर्शन कर रहे हैं.</translation>
 <translation id="6759193508432371551">फैक्टरी रीसेट करें</translation>
 <translation id="6761431452438552910">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें.</translation>
@@ -6068,6 +6091,7 @@
 <translation id="6889957081990109136">अब तक स्विच असाइन नहीं किया गया है</translation>
 <translation id="689007770043972343">खुले हुए दूसरे टैब को अपने ग्रुप में खींचें और छोड़ें</translation>
 <translation id="6892812721183419409">लिंक को <ph name="USER" /> के रूप में खोलें</translation>
+<translation id="6893164346922798247">eSpeak</translation>
 <translation id="6895032998810961280">नुकसान पहुंचाने वाले सॉफ़्टवेयर, सिस्टम की सेटिंग, और उन प्रक्रियाओं की पूरी रिपोर्ट Google को भेजें, जो हटाए जाने की इस प्रक्रिया में आपके कंप्यूटर पर मिली थीं</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6897363604023044284">डेटा मिटाने के लिए साइटें चुनें</translation>
@@ -6135,6 +6159,7 @@
 <translation id="6960507406838246615">Linux अपडेट करना ज़रूरी है</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड नहीं की जा सकीं. बाद में, डाउनलोड करने की कोशिश की जाएगी. फ़ाइल पूरी डाउनलोड होने तक, स्पीच को प्रोसेसिंग के लिए Google के पास भेजा जाता है.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> से सभी उपयोगकर्ताओं की सभी फ़ाइलें और स्थानीय डेटा हमेशा के लिए मिटा दिया गया है.</translation>
+<translation id="6963872466817251924">टेक्स्ट कर्सर को हाइलाइट करने की सेटिंग पर जाएं</translation>
 <translation id="6964390816189577014">हीरो</translation>
 <translation id="6964760285928603117">समूह से हटाएं</translation>
 <translation id="6965382102122355670">ठीक है</translation>
@@ -6334,6 +6359,7 @@
 <translation id="7160182524506337403">अब आपके पास अपने फ़ोन की सूचनाएं देखने का विकल्प है</translation>
 <translation id="7163202347044721291">ऐक्टिवेशन कोड की पुष्टि की जा रही है...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" चेक किए गए स्‍थानों में चित्रों, वीडियो, और ध्‍वनि फ़ाइलों को पढ़ सकता है.</translation>
+<translation id="7167327771183668296">अपने-आप क्लिक होने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="7167486101654761064">इस प्रकार की फ़ाइलें &amp;हमेशा खोलें</translation>
 <translation id="716775164025088943">अब आपके बुकमार्क, इतिहास, पासवर्ड, और दूसरी चीज़ों को सिंक नहीं किया जाएगा.</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> डाउनलोड हो रही है</translation>
@@ -7341,7 +7367,7 @@
 <translation id="8133676275609324831">खोजकर्ता में &amp;दिखाएं</translation>
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" />k</translation>
 <translation id="8136269678443988272">आपने जो पिन डाले हैं, वे बेमेल हैं</translation>
-<translation id="8137559199583651773">एक्सटेंशन प्रबंधित करें</translation>
+<translation id="8137559199583651773">एक्सटेंशन मैनेज करें</translation>
 <translation id="8138082791834443598">वैकल्पिक — इस डिवाइस के साथ जोड़ी जाने वाली नई जानकारी डालें या मौजूदा जानकारी को अपडेट करें.</translation>
 <translation id="8138217203226449454">क्या आपका मतलब खोज की सुविधा देने वाली कंपनी बदलने से था?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> की स्थिति</translation>
@@ -7425,6 +7451,7 @@
 <translation id="8213449224684199188">आप फ़ोटो मोड में हैं</translation>
 <translation id="8214489666383623925">फ़ाइल खोलें...</translation>
 <translation id="8215129063232901118">अपने <ph name="DEVICE_TYPE" /> से फ़ोन की सुविधाओं को ऐक्सेस करें</translation>
+<translation id="8217212468862726597">कर्सर को हाइलाइट करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="8217399928341212914">कई फ़ाइलों के अपने आप डाउनलोड होने को ब्लॉक करना जारी रखें</translation>
 <translation id="822050276545350872">अब आपको इंतज़ार नहीं करना पड़ेगा</translation>
 <translation id="8221491193165283816">आम तौर पर, आप सूचनाओंं पर रोक लगाते हैं. यह साइट आपको सूचना दिखा सके, इसके लिए यहां क्लिक करें.</translation>
@@ -7982,6 +8009,7 @@
 <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.}}</translation>
 <translation id="8776294611668764629">आपके संगठन ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि सुरक्षा जांच के हिसाब से, यह फ़ाइल बहुत बड़ी है. आपके पास 50 एमबी तक की फ़ाइलें खोलने का विकल्प है.</translation>
 <translation id="8777628254805677039">रूट पासवर्ड</translation>
+<translation id="8778393144535275552">दिखाया गया डेटा मिटाएं</translation>
 <translation id="8779944680596936487">कुकी का इस्तेमाल करके, साइटें सिर्फ़ आपकी ब्राउज़िंग गतिविधि देख सकती हैं</translation>
 <translation id="8780123805589053431">Google से इमेज के बारे में जानकारी पाएं</translation>
 <translation id="8780443667474968681">बोलकर खोजने की सेवा बंद कर दी गई है.</translation>
@@ -8460,6 +8488,7 @@
 <translation id="957960681186851048">इस साइट ने अपने आप  कई फ़ाइलें डाउनलोड करने की कोशिश की है</translation>
 <translation id="960987915827980018">करीब 1 घंटा शेष है</translation>
 <translation id="962802172452141067">बुकमार्क फ़ोल्डर ट्री</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="964286338916298286">आपके आईटी एडमिन ने आपके डिवाइस के लिए 'Chrome के तोहफ़े' रीडीम करने की सुविधा बंद कर दी है.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ऐप्लिकेशन}one{ऐप्लिकेशन}other{ऐप्लिकेशन}}</translation>
 <translation id="964790508619473209">स्क्रीन की सेटिंग</translation>
@@ -8476,6 +8505,7 @@
 <translation id="971774202801778802">यूआरएल बुकमार्क करें</translation>
 <translation id="972996901592717370">उंगली से पावर बटन को छुएं. आपका डेटा सुरक्षित तरीके से सेव किया जाता है और हमेशा आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="973473557718930265">छोड़ें</translation>
+<translation id="973558314812359997">कर्सर को बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="975893173032473675">वह भाषा जिसमें अनुवाद करना है</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> को सही करके <ph name="CORRECTED_WORD" /> किया गया, जिसके लिए 'ऑटो करेक्ट को पहले जैसा करें' डायलॉग दिखाया गया.  ऐक्सेस करने के लिए 'अप ऐरो', अनदेखा करने के लिए escape दबाएं.</translation>
 <translation id="978146274692397928">आरंभिक विराम-चिह्न चौड़ाई पूर्ण है</translation>

@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, bloķēja jūsu administrators, detalizēta informācija</translation>
 <translation id="2142680004883808240">Krievu, ar fonētisko YaZHert tastatūru</translation>
 <translation id="2143778271340628265">Manuāla starpniekservera konfigurācija</translation>
+<translation id="2148716181193084225">Šodien</translation>
 <translation id="2163152940313951844">Nederīga rakstzīme: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugāļu, ar ASV starptautisko datora tastatūru</translation>
 <translation id="2198315389084035571">Ķīniešu (vienkāršotā)</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">Taju, ar TIS 820-2531 tastatūru</translation>
 <translation id="708278670402572152">Atvienojiet, lai iespējotu skenēšanu</translation>
 <translation id="7086590977277044826">Tamilu, ar InScript tastatūru</translation>
+<translation id="7088615885725309056">Vecāka</translation>
 <translation id="7103992300314999525">Maķedoniešu</translation>
 <translation id="7106346894903675391">Iegādāties papildu vietu krātuvē...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' — &lt;em&gt;meklēt Diskā&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Ķīniešu, Wubi</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7774365994322694683">Putns</translation>
+<translation id="7781829728241885113">Vakar</translation>
 <translation id="7788080748068240085">Lai failu “<ph name="FILE_NAME" />” saglabātu bezsaistē, jums ir jāatbrīvo <ph name="TOTAL_FILE_SIZE" /> vietas.<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Atspraudiet failus, kuriem vairs nav jāpiekļūst bezsaistē.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Dzēsiet failus no mapes Lejupielādes.<ph name="MARKUP_5" /></translation>

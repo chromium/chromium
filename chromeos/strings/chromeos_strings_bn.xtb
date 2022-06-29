@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />উপযুক্ত নয় এমন কম্পোনেন্ট<ph name="LINK_END" /> পাওয়া গেছে। সমস্ত উপযুক্ত কম্পোনেন্ট শনাক্ত করা হয়েছে তা নিশ্চিত করতে, আপনার Chrome OS লেটেস্ট ভার্সনে আপডেট করুন।</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
+<translation id="2182088270354640012">মতামত দেওয়ার জন্য ধন্যবাদ। আপনার মতামত Chrome OS-কে উন্নত করতে সাহায্য করে এবং আমাদের Chrome OS টিম তা পর্যালোচনা করবে। যত সংখ্যক রিপোর্ট জমা হয়েছে তার কারণে আপনি সরাসরি কোনও উত্তর পাবেন না।</translation>
 <translation id="2209788852729124853">ট্রাফিক কাউন্টার্স রিসেট করুন</translation>
 <translation id="2212733584906323460">নামের রেজোলিউশন</translation>
 <translation id="2217935453350629363">বর্তমান স্পিড</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">রিস্টার্ট হচ্ছে...</translation>
 <translation id="2533048460510040082">সাজেস্ট করা সহায়তা কন্টেন্ট</translation>
 <translation id="2536159006530886390">ইন্টারনেটের সাথে কানেক্ট করা যাচ্ছে না।</translation>
+<translation id="256360469103926202">আপনার মতামত ChromeOS-কে উন্নত করতে সাহায্য করে এবং আমাদের টিম তা পর্যালোচনা করবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
 <translation id="2584559707064218956">সেট আপ করতে, সেটিংসে যান</translation>
 <translation id="2619761439309613843">প্রতিদিন রিফ্রেশ করা হবে</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
+<translation id="3275729367986477355">অবতারের ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">মূল দিকনির্দেশ</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">আরও সাহায্যের জন্য, <ph name="BEGIN_LINK" />সহায়তা কেন্দ্রে<ph name="END_LINK" /> যান।</translation>
 <translation id="4793756956024303490">কম্প্রেশন অ্যালগরিদম</translation>
 <translation id="4794140124556169553">সিপিইউ পরীক্ষা চালালে তার ফলে আপনার সিস্টেম পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
+<translation id="4800589996161293643">Chromebook কমিউনিটি</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
 <translation id="4809927044794281115">হালকা থিম</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
+<translation id="522307662484862935">ইমেল আইডি যোগ করবেন না</translation>
 <translation id="5227902338748591677">ডার্ক থিমের শিডিউল</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5252456968953390977">রোমিং</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">ডার্ক থিম চালু করুন</translation>
 <translation id="6295178529664209245">রিপেয়ার করা চালিয়ে যাবেন?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
+<translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />-এ ফার্মওয়্যার আপডেট করুন</translation>
 <translation id="6321407676395378991">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="6325525973963619867">ব্যর্থ</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">ফায়ারওয়ালের সাহায্যে HTTPS ওয়েবসাইটের সাথে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook সহায়তা ফোরামের বিশেষজ্ঞদের জিজ্ঞাসা করুন</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">সাইকেল কাউন্ট</translation>
 <translation id="7747039790905080783">আগে থাকতে শেয়ার করা 'কী'</translation>
 <translation id="7762130827864645708">আপনার পাসওয়ার্ড পরিবর্তন করা হয়ে গেছে। এখন থেকে নতুন পাসওয়ার্ড ব্যবহার করুন।</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />সিস্টেম ও অ্যাপ সংক্রান্ত তথ্য<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />মেট্রিক<ph name="END_LINK2" /> পাঠান।</translation>
 <translation id="7763470514545477072">ডোমেন সাফিক্সের সাথে মিল থাকা</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
 <translation id="7784116172884276937">কোনও ডিএনএস সার্ভার সেট আপ করা হয়নি</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">সাদা-লেবেল</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
+<translation id="8420955526972171689">টেস্ট রান করানো ও হার্ডওয়্যার সংক্রান্ত সমস্যার সমাধান</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ইন্টার্নাল কীবোর্ড</translation>
 <translation id="8431300646573772016">ChromeOS-এ নতুন কী আছে</translation>

@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
 <translation id="2142680004883808240">‏YaZHert فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="2143778271340628265">دستی پراکسی کنفیگریشن</translation>
+<translation id="2148716181193084225">آج</translation>
 <translation id="2163152940313951844">غلط حرف: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">‏امریکی بین الاقوامی PC کی بورڈ کے ساتھ پرتگالی</translation>
 <translation id="2198315389084035571">آسان کردہ چینی</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">موبائل پروفائل ڈاؤن لوڈ کریں، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">انگریزی (برطانیہ)</translation>
 <translation id="3975895378829046965">بنگالی فونیٹک</translation>
+<translation id="3991446849494482687">‏یہ آلہ پر SIM لاک کی ترتیب کو بھی غیر فعال کر دے گا۔</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4017788180641807848">‏Workman کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="4040753847560036377">‏غلط PUK</translation>
@@ -703,6 +705,7 @@
 <translation id="7075931588889865715">‏TIS 820-2531 کی بورڈ کے ساتھ تھائی</translation>
 <translation id="708278670402572152">اسکین کرنے کو فعال کرنے کے لئے غیر منسلک کریں</translation>
 <translation id="7086590977277044826">‏InScript کی بورڈ کے ساتھ تمل</translation>
+<translation id="7088615885725309056">پرانی</translation>
 <translation id="7103992300314999525">مقدونيائی</translation>
 <translation id="7106346894903675391">مزید اسٹوریج خریدیں…</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt; Drive تلاش کریں&lt;/em&gt;</translation>
@@ -767,6 +770,7 @@
 <translation id="7663224033570512922">ہندی</translation>
 <translation id="7693909743393669729">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا اور سبھی موجودہ پارٹیشنز ہٹ جائيں گے، بشمول وہ پارٹیشنز جو شاید دکھائی نہ دے رہے ہوں۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> کو فارمیٹ نہیں کیا جا سکا</translation>
+<translation id="76959938259365003">کوڑے دان کو خالی کرنے میں ناکام۔</translation>
 <translation id="770015031906360009">يونانی</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> کاپی ہو گیا۔</translation>
 <translation id="7711920809702896782">تصویر کی معلومات</translation>
@@ -777,6 +781,7 @@
 <translation id="7760449188139285140">‏چینی Wubi</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7774365994322694683">پرندہ</translation>
+<translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" کو آف لائن محفوظ کرنے کیلئے آپ کو اضافی <ph name="TOTAL_FILE_SIZE" /> جگہ خالی کرنا ضروری ہے:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ان فائلوں سے پن ہٹائیں جن تک آپ کو آف لائن رسائی کی مزید ضرورت نہیں ہے<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />فائلوں کو اپنے ڈاؤن لوڈز فولڈر سے ہٹائیں<ph name="MARKUP_5" /></translation>

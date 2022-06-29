@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, útilokað af kerfisstjóra, nánar</translation>
 <translation id="2142680004883808240">Rússneska með YaZHert-hljóðritunarlyklaborði</translation>
 <translation id="2143778271340628265">Handvirkar proxy-stillingar</translation>
+<translation id="2148716181193084225">Í dag</translation>
 <translation id="2163152940313951844">Ógildur stafur: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portúgalska með bandarísku alþjóðlegu tölvulyklaborði</translation>
 <translation id="2198315389084035571">Kínverska (einfölduð)</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Taílenska með TIS 820-2531-lyklaborði</translation>
 <translation id="708278670402572152">Aftengdu net til að leita</translation>
 <translation id="7086590977277044826">Tamíl með InScript-lyklaborði</translation>
+<translation id="7088615885725309056">Eldra</translation>
 <translation id="7103992300314999525">Makedónska</translation>
 <translation id="7106346894903675391">Kaupa meira geymslurými...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;leita í Drive&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Kínverska Wubi</translation>
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7774365994322694683">Fugl</translation>
+<translation id="7781829728241885113">Í gær</translation>
 <translation id="7788080748068240085">Til að vista „<ph name="FILE_NAME" />“ án nettengingar þarftu að losa <ph name="TOTAL_FILE_SIZE" /> af plássi til viðbótar:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />losaðu skrár sem þú þarf ekki lengur að hafa aðgang að án nettengingar<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />eyddu skrám úr möppunni Niðurhal<ph name="MARKUP_5" /></translation>

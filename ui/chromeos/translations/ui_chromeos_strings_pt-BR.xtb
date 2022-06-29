@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
 <translation id="2142680004883808240">Russo com teclado fonético YaZHert</translation>
 <translation id="2143778271340628265">Configuração manual de proxy</translation>
+<translation id="2148716181193084225">Hoje</translation>
 <translation id="2163152940313951844">Caractere inválido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Português com teclado internacional de PC dos EUA</translation>
 <translation id="2198315389084035571">Chinês simplificado</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Tailandês com teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desconectar para ativar a verificação</translation>
 <translation id="7086590977277044826">Tâmil com teclado InScript</translation>
+<translation id="7088615885725309056">Mais antigo</translation>
 <translation id="7103992300314999525">Macedônio</translation>
 <translation id="7106346894903675391">Adquirir mais espaço de armazenamento...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
@@ -779,6 +781,7 @@
 <translation id="7760449188139285140">Chinês (wubi)</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7774365994322694683">Pássaro</translation>
+<translation id="7781829728241885113">Ontem</translation>
 <translation id="7788080748068240085">Para salvar "<ph name="FILE_NAME" />" off-line, é necessário liberar um espaço adicional de mais <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />libere arquivos que você não precisa mais acessar off-line<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />exclua arquivos da sua pasta "Downloads"<ph name="MARKUP_5" /></translation>

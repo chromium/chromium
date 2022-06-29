@@ -131,6 +131,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="2142680004883808240">ಫೋನೆಟಿಕ್ YaZHert ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ರಷ್ಯನ್</translation>
 <translation id="2143778271340628265">ಹಸ್ತಚಾಲಿತ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್</translation>
+<translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2163152940313951844">ಅಮಾನ್ಯ ಅಕ್ಷರ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ಯುಎಸ್ ಅಂತರರಾಷ್ಟ್ರೀಯ PC ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಪೋರ್ಚುಗೀಸ್</translation>
 <translation id="2198315389084035571">ಸರಳೀಕೃತ ಚೈನೀಸ್</translation>
@@ -699,6 +700,7 @@
 <translation id="7075931588889865715">TIS 820-2531 ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಥಾಯ್</translation>
 <translation id="708278670402572152">ಸ್ಕ್ಯಾನಿಂಗ್ ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="7086590977277044826">ಇನ್‌ಸ್ಕ್ರಿಪ್ಟ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ತಮಿಳು</translation>
+<translation id="7088615885725309056">ಹಳೆಯದು</translation>
 <translation id="7103992300314999525">ಮೆಸೆಡೋನಿಯನ್</translation>
 <translation id="7106346894903675391">ಇನ್ನಷ್ಟು ಸಂಗ್ರಹಣೆಯನ್ನು ಖರೀದಿಸಿ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ಡ್ರೈವ್ ಹುಡುಕಿ&lt;/em&gt;</translation>
@@ -761,6 +763,7 @@
 <translation id="7663224033570512922">ಹಿಂದಿ</translation>
 <translation id="7693909743393669729">ಡ್ರೈವ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುವುದರಿಂದ ಅದರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ ಹಾಗೂ ಗೋಚರಿಸದ ವಿಭಾಗಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಎಲ್ಲಾ ವಿಭಾಗಗಳನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="76959938259365003">ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="770015031906360009">ಗ್ರೀಕ್</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="7711920809702896782">ಚಿತ್ರ ಮಾಹಿತಿ</translation>
@@ -771,6 +774,7 @@
 <translation id="7760449188139285140">ಚೈನೀಸ್ ವುಬಿ</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
 <translation id="7774365994322694683">ಪಕ್ಷಿ</translation>
+<translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"  ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಉಳಿಸಲು ನೀವು ಹೆಚ್ಚುವರಿ <ph name="TOTAL_FILE_SIZE" /> ಸ್ಥಳವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಅವಶ್ಯಕತೆಯಿಲ್ಲದಂತಹ ಫೈಲ್‌ಗಳನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಫೋಲ್ಡರ್‌ನ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಿ<ph name="MARKUP_5" /></translation>

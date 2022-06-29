@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />अयोग्य कम्पोनेन्टहरू<ph name="LINK_END" /> भेटिए। सबै योग्य कम्पोनेन्टहरू पहिचान गरिन्छन् भन्ने कुरा सुनिश्चित गर्न आफ्नो Chrome OS अपडेट गरी नवीनतम संस्करण बनाउनुहोस्।</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
+<translation id="2182088270354640012">प्रतिक्रिया दिनुभएकामा धन्यवाद। तपाईंले दिनुभएको प्रतिक्रियाले Chrome OS को गुणस्तर सुधार्न मद्दत गर्छ र Chrome OS को टोलीले सो प्रतिक्रियाको समीक्षा गर्ने छ। रिपोर्टहरूको सङ्ख्या धेरै भएकाले तपाईं सीधा जवाफ प्राप्त गर्नु हुने छैन।</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
 <translation id="2217935453350629363">हालको गति</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">रिस्टार्ट गरिँदै छ...</translation>
 <translation id="2533048460510040082">मद्दतसम्बन्धी सिफारिस गरिएको सामग्री</translation>
 <translation id="2536159006530886390">इन्टरनेटमा कनेक्ट हुन सकेन।</translation>
+<translation id="256360469103926202">तपाईंले दिनुभएको प्रतिक्रियाले ChromeOS को गुणस्तर सुधार्न मद्दत गर्छ र हाम्रो टोलीले सो प्रतिक्रियाको समीक्षा गर्ने छ। रिपोर्टहरूको सङ्ख्या अत्यन्त धेरै भएकाले हामी जवाफ दिन सक्ने छैनौँ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
 <translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">स्क्यानरहरू खोजिँदै छ</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
+<translation id="3275729367986477355">अवतारको फोटो</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल सम्पादन गर्नुहोस्}other{फाइलहरू सम्पादन गर्नुहोस्}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">मुख्य डिरेक्सन</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">थप मद्दत चाहिएमा <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="4793756956024303490">कम्प्रेसनसम्बन्धी एल्गोरिदम</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>
+<translation id="4800589996161293643">Chromebook समुदाय</translation>
 <translation id="4804818685124855865">जडान विच्छेद</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
 <translation id="4809927044794281115">उज्यालो थिम</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">मैले तपाईंको स्क्रिनमा आफूले मद्दत गर्न मिल्ने कुनै पनि कुरा फेला पार्न सकिन। मलाई केही कुरा सोध्न माइकमा ट्याप गरी हेर्नुहोस्।</translation>
 <translation id="5212593641110061691">ट्याब्लोइड</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
+<translation id="522307662484862935">इमेल ठेगाना समावेश नगर्नुहोस्</translation>
 <translation id="5227902338748591677">अँध्यारो थिमको समयतालिका</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5252456968953390977">रोमिङ</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="6295178529664209245">मर्मत गर्ने कार्य जारी राख्ने हो?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
+<translation id="631063167932043783">एक्स्प्लोर एप</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गर्नुहोस्</translation>
 <translation id="6321407676395378991">स्क्रिन सेभर अन गर्नुहोस्</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">फायरवाल पार गरेर HTTPS वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook को मद्दतसम्बन्धी फोरममा विशेषज्ञसँग मद्दत माग्नुहोस्</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="7343649194310845056">नेटवर्कसम्बन्धी यन्त्रहरू</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7747039790905080783">अग्रिम रूपमा सेयर गरिएको की</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />सिस्टम तथा एपसम्बन्धी जानकारी<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पठाउनुहोस्</translation>
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
 <translation id="7784116172884276937">कुनै पनि DNS सर्भर सेटअप गरिएको छैन</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">श्वेत लेबल</translation>
 <translation id="8395584934117017006">इन्टरप्राइजले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
+<translation id="8420955526972171689">हार्डवेयरसम्बन्धी समस्याहरू पत्ता लगाउन परीक्षण गर्नुहोस् र ती समस्या निवारण गर्नुहोस्</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">इन्टर्नल किबोर्ड</translation>
 <translation id="8431300646573772016">ChromeOS मा नयाँ के छ</translation>

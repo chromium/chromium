@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />અયોગ્ય ઘટકો<ph name="LINK_END" /> મળ્યા. યોગ્યતા ધરાવતા બધા ઘટકો ઓળખાયેલા છે તેની ખાતરી કરવા માટે, તમારા Chrome OSને નવીનતમ વર્ઝન પર અપડેટ કરો.</translation>
 <translation id="2180197493692062006">કંઈક ખોટું થયું. ઍપ ફરીથી ખોલવાનો પ્રયાસ કરી જુઓ.</translation>
+<translation id="2182088270354640012">પ્રતિસાદ બદલ આભાર. તમારો પ્રતિસાદ Chrome OSને બહેતર બનાવવામાં મદદ કરે છે અને Chrome OS ટીમ દ્વારા તેનો રિવ્યૂ કરવામાં આવશે. મોટી સંખ્યામાં સબમિટ કરાયેલા રિપોર્ટને કારણે, તમને સીધો કોઈ જવાબ મળશે નહીં.</translation>
 <translation id="2209788852729124853">ટ્રાફિક કાઉન્ટર રીસેટ કરો</translation>
 <translation id="2212733584906323460">નામનું રિઝોલ્યુશન</translation>
 <translation id="2217935453350629363">વર્તમાન ઝડપ</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
 <translation id="2533048460510040082">સૂચિત સહાયક કન્ટેન્ટ</translation>
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
+<translation id="256360469103926202">તમારો પ્રતિસાદ ChromeOSને બહેતર બનાવવામાં મદદ કરે છે અને અમારી ટીમ દ્વારા તેનો રિવ્યૂ કરવામાં આવશે. મોટી સંખ્યામાં મળેલા રિપોર્ટને કારણે, અમે કોઈ જવાબ મોકલી શકીશું નહીં.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
+<translation id="3275729367986477355">અવતારની છબી</translation>
 <translation id="3283504360622356314">{0,plural, =1{ફાઇલમાં ફેરફાર કરો}one{ફાઇલમાં ફેરફાર કરો}other{ફાઇલમાં ફેરફાર કરો}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">મુખ્ય દિશા</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">વધુ સહાય માટે, <ph name="BEGIN_LINK" />સહાયતા કેન્દ્ર<ph name="END_LINK" /> પર જાઓ.</translation>
 <translation id="4793756956024303490">કમ્પ્રેશન ઍલ્ગોરિધમ</translation>
 <translation id="4794140124556169553">CPUનું પરીક્ષણ ચલાવવાથી તમારી સિસ્ટમની કાર્યક્ષમતા પર અસર થઈ શકે છે</translation>
+<translation id="4800589996161293643">Chromebookનો સમુદાય</translation>
 <translation id="4804818685124855865">ડિસ્કનેક્ટ કરો</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" />ને પ્રિન્ટ કરવાનું રદ કર્યું</translation>
 <translation id="4809927044794281115">ઝાંખી થીમ</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">મને તમારી સ્ક્રીન પર એવી કોઈપણ વસ્તુ મળી નથી કે જેમાં હું તમારી સહાય કરી શકું. મને કંઈપણ પૂછવા માટે માઇકને ટૅપ કરી જુઓ.</translation>
 <translation id="5212593641110061691">ટેબ્લોઇડ</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
+<translation id="522307662484862935">ઇમેઇલ ઍડ્રેસ શામેલ કરશો નહીં</translation>
 <translation id="5227902338748591677">ઘેરી થીમનું શેડ્યૂલ</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5252456968953390977">રોમિંગ</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="6295178529664209245">રિપૅર કરવાનું ચાલુ રાખવા માગો છો?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
+<translation id="631063167932043783">Explore ઍપ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> પર ફર્મવેયર અપડેટ કરો</translation>
 <translation id="6321407676395378991">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">ફાયરવૉલ મારફતે HTTPS વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook સહાય ચર્ચામંચમાં નિષ્ણાતોને પૂછો</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchમાં પરિણામ જોવા માટે, Search અને Space કી દબાવો.</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">ચક્રની સંખ્યા</translation>
 <translation id="7747039790905080783">પહેલેથી-શેર કરેલી કી</translation>
 <translation id="7762130827864645708">પાસવર્ડ બદલવાનું સફળ રહ્યું. કૃપા કરીને હવેથી નવા પાસવર્ડનો ઉપયોગ કરો.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />સિસ્ટમ અને ઍપ વિશેની માહિતી<ph name="END_LINK1" /> તથા <ph name="BEGIN_LINK2" />મેટ્રિક<ph name="END_LINK2" /> મોકલો</translation>
 <translation id="7763470514545477072">ડોમેન સફિક્સનો મેળ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
 <translation id="7784116172884276937">કોઈપણ DNS સર્વરનું સેટઅપ કરવામાં આવ્યું નથી</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">સફેદ-લેબલ</translation>
 <translation id="8395584934117017006">આ <ph name="DEVICE_TYPE" /> એન્ટરપ્રાઇઝ દ્વારા મેનેજ થાય છે</translation>
 <translation id="8398927464629426868">ડિવાઇસ હાલમાં જે ઝડપથી ચાર્જ કે ડિસ્ચાર્જ થઈ રહ્યું છે તે ઝડપ</translation>
+<translation id="8420955526972171689">હાર્ડવેર સંબંધિત સમસ્યાઓ માટે, પરીક્ષણો અને સમસ્યા નિવારણ ચલાવો</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">આંતરિક કીબોર્ડ</translation>
 <translation id="8431300646573772016">ChromeOSમાં નવું શું છે</translation>

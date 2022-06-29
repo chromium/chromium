@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="2142680004883808240">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ YaZHert ຕາມການອອກສຽງ</translation>
 <translation id="2143778271340628265">ການປັບຕັ້ງພຣັອກຊີເອົາເອງ</translation>
+<translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2163152940313951844">ຕົວອັກສອນໃຊ້ບໍ່ໄດ້: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ພາສາປໍຕຸຍກິສທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສະຫະລັດແບບສາກົນ</translation>
 <translation id="2198315389084035571">ພາສາຈີນຕົວຫຍໍ້</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມ TIS 820-2531</translation>
 <translation id="708278670402572152">ຕັດເຊື່ອມຕໍ່ເພື່ອເປີດນຳໃຊ້ການສະແກນ</translation>
 <translation id="7086590977277044826">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມ InScript</translation>
+<translation id="7088615885725309056">ເກົ່າກ່ວາ</translation>
 <translation id="7103992300314999525">ພາສາມາເຊໂດນຽນ</translation>
 <translation id="7106346894903675391">ຊື້ບ່ອນເກັບຂໍ້ມູນເພີ່ມ​ເຕີມ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ຊອກຫາ Drive&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">ພາສາຈີນ (Wubi)</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7774365994322694683">ນົກ</translation>
+<translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7788080748068240085">ເພື່ອບັນທຶກ "<ph name="FILE_NAME" />" ອອຟລາຍນ໌ ທ່ານຕ້ອງເຮັດໃຫ້ມີເນື້ອທີ່ <ph name="TOTAL_FILE_SIZE" /> ເພີ່ມເຕີມອີກ:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ຖອນປັກໝຸດໄຟລ໌ທີ່ທ່ານບໍ່ຕ້ອງການເຂົ້າຫາອອຟລາຍນ໌ອີກ<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ລຶບໄຟລ໌ຈາກໂຟລເດີດາວໂຫຼດຂອງທ່ານ<ph name="MARKUP_5" /></translation>

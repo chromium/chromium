@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">டார்க் பயன்முறையை இயக்குதல்</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />தகுதிபெறாத காம்பனென்ட்டுகள்<ph name="LINK_END" /> உள்ளன. தகுதிபெற்ற அனைத்துக் காம்பனென்ட்டுகளும் அடையாளம் காணப்பட்டதை உறுதிசெய்ய, Chrome OSஸைச் சமீபத்திய பதிப்பிற்குப் புதுப்பிக்கவும்.</translation>
 <translation id="2180197493692062006">ஏதோ தவறாகிவிட்டது. ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
+<translation id="2182088270354640012">கருத்து தெரிவித்ததற்கு நன்றி. உங்கள் கருத்து Chrome OSஸை மேம்படுத்த உதவும், மேலும் Chrome OS குழுவினரால் மதிப்பாய்வு செய்யப்படும். பல புகார்கள் சமர்ப்பிக்கப்படுவதால் உங்களுக்கு நேரடியாகப் பதில் கிடைக்காது.</translation>
 <translation id="2209788852729124853">டிராஃபிக் கவுண்ட்டர்களை மீட்டமை</translation>
 <translation id="2212733584906323460">நேம் ரெசல்யூஷன்</translation>
 <translation id="2217935453350629363">தற்போதைய வேகம்</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">மீண்டும் தொடங்குகிறது...</translation>
 <translation id="2533048460510040082">பரிந்துரைக்கப்படும் உதவி உள்ளடக்கம்</translation>
 <translation id="2536159006530886390">இணையத்துடன் இணைக்க முடியவில்லை.</translation>
+<translation id="256360469103926202">உங்கள் கருத்து Chrome OSஸை மேம்படுத்த உதவும், மேலும் எங்கள் குழுவினரால் மதிப்பாய்வு செய்யப்படும். புகார்களின் எண்ணிக்கை அதிகமாக இருப்பதால் எங்களால் உங்களுக்குப் பதிலளிக்க முடியாது.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2619761439309613843">தினசரிப் புதுப்பிப்பு</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
+<translation id="3275729367986477355">தோற்றப் படம்</translation>
 <translation id="3283504360622356314">{0,plural, =1{ஃபைலைத் திருத்துக}other{ஃபைல்களைத் திருத்துக}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">குறியீட்டு முறை</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">கூடுதல் உதவிக்கு, <ph name="BEGIN_LINK" />உதவி மையத்திற்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4793756956024303490">சுருக்குதல் அல்காரிதம்</translation>
 <translation id="4794140124556169553">CPU பரிசோதனையை இயக்குவதால் உங்கள் சிஸ்டத்தின் செயல்திறன் பாதிக்கப்படக்கூடும்</translation>
+<translation id="4800589996161293643">Chromebook சமூகம்</translation>
 <translation id="4804818685124855865">தொடர்பைத் துண்டி</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> அச்சுப் பணி ரத்துசெய்யப்பட்டது</translation>
 <translation id="4809927044794281115">லைட் தீம்</translation>
@@ -488,6 +492,7 @@
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>
 <translation id="5212593641110061691">டேப்லாய்டு</translation>
 <translation id="5222676887888702881">வெளியேறு</translation>
+<translation id="522307662484862935">மின்னஞ்சல் முகவரியைச் சேர்க்காதே</translation>
 <translation id="5227902338748591677">டார்க் தீமினைத் திட்டமிடுதல்</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="5252456968953390977">ரோமிங்</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">டார்க் தீமினை இயக்குதல்</translation>
 <translation id="6295178529664209245">பழுதுநீக்குதலைத் தொடரவா?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> சோதனை ரத்துசெய்யப்பட்டது</translation>
+<translation id="631063167932043783">Explore ஆப்ஸ்</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பியுங்கள்</translation>
 <translation id="6321407676395378991">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="6325525973963619867">தோல்வி</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook உதவி மன்றத்தில் உள்ள நிபுணர்களிடம் உதவி கேட்கலாம்</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchசில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="7343649194310845056">நெட்வொர்க் சாதனங்கள்</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">சுழற்சியின் எண்ணிக்கை</translation>
 <translation id="7747039790905080783">முன்பே பகிரப்பட்ட குறியீடு</translation>
 <translation id="7762130827864645708">உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இனி புதிய கடவுச்சொல்லைப் பயன்படுத்தவும்.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />சாதனத் தகவல், ஆப்ஸ் தகவல்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />அளவீடுகள்<ph name="END_LINK2" /> ஆகியவற்றை அனுப்பு</translation>
 <translation id="7763470514545477072">டொமைனின் பிற்பாதிக்கான பொருத்தம்</translation>
 <translation id="7769672763586021400">மாடல் ஐடி</translation>
 <translation id="7784116172884276937">DNS சேவையகங்கள் எதுவும் அமைக்கப்படவில்லை</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">வெள்ளை-லேபிள்</translation>
 <translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
+<translation id="8420955526972171689">வன்பொருள் சிக்கல்களைக் கண்டறிய சோதனைகளை இயக்கலாம், பிழையறிந்து திருத்தலாம்</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">சாதனத்தில் உள்ள கீபோர்டு</translation>
 <translation id="8431300646573772016">ChromeOSஸில் புதியவை</translation>

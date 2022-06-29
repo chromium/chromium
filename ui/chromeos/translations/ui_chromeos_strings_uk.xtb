@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Мережа №<ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: <ph name="NETWORK_NAME" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
 <translation id="2142680004883808240">Російська, фонетична розкладка ЯЖЕРТЫ</translation>
 <translation id="2143778271340628265">Ручна конфігурація проксі-сервера</translation>
+<translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2163152940313951844">Недійсний символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португальська, міжнародна розкладка США для ПК</translation>
 <translation id="2198315389084035571">китайська (спрощена)</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">Тайська, розкладка TIS 820–2531</translation>
 <translation id="708278670402572152">Від’єднайте пристрій, щоб увімкнути сканування</translation>
 <translation id="7086590977277044826">Тамільська, розкладка InScript</translation>
+<translation id="7088615885725309056">Давніше</translation>
 <translation id="7103992300314999525">Македонська</translation>
 <translation id="7106346894903675391">Придбати більше місця...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;шукати на Диску&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Китайська, вубі</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7774365994322694683">Птах</translation>
+<translation id="7781829728241885113">Учора</translation>
 <translation id="7788080748068240085">Щоб зберегти файл "<ph name="FILE_NAME" />" у режимі офлайн, потрібно додатково звільнити <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />відкріпіть файли, доступ до яких у режимі офлайн вам більше не потрібен<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />видаліть файли з папки "Завантаження"<ph name="MARKUP_5" /></translation>

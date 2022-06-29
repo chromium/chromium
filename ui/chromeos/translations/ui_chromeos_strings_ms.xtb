@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Disekat oleh Pentadbir anda, Butiran</translation>
 <translation id="2142680004883808240">Rusia dengan papan kekunci YaZHert Fonetik</translation>
 <translation id="2143778271340628265">Konfigurasi proksi manual</translation>
+<translation id="2148716181193084225">Hari ini</translation>
 <translation id="2163152940313951844">Aksara tidak sah: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugis dengan papan kekunci PC Antarabangsa AS</translation>
 <translation id="2198315389084035571">Bahasa Cina Mudah</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Thai dengan papan kekunci TIS 820-2531</translation>
 <translation id="708278670402572152">Putuskan sambungan untuk mendayakan pengimbasan</translation>
 <translation id="7086590977277044826">Tamil dengan papan kekunci InScript</translation>
+<translation id="7088615885725309056">Lebih lama</translation>
 <translation id="7103992300314999525">Macedonia</translation>
 <translation id="7106346894903675391">Beli lagi storan...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;cari di Drive&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Tindakan memformatkan pemacu akan memadamkan semua data yang disimpan pada pemacu itu dan mengalih keluar semua petakan yang sedia ada, termasuk petakan yang mungkin tidak kelihatan. Tindakan ini tidak boleh dibuat asal.</translation>
 <translation id="7695430100978772476">Tidak boleh memformat <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Gagal mengosongkan sampah.</translation>
 <translation id="770015031906360009">Bahasa Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> disalin.</translation>
 <translation id="7711920809702896782">Maklumat imej</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">Wubi Cina</translation>
 <translation id="7765158879357617694">Alih</translation>
 <translation id="7774365994322694683">Burung</translation>
+<translation id="7781829728241885113">Semalam</translation>
 <translation id="7788080748068240085">Untuk menyimpan "<ph name="FILE_NAME" />" di luar talian anda mesti mengosongkan ruang tambahan <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />buka pin fail yang anda tidak perlu untuk akses di luar talian lagi<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />padamkan fail dari folder Muat turun anda<ph name="MARKUP_5" /></translation>

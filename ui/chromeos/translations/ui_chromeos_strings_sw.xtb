@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
 <translation id="2142680004883808240">Kirusi kwenye kibodi ya Fonetiki ya YaZHert</translation>
 <translation id="2143778271340628265">Usanidi wa proksi na mtumiaji</translation>
+<translation id="2148716181193084225">Leo</translation>
 <translation id="2163152940313951844">Herufi si sahihi: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Kireno kwenye kibodi ya Kimataifa ya Marekani (PC)</translation>
 <translation id="2198315389084035571">Kichina Kilichorahisishwa</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">Kitai kwenye kibodi ya TIS 820-2531</translation>
 <translation id="708278670402572152">Ondoa ili uruhusu utafutaji</translation>
 <translation id="7086590977277044826">Kitamili kwenye kibodi ya Hati za Kihindi</translation>
+<translation id="7088615885725309056">Za awali</translation>
 <translation id="7103992300314999525">Kimasedonia</translation>
 <translation id="7106346894903675391">Nunua hifadhi zaidi...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Hifadhi ya utafutaji&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Mbinu ya Wubi ya kuingiza data ya Kichina</translation>
 <translation id="7765158879357617694">Sogeza</translation>
 <translation id="7774365994322694683">Ndege</translation>
+<translation id="7781829728241885113">Jana</translation>
 <translation id="7788080748068240085">Ili uhifadhi "<ph name="FILE_NAME" />" nje ya mtandao lazima uongeze nafasi ya <ph name="TOTAL_FILE_SIZE" /> ya ziada:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />banua faili ambazo huzihitaji tena ili ufikie nje ya mtandao<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />futa faili kutoka kwa folda yako ya Vipakuliwa<ph name="MARKUP_5" /></translation>

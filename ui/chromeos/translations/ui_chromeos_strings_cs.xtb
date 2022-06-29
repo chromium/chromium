@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, blokováno administrátorem, podrobnosti</translation>
 <translation id="2142680004883808240">ruština s fonetickou klávesnicí YaZHert</translation>
 <translation id="2143778271340628265">Ruční nastavení proxy serveru</translation>
+<translation id="2148716181193084225">Dnes</translation>
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalština s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">thajština s klávesnicí TIS 820-2531</translation>
 <translation id="708278670402572152">Chcete-li povolit vyhledávání, odpojte zařízení od sítě</translation>
 <translation id="7086590977277044826">tamilština s klávesnicí InScript</translation>
+<translation id="7088615885725309056">Starší</translation>
 <translation id="7103992300314999525">makedonština</translation>
 <translation id="7106346894903675391">Koupit větší úložiště...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;vyhledat na Disku&lt;/em&gt;</translation>
@@ -768,6 +770,7 @@
 <translation id="7663224033570512922">hindština</translation>
 <translation id="7693909743393669729">Naformátováním jednotky smažete všechna na ní uložená data a odstraníte všechny stávající oddíly (včetně neviditelných). Tuto akci nelze vrátit zpět.</translation>
 <translation id="7695430100978772476">Disk <ph name="DRIVE_NAME" /> se nepodařilo naformátovat</translation>
+<translation id="76959938259365003">Koš se nepodařilo vysypat.</translation>
 <translation id="770015031906360009">řečtina</translation>
 <translation id="7705251383879779343">Položka <ph name="FILE_NAME" /> byla zkopírována.</translation>
 <translation id="7711920809702896782">Informace o obrázku</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">čínština (Wubi)</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7774365994322694683">Pták</translation>
+<translation id="7781829728241885113">Včera</translation>
 <translation id="7788080748068240085">Chcete-li soubor <ph name="FILE_NAME" /> uložit offline, je třeba uvolnit <ph name="TOTAL_FILE_SIZE" /> dalšího místa:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Zrušte připnutí souborů, ke kterým již nepotřebujete přístup v režimu offline.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Smažte soubory ze složky Stažené soubory.<ph name="MARKUP_5" /></translation>

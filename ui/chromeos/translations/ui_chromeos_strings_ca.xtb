@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, bloquejada per l'administrador, detalls</translation>
 <translation id="2142680004883808240">Rus amb teclat YaZHert</translation>
 <translation id="2143778271340628265">Configuració del servidor intermediari manual</translation>
+<translation id="2148716181193084225">Avui</translation>
 <translation id="2163152940313951844">Caràcter no vàlid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguès amb teclat internacional dels EUA (PC)</translation>
 <translation id="2198315389084035571">Xinès simplificat</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">Tailandès amb teclat TIS 820-2531</translation>
 <translation id="708278670402572152">Desconnecta de la xarxa per activar la cerca</translation>
 <translation id="7086590977277044826">Tàmil amb teclat InScript</translation>
+<translation id="7088615885725309056">Més antic</translation>
 <translation id="7103992300314999525">Macedoni</translation>
 <translation id="7106346894903675391">Compra més emmagatzematge...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;cerca a Drive&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Xinès (wubi)</translation>
 <translation id="7765158879357617694">Mou</translation>
 <translation id="7774365994322694683">Ocell</translation>
+<translation id="7781829728241885113">Ahir</translation>
 <translation id="7788080748068240085">Per desar "<ph name="FILE_NAME" />" fora de línia, cal que allibereu <ph name="TOTAL_FILE_SIZE" /> més d'espai:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Desfixeu els fitxers als quals ja no necessiteu accedir fora de línia<ph name="MARKUP_3" />.
     <ph name="MARKUP_4" />Suprimiu fitxers de la carpeta Baixades<ph name="MARKUP_5" />.</translation>

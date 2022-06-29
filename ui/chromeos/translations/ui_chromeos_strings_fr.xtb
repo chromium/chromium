@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Force du signal : <ph name="SIGNAL_STRENGTH" /> %, Bloqué par votre administrateur, Détails</translation>
 <translation id="2142680004883808240">Russe avec clavier phonétique YaZHert</translation>
 <translation id="2143778271340628265">Configuration manuelle du proxy</translation>
+<translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2163152940313951844">Caractère non valide : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugais avec clavier international américain (PC)</translation>
 <translation id="2198315389084035571">Chinois simplifié</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">Thaï avec clavier TIS 820-2531</translation>
 <translation id="708278670402572152">Déconnecter pour permettre la recherche</translation>
 <translation id="7086590977277044826">Tamoul (avec clavier InScript)</translation>
+<translation id="7088615885725309056">Ancien</translation>
 <translation id="7103992300314999525">Macédonien</translation>
 <translation id="7106346894903675391">Acheter de l'espace de stockage supplémentaire…</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; : &lt;em&gt;rechercher dans Google Drive&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7774365994322694683">Oiseau</translation>
+<translation id="7781829728241885113">Hier</translation>
 <translation id="7788080748068240085">Pour enregistrer le fichier <ph name="FILE_NAME" /> hors connexion, vous devez libérer <ph name="TOTAL_FILE_SIZE" /> d'espace supplémentaire :<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Annulez l'épinglage des fichiers auxquels vous n'avez plus besoin d'accéder hors connexion.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Supprimez les fichiers du dossier "Téléchargements".<ph name="MARKUP_5" /></translation>

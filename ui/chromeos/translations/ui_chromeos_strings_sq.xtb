@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="2142680004883808240">Rusisht me tastierë fonetike YaZHert</translation>
 <translation id="2143778271340628265">Konfigurimi manual i përfaqësuesit</translation>
+<translation id="2148716181193084225">Sot</translation>
 <translation id="2163152940313951844">Karakter i pavlefshëm: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalisht me tastierë amerikane ndërkombëtare për PC</translation>
 <translation id="2198315389084035571">Kinezishte e thjeshtuar</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Tajlandisht me tastierë TIS 820-2531</translation>
 <translation id="708278670402572152">Shkëputu për të aktivizuar skanimin</translation>
 <translation id="7086590977277044826">Tamilisht me tastierë InScript</translation>
+<translation id="7088615885725309056">Më të vjetër</translation>
 <translation id="7103992300314999525">Maqedonisht</translation>
 <translation id="7106346894903675391">Bli më shumë hapësirë ruajtëse...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;kërko në "Disk"&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Kinezisht Wubi</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7774365994322694683">Zog</translation>
+<translation id="7781829728241885113">Dje</translation>
 <translation id="7788080748068240085">Për të ruajtur "<ph name="FILE_NAME" />" jashtë linje duhet të lirosh <ph name="TOTAL_FILE_SIZE" /> hapësirë shtesë:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />zhgozhdo skedarët që nuk të nevojiten më për të pasur qasje te ato jashtë linje<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />fshi skedarët nga dosja "Shkarkimet"<ph name="MARKUP_5" /></translation>

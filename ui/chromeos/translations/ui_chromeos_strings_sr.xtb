@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, блокирао администратор, детаљи</translation>
 <translation id="2142680004883808240">руски са фонетском тастатуром YaZHert</translation>
 <translation id="2143778271340628265">Ручна конфигурација проксија</translation>
+<translation id="2148716181193084225">Данас</translation>
 <translation id="2163152940313951844">Неважећи знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">португалски са америчком интернационалном тастатуром за рачунар</translation>
 <translation id="2198315389084035571">кинески (поједностављени)</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">тајски са тастатуром TIS 820-2531</translation>
 <translation id="708278670402572152">Прекините везу да бисте омогућили скенирање</translation>
 <translation id="7086590977277044826">тамилски са индијском тастатуром</translation>
+<translation id="7088615885725309056">Старије</translation>
 <translation id="7103992300314999525">македонски</translation>
 <translation id="7106346894903675391">Купи још меморијског простора...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;претражи Диск&lt;/em&gt;</translation>
@@ -780,6 +782,7 @@
 <translation id="7760449188139285140">кинески вуби</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7774365994322694683">Птица</translation>
+<translation id="7781829728241885113">Јуче</translation>
 <translation id="7788080748068240085">Да бисте сачували „<ph name="FILE_NAME" />“ офлајн, морате да ослободите још <ph name="TOTAL_FILE_SIZE" /> простора:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />откачите датотеке којима више не морате да приступате офлајн<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />избришите датотеке из директоријума Преузимања<ph name="MARKUP_5" /></translation>

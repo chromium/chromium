@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="2142680004883808240">ռուսերեն (YaZHert հնչյունային ստեղնաշար)</translation>
 <translation id="2143778271340628265">Պրոքսի-սերվերի ձեռքով կազմաձևում</translation>
+<translation id="2148716181193084225">Այսօր</translation>
 <translation id="2163152940313951844">Անվավեր գրանշան՝ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">պորտուգալերեն՝ ԱՄՆ միջազգային համակարգչային ստեղնաշարով</translation>
 <translation id="2198315389084035571">Պարզեցված չինարեն</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">անգլերեն (ՄԹ)</translation>
 <translation id="3975895378829046965">բանգլա (հնչյունային)</translation>
+<translation id="3991446849494482687">SIM քարտի կողպման կարգավորումը նույնպես կանջատվի։</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4017788180641807848">անգլերեն (ԱՄՆ)՝ Workman ստեղնաշարով</translation>
 <translation id="4040753847560036377">PUK կոդը սխալ է</translation>
@@ -703,6 +705,7 @@
 <translation id="7075931588889865715">թայերեն (TIS 820-2531 ստեղնաշար)</translation>
 <translation id="708278670402572152">Անջատվեք ցանցից՝ որոնումը միացնելու համար</translation>
 <translation id="7086590977277044826">թամիլերեն (InScript ստեղնաշար)</translation>
+<translation id="7088615885725309056">Ավելի հին</translation>
 <translation id="7103992300314999525">մակեդոներեն</translation>
 <translation id="7106346894903675391">Գնել լրացուցիչ տարածք…</translation>
 <translation id="7126604456862387217">«&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;» - &lt;em&gt;որոնել Drive-ում&lt;/em&gt;</translation>
@@ -777,6 +780,7 @@
 <translation id="7760449188139285140">չինարեն (Wubi)</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
 <translation id="7774365994322694683">Թռչուն</translation>
+<translation id="7781829728241885113">Երեկ</translation>
 <translation id="7788080748068240085">«<ph name="FILE_NAME" />» ֆայլն անցանց պահելու համար հարկավոր է <ph name="TOTAL_FILE_SIZE" /> տեղ ազատել.<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ապամրացրեք ֆայլերը, որոնք անցանց վիճակում ձեզ այլևս պետք չեն<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ջնջեք ֆայլերը ձեր Ներբեռնումների պանակից<ph name="MARKUP_5" /></translation>

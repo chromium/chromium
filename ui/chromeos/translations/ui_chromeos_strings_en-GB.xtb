@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, blocked by your administrator. Details</translation>
 <translation id="2142680004883808240">Russian with phonetic YaZHert keyboard</translation>
 <translation id="2143778271340628265">Manual proxy configuration</translation>
+<translation id="2148716181193084225">Today</translation>
 <translation id="2163152940313951844">Invalid character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguese with US international PC keyboard</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Thai with TIS 820-2531 keyboard</translation>
 <translation id="708278670402572152">Disconnect to enable scanning</translation>
 <translation id="7086590977277044826">Tamil with InScript keyboard</translation>
+<translation id="7088615885725309056">Older</translation>
 <translation id="7103992300314999525">Macedonian</translation>
 <translation id="7106346894903675391">Buy more storage...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Formatting a drive will erase all data stored on it and remove all existing partitions, including partitions that may not be visible. This action cannot be undone.</translation>
 <translation id="7695430100978772476">Could not format <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Failed to empty the bin.</translation>
 <translation id="770015031906360009">Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copied.</translation>
 <translation id="7711920809702896782">Image info</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7774365994322694683">Bird</translation>
+<translation id="7781829728241885113">Yesterday</translation>
 <translation id="7788080748068240085">To save "<ph name="FILE_NAME" />" offline you must free up an additional <ph name="TOTAL_FILE_SIZE" /> of space:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />unpin files that you no longer need to access offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />delete files from your Downloads folder<ph name="MARKUP_5" /></translation>

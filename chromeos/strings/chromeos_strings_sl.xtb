@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2177831236093724629">Najdene so bile <ph name="LINK_BEGIN" />neustrezne komponente<ph name="LINK_END" />. Če se želite prepričati, da bodo prepoznane vse ustrezne komponente, posodobite sistem Chrome OS na najnovejšo različico.</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
+<translation id="2182088270354640012">Hvala za povratne informacije. S povratnimi informacijami, ki jih pregleda skupina za Chrome OS, pomagate izboljšati Chrome OS. Zaradi velikega števila prejetih poročil ne boste prejeli neposrednega odgovora.</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
 <translation id="2212733584906323460">Ločljivost imena</translation>
 <translation id="2217935453350629363">Trenutna hitrost</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Vnovičen zagon …</translation>
 <translation id="2533048460510040082">Predlagana vsebina s pomočjo</translation>
 <translation id="2536159006530886390">Internetne povezave ni mogoče vzpostaviti.</translation>
+<translation id="256360469103926202">S povratnimi informacijami, ki jih pregleda naša skupina, pomagate izboljšati ChromeOS. Zaradi velikega števila poročil vam ne bomo mogli odgovoriti.</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
 <translation id="2619761439309613843">Dnevno osveževanje</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
+<translation id="3275729367986477355">Slika avatarja</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi datoteko}one{Uredi datoteke}two{Uredi datoteke}few{Uredi datoteke}other{Uredi datoteke}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Smer ključa</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Več pomoči je na voljo v <ph name="BEGIN_LINK" />centru za pomoč<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritem stiskanja</translation>
 <translation id="4794140124556169553">Izvajanje preizkusa CPE-ja lahko vpliva na delovanje sistema.</translation>
+<translation id="4800589996161293643">Skupnost za Chromebook</translation>
 <translation id="4804818685124855865">Prekini povezavo</translation>
 <translation id="4808449224298348341">Preklicano tiskalno opravilo za dokument <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Svetla tema</translation>
@@ -488,6 +492,7 @@
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Odjava</translation>
+<translation id="522307662484862935">Ne vključi e-poštnega naslova</translation>
 <translation id="5227902338748591677">Urnik za temno temo</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="5252456968953390977">Gostovanje</translation>
@@ -614,6 +619,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6284632978374966585">Vklop temne teme</translation>
 <translation id="6295178529664209245">Želite nadaljevati s popravilom?</translation>
 <translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
+<translation id="631063167932043783">Raziščite aplikacijo</translation>
 <translation id="6319207335391420837">Posodobitev vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Vklop ohranjevalnika zaslona</translation>
 <translation id="6325525973963619867">Ni uspelo</translation>
@@ -720,6 +726,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7297226631177386107">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Vprašajte strokovnjake v forumu s pomočjo za Chromebook.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Iskanju Google.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
@@ -762,6 +769,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="773153675489693198">Število ciklov</translation>
 <translation id="7747039790905080783">Vnaprej deljeni ključ</translation>
 <translation id="7762130827864645708">Sprememba gesla je bila uspešna. Od zdaj naprej uporabljajte novo geslo.</translation>
+<translation id="7762839321248874531">Pošlji <ph name="BEGIN_LINK1" />podatke o sistemu in aplikacijah<ph name="END_LINK1" /> ter <ph name="BEGIN_LINK2" />meritve<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Ujemanje pripone domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Strežniki DNS niso nastavljeni.</translation>
@@ -831,6 +839,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8382302752385457774">Bela oznaka</translation>
 <translation id="8395584934117017006">To napravo <ph name="DEVICE_TYPE" /> upravlja podjetje.</translation>
 <translation id="8398927464629426868">Trenutna hitrost polnjenja ali praznjenja baterije naprave.</translation>
+<translation id="8420955526972171689">Izvajanje preizkusov in odpravljanje težav s strojno opremo.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Notranja tipkovnica</translation>
 <translation id="8431300646573772016">Novosti v Chromu OS</translation>

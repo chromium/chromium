@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2177831236093724629">‏<ph name="LINK_BEGIN" />عناصر فاقد صلاحیت<ph name="LINK_END" /> پیدا شد. برای اطمینان از شناسایی شدن همه عناصر واجدشرایط، Chrome OS را به جدیدترین نسخه به‌روزرسانی کنید.</translation>
 <translation id="2180197493692062006">مشکلی پیش آمد. برنامه را دوباره باز کنید.</translation>
+<translation id="2182088270354640012">‏از بازخوردتان سپاس‌گزاریم. بازخورد شما به بهبود Chrome OS کمک می‌کند و تیم Chrome OS آن را مرور خواهد کرد. به‌دلیل تعداد بالای گزارش‌های ارسالی، پاسخ مستقیم دریافت نخواهید کرد.</translation>
 <translation id="2209788852729124853">بازنشانی شمارش‌گرهای ترافیک</translation>
 <translation id="2212733584906323460">حل‌وفصل نام</translation>
 <translation id="2217935453350629363">سرعت کنونی</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">در حال بازراه‌اندازی…</translation>
 <translation id="2533048460510040082">محتوای راهنمای پیشنهادی</translation>
 <translation id="2536159006530886390">اتصال به اینترنت ممکن نیست.</translation>
+<translation id="256360469103926202">‏بازخورد شما به بهبود ChromeOS کمک می‌کند و تیم ما آن را مرور خواهد کرد. به‌دلیل تعداد بالای گزارش‌ها، قادر به ارسال پاسخ نخواهیم بود.</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
 <translation id="2619761439309613843">بازخوانی روزانه</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
+<translation id="3275729367986477355">تصویر چهره‌نما</translation>
 <translation id="3283504360622356314">{0,plural, =1{ویرایش فایل}one{ویرایش فایل}other{ویرایش فایل‌ها}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> گیگاهرتز</translation>
 <translation id="3291996639387199448">جهت کلید</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">برای دریافت راهنمایی بیشتر، به <ph name="BEGIN_LINK" />مرکز راهنمایی<ph name="END_LINK" /> بروید.</translation>
 <translation id="4793756956024303490">الگوریتم فشرده‌سازی</translation>
 <translation id="4794140124556169553">‏انجام آزمایش CPU ممکن است بر عملکرد سیستم تأثیر بگذارد</translation>
+<translation id="4800589996161293643">‏انجمن Chromebook</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="4808449224298348341">کار چاپ <ph name="DOCUMENT_TITLE" /> لغو شد</translation>
 <translation id="4809927044794281115">زمینه روشن</translation>
@@ -488,6 +492,7 @@
 برای درخواست از من، روی میکروفون ضربه بزنید.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
+<translation id="522307662484862935">نشانی ایمیل لحاظ نشود</translation>
 <translation id="5227902338748591677">زمان‌بندی زمینه تیره</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="5252456968953390977">فراگردی</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">روشن کردن زمینه تیره</translation>
 <translation id="6295178529664209245">تعمیر ادامه یابد؟</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
+<translation id="631063167932043783">برنامه کاوش</translation>
 <translation id="6319207335391420837">به‌روزرسانی سفت‌افزار در <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">روشن کردن محافظ صفحه</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">‏نمی‌توان ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">‏از کارشناسان تالار گفتمان راهنمایی Chromebook سؤال بپرسید</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ کلیدهای «جستجو» و «فاصله» را فشار دهید تا نتیجه را در «جستجوی Google» ببینید</translation>
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">تعداد چرخه‌ها</translation>
 <translation id="7747039790905080783">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="7762130827864645708">گذرواژه‌تان تغییر کرد. لطفاً ازاین‌پس، از گذرواژه جدید استفاده کنید.</translation>
+<translation id="7762839321248874531">ارسال <ph name="BEGIN_LINK1" />اطلاعات<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />سنجه‌های سیستم و برنامه<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">مطابقت پسوند دامنه</translation>
 <translation id="7769672763586021400">شناسه مدل</translation>
 <translation id="7784116172884276937">هیچ سرور سانادی راه‌اندازی نشده است</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">برچسب-سفید</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
+<translation id="8420955526972171689">اجرای آزمایش و عیب‌یابی مشکلات سخت‌افزاری</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">صفحه‌کلید داخلی</translation>
 <translation id="8431300646573772016">‏ویژگی‌های جدید ChromeOS</translation>

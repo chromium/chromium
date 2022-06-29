@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Танай администратор блоклосон, Дэлгэрэнгүй</translation>
 <translation id="2142680004883808240">YaZHert авиа зүйн гартай орос</translation>
 <translation id="2143778271340628265">Прокси-гийн гар тохиргоо</translation>
+<translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2163152940313951844">Хүчингүй тэмдэгт: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">АНУ-ын олон улсын компьютерын гартай португал</translation>
 <translation id="2198315389084035571">Хялбаршуулсан Хятад хэл</translation>
@@ -702,6 +703,7 @@
 <translation id="7075931588889865715">TIS 820-2531 гартай тай</translation>
 <translation id="708278670402572152">Шалгалтыг идэвхжүүлэхийн тулд салгах</translation>
 <translation id="7086590977277044826">InScript гартай тамил</translation>
+<translation id="7088615885725309056">Хуучин</translation>
 <translation id="7103992300314999525">Македон</translation>
 <translation id="7106346894903675391">Илүү их хадгалалтын санг худалдаж аваарай...</translation>
 <translation id="7126604456862387217">"&lt;b&gt; <ph name="SEARCH_STRING" /> &lt;/ б&gt; '- search &lt;em&gt; Drive &lt;/em&gt;</translation>
@@ -766,6 +768,7 @@
 <translation id="7663224033570512922">Хинди</translation>
 <translation id="7693909743393669729">Драйвыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгах бөгөөд харагдахгүй байж болзошгүй хуваарилалтыг оруулаад одоо байгаа бүх хуваарилалтыг хасна. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />-г форматалж чадсангүй</translation>
+<translation id="76959938259365003">Хогийн савыг хоосолж чадсангүй.</translation>
 <translation id="770015031906360009">Грек</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" />-г хуулсан.</translation>
 <translation id="7711920809702896782">Зургийн мэдээлэл</translation>
@@ -776,6 +779,7 @@
 <translation id="7760449188139285140">Хятад вуби</translation>
 <translation id="7765158879357617694">Зөөх</translation>
 <translation id="7774365994322694683">Шувуу</translation>
+<translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" оффлайныг хадгалахын тулд та  <ph name="MARKUP_1" />-аас нэмэлт <ph name="TOTAL_FILE_SIZE" />-ыг чөлөөлөх ёстой. 
 <ph name="MARKUP_2" /> Оффлайн руу нэвтрэхэд цаашид хэрэглэх шаардлагагүй файлуудыг гаргах <ph name="MARKUP_3" />
  <ph name="MARKUP_4" /> Татаж авсан файл хадгалах хавтаснаас файлуудыг устга <ph name="MARKUP_5" /></translation>

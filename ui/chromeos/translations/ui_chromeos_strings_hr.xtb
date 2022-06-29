@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao vaš administrator, pojedinosti</translation>
 <translation id="2142680004883808240">ruski s fonetskom tipkovnicom YaZHert</translation>
 <translation id="2143778271340628265">Ručna konfiguracija proxyja</translation>
+<translation id="2148716181193084225">Danas</translation>
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalski s američkom međunarodnom tipkovnicom za PC</translation>
 <translation id="2198315389084035571">pojednostavnjeni kineski</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">tajlandski s tipkovnicom TIS 820-2531</translation>
 <translation id="708278670402572152">Prekinite vezu da biste omogućili pretraživanje</translation>
 <translation id="7086590977277044826">tamilski s tipkovnicom InScript</translation>
+<translation id="7088615885725309056">Starije</translation>
 <translation id="7103992300314999525">makedonski</translation>
 <translation id="7106346894903675391">Kupite još prostora za pohranu...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
@@ -780,6 +782,7 @@
 <translation id="7760449188139285140">kineski wubi</translation>
 <translation id="7765158879357617694">Pomakni</translation>
 <translation id="7774365994322694683">Ptica</translation>
+<translation id="7781829728241885113">Danas</translation>
 <translation id="7788080748068240085">Da biste izvenmrežno spremili datoteku "<ph name="FILE_NAME" />", morate osloboditi još <ph name="TOTAL_FILE_SIZE" /> prostora:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />otkvačite datoteke kojima više ne morate izvanmrežno pristupati<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />izbrišite datoteke iz mape Preuzimanja.<ph name="MARKUP_5" /></translation>

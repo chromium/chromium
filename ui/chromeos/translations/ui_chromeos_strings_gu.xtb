@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે, વિગતો</translation>
 <translation id="2142680004883808240">રશિયન, ફોનેટિક YaZHert કીબોર્ડ સાથે</translation>
 <translation id="2143778271340628265">મેન્યુઅલ પ્રૉક્સી ગોઠવણી</translation>
+<translation id="2148716181193084225">આજે</translation>
 <translation id="2163152940313951844">અમાન્ય અક્ષર: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">પોર્ટુગીઝ, યુએસ આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
 <translation id="2198315389084035571">સરળીકૃત ચાઇનીઝ</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="3973925058222872294">અંગ્રેજી (યુકે)</translation>
 <translation id="3975895378829046965">બંગાળી ફોનેટિક</translation>
+<translation id="3991446849494482687">આ ડિવાઇસ પર સિમ કાર્ડ લૉક કરવાના સેટિંગને પણ બંધ કરશે.</translation>
 <translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4017788180641807848">અંગ્રેજી (યુએસ), વર્કમેન કીબોર્ડ સાથે</translation>
 <translation id="4040753847560036377">ખોટો PUK</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">થાઇ, TIS 820-2531 કીબોર્ડ સાથે</translation>
 <translation id="708278670402572152">સ્કૅનિંગ ચાલુ કરવા માટે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7086590977277044826">તમિળ, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
+<translation id="7088615885725309056">વધુ જૂનું</translation>
 <translation id="7103992300314999525">મેસિડોનિયન</translation>
 <translation id="7106346894903675391">વધુ સ્ટોરેજ ખરીદો...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Driveમાં શોધો&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">ચાઇનીઝ વુબી</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7774365994322694683">પક્ષી</translation>
+<translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"ને ઑફલાઇન સાચવવા માટે તમારે વધુ <ph name="TOTAL_FILE_SIZE" /> સ્પેસ ખાલી કરવી જરૂરી છે:<ph name="MARKUP_1" /><ph name="MARKUP_2" />તમારે હવે ઑફલાઇન ઍક્સેસ કરવાની જરૂર ન હોય એવી ફાઇલોને અનપિન કરો<ph name="MARKUP_3" /><ph name="MARKUP_4" />તમારા ડાઉનલોડ ફોલ્ડરમાંથી ફાઇલો ડિલીટ કરો<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ઉપકરણને ફોર્મેટ કરો</translation>
 <translation id="7799329977874311193">HTML દસ્તાવેજ</translation>

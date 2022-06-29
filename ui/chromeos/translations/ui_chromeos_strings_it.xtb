@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
 <translation id="2142680004883808240">Russo con tastiera fonetica YaZHert</translation>
 <translation id="2143778271340628265">Configurazione manuale del proxy</translation>
+<translation id="2148716181193084225">Oggi</translation>
 <translation id="2163152940313951844">Carattere non valido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portoghese con tastiera PC internazionale USA</translation>
 <translation id="2198315389084035571">Cinese semplificato</translation>
@@ -704,6 +705,7 @@
 <translation id="7075931588889865715">Thai con tastiera TIS 820-2531</translation>
 <translation id="708278670402572152">Scollega per consentire la scansione</translation>
 <translation id="7086590977277044826">Tamil con tastiera InScript</translation>
+<translation id="7088615885725309056">Meno recente</translation>
 <translation id="7103992300314999525">Macedone</translation>
 <translation id="7106346894903675391">Acquista più spazio di archiviazione...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;cerca in Drive&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@
 <translation id="7760449188139285140">Cinese Wubi</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7774365994322694683">Uccellino</translation>
+<translation id="7781829728241885113">Ieri</translation>
 <translation id="7788080748068240085">Per poter salvare il file "<ph name="FILE_NAME" />" offline, devi liberare altri <ph name="TOTAL_FILE_SIZE" /> di spazio:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />sblocca i file a cui non devi più accedere offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />elimina file dalla cartella Download<ph name="MARKUP_5" /></translation>

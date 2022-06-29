@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="2142680004883808240">Орыс (фонетикалық YaZHert пернетақтасымен)</translation>
 <translation id="2143778271340628265">Прокси конфигурациясын қолмен реттеу</translation>
+<translation id="2148716181193084225">Бүгін</translation>
 <translation id="2163152940313951844">Жарамсыз таңба: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португал (АҚШ), халықаралық дербес компьютер пернетақтасымен</translation>
 <translation id="2198315389084035571">Жеңілдетілген қытай тілі</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Тай (TIS 820-2531 пернетақтасымен)</translation>
 <translation id="708278670402572152">Сканерлеуді қосу үшін желіден шығу керек</translation>
 <translation id="7086590977277044826">Тамиль (InScript пернетақтасымен)</translation>
+<translation id="7088615885725309056">Ескірек</translation>
 <translation id="7103992300314999525">Македон</translation>
 <translation id="7106346894903675391">Қосымша жад сатып алу…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;Drive ішінен іздеу&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Қытай (Wubi)</translation>
 <translation id="7765158879357617694">Жылжыту</translation>
 <translation id="7774365994322694683">Құс</translation>
+<translation id="7781829728241885113">Кеше</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" офлайн сақтау үшін қосымша <ph name="TOTAL_FILE_SIZE" /> орын босатуыңыз керек:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />офлайн кіру қажет болмайтын файлдарды босатыңыз<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />"Жүктеулер" қалтасындағы файлдарды жойыңыз<ph name="MARKUP_5" /></translation>

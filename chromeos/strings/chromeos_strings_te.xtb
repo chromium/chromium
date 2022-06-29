@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />అర్హత లేని భాగాలు<ph name="LINK_END" /> దొరికాయి. అన్ని అర్హత కలిగిన భాగాలు గుర్తించబడ్డాయని నిర్ధారించుకోవడానికి, మీ Chrome OSను తాజా వెర్షన్‌కు అప్‌డేట్ చేయండి.</translation>
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
+<translation id="2182088270354640012">ఫీడ్‌బ్యాక్‌ను ఇచ్చినందుకు ధన్యవాదాలు. మీ ఫీడ్‌బ్యాక్ Chrome OSను మెరుగుపరచడంలో సహాయం చేస్తుంది, దీనిని Chrome OS టీమ్ రివ్యూ చేస్తుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లను సబ్మిట్ చేసినందున, మీరు నేరుగా రిప్లయిని పొందలేరు.</translation>
 <translation id="2209788852729124853">ట్రాఫిక్ కౌంటర్‌లను రీసెట్ చేయండి</translation>
 <translation id="2212733584906323460">పేరు రిజల్యూషన్</translation>
 <translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">రీస్టార్ట్ అవుతోంది…</translation>
 <translation id="2533048460510040082">సూచించబడిన సహాయక కంటెంట్</translation>
 <translation id="2536159006530886390">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు.</translation>
+<translation id="256360469103926202">మీ ఫీడ్‌బ్యాక్ ChromeOSను మెరుగుపరచడంలో సహాయం చేస్తుంది, దీనిని మా టీమ్ రివ్యూ చేస్తుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
 <translation id="2584559707064218956">సెటప్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
+<translation id="3275729367986477355">అవతార్ ఇమేజ్</translation>
 <translation id="3283504360622356314">{0,plural, =1{ఫైల్‌ను ఎడిట్ చేయండి}other{ఫైల్‌లను ఎడిట్ చేయండి}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">కీ దశ</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">మరింత సహాయం కోసం, <ph name="BEGIN_LINK" />సహాయ కేంద్రంకు<ph name="END_LINK" /> వెళ్లండి.</translation>
 <translation id="4793756956024303490">కుదింపు అల్గారిథమ్</translation>
 <translation id="4794140124556169553">CPU టెస్ట్‌ను రన్ చేయడం మీ సిస్టమ్ పనితీరుని ప్రభావితం చేయవచ్చు</translation>
+<translation id="4800589996161293643">Chromebook కమ్యూనిటీ</translation>
 <translation id="4804818685124855865">డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ప్రింట్ టాస్క్ రద్దు చేయబడింది</translation>
 <translation id="4809927044794281115">లేత రంగు రూపం</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
 <translation id="5212593641110061691">టాబ్లాయిడ్</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
+<translation id="522307662484862935">ఈమెయిల్ అడ్రస్‌ను చేర్చకండి</translation>
 <translation id="5227902338748591677">ముదురు రంగు రూపం షెడ్యూల్</translation>
 <translation id="5234764350956374838">తొలగించు</translation>
 <translation id="5252456968953390977">రోమింగ్</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">ముదురు రంగు రూపాన్ని ఆన్ చేయండి</translation>
 <translation id="6295178529664209245">రిపేర్‌ను కొనసాగించాలా?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> టెస్ట్ రద్దు చేయబడింది</translation>
+<translation id="631063167932043783">అన్వేషణ యాప్</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="6321407676395378991">స్క్రీన్ సేవర్ ఆన్ చేయి</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">HTTPS వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook సహాయ ఫోరమ్‌లో నిపుణులను సహాయం అడగండి</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">సైకిల్ సంఖ్య</translation>
 <translation id="7747039790905080783">ముందే షేర్ చేసిన కీ</translation>
 <translation id="7762130827864645708">మీ పాస్‌వర్డ్ మార్పు విజయవంతమైంది. ఇప్పటి నుండి కొత్త పాస్‌వర్డ్‌ను ఉపయోగించండి.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />సిస్టమ్, యాప్ సమాచారాన్ని<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />కొలమానాలను<ph name="END_LINK2" /> పంపండి</translation>
 <translation id="7763470514545477072">డొమైన్ సఫిక్స్ మ్యాచ్</translation>
 <translation id="7769672763586021400">మోడల్ ID</translation>
 <translation id="7784116172884276937">DNS సర్వర్‌లు ఏవీ సెటప్ చేయబడలేదు</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">వైట్ లేబుల్</translation>
 <translation id="8395584934117017006">ఈ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="8398927464629426868">పరికరం ప్రస్తుతం ఛార్జ్ అవుతున్న లేదా డిశ్చార్జ్ అవుతున్న రేట్</translation>
+<translation id="8420955526972171689">హార్డ్‌వేర్ సమస్యలకు టెస్ట్‌లను రన్ చేసి, సమస్యలను పరిష్కరించండి</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">అంతర్గత కీబోర్డ్</translation>
 <translation id="8431300646573772016">ChromeOSలో కొత్తవి ఏంటి</translation>

@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
 <translation id="2142680004883808240">Russian na may Phonetic YaZHert keyboard</translation>
 <translation id="2143778271340628265">Manu-manong configuration ng proxy</translation>
+<translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2163152940313951844">Invalid na character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguese na may US International PC keyboard</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Thai na may TIS 820-2531 keyboard</translation>
 <translation id="708278670402572152">Idiskonekta upang i-enable ang pag-scan</translation>
 <translation id="7086590977277044826">Tamil na may InScript keyboard</translation>
+<translation id="7088615885725309056">Mas Nauna</translation>
 <translation id="7103992300314999525">Macedonian</translation>
 <translation id="7106346894903675391">Bumili ng higit pang storage...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;maghanap sa Drive&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7695430100978772476">Hindi ma-format ang <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Hindi naalis ang laman ng trash.</translation>
 <translation id="770015031906360009">Greko</translation>
 <translation id="7705251383879779343">Nakopya ang <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">Impormasyon ng larawan</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Ilipat</translation>
 <translation id="7774365994322694683">Ibon</translation>
+<translation id="7781829728241885113">Kahapon</translation>
 <translation id="7788080748068240085">Upang i-save ang "<ph name="FILE_NAME" />" offline, dapat kang magbakante ng karagdagang <ph name="TOTAL_FILE_SIZE" /> ng espasyo:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />mag-unpin ng mga file na hindi mo na kailangang i-access offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />magtanggal ng mga file sa iyong folder na Mga Download<ph name="MARKUP_5" /></translation>

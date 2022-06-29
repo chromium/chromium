@@ -216,6 +216,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1197199342062592414">Vamos começar</translation>
 <translation id="11978075283960463">Dados armazenados na app: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Desativar</translation>
+<translation id="1198066799963193307">Ferramentas de voz para visão reduzida</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
 <translation id="1199814941632954229">Estão a ser aprovisionados certificados para estes perfis de certificado</translation>
 <translation id="120069043972472860">Impossível de visualizar</translation>
@@ -1496,6 +1497,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2371076942591664043">Abrir quando estiver concluí&amp;do</translation>
 <translation id="2373666622366160481">Ajustar à folha de papel</translation>
 <translation id="2375406435414127095">Associar ao seu telemóvel</translation>
+<translation id="2376056713414548745">Ler em voz alta</translation>
 <translation id="2377588536920405462">Pode desativar a Localização ao desativar a definição de Localização principal no seu dispositivo. Também pode desativar a utilização das redes Wi-Fi, das redes móveis e dos sensores para fins de localização nas definições de localização.</translation>
 <translation id="2377667304966270281">Falhas de hardware</translation>
 <translation id="237828693408258535">Pretende traduzir esta página?</translation>
@@ -2325,6 +2327,7 @@ Pretende pará-lo?</translation>
 <translation id="3163511056918491211">Restaure os dados ou troque de dispositivo facilmente em qualquer altura. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
 <translation id="3164329792803560526">A partilhar este separador com o <ph name="APP_NAME" />…</translation>
 <translation id="3165390001037658081">Alguns operadores podem bloquear esta funcionalidade.</translation>
+<translation id="3169930038976362151">Escolha o tema que se adequa às suas necessidades. Para alterar o tema, a imagem de fundo, a proteção de ecrã e muito mais, basta tocar sem soltar no ambiente de trabalho.</translation>
 <translation id="3170072451822350649">Também pode ignorar o início de sessão e <ph name="LINK_START" />navegar como Convidado<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Novo separador à esquerda</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
@@ -3198,6 +3201,7 @@ Pretende pará-lo?</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copiar detalhes da compilação</translation>
 <translation id="4021941025609472374">Fechar separadores à esquerda</translation>
+<translation id="402211067068791756">Esta ação irá limpar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites apresentados</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao Dicionário</translation>
 <translation id="4023146161712577481">A determinar a configuração do dispositivo.</translation>
 <translation id="4025039777635956441">Desativar o som do site selecionado</translation>
@@ -3449,6 +3453,7 @@ Pretende pará-lo?</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
 <translation id="4284755288573763878">Desativar a segurança melhorada?</translation>
+<translation id="4284903252249997120">Leitor de ecrã ChromeVox e Selecionar para falar</translation>
 <translation id="4285418559658561636">Atualizar palavra-passe</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428565720843367874">O software antivírus falhou inesperadamente enquanto analisava este ficheiro.</translation>
@@ -4290,7 +4295,6 @@ Pretende pará-lo?</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="5125967981703109366">Acerca deste cartão</translation>
 <translation id="5126611267288187364">Ver alterações</translation>
-<translation id="5126735406625174440">A configuração está concluída!</translation>
 <translation id="5127242257756472928">Sem autorização para utilizar informações acerca dos seus ecrãs para abrir e posicionar janelas</translation>
 <translation id="5127620150973591153">ID de ligação segura: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">A sincronização está desativada</translation>
@@ -4991,6 +4995,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5827733057563115968">Previsão da palavra seguinte</translation>
 <translation id="5828545842856466741">Adicionar perfil…</translation>
 <translation id="5828633471261496623">A imprimir...</translation>
+<translation id="5828797982387013521">Selecionar guia interativo</translation>
 <translation id="5830205393314753525">Não é possível abrir a app <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Guard&amp;ar Página Como...</translation>
 <translation id="5832813618714645810">Perfis</translation>
@@ -5081,6 +5086,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 
   Expoente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">Leitura automática</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5920543303088087579">O gestor desativou a ligação a esta rede</translation>
@@ -5366,6 +5372,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6200151268994853226">Gerir extensão</translation>
 <translation id="6201608810045805374">Remover esta conta?</translation>
 <translation id="6202304368170870640">Pode utilizar o PIN para iniciar sessão ou desbloquear o dispositivo.</translation>
+<translation id="6206199626856438589">A sua sessão nos sites apresentados vai ser terminada, incluindo em separadores abertos</translation>
 <translation id="6206311232642889873">Cop&amp;iar Imagem</translation>
 <translation id="6207200176136643843">Repor o nível de zoom predefinido</translation>
 <translation id="6207937957461833379">País/Região</translation>
@@ -5912,6 +5919,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6733620523445262364">"<ph name="BOOKMARK_TITLE" />" criado.</translation>
 <translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
+<translation id="6737393581255281855">Limpar dados apresentados?</translation>
 <translation id="6737663862851963468">Remover permissão Kerberos</translation>
 <translation id="6738430949033571771">A validar a conta…</translation>
 <translation id="6739923123728562974">Mostrar atalho no ambiente de trabalho</translation>
@@ -7204,6 +7212,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7988355189918024273">Ativar funcionalidades de acessibilidade</translation>
 <translation id="7988805580376093356">Mantenha o seu SO e execute o <ph name="DEVICE_OS" /> a partir de uma unidade USB.</translation>
 <translation id="7991296728590311172">Definições do acesso por comutador</translation>
+<translation id="7992203134935383159">Síntese de voz</translation>
 <translation id="7997826902155442747">Prioridade do processo</translation>
 <translation id="7999229196265990314">Criou os seguintes ficheiros:
         
@@ -7228,7 +7237,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8017176852978888182">Diretórios partilhados do Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Atalho editado</translation>
-<translation id="8018140635032674020">Abra a app Explore após a configuração para começar a jogar. Aceda a centenas de jogos recentes, veja ofertas de videojogos e obtenha uma experiência de jogo envolvente.</translation>
 <translation id="8018298733481692628">Eliminar este perfil?</translation>
 <translation id="8018313076035239964">Controle as informações que os Sites podem utilizar e os conteúdos que podem apresentar</translation>
 <translation id="8023133589013344428">Gerir idiomas nas definições do ChromeOS Flex</translation>
@@ -7591,6 +7599,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8366396658833131068">A conetividade de rede foi restaurada. Selecione uma rede diferente ou prima "Continuar" abaixo para iniciar a app de quiosque.</translation>
 <translation id="8366694425498033255">Teclas de seleção</translation>
 <translation id="8368859634510605990">&amp;Abrir todos os marcadores</translation>
+<translation id="8369028061188107403">Esta ação irá limpar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites apresentados e pelas apps instaladas.</translation>
 <translation id="8370294614544004647">Suspender ao fechar o portátil</translation>
 <translation id="8371695176452482769">Falar agora</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Desativar o som do site}other{Desativar o som dos sites}}</translation>
@@ -7678,7 +7687,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8457451314607652708">Importar marcadores</translation>
 <translation id="8458341576712814616">Atalho</translation>
 <translation id="8458627787104127436">Abra todos (<ph name="URL_COUNT" />) numa nova janela</translation>
-<translation id="8459940671591713946">Prepare-se para começar a jogar</translation>
 <translation id="8460448946170646641">Rever os principais controlos de privacidade e segurança</translation>
 <translation id="8460490661223303637">Para poupar memória, o Chrome removeu algum conteúdo</translation>
 <translation id="8460932807646981183">Gerir motores de pesquisa e a pesquisa de sites</translation>

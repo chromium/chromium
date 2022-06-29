@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">تاریک وضع آن کریں</translation>
 <translation id="2177831236093724629">‏<ph name="LINK_BEGIN" />نا اہل اجزاء<ph name="LINK_END" /> پائے گئے۔ یہ یقینی بنانے کے لیے کہ تمام اہل اجزاء کی شناخت ہو گئی ہے، اپنے Chrome OS کو تازہ ترین ورژن میں اپ ڈیٹ کریں۔</translation>
 <translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
+<translation id="2182088270354640012">‏تاثرات کا شکریہ۔ آپ کے تاثرات سے Chrome OS کو بہتر بنانے میں مدد ملتی ہے اور Chrome OS ٹیم اس کا جائزہ لے گی۔ جمع کرائی گئی رپورٹس کی تعداد کی وجہ سے، آپ کو براہ راست جواب نہیں ملے گا۔</translation>
 <translation id="2209788852729124853">ٹریفک کاؤنٹرز ری سیٹ کریں</translation>
 <translation id="2212733584906323460">ریزولیوشن کا نام دیں</translation>
 <translation id="2217935453350629363">موجودہ رفتار</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">ری سٹارٹ ہو رہا ہے...</translation>
 <translation id="2533048460510040082">تجویز کردہ مددگار مواد</translation>
 <translation id="2536159006530886390">انٹرنیٹ سے منسلک نہیں کر سکتے۔</translation>
+<translation id="256360469103926202">‏آپ کے تاثرات سے ChromeOS کو بہتر بنانے میں مدد ملتی ہے اور ہماری ٹیم اس کا جائزہ لے گی۔ رپورٹس کی بڑی تعداد کی وجہ سے، ہم جواب نہیں بھیج سکیں گے۔</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
 <translation id="2584559707064218956">سیٹ اپ کرنے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
+<translation id="3275729367986477355">اوتار کی تصویر</translation>
 <translation id="3283504360622356314">{0,plural, =1{فائل میں ترمیم کریں}other{فائلز میں ترمیم کریں}}</translation>
 <translation id="3286515922899063534">‎<ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">کلیدی ڈائریکشن</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">مزید مدد کے لیے، <ph name="BEGIN_LINK" />مرکز امداد<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="4793756956024303490">کمپریشن الگورتھم</translation>
 <translation id="4794140124556169553">‏CPU ٹیسٹ چلانے سے آپ کے سسٹم کی کارکردگی متاثر ہو سکتی ہے</translation>
+<translation id="4800589996161293643">‏Chromebook کمیونٹی</translation>
 <translation id="4804818685124855865">منقطع کریں</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
 <translation id="4809927044794281115">ہلکی تھیم</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">مجھے آپ کی اسکرین پر ایسا کچھ نہیں ملا جس سے متعلق میں آپ کی مدد کر سکوں۔ مجھ سے کچھ بھی پوچھنے کے لیے مائیک کو تھپتھپانے کی کوشش کریں۔</translation>
 <translation id="5212593641110061691">ٹیبلائڈ</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
+<translation id="522307662484862935">ای میل پتہ شامل نہ کریں</translation>
 <translation id="5227902338748591677">گہری تھیم شیڈول کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="5252456968953390977">رومنگ</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">گہری تھیم آن کریں</translation>
 <translation id="6295178529664209245">مرمت جاری رکھیں؟</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
+<translation id="631063167932043783">ایکسپلور ایپ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> پر فرم ویئر اپ ڈیٹ کریں</translation>
 <translation id="6321407676395378991">اسکرین سیور آن کریں</translation>
 <translation id="6325525973963619867">ناکام</translation>
@@ -641,6 +647,7 @@
 <translation id="6516990319416533844">بیٹری چارجنگ کی شرح ٹیسٹ کرنے کے لئے اپنی بیٹری کو تھوڑے وقفہ کے لئے ختم ہونے دیں</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
+<translation id="6535178685492749208">آپ آف لائن ہیں۔ تاثرات بعد میں بھیجے جائیں گے۔</translation>
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
 <translation id="6566314079205407217">کثیر صفحاتی اسکین</translation>
@@ -719,6 +726,7 @@
 <translation id="7297226631177386107">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">‏Chromebook امدادی فورم میں ماہرین سے پوچھیں</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
@@ -761,6 +769,7 @@
 <translation id="773153675489693198">دورانیے کی تعداد</translation>
 <translation id="7747039790905080783">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="7762130827864645708">آپ کا پاس ورڈ کامیابی سے تبدیل کر دیا گیا۔ براہ کرم اب سے نیا پاس ورڈ استعمال کریں۔</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />سسٹم اور ایپ کی معلومات<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />میٹرکس<ph name="END_LINK2" /> بھیجیں</translation>
 <translation id="7763470514545477072">ڈومین لاحقہ کا مماثل</translation>
 <translation id="7769672763586021400">‏ماڈل ID</translation>
 <translation id="7784116172884276937">‏کوئی DNS سرور سیٹ اپ نہیں کیا گیا ہے</translation>
@@ -830,6 +839,7 @@
 <translation id="8382302752385457774">وائیٹ لیبل</translation>
 <translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
+<translation id="8420955526972171689">ہارڈ ویئر کے مسائل کے لیے ٹیسٹس اور ٹربل شوٹنگ چلائیں</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">پہلے سے شامل کی بورڈ</translation>
 <translation id="8431300646573772016">‏ChromeOS میں نیا کیا ہے</translation>

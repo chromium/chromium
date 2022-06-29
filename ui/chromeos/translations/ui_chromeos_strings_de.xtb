@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
 <translation id="2142680004883808240">Russisch mit phonetischer Tastatur (YaZHert)</translation>
 <translation id="2143778271340628265">Manuelle Proxy-Konfiguration</translation>
+<translation id="2148716181193084225">Heute</translation>
 <translation id="2163152940313951844">Ungültiges Zeichen: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugiesisch mit internationaler US-amerikanischer PC-Tastatur</translation>
 <translation id="2198315389084035571">Chinesisch (vereinfacht)</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Thai mit TIS 820-2531-Tastatur</translation>
 <translation id="708278670402572152">Zum Scannen Verbindung trennen</translation>
 <translation id="7086590977277044826">Tamil mit InScript-Tastatur</translation>
+<translation id="7088615885725309056">Älter</translation>
 <translation id="7103992300314999525">Mazedonisch</translation>
 <translation id="7106346894903675391">Mehr Speicherplatz erwerben...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;Ablage durchsuchen&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht und alle vorhandenen Partitionen entfernt. Dies schließt ggf. auch Partitionen ein, die nicht sichtbar sind. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7695430100978772476">"<ph name="DRIVE_NAME" />" konnte nicht formatiert werden</translation>
+<translation id="76959938259365003">Der Papierkorb konnte nicht geleert werden.</translation>
 <translation id="770015031906360009">Griechisch</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopiert.</translation>
 <translation id="7711920809702896782">Bildinformationen</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7774365994322694683">Vogel</translation>
+<translation id="7781829728241885113">Gestern</translation>
 <translation id="7788080748068240085">Wenn du „<ph name="FILE_NAME" />“ offline speichern möchtest, musst du <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Entferne Dateien, auf die du nicht mehr offline zugreifen musst.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Lösche Dateien aus dem Ordner „Downloads“.<ph name="MARKUP_5" /></translation>

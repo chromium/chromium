@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, užblokavo administratorius, išsami informacija</translation>
 <translation id="2142680004883808240">Rusų k. su fonetine „YaZHert“ klaviatūra</translation>
 <translation id="2143778271340628265">Rankinė tarpinio serverio konfigūracija</translation>
+<translation id="2148716181193084225">Šiandien</translation>
 <translation id="2163152940313951844">Netinkamas simbolis: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalų k. su JAV tarptautine AK klaviatūra</translation>
 <translation id="2198315389084035571">Supaprastinta kinų k.</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">Atsisiųsti mobiliojo ryšio tinklo profilį; <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“</translation>
 <translation id="3973925058222872294">Anglų k. (JK)</translation>
 <translation id="3975895378829046965">Bengalų k. fonetinė</translation>
+<translation id="3991446849494482687">Įrenginyje taip pat bus išjungtas SIM užrakto nustatymas.</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4017788180641807848">Anglų k. (JAV) su „Workman“ klaviatūra</translation>
 <translation id="4040753847560036377">Netinkamas PUK kodas</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">Tajų k. su TIS 820-2531 klaviatūra</translation>
 <translation id="708278670402572152">Atjunkite, kad įgalintumėte nuskaitymą</translation>
 <translation id="7086590977277044826">Tamilų k. su „InScript“ klaviatūra</translation>
+<translation id="7088615885725309056">Ankstesnė</translation>
 <translation id="7103992300314999525">Makedoniečių k.</translation>
 <translation id="7106346894903675391">Įsigyti daugiau atminties...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;ieškoti Diske&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">Kinų k. „Wubi“</translation>
 <translation id="7765158879357617694">Perkelti</translation>
 <translation id="7774365994322694683">Paukštis</translation>
+<translation id="7781829728241885113">Vakar</translation>
 <translation id="7788080748068240085">Jei norite išsaugoti „<ph name="FILE_NAME" />“ neprisijungę, turite atlaisvinti papildomai <ph name="TOTAL_FILE_SIZE" /> vietos:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />atsekite failus, kurių nebenorite pasiekti neprisijungę<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ištrinkite failus iš atsisiuntimų aplanko<ph name="MARKUP_5" /></translation>

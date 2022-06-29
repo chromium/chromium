@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="2142680004883808240">Руская (фанетычная раскладка YaZHert)</translation>
 <translation id="2143778271340628265">Ручная канфігурацыя проксі</translation>
+<translation id="2148716181193084225">Сёння</translation>
 <translation id="2163152940313951844">Недапушчальны сімвал: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Партугальская з міжнароднай клавіятурай ЗША для ПК</translation>
 <translation id="2198315389084035571">Кітайская (спрошчаная)</translation>
@@ -777,6 +778,7 @@
 <translation id="7760449188139285140">Кітайская (раскладка Wubi)</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7774365994322694683">Птушка</translation>
+<translation id="7781829728241885113">Учора</translation>
 <translation id="7788080748068240085">Каб захаваць "<ph name="FILE_NAME" />" для выкарыстання па-за сеткай, трэба вызваліць дадаткова <ph name="TOTAL_FILE_SIZE" /> месца:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Адмацуйце файлы, для якіх больш не патрабуецца пазасеткавы доступ.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Выдаліце файлы з папкі "Спампоўкі".<ph name="MARKUP_5" /></translation>

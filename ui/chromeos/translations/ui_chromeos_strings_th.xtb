@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
 <translation id="2142680004883808240">รัสเซียด้วยแป้นพิมพ์ YaZHert (ตามการออกเสียง)</translation>
 <translation id="2143778271340628265">กำหนดค่าพร็อกซีด้วยตนเอง</translation>
+<translation id="2148716181193084225">วันนี้</translation>
 <translation id="2163152940313951844">อักขระไม่ถูกต้อง: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">โปรตุเกสด้วยแป้นพิมพ์พีซีสหรัฐฯ แบบสากล</translation>
 <translation id="2198315389084035571">จีนตัวย่อ</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">ไทยด้วยแป้นพิมพ์ TIS 820-2531</translation>
 <translation id="708278670402572152">ยกเลิกการเชื่อมต่อเพื่อเปิดใช้การสแกน</translation>
 <translation id="7086590977277044826">ทมิฬด้วยแป้นพิมพ์ InScript</translation>
+<translation id="7088615885725309056">เก่ากว่า</translation>
 <translation id="7103992300314999525">มาซีโดเนีย</translation>
 <translation id="7106346894903675391">ซื้อพื้นที่เก็บข้อมูลเพิ่มเติม...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;ค้นหาไดรฟ์&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">ฮินดี</translation>
 <translation id="7693909743393669729">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์และลบพาร์ติชันที่มีอยู่ทั้งหมด รวมถึงพาร์ติชันที่อาจมองไม่เห็น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7695430100978772476">จัดรูปแบบ <ph name="DRIVE_NAME" /> ไม่ได้</translation>
+<translation id="76959938259365003">ล้างข้อมูลในถังขยะไม่สำเร็จ</translation>
 <translation id="770015031906360009">กรีก</translation>
 <translation id="7705251383879779343">คัดลอก <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="7711920809702896782">ข้อมูลรูปภาพ</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">จีน (Wubi)</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7774365994322694683">นก</translation>
+<translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7788080748068240085">หากต้องการบันทึก "<ph name="FILE_NAME" />" เป็นแบบออฟไลน์ คุณจะต้องเพิ่มพื้นที่ว่างอีก <ph name="TOTAL_FILE_SIZE" /> โดยทำดังนี้:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />เลิกปักหมุดไฟล์ที่คุณไม่ต้องการเข้าถึงแบบออฟไลน์อีกต่อไป<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ลบไฟล์จากโฟลเดอร์ "ดาวน์โหลด"<ph name="MARKUP_5" /></translation>

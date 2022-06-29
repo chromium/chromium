@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, bloqueada polo administrador, detalles</translation>
 <translation id="2142680004883808240">Ruso con teclado YaZHert fonético</translation>
 <translation id="2143778271340628265">Configuración manual do proxy</translation>
+<translation id="2148716181193084225">Hoxe</translation>
 <translation id="2163152940313951844">Carácter non válido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugués con teclado internacional estadounidense (PC)</translation>
 <translation id="2198315389084035571">Chinés simplificado</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Tailandés con teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desconectar a rede para activar a busca</translation>
 <translation id="7086590977277044826">Támil con teclado InScript</translation>
+<translation id="7088615885725309056">Anterior</translation>
 <translation id="7103992300314999525">Macedonio</translation>
 <translation id="7106346894903675391">Comprar máis almacenamento...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;buscar en Drive&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Chinés (Wubi)</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7774365994322694683">Paxaro</translation>
+<translation id="7781829728241885113">Onte</translation>
 <translation id="7788080748068240085">Para gardar "<ph name="FILE_NAME" />" sen conexión, debes liberar <ph name="TOTAL_FILE_SIZE" /> adicionais de espazo:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />deixa de fixar ficheiros que xa non precises para acceder a eles sen conexión<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />elimina ficheiros do cartafol Descargas<ph name="MARKUP_5" /></translation>

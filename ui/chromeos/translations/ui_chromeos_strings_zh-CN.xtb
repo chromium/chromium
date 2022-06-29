@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
 <translation id="2142680004883808240">俄语注音 YaZHert 键盘</translation>
 <translation id="2143778271340628265">手动配置代理</translation>
+<translation id="2148716181193084225">今天</translation>
 <translation id="2163152940313951844">字符无效：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">葡萄牙语美式国际 PC 键盘</translation>
 <translation id="2198315389084035571">简体中文</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>
 <translation id="3975895378829046965">孟加拉语注音</translation>
+<translation id="3991446849494482687">这样做也会停用设备上的 SIM 卡锁定设置。</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4017788180641807848">英语（美国）Workman 键盘</translation>
 <translation id="4040753847560036377">PUK 不正确</translation>
@@ -699,6 +701,7 @@
 <translation id="7075931588889865715">泰语 TIS 820-2531 键盘</translation>
 <translation id="708278670402572152">要想启用扫描，请先断开连接</translation>
 <translation id="7086590977277044826">泰米尔语 InScript 键盘</translation>
+<translation id="7088615885725309056">往前</translation>
 <translation id="7103992300314999525">马其顿语</translation>
 <translation id="7106346894903675391">购买更多存储空间...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - 搜索云端硬盘&lt;em&gt;&lt;/em&gt;</translation>
@@ -773,6 +776,7 @@
 <translation id="7760449188139285140">中文五笔</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7774365994322694683">鸟</translation>
+<translation id="7781829728241885113">昨天</translation>
 <translation id="7788080748068240085">要保存“<ph name="FILE_NAME" />”的离线版本，您必须先释放<ph name="TOTAL_FILE_SIZE" />空间：<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />取消固定不再需要离线访问的文件<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />删除“下载内容”文件夹中的文件<ph name="MARKUP_5" /></translation>

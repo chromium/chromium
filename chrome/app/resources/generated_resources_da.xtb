@@ -4306,7 +4306,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
 <translation id="5125967981703109366">Om dette kort</translation>
 <translation id="5126611267288187364">Se ændringer</translation>
-<translation id="5126735406625174440">Konfigurationen er fuldført.</translation>
 <translation id="5127242257756472928">Har ikke tilladelse til at bruge oplysninger om dine skærme til at åbne og placere vinduer</translation>
 <translation id="5127620150973591153">Id for sikker forbindelse: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Synkronisering er slået fra</translation>
@@ -7244,7 +7243,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8017176852978888182">Delte indekser i Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Genvejen blev redigeret</translation>
-<translation id="8018140635032674020">Åbn appen Udforsk efter konfigurationen for at komme i gang med at spille. Få adgang til hundredvis af de nyeste spil, se spiltilbud, og få en medrivende spiloplevelse.</translation>
 <translation id="8018298733481692628">Vil du slette denne profil?</translation>
 <translation id="8018313076035239964">Kontrollér, hvilke oplysninger websites kan bruge, og hvilket indhold de kan vise dig</translation>
 <translation id="8023133589013344428">Administrer sprog i indstillingerne for ChromeOS Flex</translation>
@@ -7694,7 +7692,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8457451314607652708">Importér bogmærker</translation>
 <translation id="8458341576712814616">Genvej</translation>
 <translation id="8458627787104127436">Åbn alle (<ph name="URL_COUNT" />) i et nyt vindue</translation>
-<translation id="8459940671591713946">Gør klar til at spille</translation>
 <translation id="8460448946170646641">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger</translation>
 <translation id="8460490661223303637">Chrome har fjernet noget indhold for at spare på hukommelsen</translation>
 <translation id="8460932807646981183">Administrer søgemaskiner og websitesøgning</translation>

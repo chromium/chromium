@@ -159,6 +159,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1148063863818152153">EID thiết bị</translation>
 <translation id="1148624853678088576">Bạn đã hoàn tất!</translation>
 <translation id="1149401351239820326">Tháng hết hạn</translation>
+<translation id="1149483087970735785">Công nghệ hỗ trợ</translation>
 <translation id="1149725087019908252">Đang quét <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">Đây là bản tự động cập nhật bảo mật và phần mềm mới nhất cho <ph name="DEVICE_TYPE" /> này. Để nhận các bản cập nhật trong tương lai, hãy nâng cấp lên mẫu thiết bị mới hơn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Kính mát</translation>
@@ -732,6 +733,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1680849702532889074">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
 <translation id="16815041330799488">Không cho phép các trang web xem văn bản và hình ảnh đã sao chép sang bảng nhớ tạm</translation>
 <translation id="1682548588986054654">Cửa sổ ẩn danh mới</translation>
+<translation id="1682696837763999627">Con trỏ chuột lớn</translation>
 <translation id="1682867089915960590">Bật tính năng Duyệt web có con nháy?</translation>
 <translation id="1686550358074589746">Bật tính năng nhập bằng cách lướt</translation>
 <translation id="168715261339224929">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật đồng bộ hóa.</translation>
@@ -843,6 +845,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="178092663238929451">Thiết lập tính năng Chia sẻ lân cận để nhận và gửi tệp với những người xung quanh bạn</translation>
 <translation id="1781291988450150470">Mã PIN hiện tại</translation>
 <translation id="1781502536226964113">Mở trang thẻ mới</translation>
+<translation id="1781553166608855614">Ngôn ngữ nói</translation>
 <translation id="1781771911845953849">Tài khoản và đồng bộ hóa</translation>
 <translation id="1781979858217752599">Chia sẻ âm thanh trên cửa sổ</translation>
 <translation id="1782101999402987960">Quản trị viên của bạn đã chặn các bản cập nhật</translation>
@@ -1571,6 +1574,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="244475495405467108">Đóng các Thẻ ở bên Trái</translation>
 <translation id="2445081178310039857">Thư mục gốc của tiện ích là bắt buộc.</translation>
 <translation id="2445484935443597917">Tạo hồ sơ mới</translation>
+<translation id="2445726032315793326">Phóng to một phần</translation>
 <translation id="244641233057214044">Liên quan đến nội dung tìm kiếm của bạn</translation>
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2448810255793562605">Tự động quét tìm tính năng Tiếp cận bằng công tắc</translation>
@@ -1863,6 +1867,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2724841811573117416">Nhật ký WebRTC</translation>
 <translation id="272488616838512378">Chuyển đổi đơn vị</translation>
 <translation id="2725200716980197196">Đã khôi phục kết nối mạng</translation>
+<translation id="272741954544380994">Tìm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Đừng nhắc tôi lần nữa</translation>
 <translation id="2727712005121231835">Kích thước Thực</translation>
 <translation id="2729314457178420145">Xóa cả dữ liệu duyệt web (<ph name="URL" />), việc này có thể khiến bạn bị đăng xuất khỏi Google.com. <ph name="LEARN_MORE" /></translation>
@@ -2204,6 +2209,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3030967311408872958">Từ tối đến sáng</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
 <translation id="3031557471081358569">Chọn các mục cần nhập:</translation>
+<translation id="3032204772252313646">Phụ đề tự động</translation>
 <translation id="3033348223765101500">Kiểm soát dữ liệu của bạn</translation>
 <translation id="3034627908241330765">Có một quy trình thiết lập Steam khác đang chạy. Vui lòng đợi quy trình đó hoàn tất trước khi chạy lại quy trình thiết lập.</translation>
 <translation id="3036327949511794916">Đã quá thời hạn trả lại thiết bị <ph name="DEVICE_TYPE" /> này.</translation>
@@ -2636,6 +2642,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3480612136143976912">Tùy chỉnh kích cỡ và kiểu phụ đề cho Phụ đề trực tiếp. Một số ứng dụng và trang web cũng sẽ dùng chế độ cài đặt này.</translation>
 <translation id="3480827850068960424">Đã tìm thấy <ph name="NUM" /> thẻ</translation>
 <translation id="3481268647794498892">Sẽ mở trong <ph name="ALTERNATIVE_BROWSER_NAME" /> sau <ph name="COUNTDOWN_SECONDS" /> giây</translation>
+<translation id="348268549820508141">Nhận dạng lời nói</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> có thể xem các tệp sau</translation>
 <translation id="3484273680291419129">Đang xóa phần mềm độc hại...</translation>
 <translation id="3484869148456018791">Nhận chứng chỉ mới</translation>
@@ -2794,6 +2801,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3640214691812501263">Thêm "<ph name="EXTENSION_NAME" />" cho <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Hướng dẫn Trợ lý nhận dạng giọng nói của bạn</translation>
 <translation id="3641456520301071208">Các trang web có thể yêu cầu thông tin vị trí của bạn</translation>
+<translation id="3642070413432681490">Di chuyển con trỏ xung quanh</translation>
 <translation id="3642699533549879077">Khi người khác nhìn vào màn hình của bạn, bạn sẽ nhận được cảnh báo và nội dung của thông báo sẽ bị ẩn đi.</translation>
 <translation id="3645372836428131288">Nhẹ nhàng di chuyển ngón tay để hệ thống quét các phần của vân tay.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Đã nhận <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}other{Đã nhận <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}}</translation>
@@ -2828,6 +2836,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="368019053277764111">Mở thanh tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="3680683624079082902">Giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="3681311097828166361">Cảm ơn bạn đã phản hồi. Bạn hiện đang ngoại tuyến và báo cáo của bạn sẽ được gửi sau.</translation>
+<translation id="3681548574519135185">Vòng tròn tiêu điểm</translation>
 <translation id="3682824389861648626">Ngưỡng chuyển động</translation>
 <translation id="3683524264665795342">Yêu cầu chia sẻ màn hình <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">Các tùy chọn USB của Linux</translation>
@@ -3127,6 +3136,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
 <translation id="394984172568887996">Đã nhập từ IE</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
+<translation id="3950841222883198950">Nhập liệu bằng giọng nói</translation>
 <translation id="3953834000574892725">Tài khoản của tôi</translation>
 <translation id="3954354850384043518">Đang diễn ra</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
@@ -3187,6 +3197,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3994878504415702912">Thu &amp;phóng</translation>
 <translation id="3995138139523574647">Thiết bị USB-C (cổng phía sau, bên phải)</translation>
 <translation id="3995963973192100066">Phát ảnh động</translation>
+<translation id="4001540981461989979">Làm nổi bật con trỏ chuột khi di chuyển</translation>
 <translation id="4002329649066944389">Quản lý các ngoại lệ cụ thể của trang web</translation>
 <translation id="4002440992267487163">Thiết lập mã PIN</translation>
 <translation id="4005817994523282006">Phương pháp phát hiện múi giờ</translation>
@@ -3420,6 +3431,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Đã chia sẻ nội dung thẻ</translation>
 <translation id="4253168017788158739">Lưu ý</translation>
 <translation id="4253183225471855471">Không tìm thấy mạng. Vui lòng lắp SIM và khởi động lại thiết bị của bạn rồi thử lại.</translation>
+<translation id="4254414375763576535">Con trỏ lớn</translation>
 <translation id="4254813446494774748">Ngôn ngữ dịch:</translation>
 <translation id="425573743389990240">Tốc độ phóng điện của pin tính bằng Watt (giá trị âm có nghĩa là đang sạc pin)</translation>
 <translation id="4256316378292851214">Lưu &amp;Video Dưới dạng...</translation>
@@ -3570,6 +3582,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4400963414856942668">Bạn có thể nhấp vào dấu sao để đánh dấu một thẻ</translation>
 <translation id="4401912261345737180">Kết nối với một mã để truyền</translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
+<translation id="4403012369005671154">Chuyển lời nói thành văn bản</translation>
 <translation id="4403266582403435904">Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của con bạn.</translation>
 <translation id="4403775189117163360">Chọn một thư mục khác</translation>
 <translation id="4404136731284211429">Quét lại</translation>
@@ -3913,6 +3926,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Trái)</translation>
 <translation id="4733793249294335256">Vị trí</translation>
 <translation id="473546211690256853">Tài khoản này do <ph name="DOMAIN" /> quản lý</translation>
+<translation id="4735506354605317060">Di chuyển con trỏ xung quanh</translation>
 <translation id="4735803855089279419">Hệ thống không xác định được mã nhận dạng thiết bị cho thiết bị này.</translation>
 <translation id="4736292055110123391">Đồng bộ hóa dấu trang, mật khẩu, lịch sử và nhiều nội dung khác trên tất cả các thiết bị của bạn</translation>
 <translation id="473775607612524610">Cập nhật</translation>
@@ -3933,6 +3947,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4759202969060787081">Không mở</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4761104368405085019">Sử dụng micrô của bạn</translation>
+<translation id="4762489666082647806">Màu con trỏ</translation>
 <translation id="4762718786438001384">Dung lượng đĩa của thiết bị quá thấp</translation>
 <translation id="4763408175235639573">Các cookie sau đã được cài đặt khi bạn xem trang này</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Thiết bị này sẽ được lưu trong 1 tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {MONTHS} tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
@@ -4028,6 +4043,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="485053257961878904">Không thể thiết lập tính năng đồng bộ hóa thông báo</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="485088796993065002">Các trang web có thể phát âm thanh để cung cấp âm thanh cho nhạc, video và nội dung nghe nhìn khác</translation>
+<translation id="4852916668365817106">Màu chuột</translation>
 <translation id="4853020600495124913">Mở trong &amp;cửa sổ mới</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
 <translation id="485480310608090163">Các quyền và tùy chọn cài đặt khác</translation>
@@ -4081,6 +4097,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4893522937062257019">Trên màn hình khóa</translation>
 <translation id="4897496410259333978">Để biết thêm thông tin, hãy liên hệ với quản trị viên của bạn.</translation>
 <translation id="4898011734382862273">Chứng chỉ "<ph name="CERTIFICATE_NAME" />" đại diện cho một tổ chức phát hành chứng chỉ</translation>
+<translation id="4899052647152077033">Đảo ngược màu</translation>
 <translation id="4899696330053002588">Chứa quảng cáo</translation>
 <translation id="489985760463306091">Để hoàn tất xóa phần mềm độc hại, hãy khởi động lại máy tính của bạn</translation>
 <translation id="4900392736118574277">Trang khởi động của bạn đã được thay đổi thành <ph name="URL" />.</translation>
@@ -4572,6 +4589,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5414566801737831689">Đọc biểu tượng của các trang web bạn truy cập</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
 <translation id="5417312524372586921">Chủ đề của trình duyệt</translation>
+<translation id="541737483547792035">Phóng to màn hình</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420274697768050645">Cần có mật khẩu để mở khóa thiết bị nhằm tăng cường bảo mật</translation>
 <translation id="5420438158931847627">Xác định độ sắc nét của văn bản và hình ảnh</translation>
@@ -4617,6 +4635,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5459864179070366255">Tiếp tục cài đặt</translation>
 <translation id="5461050611724244538">Mất kết nối với điện thoại của bạn</translation>
 <translation id="5463275305984126951">Chỉ mục của <ph name="LOCATION" /></translation>
+<translation id="5463450804024056231">Đăng ký nhận email về <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Đang tìm thiết bị...</translation>
 <translation id="5463845647891602726">Để tăng dung lượng trống, hãy xoá bớt tệp khỏi thiết bị</translation>
 <translation id="5463856536939868464">Menu chứa các dấu trang bị ẩn</translation>
@@ -4765,6 +4784,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Đang tải ứng dụng...</translation>
 <translation id="5592595402373377407">Chưa có đủ dữ liệu.</translation>
+<translation id="5595307023264033512">Tổng bộ nhớ mà các trang web sử dụng: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Chỉnh sửa địa chỉ</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
 <translation id="5600348067066185292">Quá trình cài đặt chỉ mất vài bước đơn giản. Bạn sẽ được yêu cầu xác nhận một lần nữa trước khi hệ thống thực hiện các thay đổi trên máy tính của bạn.</translation>
@@ -4967,6 +4987,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5801568494490449797">Tùy chọn</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
+<translation id="5806447147478173900">Tổng bộ nhớ mà các trang web hiển thị sử dụng: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Mặc định)</translation>
 <translation id="5810809306422959727">Tài khoản này không đủ điều kiện để thêm các quyền kiểm soát của cha mẹ</translation>
 <translation id="5811614940486072060">Tệp này không được tải xuống theo cách thông thường và có thể nguy hiểm</translation>
@@ -5643,6 +5664,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6474884162850599008">Ngắt kết nối tài khoản Google Drive</translation>
 <translation id="6475294023568239942">Giải phóng dung lượng ổ đĩa hoặc thay đổi kích thước ổ đĩa Linux trong phần Cài đặt</translation>
 <translation id="6476138569087741884">Mức thu phóng toàn bộ màn hình</translation>
+<translation id="6476482583633999078">Tốc độ lời nói</translation>
 <translation id="6477822444490674459">Không dùng được tính năng đồng bộ hóa thông báo trên điện thoại có hồ sơ công việc. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Giữ tệp nguy hiểm?</translation>
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
@@ -5919,6 +5941,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6750757184909117990">Tắt mạng di động</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Ẩn danh)</translation>
 <translation id="6756157672127672536">Ứng dụng Files cho phép truy cập nhanh vào các tệp mà bạn đã lưu trên Google Drive, bộ nhớ ngoài hoặc thiết bị ChromeOS.</translation>
+<translation id="6756643207511618722">Công cụ chuyển văn bản thành lời nói</translation>
 <translation id="6758056191028427665">Hãy cho chúng tôi biết ý kiến của bạn về dịch vụ của chúng tôi.</translation>
 <translation id="6759193508432371551">Khôi phục cài đặt gốc</translation>
 <translation id="6761431452438552910">Hãy đảm bảo thiết bị Bluetooth của bạn đang ở gần và đã bật chế độ ghép nối. Chỉ ghép nối với các thiết bị mà bạn tin tưởng.</translation>
@@ -6067,6 +6090,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6889957081990109136">Công tắc chưa được gán</translation>
 <translation id="689007770043972343">Thử kéo các thẻ đang mở khác vào nhóm</translation>
 <translation id="6892812721183419409">Mở đường liên kết bằng tài khoản <ph name="USER" /></translation>
+<translation id="6893164346922798247">eSpeak</translation>
 <translation id="6895032998810961280">Báo cáo chi tiết cho Google về các quy trình, tùy chọn cài đặt hệ thống và phần mềm có hại được phát hiện trên máy tính của bạn trong quá trình làm sạch này</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6897363604023044284">Chọn các trang web có dữ liệu cần xóa</translation>
@@ -6134,6 +6158,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6960507406838246615">Cần cập nhật Linux</translation>
 <translation id="6960648667961844909">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống. Thử tải xuống sau. Dữ liệu giọng nói sẽ được gửi tới Google cho đến khi quá trình tải xuống hoàn tất.</translation>
 <translation id="696103774840402661">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
+<translation id="6963872466817251924">Công cụ đánh dấu bằng con trỏ văn bản</translation>
 <translation id="6964390816189577014">Anh hùng</translation>
 <translation id="6964760285928603117">Xóa khỏi nhóm</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -6333,6 +6358,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7160182524506337403">Giờ đây, bạn có thể xem thông báo có trên điện thoại của mình</translation>
 <translation id="7163202347044721291">Đang xác minh mã kích hoạt...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" có thể đọc hình ảnh, video và tệp âm thanh trong các vị trí đã chọn.</translation>
+<translation id="7167327771183668296">Lượt nhấp tự động</translation>
 <translation id="7167486101654761064">&amp;Luôn mở loại tệp này</translation>
 <translation id="716775164025088943">Dấu trang, nhật ký, mật khẩu và một số dữ liệu khác của bạn sẽ không được đồng bộ hoá nữa.</translation>
 <translation id="716810439572026343">Đang tải xuống <ph name="FILE_NAME" /></translation>
@@ -7425,6 +7451,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8213449224684199188">Đã chuyển sang chế độ ảnh</translation>
 <translation id="8214489666383623925">Mở Tệp...</translation>
 <translation id="8215129063232901118">Sử dụng các tính năng của điện thoại trên chiếc <ph name="DEVICE_TYPE" /> của bạn</translation>
+<translation id="8217212468862726597">Làm nổi bật con trỏ</translation>
 <translation id="8217399928341212914">Tiếp tục chặn tự động tải nhiều tệp xuống</translation>
 <translation id="822050276545350872">Từ đây trở đi, bạn không cần phải chờ đợi nữa</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
@@ -7981,6 +8008,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
 <translation id="8776294611668764629">Tổ chức của bạn đã chặn tệp này vì tệp quá lớn, không thể kiểm tra bảo mật. Bạn có thể mở tệp có dung lượng tối đa là 50 MB.</translation>
 <translation id="8777628254805677039">mật khẩu gốc</translation>
+<translation id="8778393144535275552">Xoá dữ liệu đã hiển thị</translation>
 <translation id="8779944680596936487">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của chính họ</translation>
 <translation id="8780123805589053431">Lấy nội dung mô tả hình ảnh từ Google</translation>
 <translation id="8780443667474968681">Tính năng tìm kiếm bằng giọng nói đã bị tắt.</translation>
@@ -8459,6 +8487,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="957960681186851048">Trang web này đã cố gắng tự động tải nhiều tệp xuống</translation>
 <translation id="960987915827980018">Còn khoảng 1 giờ</translation>
 <translation id="962802172452141067">Cây thư mục dấu trang</translation>
+<translation id="963000966785016697">Tìm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Quản trị viên CNTT đã tắt các Ưu đãi của Chrome trên thiết bị của bạn.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ứng dụng}other{Các ứng dụng}}</translation>
 <translation id="964790508619473209">Sắp xếp màn hình</translation>
@@ -8475,6 +8504,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="971774202801778802">URL dấu trang</translation>
 <translation id="972996901592717370">Dùng ngón tay chạm vào nút nguồn. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên chiếc <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="973473557718930265">Thoát</translation>
+<translation id="973558314812359997">Kích thước chuột</translation>
 <translation id="975893173032473675">Ngôn ngữ cần dịch sang</translation>
 <translation id="976499800099896273">Hộp thoại hủy thao tác tự động sửa lỗi hiển thị cho từ <ph name="TYPED_WORD" /> đã được sửa thành từ <ph name="CORRECTED_WORD" />.  Nhấn phím mũi tên lên để truy cập hoặc nhấn phím Escape để bỏ qua.</translation>
 <translation id="978146274692397928">Độ rộng dấu câu ban đầu là Đầy đủ</translation>

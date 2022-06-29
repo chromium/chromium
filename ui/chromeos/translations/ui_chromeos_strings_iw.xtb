@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי מנהל המערכת, פרטים</translation>
 <translation id="2142680004883808240">‏רוסית עם מקלדת פונטית YaZHert</translation>
 <translation id="2143778271340628265">‏תצורת שרת proxy ידנית</translation>
+<translation id="2148716181193084225">היום</translation>
 <translation id="2163152940313951844">תו לא חוקי: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">‏פורטוגזית עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
 <translation id="2198315389084035571">סינית פשוטה</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">אנגלית (בריטניה)</translation>
 <translation id="3975895378829046965">בנגלית פונטית</translation>
+<translation id="3991446849494482687">‏הפעולה הזו תשבית גם את ההגדרה של נעילת ה-SIM במכשיר.</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4017788180641807848">‏מקלדת Workman באנגלית (ארה"ב)</translation>
 <translation id="4040753847560036377">‏ה-PUK שגוי</translation>
@@ -705,6 +707,7 @@
 <translation id="7075931588889865715">‏תאילנדית עם מקלדת TIS 820-2531</translation>
 <translation id="708278670402572152">עליך להתנתק כדי לאפשר סריקה</translation>
 <translation id="7086590977277044826">‏טמילית עם מקלדת InScript</translation>
+<translation id="7088615885725309056">ישן יותר</translation>
 <translation id="7103992300314999525">מקדונית</translation>
 <translation id="7106346894903675391">קניית נפח אחסון נוסף...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-‏Drive‏&lt;/em‏&gt;</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">‏סינית Wubi</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7774365994322694683">ציפור</translation>
+<translation id="7781829728241885113">אתמול</translation>
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב אופליין<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>

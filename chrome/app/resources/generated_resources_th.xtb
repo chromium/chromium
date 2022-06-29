@@ -216,6 +216,7 @@
 <translation id="1197199342062592414">มาเริ่มต้นกันเลย</translation>
 <translation id="11978075283960463">ข้อมูลที่จัดเก็บในแอป: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">ปิดใช้งาน</translation>
+<translation id="1198066799963193307">เครื่องมืออ่านออกเสียงสำหรับผู้ที่มีสายตาเลือนราง</translation>
 <translation id="119944043368869598">ล้างทั้งหมด</translation>
 <translation id="1199814941632954229">กำลังจัดสรรใบรับรองสำหรับโปรไฟล์ใบรับรองเหล่านี้</translation>
 <translation id="120069043972472860">ดูไม่ได้</translation>
@@ -1496,6 +1497,7 @@
 <translation id="2371076942591664043">เปิดเมื่อเ&amp;สร็จ</translation>
 <translation id="2373666622366160481">พอดีกับหน้ากระดาษ</translation>
 <translation id="2375406435414127095">เชื่อมต่อโทรศัพท์ของคุณ</translation>
+<translation id="2376056713414548745">อ่านออกเสียง</translation>
 <translation id="2377588536920405462">คุณปิดตำแหน่งได้โดยปิดการตั้งค่าตำแหน่งหลักในอุปกรณ์ และยังปิดการใช้ Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับการบอกตำแหน่งในการตั้งค่าตำแหน่งได้ด้วย</translation>
 <translation id="2377667304966270281">ฮาร์ดฟอลต์</translation>
 <translation id="237828693408258535">แปลหน้านี้ไหม</translation>
@@ -2324,6 +2326,7 @@
 <translation id="3163511056918491211">กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
 <translation id="3164329792803560526">กำลังแชร์แท็บนี้กับ <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">ผู้ให้บริการบางรายอาจบล็อกฟีเจอร์นี้</translation>
+<translation id="3169930038976362151">เลือกธีมที่ตรงกับความต้องการของคุณ หากต้องการเปลี่ยนธีม วอลเปเปอร์ โปรแกรมรักษาหน้าจอ และอื่นๆ เพียงแตะค้างไว้บนเดสก์ท็อป</translation>
 <translation id="3170072451822350649">คุณสามารถข้ามการลงชื่อเข้าใช้และ<ph name="LINK_START" />เรียกดูในฐานะผู้เยี่ยมชม<ph name="LINK_END" />ได้ด้วย</translation>
 <translation id="31774765611822736">แท็บใหม่อยู่ด้านซ้าย</translation>
 <translation id="3177909033752230686">ภาษาหน้าเว็บ:</translation>
@@ -3197,6 +3200,7 @@
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">คัดลอกรายละเอียดบิลด์</translation>
 <translation id="4021941025609472374">ปิดแท็บทางด้านซ้าย</translation>
+<translation id="402211067068791756">การดำเนินการนี้จะล้างข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงรวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">&amp;เพิ่มลงในพจนานุกรม</translation>
 <translation id="4023146161712577481">กำลังกำหนดการกำหนดค่าของอุปกรณ์</translation>
 <translation id="4025039777635956441">ปิดเสียงเว็บไซต์ที่เลือก</translation>
@@ -3448,6 +3452,7 @@
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="4282196459431406533">Smart Lock เปิดอยู่</translation>
 <translation id="4284755288573763878">ปิดความปลอดภัยที่ปรับปรุงแล้วใช่ไหม</translation>
+<translation id="4284903252249997120">โปรแกรมอ่านหน้าจอ ChromeVox และฟีเจอร์เลือกเพื่อให้อ่าน</translation>
 <translation id="4285418559658561636">อัปเดตรหัสผ่าน</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="428565720843367874">ซอฟต์แวร์ป้องกันไวรัสล้มเหลวอย่างไม่คาดคิดในขณะสแกนไฟล์นี้</translation>
@@ -4289,7 +4294,6 @@
 <translation id="5125751979347152379">URL ไม่ถูกต้อง</translation>
 <translation id="5125967981703109366">เกี่ยวกับการ์ดนี้</translation>
 <translation id="5126611267288187364">ดูการเปลี่ยนแปลง</translation>
-<translation id="5126735406625174440">การตั้งค่าเสร็จสมบูรณ์</translation>
 <translation id="5127242257756472928">ไม่ได้รับอนุญาตให้ใช้ข้อมูลเกี่ยวกับหน้าจอเพื่อเปิดและวางหน้าต่าง</translation>
 <translation id="5127620150973591153">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">การซิงค์ปิดอยู่</translation>
@@ -4987,6 +4991,7 @@
 <translation id="5827733057563115968">การคาดคะเนคำถัดไป</translation>
 <translation id="5828545842856466741">เพิ่มโปรไฟล์...</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
+<translation id="5828797982387013521">เลือก Playbook</translation>
 <translation id="5830205393314753525">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="5830720307094128296">บันทึกหน้าเ&amp;ป็น...</translation>
 <translation id="5832813618714645810">โปรไฟล์</translation>
@@ -5077,6 +5082,7 @@
 
   Public Exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> บิต):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">การอ่านอัตโนมัติ</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="59174027418879706">เปิดใช้งาน</translation>
 <translation id="5920543303088087579">ผู้ดูแลระบบปิดใช้การเชื่อมต่อเครือข่ายนี้</translation>
@@ -5361,6 +5367,7 @@
 <translation id="6200151268994853226">จัดการส่วนขยาย</translation>
 <translation id="6201608810045805374">นำบัญชีนี้ออกใช่ไหม</translation>
 <translation id="6202304368170870640">คุณใช้ PIN เพื่อลงชื่อเข้าใช้หรือปลดล็อกอุปกรณ์ได้</translation>
+<translation id="6206199626856438589">คุณจะออกจากระบบเว็บไซต์ที่แสดง รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="6206311232642889873">คัดลอ&amp;กรูปภาพ</translation>
 <translation id="6207200176136643843">รีเซ็ตเป็นระดับการซูมเริ่มต้น</translation>
 <translation id="6207937957461833379">ประเทศ/เขตการปกครอง</translation>
@@ -5907,6 +5914,7 @@
 <translation id="6733620523445262364">สร้าง '<ph name="BOOKMARK_TITLE" />' แล้ว</translation>
 <translation id="6735304988756581115">แสดงคุกกี้และข้อมูลอื่นของไซต์...</translation>
 <translation id="6736243959894955139">ที่อยู่</translation>
+<translation id="6737393581255281855">ล้างข้อมูลที่แสดงใช่ไหม</translation>
 <translation id="6737663862851963468">นำตั๋ว Kerberos ออก</translation>
 <translation id="6738430949033571771">กำลังยืนยันบัญชี...</translation>
 <translation id="6739923123728562974">แสดงทางลัดในเดสก์ท็อป</translation>
@@ -7198,6 +7206,7 @@
 <translation id="7988355189918024273">เปิดการใช้งานฟีเจอร์การเข้าถึง</translation>
 <translation id="7988805580376093356">ใช้ระบบปฏิบัติการของคุณต่อไปและเรียกใช้ <ph name="DEVICE_OS" /> จาก USB</translation>
 <translation id="7991296728590311172">การตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
+<translation id="7992203134935383159">การสังเคราะห์เสียง</translation>
 <translation id="7997826902155442747">ลำดับความสำคัญของกระบวนการ</translation>
 <translation id="7999229196265990314">สร้างไฟล์ต่อไปนี้:
         
@@ -7222,7 +7231,6 @@
 <translation id="8017176852978888182">ไดเรกทอรีที่แชร์ใน Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">แก้ไขทางลัดแล้ว</translation>
-<translation id="8018140635032674020">เปิดแอป "สำรวจ" หลังการตั้งค่าเพื่อเริ่มเล่นเกม เข้าถึงเกมใหม่ล่าสุดหลายร้อยเกม ดูข้อเสนอเกี่ยวกับเกม และสัมผัสประสบการณ์การเล่นเกมที่สมจริง</translation>
 <translation id="8018298733481692628">ลบโปรไฟล์นี้ใช่ไหม</translation>
 <translation id="8018313076035239964">ควบคุมว่าจะให้เว็บไซต์ใช้ข้อมูลใดได้บ้าง และสามารถแสดงเนื้อหาใดให้กับคุณ</translation>
 <translation id="8023133589013344428">จัดการภาษาในการตั้งค่า Chrome OS Flex</translation>
@@ -7585,6 +7593,7 @@
 <translation id="8366396658833131068">กู้คืนการเชื่อมต่อเครือข่ายของคุณแล้ว โปรดเลือกเครือข่ายอื่นหรือกดปุ่ม "ดำเนินการต่อ" ที่ด้านล่างเพื่อเปิดแอปคีออสก์</translation>
 <translation id="8366694425498033255">คีย์การเลือก</translation>
 <translation id="8368859634510605990">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
+<translation id="8369028061188107403">การดำเนินการนี้จะล้างข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงและแอปที่ติดตั้งไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="8370294614544004647">เข้าสู่โหมดสลีปเมื่อปิดแล็ปท็อป</translation>
 <translation id="8371695176452482769">เชิญพูดเลย</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ซ่อนเว็บไซต์}other{ซ่อนเว็บไซต์}}</translation>
@@ -7672,7 +7681,6 @@
 <translation id="8457451314607652708">นำเข้าบุ๊กมาร์ก</translation>
 <translation id="8458341576712814616">ทางลัด</translation>
 <translation id="8458627787104127436">เปิดทั้งหมด (<ph name="URL_COUNT" />) ในหน้าต่างใหม่</translation>
-<translation id="8459940671591713946">เตรียมตัวเริ่มเล่นเกม</translation>
 <translation id="8460448946170646641">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัย</translation>
 <translation id="8460490661223303637">Chrome ได้นำเนื้อหาบางรายการออกเพื่อประหยัดหน่วยความจำ</translation>
 <translation id="8460932807646981183">จัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์</translation>

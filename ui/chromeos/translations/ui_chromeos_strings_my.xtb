@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="2142680004883808240">အသံထွက် YaZHert ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="2143778271340628265">လက်ဖြင့် ပရောက်စီ စီစဉ်ပေးခြင်း</translation>
+<translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2163152940313951844">အက္ခရာ မမှန်ကန်ပါ- <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ယူအက်စ်နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် ပေါ်တူဂီ</translation>
 <translation id="2198315389084035571">ရိုးရှင်း တရုတ်</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">TIS 820-2531 ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="708278670402572152">ရှာဖွေခြင်းကို ဖွင့်ရန် ချိတ်ဆက်မှုဖြုတ်ပါ</translation>
 <translation id="7086590977277044826">InScript ကီးဘုတ်ဖြင့် တမီးလ်</translation>
+<translation id="7088615885725309056">ပိုဟောင်းသော</translation>
 <translation id="7103992300314999525">မက်ဆီဒိုးနီးယား</translation>
 <translation id="7106346894903675391">နောက်ထပ်သိုလှောင်မှု ဝယ်မည်...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ဒရိုက်ရှာ&lt;/em&gt;</translation>
@@ -767,6 +769,7 @@
 <translation id="7663224033570512922">ဟင်ဒီ</translation>
 <translation id="7693909743393669729">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်ပြီး မမြင်ရသောအကန့်ခွဲများ အပါအဝင် လက်ရှိအကန့်ခွဲများအားလုံးကို ဖယ်ရှားပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချ၍မရပါ</translation>
+<translation id="76959938259365003">အမှိုက်ပုံးရှင်း၍မရပါ။</translation>
 <translation id="770015031906360009">ဂရိ</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> ကို မိတ္တူကူးထားသည်။</translation>
 <translation id="7711920809702896782">ဓာတ်ပုံအချက်အလက်</translation>
@@ -777,6 +780,7 @@
 <translation id="7760449188139285140">တရုတ် ဝူဘီ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
 <translation id="7774365994322694683">ငှက်</translation>
+<translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" အား လိုင်းမဲ့အခြေနေတွင် သိမ်းရန် နောက်ထပ် <ph name="TOTAL_FILE_SIZE" /> နေရာအား ရှင်းလင်းရပါမည်:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />လိုင်းမဲ့အခြေနေတွင် သင်အသုံးမလိုတော့သည့် ဖိုင်များကို ချိတ်ဆက်မှု ဖြုတ်ပါ<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />သင့် ဒေါင်းလုဒ် ဖိုင်တွဲရှိ ဖိုင်များကို ဖျက်ပါ<ph name="MARKUP_5" /></translation>

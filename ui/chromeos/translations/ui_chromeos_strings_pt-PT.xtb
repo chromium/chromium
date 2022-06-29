@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
 <translation id="2142680004883808240">Russo com teclado YaZHert fonético</translation>
 <translation id="2143778271340628265">Configuração manual do proxy</translation>
+<translation id="2148716181193084225">Hoje</translation>
 <translation id="2163152940313951844">Caráter inválido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Português com teclado de PC americano internacional</translation>
 <translation id="2198315389084035571">Chinês Simplificado</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Tailandês com teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desligar para ativar a verificação</translation>
 <translation id="7086590977277044826">Tâmil com teclado InScript</translation>
+<translation id="7088615885725309056">Mais antigo</translation>
 <translation id="7103992300314999525">Macedónio</translation>
 <translation id="7106346894903675391">Comprar mais armazenamento...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">A formatação de uma unidade elimina todos os dados armazenados na mesma e remove todas as partições existentes, incluindo as partições que podem não estar visíveis. Não é possível anular esta ação.</translation>
 <translation id="7695430100978772476">Não foi possível formatar <ph name="DRIVE_NAME" />.</translation>
+<translation id="76959938259365003">Falha ao esvaziar o lixo.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
 <translation id="7711920809702896782">Informações da imagem</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">Wubi chinês</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7774365994322694683">Pássaro</translation>
+<translation id="7781829728241885113">Ontem</translation>
 <translation id="7788080748068240085">Para guardar "<ph name="FILE_NAME" />" offline, tem de libertar mais <ph name="TOTAL_FILE_SIZE" /> de espaço:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />solte os ficheiros aos quais já não precisa de aceder offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />elimine ficheiros da pasta Transferências<ph name="MARKUP_5" /></translation>

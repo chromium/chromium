@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Uyğunsuz komponentlər<ph name="LINK_END" /> tapılıb. Bütün uyğun komponentlərin müəyyən edildiyinə əmin olmaq üçün Chrome OS-i ən son versiyaya güncəlləyin.</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
+<translation id="2182088270354640012">Rəyiniz üçün təşəkkür edirik. Rəyiniz Chrome OS'i təkmilləşdirməyə kömək edir və Chrome OS komandası tərəfindən nəzərdən keçiriləcək. Təqdim olunan hesabatların çoxluğuna görə birbaşa cavab ala bilməyəcəksiniz.</translation>
 <translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
 <translation id="2212733584906323460">Ad Həlli</translation>
 <translation id="2217935453350629363">Cari sürət</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Yenidən başladılır...</translation>
 <translation id="2533048460510040082">Təklif olunan yardım məzmunu</translation>
 <translation id="2536159006530886390">İnternetə qoşulmaq olmur.</translation>
+<translation id="256360469103926202">Rəyiniz ChromeOS'i təkmilləşdirməyə kömək edir və komandamız tərəfindən nəzərdən keçiriləcək. Çox sayda hesabat olduğu üçün cavab göndərə bilməyəcəyik.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
 <translation id="2584559707064218956">Ayarlamaq üçün Ayarlara keçin</translation>
 <translation id="2619761439309613843">Gündəlik Yenilənmə</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
+<translation id="3275729367986477355">Avatar şəkli</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylı redaktə edin}other{Faylları redaktə edin}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHs</translation>
 <translation id="3291996639387199448">Açar istiqaməti</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Ətraflı məlumat üçün <ph name="BEGIN_LINK" />Yardım Mərkəzinə<ph name="END_LINK" /> keçin.</translation>
 <translation id="4793756956024303490">Sıxılma alqoritmi</translation>
 <translation id="4794140124556169553">CPU testi etmək sistem performansınıza təsir göstərə bilər</translation>
+<translation id="4800589996161293643">Chromebook icması</translation>
 <translation id="4804818685124855865">Ayırın</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> çap işi ləğv edilib</translation>
 <translation id="4809927044794281115">İşıqlı tema</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">Ekranınızda kömək edə biləcəyim heç nə tapmadım. Məndən hər hansı bir şey soruşmaq üçün mikrofona klikləyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
+<translation id="522307662484862935">E-poçt ünvanını daxil etməyin</translation>
 <translation id="5227902338748591677">Qaranlıq tema cədvəli</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5252456968953390977">Rominq</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">Qaranlıq temanı aktiv edin</translation>
 <translation id="6295178529664209245">Təmirə davam edilsin?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
+<translation id="631063167932043783">Tətbiqi araşdırın</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazında proqramı güncəlləyin</translation>
 <translation id="6321407676395378991">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="6325525973963619867">Alınmadı</translation>
@@ -641,6 +647,7 @@
 <translation id="6516990319416533844">Batareya şarj sürətini test etmək üçün batareyanın qısa müddət boşalmasına imkan verin</translation>
 <translation id="6517239166834772319">Araşdırın</translation>
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
+<translation id="6535178685492749208">Oflaynsınız. Rəy sonra göndəriləcək.</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
 <translation id="6566314079205407217">Bir neçə səhifənin skanlanması</translation>
@@ -719,6 +726,7 @@
 <translation id="7297226631177386107">Alov divarı aktiv olduqda HTTPS vebsaytlarına qoşulmaq olmur</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook yardım forumunda ekspertlərdən soruşun</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Axtarışda nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
@@ -761,6 +769,7 @@
 <translation id="773153675489693198">Dövrə sayı</translation>
 <translation id="7747039790905080783">Öncədən paylaşılan açar</translation>
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Sistem və tətbiq məlumatı<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />göstəriciləri<ph name="END_LINK2" /> göndərin</translation>
 <translation id="7763470514545477072">Domen sonluğunun uyğunluğu</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">DNS serveri ayarlanmayıb</translation>
@@ -830,6 +839,7 @@
 <translation id="8382302752385457774">Ağ etiket</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> müəssisə tərəfindən idarə edilir</translation>
 <translation id="8398927464629426868">Cihazın hazırda şarj və ya deşarj olma sürəti</translation>
+<translation id="8420955526972171689">Aparat problemləri üçün testlər və problem həllini icra edin</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Daxili klaviatura</translation>
 <translation id="8431300646573772016">ChromeOS üzrə yeniliklər</translation>

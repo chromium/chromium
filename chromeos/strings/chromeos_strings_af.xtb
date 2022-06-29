@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Skakel donkermodus aan</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Komponente wat nie kwalifiseer nie<ph name="LINK_END" /> is gevind. Dateer jou Chrome OS na die jongste weergawe op om seker te maak dat alle komponente wat kwalifiseer, geïdentifiseer word.</translation>
 <translation id="2180197493692062006">Iets was fout. Probeer om die program weer oop te maak.</translation>
+<translation id="2182088270354640012">Dankie vir die terugvoer. Jou terugvoer help om ChromeOS te verbeter en sal deur die ChromeOS-span nagegaan word. Weens die groot aantal verslae wat ingedien is, sal jy nie ’n direkte antwoord kry nie.</translation>
 <translation id="2209788852729124853">Stel verkeertellers terug</translation>
 <translation id="2212733584906323460">Naamresolusie</translation>
 <translation id="2217935453350629363">Huidige spoed</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Herbegin tans …</translation>
 <translation id="2533048460510040082">Voorgestelde hulpinhoud</translation>
 <translation id="2536159006530886390">Kan nie aan die internet koppel nie.</translation>
+<translation id="256360469103926202">Jou terugvoer help om ChromeOS te verbeter en sal deur ons span nagegaan word. Weens die groot aantal verslae sal ons nie ’n antwoord kan stuur nie.</translation>
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
 <translation id="2584559707064218956">Gaan na Instellings om dit op te stel</translation>
 <translation id="2619761439309613843">Herlaai daagliks</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Soek skandeerders</translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
+<translation id="3275729367986477355">Avatar-prent</translation>
 <translation id="3283504360622356314">{0,plural, =1{Wysig lêer}other{Wysig lêers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Sleutelrigting</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Gaan na die <ph name="BEGIN_LINK" />Hulpsentrum<ph name="END_LINK" /> vir meer hulp.</translation>
 <translation id="4793756956024303490">Saampersingalgoritme</translation>
 <translation id="4794140124556169553">As jy 'n CPU-toets doen, kan dit jou stelselwerkverrigting affekteer</translation>
+<translation id="4800589996161293643">Chromebook-gemeenskap</translation>
 <translation id="4804818685124855865">Ontkoppel</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Ligtema</translation>
@@ -488,6 +492,7 @@
 Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5212593641110061691">Ponieformaat</translation>
 <translation id="5222676887888702881">Meld af</translation>
+<translation id="522307662484862935">Moenie e-posadres insluit nie</translation>
 <translation id="5227902338748591677">Donkertema-skedule</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5252456968953390977">Swerf tans</translation>
@@ -614,6 +619,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6284632978374966585">Skakel donkertema aan</translation>
 <translation id="6295178529664209245">Gaan voort met herstelproses?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-toets is gekanselleer</translation>
+<translation id="631063167932043783">Verken program</translation>
 <translation id="6319207335391420837">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
 <translation id="6321407676395378991">Skakel sluimerskerm aan</translation>
 <translation id="6325525973963619867">Misluk</translation>
@@ -642,6 +648,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6516990319416533844">Laat jou battery 'n rukkie afloop om die batterylaaikoers te toets</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
+<translation id="6535178685492749208">Jy is vanlyn. Terugvoer sal later gestuur word.</translation>
 <translation id="65587193855025101">Plat oppervlak</translation>
 <translation id="6564646048574748301">Misluk – Kon nie drukker bereik nie</translation>
 <translation id="6566314079205407217">Skandering van veelvuldige bladsye</translation>
@@ -720,6 +727,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7297226631177386107">Kan nie deur brandmuur aan HTTPS-webwerwe koppel nie</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Vra die kundiges in die Chromebook-hulpforum</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
@@ -762,6 +770,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="773153675489693198">Siklustelling</translation>
 <translation id="7747039790905080783">Voorafgedeelde sleutel</translation>
 <translation id="7762130827864645708">Jou wagwoord is suksesvol verander. Gebruik asseblief van nou af die nuwe wagwoord.</translation>
+<translation id="7762839321248874531">Stuur <ph name="BEGIN_LINK1" />stelsel- en programinligting<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />maatstawwe<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Passing vir domein-agtervoegsel</translation>
 <translation id="7769672763586021400">Model-ID</translation>
 <translation id="7784116172884276937">Geen DNS-bedieners is opgestel nie</translation>
@@ -831,6 +840,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8382302752385457774">Wit etiket</translation>
 <translation id="8395584934117017006">Hierdie <ph name="DEVICE_TYPE" /> word deur 'n onderneming bestuur</translation>
 <translation id="8398927464629426868">Die koers waarteen die toestel tans laai of ontlaai</translation>
+<translation id="8420955526972171689">Doen toetse en foutsporing vir hardewarekwessies</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interne sleutelbord</translation>
 <translation id="8431300646573772016">Wat's nuut in ChromeOS</translation>

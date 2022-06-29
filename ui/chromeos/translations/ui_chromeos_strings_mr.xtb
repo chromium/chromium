@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटर ने ब्लॉक केलेले नेटवर्क, तपशील</translation>
 <translation id="2142680004883808240">फोनेटिक YaZHert कीबोर्डसह रशियन</translation>
 <translation id="2143778271340628265">व्यक्तिचलित प्रॉक्झी कॉंफिगरेशन</translation>
+<translation id="2148716181193084225">आज</translation>
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह पोर्तुगीज</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
@@ -705,6 +706,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7075931588889865715">TIS 820-2531 कीबोर्डसह थाई</translation>
 <translation id="708278670402572152">स्कॅनिंग सुरू करण्यासाठी डिस्कनेक्ट करा</translation>
 <translation id="7086590977277044826">InScript कीबोर्डसह तमिळ</translation>
+<translation id="7088615885725309056">थोडा जुना</translation>
 <translation id="7103992300314999525">मॅसे‍डोनियन</translation>
 <translation id="7106346894903675391">अधिक स्टोरेज विकत घ्या...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइव्ह शोधा&lt;/em&gt;</translation>
@@ -779,6 +781,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7760449188139285140">चीनी वुबी</translation>
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7774365994322694683">पक्षी</translation>
+<translation id="7781829728241885113">काल</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" ऑफलाइन सेव्ह करण्यासाठी तुम्ही अतिरिक्त <ph name="TOTAL_FILE_SIZE" /> जागा मोकळी करणे आवश्‍यक आहे:<ph name="MARKUP_1" /> 
         <ph name="MARKUP_2" />तुम्हाला ऑफलाइन ॲक्सेस करण्‍याची यापुढे आवश्यकता नसलेल्या फाइल अनपिन करा<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />तुमच्या डाउनलोड फोल्डरमधून फाइल हटवा<ph name="MARKUP_5" /></translation>

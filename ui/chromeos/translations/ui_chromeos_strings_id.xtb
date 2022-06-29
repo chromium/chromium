@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
 <translation id="2142680004883808240">Rusia dengan keyboard Fonetik YaZHert</translation>
 <translation id="2143778271340628265">Konfigurasi proxy manual</translation>
+<translation id="2148716181193084225">Hari ini</translation>
 <translation id="2163152940313951844">Karakter tidak valid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugis dengan keyboard International PC AS</translation>
 <translation id="2198315389084035571">China Aksara Sederhana</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">Download profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inggris (Inggris Raya)</translation>
 <translation id="3975895378829046965">Fonetik Bengali</translation>
+<translation id="3991446849494482687">Tindakan ini juga akan menonaktifkan setelan Kunci SIM di perangkat.</translation>
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4017788180641807848">Inggris (AS) dengan keyboard Workman</translation>
 <translation id="4040753847560036377">PUK salah</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">Thai dengan keyboard TIS 820-2531</translation>
 <translation id="708278670402572152">Putuskan hubungan untuk mengaktifkan pemindaian</translation>
 <translation id="7086590977277044826">Tamil dengan keyboard InScript</translation>
+<translation id="7088615885725309056">Lawas</translation>
 <translation id="7103992300314999525">Makedonia</translation>
 <translation id="7106346894903675391">Beli penyimpanan lagi...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;telusuri Drive&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">Wubi China</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
 <translation id="7774365994322694683">Burung</translation>
+<translation id="7781829728241885113">Kemarin</translation>
 <translation id="7788080748068240085">Untuk menyimpan "<ph name="FILE_NAME" />" secara offline, Anda harus mengosongkan ruang tambahan sebesar <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />lepas sematan file yang tidak lagi Anda gunakan untuk mengakses secara offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />hapus file dari folder Download Anda<ph name="MARKUP_5" /></translation>

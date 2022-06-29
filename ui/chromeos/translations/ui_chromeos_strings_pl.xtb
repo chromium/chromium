@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
 <translation id="2142680004883808240">Rosyjski z fonetyczną klawiaturą YaZHert</translation>
 <translation id="2143778271340628265">Ręczna konfiguracja serwera proxy</translation>
+<translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2163152940313951844">Nieprawidłowy znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalski z klawiaturą amerykańską międzynarodową (PC)</translation>
 <translation id="2198315389084035571">chiński uproszczony</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">Tajski z klawiaturą TIS 820-2531</translation>
 <translation id="708278670402572152">Rozłącz, by włączyć skanowanie</translation>
 <translation id="7086590977277044826">Tamilski z klawiaturą InScript</translation>
+<translation id="7088615885725309056">Starsze</translation>
 <translation id="7103992300314999525">Macedoński</translation>
 <translation id="7106346894903675391">Kup więcej miejsca...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;wyszukaj na Dysku&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych i wszystkich znajdujących się na nim partycji, w tym partycji niewidocznych. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7695430100978772476">Nie udało się sformatować: <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Nie udało się opróżnić kosza.</translation>
 <translation id="770015031906360009">Grecki</translation>
 <translation id="7705251383879779343">Plik <ph name="FILE_NAME" /> został skopiowany.</translation>
 <translation id="7711920809702896782">Informacje o pliku graficznym</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">Chiński wubi</translation>
 <translation id="7765158879357617694">Przenieś</translation>
 <translation id="7774365994322694683">Ptak</translation>
+<translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7788080748068240085">Aby zapisać „<ph name="FILE_NAME" />” offline, musisz zwolnić dodatkowe <ph name="TOTAL_FILE_SIZE" /> miejsca:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />odepnij pliki, do których nie potrzebujesz już uzyskiwać dostępu offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />usuń pliki z folderu Pobrane pliki<ph name="MARKUP_5" /></translation>

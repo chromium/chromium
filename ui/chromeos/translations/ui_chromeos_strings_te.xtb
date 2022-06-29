@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు, వివరాలు</translation>
 <translation id="2142680004883808240">YaZHert కీబోర్డ్‌తో రష్యన్</translation>
 <translation id="2143778271340628265">మాన్యువల్ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
+<translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2163152940313951844">చెల్లని అక్షరం: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">US అంతర్జాతీయ PC కీబోర్డ్‌తో పోర్చుగీస్</translation>
 <translation id="2198315389084035571">సరళీకృత చైనీస్</translation>
@@ -162,7 +163,7 @@
 <translation id="2387120140441437063">ట్రాష్‌లో ఉన్న ఫైళ్లను తెరవడం సాధ్యం కాదు. దయచేసి తెరవడానికి ముందు, ఫైళ్లను రీస్టోర్ చేయండి.</translation>
 <translation id="2387458720915042159">ప్రాక్సీ కనెక్షన్ రకం</translation>
 <translation id="2389832672041313158">బర్మీస్/మయన్మార్</translation>
-<translation id="2392369802118427583">సక్రియం చేయి</translation>
+<translation id="2392369802118427583">యాక్టివేట్ చేయండి</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> అందుబాటులో ఉంది</translation>
 <translation id="2425665904502185219">మొత్తం ఫైల్ పరిమాణం</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3973925058222872294">ఇంగ్లీష్ (UK)</translation>
 <translation id="3975895378829046965">బంగ్లా ఫొనెటిక్</translation>
+<translation id="3991446849494482687">పరికరంలోని SIM లాక్ సెట్టింగ్‌ను కూడా ఇది డిజేబుల్ చేస్తుంది.</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4017788180641807848">వర్క్‌మాన్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="4040753847560036377">తప్పు PUK</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">TIS 820-2531 కీబోర్డ్‌తో థాయ్</translation>
 <translation id="708278670402572152">స్కానింగ్‌ను ప్రారంభించడం కోసం డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="7086590977277044826">ఇన్‌స్క్రిప్ట్ కీబోర్డ్‌తో తమిళం</translation>
+<translation id="7088615885725309056">పాతవి</translation>
 <translation id="7103992300314999525">మాసిడోనియన్</translation>
 <translation id="7106346894903675391">మరింత నిల్వని కొనుగోలు చేయండి...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;డిస్క్‌లో వెతకండి&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">చైనీస్ వుబీ</translation>
 <translation id="7765158879357617694">తరలించు</translation>
 <translation id="7774365994322694683">పక్షి</translation>
+<translation id="7781829728241885113">నిన్న</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"ను ఆఫ్‌లైన్‌లో సేవ్ చేయడానికి మీ వద్ద <ph name="TOTAL_FILE_SIZE" /> అదనపు ఖాళీ స్థలం తప్పనిసరిగా ఉండాలి:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />మీరు ఆఫ్‌లైన్‌లో ఇకపై యాక్సెస్ చేయకూడదనుకునే ఫైళ్లను అన్‌పిన్ చేయండి<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />మీ డౌన్‌లోడ్‌ల ఫోల్డర్ నుండి ఫైళ్లను తొలగించండి<ph name="MARKUP_5" /></translation>

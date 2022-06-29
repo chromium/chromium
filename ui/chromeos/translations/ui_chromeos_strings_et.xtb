@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, blokeeris administraator, üksikasjad</translation>
 <translation id="2142680004883808240">vene, foneetilise (YaZHert) klaviatuuriga</translation>
 <translation id="2143778271340628265">Puhverserveri käsitsi konfigureerimine</translation>
+<translation id="2148716181193084225">Täna</translation>
 <translation id="2163152940313951844">Sobimatu tähemärk: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugali USA, rahvusvahelise arvutiklaviatuuriga</translation>
 <translation id="2198315389084035571">hiina (lihtsustatud)</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">inglise (Ühendkuningriik)</translation>
 <translation id="3975895378829046965">bengali, foneetiline</translation>
+<translation id="3991446849494482687">Sellega keelatakse seadmes ka SIM-kaardi luku seade.</translation>
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4017788180641807848">inglise (USA), Workmani klaviatuuriga</translation>
 <translation id="4040753847560036377">Vale PUK</translation>
@@ -704,6 +706,7 @@
 <translation id="7075931588889865715">tai, klaviatuuriga TIS 820-2531</translation>
 <translation id="708278670402572152">Skannimise lubamiseks katkestage ühendus</translation>
 <translation id="7086590977277044826">tamili, InScript-klaviatuuriga</translation>
+<translation id="7088615885725309056">Vanemad</translation>
 <translation id="7103992300314999525">makedoonia</translation>
 <translation id="7106346894903675391">Ostke rohkem salvestusruumi ...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;otsi Drive'ist&lt;/em&gt;</translation>
@@ -778,6 +781,7 @@
 <translation id="7760449188139285140">hiina, wubi</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7774365994322694683">Lind</translation>
+<translation id="7781829728241885113">Eile</translation>
 <translation id="7788080748068240085">Kui soovite salvestada faili „<ph name="FILE_NAME" />” võrguühenduseta kasutamiseks, peate vabastama veel <ph name="TOTAL_FILE_SIZE" /> ruumi:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />vabastage failid, millele teil ei ole enam vaja võrguühenduseta juurde pääseda;<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />kustutage kaustas Allalaadimised olevaid faile.<ph name="MARKUP_5" /></translation>

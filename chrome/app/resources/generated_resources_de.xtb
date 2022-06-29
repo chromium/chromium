@@ -216,6 +216,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1197199342062592414">Los geht's</translation>
 <translation id="11978075283960463">In App gespeicherte Daten: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Deaktivieren</translation>
+<translation id="1198066799963193307">Sprachausgabetools für Menschen mit eingeschränktem Sehvermögen</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
 <translation id="1199814941632954229">Es werden Zertifikate für diese Zertifikatprofile bereitgestellt</translation>
 <translation id="120069043972472860">Ansehen nicht möglich</translation>
@@ -1493,6 +1494,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2371076942591664043">Nach &amp;Download öffnen</translation>
 <translation id="2373666622366160481">An Papierformat anpassen</translation>
 <translation id="2375406435414127095">Mit dem Smartphone verbinden</translation>
+<translation id="2376056713414548745">Vorlesen</translation>
 <translation id="2377588536920405462">Du kannst die Standortermittlung deaktivieren, indem du die Haupteinstellung "Standort" auf deinem Gerät deaktivierst. Außerdem hast du die Möglichkeit, die Nutzung von WLANs, Mobilfunknetzen und Sensoren zur Standortermittlung in den Standorteinstellungen zu deaktivieren.</translation>
 <translation id="2377667304966270281">Harte Fehler</translation>
 <translation id="237828693408258535">Diese Seite übersetzen?</translation>
@@ -2321,6 +2323,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3163511056918491211">Wenn du deine Daten sicherst, kannst du diese jederzeit wiederherstellen – auch auf einem anderen Gerät. Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt.</translation>
 <translation id="3164329792803560526">Tab wird mit <ph name="APP_NAME" /> geteilt</translation>
 <translation id="3165390001037658081">Einige Mobilfunkanbieter blockieren diese Funktion möglicherweise.</translation>
+<translation id="3169930038976362151">Wähle ein Design aus, das deinen Anforderungen entspricht. Wenn du das Design, den Hintergrund oder den Bildschirmschoner ändern möchtest, halte einfach eine beliebige Stelle auf dem Desktop gedrückt.</translation>
 <translation id="3170072451822350649">Du kannst die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Neuer Tab links</translation>
 <translation id="3177909033752230686">Sprache der Seite:</translation>
@@ -3194,6 +3197,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Build-Details kopieren</translation>
 <translation id="4021941025609472374">Tabs links schließen</translation>
+<translation id="402211067068791756">Dadurch werden <ph name="TOTAL_USAGE" /> an von angezeigten Websites gespeicherten Daten gelöscht</translation>
 <translation id="4022426551683927403">&amp;Zum Wörterbuch hinzufügen</translation>
 <translation id="4023146161712577481">Gerätekonfiguration wird abgerufen</translation>
 <translation id="4025039777635956441">Ausgewählte Website stummschalten</translation>
@@ -3445,6 +3449,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4282196459431406533">Smart Lock ist aktiviert</translation>
 <translation id="4284755288573763878">Erweitertes Safe Browsing deaktivieren?</translation>
+<translation id="4284903252249997120">Screenreader „ChromeVox“ und Bedienungshilfe „Vorlesen“</translation>
 <translation id="4285418559658561636">Passwort aktualisieren</translation>
 <translation id="4285498937028063278">Loslösen</translation>
 <translation id="428565720843367874">Beim Scannen dieser Datei durch die Antivirensoftware ist ein unerwarteter Fehler aufgetreten.</translation>
@@ -4286,7 +4291,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5125751979347152379">Ungültige URL</translation>
 <translation id="5125967981703109366">Über diese Karte</translation>
 <translation id="5126611267288187364">Änderungen anzeigen</translation>
-<translation id="5126735406625174440">Die Einrichtung ist abgeschlossen.</translation>
 <translation id="5127242257756472928">Dürfen keine Informationen über meine Bildschirme verwenden, um Fenster zu öffnen und zu platzieren</translation>
 <translation id="5127620150973591153">ID der sicheren Verbindung: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
@@ -4984,6 +4988,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5827733057563115968">Vervollständigung des nächsten Wortes</translation>
 <translation id="5828545842856466741">Profil hinzufügen…</translation>
 <translation id="5828633471261496623">Wird gedruckt...</translation>
+<translation id="5828797982387013521">Playbook auswählen</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> kann nicht geöffnet werden</translation>
 <translation id="5830720307094128296">Seite speichern &amp;unter...</translation>
 <translation id="5832813618714645810">Profile</translation>
@@ -5074,6 +5079,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 
   Öffentlicher Exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> Bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">Automatisches Vorlesen</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="59174027418879706">Aktiviert</translation>
 <translation id="5920543303088087579">Die Möglichkeit einer Verbindung zu diesem Netzwerk wurde von deinem Administrator deaktiviert</translation>
@@ -5358,6 +5364,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6200151268994853226">Erweiterung verwalten</translation>
 <translation id="6201608810045805374">Dieses Konto entfernen?</translation>
 <translation id="6202304368170870640">Mit deiner PIN kannst du dich auf deinem Gerät anmelden oder es entsperren.</translation>
+<translation id="6206199626856438589">Du wirst von angezeigten Websites abgemeldet, auch in geöffneten Tabs</translation>
 <translation id="6206311232642889873">Bild kop&amp;ieren</translation>
 <translation id="6207200176136643843">Auf Standard-Zoomstufe zurücksetzen</translation>
 <translation id="6207937957461833379">Land/Region</translation>
@@ -5904,6 +5911,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6733620523445262364">„<ph name="BOOKMARK_TITLE" />“ erstellt.</translation>
 <translation id="6735304988756581115">Cookies und andere Websitedaten anzeigen...</translation>
 <translation id="6736243959894955139">Adresse</translation>
+<translation id="6737393581255281855">Daten angezeigter Websites löschen?</translation>
 <translation id="6737663862851963468">Kerberos-Ticket entfernen</translation>
 <translation id="6738430949033571771">Konto wird überprüft…</translation>
 <translation id="6739923123728562974">Desktopverknüpfung einblenden</translation>
@@ -7195,6 +7203,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7988355189918024273">Bedienungshilfen aktivieren</translation>
 <translation id="7988805580376093356">Behalte dein Betriebssystem und führe <ph name="DEVICE_OS" /> über USB aus.</translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
+<translation id="7992203134935383159">Sprachsynthese</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
 <translation id="7999229196265990314">Folgende Dateien wurden erstellt:
         
@@ -7219,7 +7228,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8017176852978888182">Freigegebene Linux-Verzeichnisse</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Verknüpfung bearbeitet</translation>
-<translation id="8018140635032674020">Öffne nach der Einrichtung die Entdecken App, um loszulegen. Du kannst Hunderte aktuelle Games spielen, verfügbare Spielangebote ansehen und Gaming auf einem neuen, eindrucksvollen Level erleben.</translation>
 <translation id="8018298733481692628">Dieses Profil löschen?</translation>
 <translation id="8018313076035239964">Festlegen, welche Informationen von Websites genutzt werden dürfen und welche Inhalte Websites präsentieren dürfen</translation>
 <translation id="8023133589013344428">Sprachen in den Chrome OS Flex-Einstellungen verwalten</translation>
@@ -7582,6 +7590,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8366396658833131068">Deine Netzwerkverbindung wurde wiederhergestellt. Wähle ein anderes Netzwerk aus oder klicke unten auf "Weiter", um deine Kiosk-App zu starten.</translation>
 <translation id="8366694425498033255">Auswahltasten</translation>
 <translation id="8368859634510605990">&amp;Alle Lesezeichen öffnen</translation>
+<translation id="8369028061188107403">Dadurch werden <ph name="TOTAL_USAGE" /> an von angezeigten Websites oder installierten Apps gespeicherten Daten gelöscht</translation>
 <translation id="8370294614544004647">Beim Zuklappen des Laptops in den Ruhemodus wechseln</translation>
 <translation id="8371695176452482769">Jetzt sprechen</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Website stummschalten}other{Websites stummschalten}}</translation>
@@ -7669,7 +7678,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8457451314607652708">Lesezeichen importieren</translation>
 <translation id="8458341576712814616">Kürzel</translation>
 <translation id="8458627787104127436">Alle (<ph name="URL_COUNT" />) in neuem Fenster öffnen</translation>
-<translation id="8459940671591713946">Du kannst jetzt spielen</translation>
 <translation id="8460448946170646641">Die wichtigsten Datenschutz- und Sicherheitseinstellungen überprüfen</translation>
 <translation id="8460490661223303637">Um Speicherplatz zu sparen, hat Chrome einige Inhalte entfernt</translation>
 <translation id="8460932807646981183">Suchmaschinen und die Websitesuche verwalten</translation>

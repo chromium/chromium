@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator tomonidan bloklangan, Batafsil</translation>
 <translation id="2142680004883808240">Rus (YaZHert fonetik klaviaturasi)</translation>
 <translation id="2143778271340628265">Proksini qo‘lda sozlash</translation>
+<translation id="2148716181193084225">Bugun</translation>
 <translation id="2163152940313951844">Yaroqsiz belgi: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugal va kompyuter uchun AQSH klaviaturasi (xalqaro)</translation>
 <translation id="2198315389084035571">Xitoy (soddalashtirilgan) klaviaturasi</translation>
@@ -704,6 +705,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7075931588889865715">Tay (TIS 820-2531 klaviaturasi)</translation>
 <translation id="708278670402572152">Tekshirish uchun tarmoqdan uzing</translation>
 <translation id="7086590977277044826">Tamil (InScript klaviaturasi)</translation>
+<translation id="7088615885725309056">Avvalgi</translation>
 <translation id="7103992300314999525">Makedon</translation>
 <translation id="7106346894903675391">Qo‘shimcha joy sotib olish...</translation>
 <translation id="7126604456862387217">“&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” - &lt;em&gt;Google Diskdan qidirish&lt;/em&gt;</translation>
@@ -778,6 +780,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7760449188139285140">Xitoy (Wubi)</translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
 <translation id="7774365994322694683">Qush</translation>
+<translation id="7781829728241885113">Kecha</translation>
 <translation id="7788080748068240085">“<ph name="FILE_NAME" />” faylini oflayn foydalanish maqsadida saqlab olish uchun <ph name="TOTAL_FILE_SIZE" /> joy bo‘shatish zarur.<ph name="MARKUP_1" />
    <ph name="MARKUP_2" />oflayn rejimda ishlatmaydigan fayllaringizni ro‘yxatdan olib tashlang<ph name="MARKUP_3" />
    <ph name="MARKUP_4" />Yuklanishlar jildidagi fayllarni o‘chirib tashlang<ph name="MARKUP_5" /></translation>

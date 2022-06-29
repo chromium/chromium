@@ -135,6 +135,7 @@
 <translation id="2141347188420181405">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rhwystrwyd gan eich Gweinyddwr, Manylion</translation>
 <translation id="2142680004883808240">Rwseg gyda bysellfwrdd Seinegol YaZHert</translation>
 <translation id="2143778271340628265">Ffurfweddu dirprwy weinydd yn bwrpasol</translation>
+<translation id="2148716181193084225">Heddiw</translation>
 <translation id="2163152940313951844">Nod annilys: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portiwgaleg gyda bysellfwrdd PC Rhyngwladol UDA</translation>
 <translation id="2198315389084035571">Tsieinëeg Syml</translation>
@@ -340,6 +341,7 @@
 <translation id="3971140002794351170">Lawrlwytho proffil dyfais symudol, Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Saesneg (DU)</translation>
 <translation id="3975895378829046965">Seinegol Bangala</translation>
+<translation id="3991446849494482687">Bydd hyn hefyd yn analluogi'r gosodiad Cloi SIM ar y ddyfais.</translation>
 <translation id="4002066346123236978">Teitl</translation>
 <translation id="4017788180641807848">Saesneg (UDA) gyda bysellfwrdd Gweithiwr</translation>
 <translation id="4040753847560036377">PUK anghywir</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Wubi Tsieinëeg</translation>
 <translation id="7765158879357617694">Symud</translation>
 <translation id="7774365994322694683">Aderyn</translation>
+<translation id="7781829728241885113">Ddoe</translation>
 <translation id="7788080748068240085">I gadw "<ph name="FILE_NAME" />" all-lein, rhaid i chi greu <ph name="TOTAL_FILE_SIZE" /> o le storio ychwanegol:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />dadbiniwch ffeiliau nad oes angen i chi eu cyrchu all-lein mwyach<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />dilëwch ffeiliau o'ch ffolder Lawrlwythiadau<ph name="MARKUP_5" /></translation>

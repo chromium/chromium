@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
 <translation id="2142680004883808240">Орусча (YaZHert фонетикалык баскычтобу)</translation>
 <translation id="2143778271340628265">Проксини кол менен конфигурациялоо</translation>
+<translation id="2148716181193084225">Бүгүн</translation>
 <translation id="2163152940313951844">Жараксыз символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португалча жана эл аралык АКШ баскычтобу (жеке компьютерлер үчүн)</translation>
 <translation id="2198315389084035571">Жөнөкөйлөштүрүлгөн кытайча</translation>
@@ -703,6 +704,7 @@
 <translation id="7075931588889865715">Тайча (TIS 820-2531 баскычтобу)</translation>
 <translation id="708278670402572152">Текшерүү үчүн Интернетти өчүрүңүз</translation>
 <translation id="7086590977277044826">Тамилче (InScript баскычтобу)</translation>
+<translation id="7088615885725309056">Эскирээк</translation>
 <translation id="7103992300314999525">Македончо</translation>
 <translation id="7106346894903675391">Көбүрөөк сактоо мейкиндигин сатып алыңыз…</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Drive'ды издөө&lt;/em&gt;</translation>
@@ -777,6 +779,7 @@
 <translation id="7760449188139285140">Кытайча (Wubi)</translation>
 <translation id="7765158879357617694">Жылуу</translation>
 <translation id="7774365994322694683">Куш</translation>
+<translation id="7781829728241885113">Кечээ</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" офлайнда сактоо үчүн, кошумча <ph name="TOTAL_FILE_SIZE" /> орун бошотушуңуз керек:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />офлайн режиминде мындан ары керектелбей турган файлдарды чыгарып салыңыз<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />файлдарды Жүктөлүп алынгандар куржунунан өчүрүшүңүз керек<ph name="MARKUP_5" /></translation>

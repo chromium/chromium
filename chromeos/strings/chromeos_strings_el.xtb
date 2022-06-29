@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Ενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2177831236093724629">Βρέθηκαν <ph name="LINK_BEGIN" />ακατάλληλα στοιχεία<ph name="LINK_END" />. Για να βεβαιωθείτε ότι θα αναγνωρίζονται όλα τα κατάλληλα στοιχεία, ενημερώστε το Chrome OS στην τελευταία έκδοση.</translation>
 <translation id="2180197493692062006">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε να ανοίξετε ξανά την εφαρμογή.</translation>
+<translation id="2182088270354640012">Ευχαριστούμε για τα σχόλια. Τα σχόλιά σας συμβάλλουν στη βελτίωση του Chrome OS και θα ελεγχθούν από την ομάδα του Chrome OS. Λόγω του αριθμού των αναφορών που έχουν υποβληθεί, δεν θα λάβετε άμεση απάντηση.</translation>
 <translation id="2209788852729124853">Επαναφορά μετρητών επισκεψιμότητας</translation>
 <translation id="2212733584906323460">Ανάλυση ονόματος</translation>
 <translation id="2217935453350629363">Τρέχουσα ταχύτητα</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Επανεκκίνηση…</translation>
 <translation id="2533048460510040082">Προτεινόμενο περιεχόμενο βοήθειας</translation>
 <translation id="2536159006530886390">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
+<translation id="256360469103926202">Τα σχόλιά σας συμβάλλουν στη βελτίωση του ChromeOS και θα ελεγχθούν από την ομάδα μας. Λόγω του μεγάλου αριθμού αναφορών, δεν θα μπορέσουμε να στείλουμε απάντηση.</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Για να ρυθμίσετε το δίκτυο, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="2619761439309613843">Ημερήσια ανανέωση</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
+<translation id="3275729367986477355">Εικόνα avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Επεξεργασία αρχείου}other{Επεξεργασία αρχείων}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Κατεύθυνση κλειδιού</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Για περισσότερη βοήθεια, μεταβείτε στο <ph name="BEGIN_LINK" />Κέντρο βοήθειας<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Αλγόριθμος συμπίεσης</translation>
 <translation id="4794140124556169553">Η εκτέλεση μιας δοκιμής CPU μπορεί να επηρεάσει την απόδοση του συστήματος</translation>
+<translation id="4800589996161293643">Κοινότητα Chromebook</translation>
 <translation id="4804818685124855865">Αποσύνδεση</translation>
 <translation id="4808449224298348341">Ακυρώθηκε η εργασία εκτύπωσης <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Φωτεινό θέμα</translation>
@@ -488,6 +492,7 @@
 Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
+<translation id="522307662484862935">Να μην συμπεριληφθεί η διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5227902338748591677">Πρόγραμμα σκούρου θέματος</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5252456968953390977">Περιαγωγη</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="6295178529664209245">Συνέχιση επισκευής;</translation>
 <translation id="6302401976930124515">Η δοκιμή <ph name="TEST_NAME" /> ακυρώθηκε</translation>
+<translation id="631063167932043783">Εφαρμογή Εξερεύνηση</translation>
 <translation id="6319207335391420837">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ενεργοποίηση προφύλαξης οθόνης</translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
@@ -721,6 +727,7 @@
 <translation id="7297226631177386107">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Ρωτήστε τους ειδικούς στο φόρουμ βοήθειας του Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />. <ph name="RESULT_TEXT" />. Πατήστε το πλήκτρο αναζήτησης και το πλήκτρο διαστήματος, για να δείτε το αποτέλεσμα στην Αναζήτηση Google.</translation>
 <translation id="7343649194310845056">Συσκευές δικτύου</translation>
@@ -763,6 +770,7 @@
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7747039790905080783">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="7762130827864645708">Η αλλαγή του κωδικού πρόσβασής σας ήταν επιτυχής. Χρησιμοποιείτε στο εξής τον νέο κωδικό πρόσβασης.</translation>
+<translation id="7762839321248874531">Αποστολή <ph name="BEGIN_LINK1" />πληροφοριών συστήματος και εφαρμογών<ph name="END_LINK1" /> καθώς και <ph name="BEGIN_LINK2" />μετρήσεων<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Αντιστοιχία επιθήματος τομέα</translation>
 <translation id="7769672763586021400">Αναγνωριστικό μοντέλου</translation>
 <translation id="7784116172884276937">Δεν έχουν ρυθμιστεί διακομιστές DNS.</translation>
@@ -832,6 +840,7 @@
 <translation id="8382302752385457774">Λευκή ετικέτα</translation>
 <translation id="8395584934117017006">Η διαχείριση αυτής της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από επιχείρηση.</translation>
 <translation id="8398927464629426868">Ο ρυθμός με τον οποίο φορτίζεται ή εκφορτίζεται η συσκευή αυτήν τη στιγμή.</translation>
+<translation id="8420955526972171689">Εκτέλεση δοκιμών και αντιμετώπιση προβλημάτων για προβλήματα εξοπλισμού</translation>
 <translation id="8422748173858722634">Αριθμός ΙΜΕΙ</translation>
 <translation id="8428073762635678092">Ενσωματωμένο πληκτρολόγιο</translation>
 <translation id="8431300646573772016">Νέα στοιχεία Chrome OS</translation>

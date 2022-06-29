@@ -135,6 +135,7 @@
 <translation id="2141347188420181405"><ph name="NETWORK_INDEX" />-ൽ <ph name="NETWORK_COUNT" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു, വിശദാംശങ്ങൾ</translation>
 <translation id="2142680004883808240">ഫൊണറ്റിക് YaZHert കീബോർഡ് ഉള്ള റഷ്യൻ</translation>
 <translation id="2143778271340628265">നേരിട്ടുള്ള പ്രോക്സി ക്രമീകരണം</translation>
+<translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2163152940313951844">അസാധുവായ പ്രതീകം: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">യുഎസ് അന്താരാഷ്ട്ര PC കീബോർഡ് ഉള്ള പോർച്ചുഗീസ്</translation>
 <translation id="2198315389084035571">(ലളിതമാക്കിയ ചൈനീസ്)</translation>
@@ -705,6 +706,7 @@
 <translation id="7075931588889865715">TIS 820-2531 കീബോർഡ് ഉള്ള തായ്</translation>
 <translation id="708278670402572152">സ്‌കാനിംഗ് പ്രവർത്തനക്ഷമമാക്കാൻ വിച്ഛേദിക്കുക</translation>
 <translation id="7086590977277044826">InScript കീബോർഡ് ഉള്ള തമിഴ്</translation>
+<translation id="7088615885725309056">വളരെ പഴയ</translation>
 <translation id="7103992300314999525">മാസഡോണിയൻ</translation>
 <translation id="7106346894903675391">കൂടുതൽ സംഭരണം വാങ്ങുക...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;തിരയൽ ഡ്രൈവ്&lt;/em&gt;</translation>
@@ -769,6 +771,7 @@
 <translation id="7663224033570512922">ഹിന്ദി</translation>
 <translation id="7693909743393669729">ഡ്രൈവ് ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും, ദൃശ്യമാകാത്ത ഭാഗങ്ങൾ ഉൾപ്പെടെ നിലവിലുള്ള എല്ലാ ഭാഗങ്ങളും നീക്കം ചെയ്യും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യാനായില്ല</translation>
+<translation id="76959938259365003">ട്രാഷിലുള്ളവ എല്ലാം ഇല്ലാതാക്കാനായില്ല.</translation>
 <translation id="770015031906360009">ഗ്രീക്ക്</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> പകർത്തി.</translation>
 <translation id="7711920809702896782">ചിത്രത്തിന്റെ വിവരം</translation>
@@ -779,6 +782,7 @@
 <translation id="7760449188139285140">ചൈനീസ് വുബി</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7774365994322694683">കിളി</translation>
+<translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" ഓഫ്‌ലൈനിൽ സംരക്ഷിക്കുന്നതിന് നിങ്ങൾ അധികമായി <ph name="TOTAL_FILE_SIZE" /> ഇടം ശൂന്യമാക്കണം:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ഓഫ്‌ലൈനിൽ ഇനി ആക്‌സസ് ചെയ്യേണ്ടതില്ലാത്ത ഫയലുകൾ അൺപിൻ ചെയ്യുക<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />നിങ്ങളുടെ ഡൗൺലോഡുകളുടെ ഫോൾഡറിൽ നിന്നും ഫയലുകൾ ഇല്ലാതാക്കുക<ph name="MARKUP_5" /></translation>
