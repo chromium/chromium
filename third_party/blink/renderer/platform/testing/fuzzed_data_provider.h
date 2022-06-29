@@ -30,6 +30,14 @@ class FuzzedDataProvider {
   // Returns a bool, or false when no data remains.
   bool ConsumeBool() { return provider_.ConsumeBool(); }
 
+  // Returns an enum value. The enum must start at 0 and be contiguous. It must
+  // also contain |kMaxValue| aliased to its largest (inclusive) value. Such as:
+  // enum class Foo { SomeValue, OtherValue, kMaxValue = OtherValue };
+  template <typename T>
+  T ConsumeEnum() {
+    return provider_.ConsumeEnum<T>();
+  }
+
   // Returns a number in the range [min, max] by consuming bytes from the input
   // data. The value might not be uniformly distributed in the given range. If
   // there's no input data left, always returns |min|. |min| must be less than

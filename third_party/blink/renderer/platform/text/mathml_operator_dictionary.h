@@ -27,7 +27,12 @@ enum class MathMLOperatorDictionaryCategory : uint8_t {
   kUndefined = 15
 };
 
-enum MathMLOperatorDictionaryForm { kInfix, kPrefix, kPostfix };
+enum MathMLOperatorDictionaryForm {
+  kInfix,
+  kPrefix,
+  kPostfix,
+  kMaxValue = kPostfix
+};
 
 // FindCategory takes a UTF-16 string and form (infix, prefix, postfix) as input
 // and returns the operator dictionary category for this pair, see:

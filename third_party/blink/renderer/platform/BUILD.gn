@@ -2422,6 +2422,17 @@ source_set("blink_fuzzer_test_support") {
   ]
 }
 
+# Fuzzer for blink::FindCategory.
+fuzzer_test("mathml_operator_dictionary_fuzzer") {
+  sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  libfuzzer_options = [ "max_len=10" ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
+}
+
 # Fuzzer for blink::MHTMLParser.
 fuzzer_test("mhtml_parser_fuzzer") {
   sources = [ "mhtml/mhtml_fuzzer.cc" ]
