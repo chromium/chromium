@@ -7,7 +7,7 @@
  * the personalization hub.
  */
 
-import './cros_button_style.css.js';
+import '../css/cros_button_style.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 

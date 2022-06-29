@@ -8,7 +8,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import './trusted_style.css.js';
+import '../../css/wallpaper.css.js';
 import '../../common/common_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';

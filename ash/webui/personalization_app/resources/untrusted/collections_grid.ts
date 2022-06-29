@@ -4,7 +4,7 @@
 
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
-import '../trusted/wallpaper/trusted_style.css.js';
+import '../css/wallpaper.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

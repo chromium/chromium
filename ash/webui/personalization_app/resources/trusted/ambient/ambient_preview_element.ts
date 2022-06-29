@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../common/common_style.css.js';
-import '../cros_button_style.css.js';
+import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';

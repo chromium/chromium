@@ -10,7 +10,7 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './trusted_style.css.js';
+import '../../css/wallpaper.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 

@@ -6,7 +6,7 @@ import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../../common/common_style.css.js';
-import '../cros_button_style.css.js';
+import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';

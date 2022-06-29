@@ -6,7 +6,7 @@
  * @fileoverview Polymer element that displays the Google Photos zero state.
  */
 
-import './trusted_style.css.js';
+import '../../css/wallpaper.css.js';
 import '../../common/common_style.css.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';

@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
-import '../trusted/wallpaper/trusted_style.css.js';
+import '../css/wallpaper.css.js';
 
 import {assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

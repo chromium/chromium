@@ -11,7 +11,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './trusted_style.css.js';
+import '../../css/wallpaper.css.js';
 import '../../common/icons.html.js';
 import '../../common/common_style.css.js';
 
