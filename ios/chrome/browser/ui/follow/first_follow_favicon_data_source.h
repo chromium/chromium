@@ -10,11 +10,11 @@
 
 // Protocol that First Follow UI uses to retrieve favicons for its cells.
 @protocol FirstFollowFaviconDataSource
-// Requests the receiver to provide a favicon image for |URL|. A
+// Requests the receiver to provide a favicon image for `URL`. A
 // FaviconAttributes instance with non-nil properties is synchronously returned
-// for immediate use. |completion| is called asynchronously with a
-// FaviconAttributes instance if appropriate. For example, a default image may be
-// returned synchronously and the actual favicon returned asynchronously. In
+// for immediate use. `completion` is called asynchronously with a
+// FaviconAttributes instance if appropriate. For example, a default image may
+// be returned synchronously and the actual favicon returned asynchronously. In
 // another example, the image returned synchronously may be the actual favicon,
 // so there is no need to call the completion block.
 - (void)faviconForURL:(CrURL*)URL
