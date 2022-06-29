@@ -763,10 +763,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       "titlebarAreaWidthRectInt, "
       "titlebarAreaHeightRectInt];";
 
-  base::Value::ListStorage initial_rect_list =
-      helper()->GetXYWidthHeightListValue(
-          helper()->browser_view()->GetActiveWebContents(), kRectListString,
-          "rect");
+  base::Value::List initial_rect_list = helper()->GetXYWidthHeightListValue(
+      helper()->browser_view()->GetActiveWebContents(), kRectListString,
+      "rect");
 
   const int initial_x_value = initial_rect_list[0].GetInt();
   const int initial_y_value = initial_rect_list[1].GetInt();
@@ -792,10 +791,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_TRUE(
       ExecuteScript(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
 
-  base::Value::ListStorage updated_rect_list =
-      helper()->GetXYWidthHeightListValue(
-          helper()->browser_view()->GetActiveWebContents(), kRectListString,
-          "rect");
+  base::Value::List updated_rect_list = helper()->GetXYWidthHeightListValue(
+      helper()->browser_view()->GetActiveWebContents(), kRectListString,
+      "rect");
 
   // Changing the window dimensions should only change the overlay width. The
   // overlay height should remain the same.
@@ -822,10 +820,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       "titlebarAreaWidthRectInt, "
       "titlebarAreaHeightRectInt];";
 
-  base::Value::ListStorage initial_rect_list =
-      helper()->GetXYWidthHeightListValue(
-          helper()->browser_view()->GetActiveWebContents(), kRectListString,
-          "rect");
+  base::Value::List initial_rect_list = helper()->GetXYWidthHeightListValue(
+      helper()->browser_view()->GetActiveWebContents(), kRectListString,
+      "rect");
 
   const int initial_x_value = initial_rect_list[0].GetInt();
   const int initial_y_value = initial_rect_list[1].GetInt();
@@ -846,10 +843,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_TRUE(
       ExecuteScript(web_contents->GetPrimaryMainFrame(), kCSSTitlebarRect));
 
-  base::Value::ListStorage updated_rect_list =
-      helper()->GetXYWidthHeightListValue(
-          helper()->browser_view()->GetActiveWebContents(), kRectListString,
-          "rect");
+  base::Value::List updated_rect_list = helper()->GetXYWidthHeightListValue(
+      helper()->browser_view()->GetActiveWebContents(), kRectListString,
+      "rect");
 
   // Changing the window dimensions should only change the overlay width. The
   // overlay height should remain the same.

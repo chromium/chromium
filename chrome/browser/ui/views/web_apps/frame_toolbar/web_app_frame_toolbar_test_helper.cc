@@ -130,20 +130,19 @@ GURL WebAppFrameToolbarTestHelper::
   return url;
 }
 
-base::Value::ListStorage
-WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
+base::Value::List WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), rect_value_list));
-  return EvalJs(web_contents, rect_var_name).ExtractList().TakeListDeprecated();
+  return std::move(EvalJs(web_contents, rect_var_name).ExtractList().GetList());
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
     content::WebContents* web_contents,
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
-  base::Value::ListStorage rect_list =
+  base::Value::List rect_list =
       GetXYWidthHeightListValue(web_contents, rect_value_list, rect_var_name);
   return gfx::Rect(rect_list[0].GetInt(), rect_list[1].GetInt(),
                    rect_list[2].GetInt(), rect_list[3].GetInt());
