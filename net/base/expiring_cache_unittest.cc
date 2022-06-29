@@ -21,8 +21,8 @@ namespace net {
 namespace {
 
 const int kMaxCacheEntries = 10;
-typedef ExpiringCache<std::string, std::string, base::TimeTicks,
-                      std::less<base::TimeTicks> > Cache;
+typedef ExpiringCache<std::string, std::string, base::TimeTicks, std::less<>>
+    Cache;
 
 struct TestFunctor {
   bool operator()(const std::string& now,

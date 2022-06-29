@@ -660,10 +660,7 @@ class NET_EXPORT TransportSecurityState {
   typedef std::map<std::string, STSState> STSStateMap;
   typedef std::map<std::string, PKPState> PKPStateMap;
   typedef std::map<ExpectCTStateIndex, ExpectCTState> ExpectCTStateMap;
-  typedef ExpiringCache<std::string,
-                        bool,
-                        base::TimeTicks,
-                        std::less<base::TimeTicks>>
+  typedef ExpiringCache<std::string, bool, base::TimeTicks, std::less<>>
       ReportCache;
 
   base::Value NetLogUpgradeToSSLParam(const std::string& host);
