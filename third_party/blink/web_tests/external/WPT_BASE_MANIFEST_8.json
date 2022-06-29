@@ -151969,6 +151969,19 @@
        {}
       ]
      ],
+     "marker-text-transform-dynamic.html": [
+      "f10b42ead6d77c30dc63d44efa19e73c56573c6c",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-text-transform-dynamic-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-text-transform-uppercase.html": [
       "d77f4e7de2e2507b34b836efd33b882a798069e8",
       [
@@ -164272,6 +164285,19 @@
         [
          [
           "/css/css-text/hyphens/reference/hyphenate-character-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hyphenate-character-005.html": [
+       "5600d8a4cfe75382c2b3537960bb74f14ba83a67",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hyphens/reference/hyphenate-character-005-ref.html",
           "=="
          ]
         ],
@@ -282210,6 +282236,10 @@
       "ceec36dd365556e86cdbaa09efc30f7cffb64fc3",
       []
      ],
+     "marker-text-transform-dynamic-ref.html": [
+      "8e67569ff5e95ca30023fcdd2497a4d003dc54ca",
+      []
+     ],
      "marker-text-transform-uppercase-ref.html": [
       "6f959dad676467abcd5696013ac99ff888b4d4f1",
       []
@@ -284842,6 +284872,10 @@
        ],
        "hyphenate-character-004-ref.html": [
         "399f86721071ec7d285998bdeb7178968946ddc5",
+        []
+       ],
+       "hyphenate-character-005-ref.html": [
+        "50a0ebd58542055dd972c8f3816a168d91db76e7",
         []
        ],
        "hyphens-auto-001-ref.html": [
@@ -330779,6 +330813,12 @@
        "02f49c6da3af57f56bf4105e5b34daab26937d09",
        []
       ]
+     },
+     "support": {
+      "a-green.css": [
+       "b0dbb071d5b05d1c574cd5c9a660f1e3d62c573b",
+       []
+      ]
      }
     },
     "text": {
@@ -374304,6 +374344,13 @@
         {}
        ]
       ],
+      "container-units-in-at-container-dynamic.html": [
+       "c1f929241ca7018f636bfabf7072c1bfa549db6a",
+       [
+        null,
+        {}
+       ]
+      ],
       "container-units-in-at-container-fallback.html": [
        "3784499c387cc3f56356918064470461f039eada",
        [
@@ -375236,7 +375283,7 @@
       ]
      ],
      "linear-timing-functions-syntax.tentative.html": [
-      "25714f20a8199e2e66c061e2e45f674316357112",
+      "b47633f2747497930cde9853385f3c6539d1c3e1",
       [
        null,
        {}
@@ -383820,6 +383867,15 @@
        ]
       ]
      },
+     "resizer-transform.tentative.html": [
+      "7b1af7f8f9029b2e0a98a2f1a45390d28495e24a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "scroll-overflow-padding-block-001.html": [
       "13df853ab3462dff7db84d6558d4b941bf83995d",
       [
@@ -433677,6 +433733,13 @@
     ],
     "iframe-focuses-parent-same-site.html": [
      "f130410e2a1b4cbc1e3d96fb14cbca7f5be2e8ea",
+     [
+      null,
+      {}
+     ]
+    ],
+    "scroll-matches-focus.html": [
+     "46a58fdf974f53129b62dc1d05f965f02631417b",
      [
       null,
       {}
@@ -533598,6 +533661,13 @@
        null,
        {}
       ]
+     ],
+     "style-sheet-interfaces.svg": [
+      "9532e64929001c83cb693d0661145ff0c58ef21f",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "text": {
@@ -553194,6 +553264,13 @@
     ],
     "rtp-stats-creation.html": [
      "3141bc08bf1c2951a9438f1c461d750b69694f9e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "stats-caching.html": [
+     "50a5b528e9b0cc13655169286a07f7539fbf4ee6",
      [
       null,
       {}
