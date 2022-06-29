@@ -6,6 +6,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("web_package") {
   sources = [
+    "input_reader.cc",
+    "input_reader.h",
     "signed_web_bundles/ed25519_public_key.cc",
     "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/signed_web_bundle_id.cc",
