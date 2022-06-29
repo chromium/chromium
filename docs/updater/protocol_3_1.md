@@ -276,7 +276,7 @@ A request object has the following members:
      counted toward official metrics. Default: "" (empty string).
  *   `updater`: A list of `updater` objects.
  *   `updaterchannel`: If present, identifies the distribution channel of the
-     client (e.g. "stable", "beta", "dev", "canary"). Default: "".
+     client (e.g. "stable", "beta", "dev", "canary", "extended"). Default: "".
  *   `updaterversion`: The version of the client that is sending this request.
      Default: "0".
 
