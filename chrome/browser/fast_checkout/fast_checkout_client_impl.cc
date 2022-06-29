@@ -78,7 +78,7 @@ bool FastCheckoutClientImpl::IsRunning() const {
 std::unique_ptr<autofill_assistant::HeadlessScriptController>
 FastCheckoutClientImpl::CreateHeadlessScriptController() {
   fast_checkout_external_action_delegate_ =
-      std::make_unique<FastCheckoutExternalActionDelegate>();
+      std::make_unique<FastCheckoutExternalActionDelegate>(&GetWebContents());
   std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
           GetWebContents().GetBrowserContext(),

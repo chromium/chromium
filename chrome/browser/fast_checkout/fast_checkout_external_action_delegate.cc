@@ -4,21 +4,83 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 
+#include "chrome/browser/fast_checkout/proto/fast_checkout.pb.h"
+#include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+
+FastCheckoutExternalActionDelegate::FastCheckoutExternalActionDelegate(
+    content::WebContents* web_contents)
+    : fast_checkout_controller_(
+          std::make_unique<FastCheckoutControllerImpl>(web_contents, this)) {}
+
 FastCheckoutExternalActionDelegate::~FastCheckoutExternalActionDelegate() =
     default;
 
 void FastCheckoutExternalActionDelegate::OnActionRequested(
-    const autofill_assistant::external::Action& action_info,
+    const autofill_assistant::external::Action& action,
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const autofill_assistant::external::Result&)>
         end_action_callback) {
-  // TODO(crbug.com/1338523): Implement.
+  end_action_callback_ = std::move(end_action_callback);
+
+  FastCheckoutAction fast_checkout_action;
+  if (!fast_checkout_action.ParseFromString(action.info().action_payload())) {
+    DLOG(ERROR) << "unable to parse FastCheckoutAction";
+    EndAction(false);
+    return;
+  }
+
+  switch (fast_checkout_action.action_case()) {
+    case FastCheckoutAction::ActionCase::kShowBottomSheet:
+      // Show bottomsheet UI.
+      fast_checkout_controller_->Show();
+      break;
+    case FastCheckoutAction::ActionCase::ACTION_NOT_SET:
+      DLOG(ERROR) << "unknown fast checkout action";
+      EndAction(false);
+      break;
+  }
 }
 
 void FastCheckoutExternalActionDelegate::OnInterruptStarted() {
-  // TODO(crbug.com/1338523): Implement.
+  // Currently interrupts are not required for this.
+  // TODO(crrev.com/c/3734869): Remove once linked CL is merged.
 }
 
 void FastCheckoutExternalActionDelegate::OnInterruptFinished() {
-  // TODO(crbug.com/1338523): Implement.
+  // Currently interrupts are not required for this.
+  // TODO(crrev.com/c/3734869): Remove once linked CL is merged.
+}
+
+void FastCheckoutExternalActionDelegate::OnOptionsSelected(
+    std::unique_ptr<autofill::AutofillProfile> selected_profile,
+    std::unique_ptr<autofill::CreditCard> selected_credit_card) {
+  if (selected_profile && selected_credit_card) {
+    EndAction(true, std::move(selected_profile),
+              std::move(selected_credit_card));
+    return;
+  }
+
+  // Should not be reached.
+  DLOG(ERROR) << "FastCheckoutExternalActionDelegate::OnOptionsSelected was "
+                 "passed at least one null pointer.";
+  EndAction(false);
+}
+
+void FastCheckoutExternalActionDelegate::OnDismiss() {
+  EndAction(false);
+}
+
+void FastCheckoutExternalActionDelegate::EndAction(
+    bool success,
+    std::unique_ptr<autofill::AutofillProfile> selected_profile,
+    std::unique_ptr<autofill::CreditCard> selected_credit_card) {
+  autofill_assistant::external::Result result;
+  result.set_success(success);
+
+  // TODO(crbug.com/1339793): Implement setting `selected_profile` and
+  // `selected_credit_card` on `result` if not `nullptr`.
+
+  std::move(end_action_callback_).Run(std::move(result));
 }
