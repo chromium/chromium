@@ -7479,6 +7479,21 @@
             ]
         }
     ],
+    "SafeBrowsingEnhancedProtectionPhase2IOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingEnhancedProtectionPhase2IOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrollUnification": [
         {
             "platforms": [
