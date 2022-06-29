@@ -11,6 +11,7 @@
 #include <list>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
@@ -83,11 +84,11 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   class ContentLayer;
   friend class ContentLayer;
 
-  // Populate the `old_layer_` entries for all layers in `this`, pointing them
-  // to values in `old_tree`. This is a very naive algorithm and often creates
-  // large diffs.
-  // TODO(https://crbug.com/1313999): Find a better V2 matching algorithm.
-  void MatchLayersToOldTreeV1(CARendererLayerTree* old_tree);
+  using CALayerMap = base::flat_map<IOSurfaceRef, base::WeakPtr<ContentLayer>>;
+
+  void MatchLayersToOldTreeDefault(CARendererLayerTree* old_tree);
+  void MatchLayersToOldTree(CARendererLayerTree* old_tree);
+  void VerifyCommittedCALayers();
 
   class RootLayer {
    public:
@@ -115,6 +116,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // possible. If re-using a CALayer from |old_layer|, reset its |ca_layer|
     // to nil, so that its destructor will not remove an active CALayer.
     void CommitToCA(CALayer* superlayer, const gfx::Size& pixel_size);
+
+    void CALayerFallBack();
 
     // Return true if the CALayer tree is just a video layer on a black or
     // transparent background, false otherwise.
@@ -148,7 +151,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // |ca_layer| member and |old_layer| argument.
     ~ClipAndSortingLayer();
     void AddContentLayer(const CARendererLayerParams& params);
-    void CommitToCA();
+
+    void CommitToCA(CALayer* last_committed_clip_ca_layer);
+    void CALayerFallBack();
+
     CARendererLayerTree* tree() { return parent_layer_->tree_; }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
@@ -162,6 +168,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     bool is_singleton_sorting_context_ = false;
     base::scoped_nsobject<CALayer> clipping_ca_layer_;
     base::scoped_nsobject<CALayer> rounded_corner_ca_layer_;
+
+    // The status when used as an old layer.
+    bool ca_layer_used_ = false;
 
     // Weak pointer to the layer in the old CARendererLayerTree that will be
     // reused by this layer, and the weak factory used to make that pointer.
@@ -181,7 +190,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // |ca_layer| member and |old_layer| argument.
     ~TransformLayer();
     void AddContentLayer(const CARendererLayerParams& params);
-    void CommitToCA();
+    void CommitToCA(CALayer* last_committed_transform_ca_layer);
+
+    void CALayerFallBack();
+
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
@@ -190,6 +202,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     gfx::Transform transform_;
     base::scoped_nsobject<CALayer> ca_layer_;
+
+    // The ca layer status when used as an old layer.
+    bool ca_layer_used_ = false;
 
     // Weak pointer to the layer in the old CARendererLayerTree that will be
     // reused by this layer, and the weak factory used to make that pointer.
@@ -216,8 +231,12 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     // See the behavior of RootLayer for the effects of these functions.
     ~ContentLayer();
-    void CommitToCA();
+    void CommitToCA(CALayer* last_committed_ca_layer);
+
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
+    void UpdateMapAndMatchOldLayers(CALayerMap& old_ca_layer_map,
+                                    int& layer_order,
+                                    int& last_old_layer_order);
 
     // Parent layer that owns `this`.
     const raw_ptr<TransformLayer> parent_layer_;
@@ -260,6 +279,12 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // enabled.
     base::scoped_nsobject<CALayer> update_indicator_layer_;
 
+    // Indicate the content layer order in the whole layer tree.
+    int layer_order_ = 0;
+
+    // The status when used as an old layer.
+    bool ca_layer_used_ = false;
+
     // Weak pointer to the layer in the old CARendererLayerTree that will be
     // reused by this layer, and the weak factory used to make that pointer.
     base::WeakPtr<ContentLayer> old_layer_;
@@ -272,9 +297,17 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
 
+  // Used for uma.
   int changed_io_surfaces_during_commit_ = 0;
   int unchanged_io_surfaces_during_commit_ = 0;
   int total_updated_io_surface_size_during_commit_ = 0;
+
+  // Enable CALayerTree optimization that will try to reuse the CALayer with a
+  // matched CALayer from the old CALayerTree in the previous frame.
+  const bool ca_layer_tree_optimization_;
+
+  // Map of content IOSurface.
+  CALayerMap ca_layer_map_;
 };
 
 }  // namespace ui
