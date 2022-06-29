@@ -226,8 +226,6 @@ interface HID : EventTarget
 # Window Controls Overlay API is not implemented on Android.
 interface WindowControlsOverlay : EventTarget
 interface WindowControlsOverlayGeometryChangeEvent : Event
-interface Navigator
-    getter windowControlsOverlay
 
 # Web Bluetooth is not implemented on WebView. crbug.com/1100993
 interface Bluetooth : EventTarget
