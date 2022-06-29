@@ -55,7 +55,6 @@ TEST_F(PasswordStoreBackendSyncDelegateImplTest, SyncDisabled) {
       syncer::SyncService::TransportState::DISABLED);
   sync_service()->SetHasSyncConsent(false);
   EXPECT_FALSE(sync_delegate()->IsSyncingPasswordsEnabled());
-  EXPECT_EQ(absl::nullopt, sync_delegate()->GetSyncingAccount());
 }
 
 TEST_F(PasswordStoreBackendSyncDelegateImplTest,
@@ -67,7 +66,6 @@ TEST_F(PasswordStoreBackendSyncDelegateImplTest,
       ->SetSelectedTypes(/*sync_everything=*/false,
                          {syncer::UserSelectableType::kHistory});
   EXPECT_FALSE(sync_delegate()->IsSyncingPasswordsEnabled());
-  EXPECT_EQ(absl::nullopt, sync_delegate()->GetSyncingAccount());
 }
 
 TEST_F(PasswordStoreBackendSyncDelegateImplTest, SyncEnabled) {
@@ -78,6 +76,4 @@ TEST_F(PasswordStoreBackendSyncDelegateImplTest, SyncEnabled) {
   active_info.email = "test@email.com";
   sync_service()->SetAccountInfo(active_info);
   EXPECT_TRUE(sync_delegate()->IsSyncingPasswordsEnabled());
-  EXPECT_TRUE(sync_delegate()->GetSyncingAccount().has_value());
-  EXPECT_EQ(active_info.email, sync_delegate()->GetSyncingAccount().value());
 }
