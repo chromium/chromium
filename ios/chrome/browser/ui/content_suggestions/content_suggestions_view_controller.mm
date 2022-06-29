@@ -89,7 +89,7 @@ const float kModuleVerticalSpacing = 16.0f;
 // Module Container for the Shortcuts.
 @property(nonatomic, strong)
     ContentSuggestionsModuleContainer* shortcutsModuleContainer;
-// StackView holding all of |shortcutsViews|.
+// StackView holding all of `shortcutsViews`.
 @property(nonatomic, strong) UIStackView* shortcutsStackView;
 // List of all of the Shortcut views.
 @property(nonatomic, strong)
