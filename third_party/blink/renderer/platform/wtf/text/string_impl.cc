@@ -88,6 +88,11 @@ void StringImpl::DestroyIfNeeded() const {
       // killing it.
     }
   } else {
+    // This is not necessary but TSAN bots don't like the load in the
+    // caller to have relaxed memory order. Adding this check here instead
+    // of changing the load memory order to minimize perf impact.
+    int ref_count = ref_count_.load(std::memory_order_acquire);
+    DCHECK_EQ(ref_count, 1);
     delete this;
   }
 }
