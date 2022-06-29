@@ -196,7 +196,7 @@ WebDriverLog::WebDriverLog(const std::string& type, Log::Level min_level)
 WebDriverLog::~WebDriverLog() {
   size_t sum = 0;
   for (const std::unique_ptr<base::ListValue>& batch : batches_of_entries_)
-    sum += batch->GetListDeprecated().size();
+    sum += batch->GetList().size();
   VLOG(1) << "Log type '" << type_ << "' lost " << sum
           << " entries on destruction";
 }
@@ -216,7 +216,7 @@ std::unique_ptr<base::ListValue> WebDriverLog::GetAndClearEntries() {
 
 bool GetFirstErrorMessageFromList(const base::ListValue* list,
                                   std::string* message) {
-  for (const auto& entry : list->GetListDeprecated()) {
+  for (const auto& entry : list->GetList()) {
     const base::DictionaryValue* log_entry = nullptr;
     if (entry.GetAsDictionary(&log_entry)) {
       std::string level;
@@ -251,7 +251,7 @@ void WebDriverLog::AddEntryTimestamped(const base::Time& timestamp,
     log_entry_dict.Set("source", source);
   log_entry_dict.Set("message", message);
   if (batches_of_entries_.empty() ||
-      batches_of_entries_.back()->GetListDeprecated().size() >=
+      batches_of_entries_.back()->GetList().size() >=
           internal::kMaxReturnedEntries) {
     batches_of_entries_.push_back(std::make_unique<base::ListValue>());
   }

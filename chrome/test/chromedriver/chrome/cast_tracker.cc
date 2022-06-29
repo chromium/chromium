@@ -9,7 +9,7 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 
 CastTracker::CastTracker(DevToolsClient* client)
-    : sinks_(std::vector<base::Value>()), issue_("") {
+    : sinks_(base::Value::List()), issue_("") {
   client->ConnectIfNecessary();
   client->AddListener(this);
   client->SendCommand("Cast.enable", base::DictionaryValue());

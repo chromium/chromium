@@ -572,7 +572,7 @@ Status ExecuteSendKeysToElement(Session* session,
     }
     // Compress array into a single string.
     std::string paths_string;
-    for (const base::Value& i : key_list->GetListDeprecated()) {
+    for (const base::Value& i : key_list->GetList()) {
       const std::string* path_part = i.GetIfString();
       if (!path_part)
         return Status(kInvalidArgument, "'value' is invalid");
