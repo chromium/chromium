@@ -108,7 +108,7 @@ suite('<emoji-picker>', () => {
   test('recently used should be hidden when empty', () => {
     const recentlyUsed =
         findInEmojiPicker('[data-group="emoji-history"] > emoji-group');
-    assert(!recentlyUsed);
+    assert(recentlyUsed.classList.contains('hidden'));
   });
 
   test(
@@ -207,7 +207,7 @@ suite('<emoji-picker>', () => {
 
         const recentlyUsed =
             findInEmojiPicker('[data-group="emoji-history"] > emoji-group');
-        assert(!recentlyUsed);
+        assert(recentlyUsed.classList.contains('hidden'));
       });
 
   test('recently used should be empty after clearing', async () => {
@@ -234,8 +234,9 @@ suite('<emoji-picker>', () => {
 
     // Expect no more history.
     await waitForCondition(
-        () => findInEmojiPicker('[data-group="emoji-history"] > emoji-group')
-                  .style.display === 'none',
+        () => findInEmojiPicker(
+          '[data-group="emoji-history"] > emoji-group')
+                  .classList.contains('hidden'),
         'history failed to disappear');
   });
 
