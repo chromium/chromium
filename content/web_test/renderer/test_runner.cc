@@ -2319,15 +2319,14 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
   return false;
 }
 
-void TestRunner::WorkQueue::ReplicateStates(
-    const base::DictionaryValue& values) {
+void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values) {
   states_.ApplyUntrackedChanges(values);
   if (!has_items())
     controller_->FinishTestIfReady();
 }
 
 void TestRunner::WorkQueue::OnStatesChanged() {
-  if (states_.changed_values().DictEmpty())
+  if (states_.changed_values().empty())
     return;
 
   controller_->GetWebTestControlHostRemote()->WorkQueueStatesChanged(
@@ -2529,7 +2528,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 }
 
 void TestRunner::ReplicateWebTestRuntimeFlagsChanges(
-    const base::DictionaryValue& changed_values) {
+    const base::Value::Dict& changed_values) {
   if (!test_is_running_)
     return;
 
@@ -2830,7 +2829,7 @@ void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item) {
   work_queue_.ProcessWorkItem(std::move(work_item));
 }
 
-void TestRunner::ReplicateWorkQueueStates(const base::DictionaryValue& values) {
+void TestRunner::ReplicateWorkQueueStates(const base::Value::Dict& values) {
   if (!test_is_running_)
     return;
   work_queue_.ReplicateStates(values);
@@ -3295,7 +3294,7 @@ void TestRunner::OnWebTestRuntimeFlagsChanged() {
   // web flag changes in SetTestConfiguration().
   if (!test_is_running_)
     return;
-  if (web_test_runtime_flags_.tracked_dictionary().changed_values().DictEmpty())
+  if (web_test_runtime_flags_.tracked_dictionary().changed_values().empty())
     return;
 
   GetWebTestControlHostRemote()->WebTestRuntimeFlagsChanged(

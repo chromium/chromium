@@ -140,24 +140,24 @@ std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
   result.append("\n");
 
   std::vector<blink::ExplodedFrameState> sorted_children = frame_state.children;
-  std::sort(
-      sorted_children.begin(), sorted_children.end(),
-      [](const blink::ExplodedFrameState& lhs,
-         const blink::ExplodedFrameState& rhs) {
-        // Child nodes should always have a target (aka unique name).
-        DCHECK(lhs.target);
-        DCHECK(rhs.target);
-        std::string lhs_name =
-            blink::UniqueNameHelper::ExtractStableNameForTesting(
-                base::UTF16ToUTF8(*lhs.target));
-        std::string rhs_name =
-            blink::UniqueNameHelper::ExtractStableNameForTesting(
-                base::UTF16ToUTF8(*rhs.target));
-        if (!base::EqualsCaseInsensitiveASCII(lhs_name, rhs_name))
-          return base::CompareCaseInsensitiveASCII(lhs_name, rhs_name) < 0;
+  std::sort(sorted_children.begin(), sorted_children.end(),
+            [](const blink::ExplodedFrameState& lhs,
+               const blink::ExplodedFrameState& rhs) {
+              // Child nodes should always have a target (aka unique name).
+              DCHECK(lhs.target);
+              DCHECK(rhs.target);
+              std::string lhs_name =
+                  blink::UniqueNameHelper::ExtractStableNameForTesting(
+                      base::UTF16ToUTF8(*lhs.target));
+              std::string rhs_name =
+                  blink::UniqueNameHelper::ExtractStableNameForTesting(
+                      base::UTF16ToUTF8(*rhs.target));
+              if (!base::EqualsCaseInsensitiveASCII(lhs_name, rhs_name))
+                return base::CompareCaseInsensitiveASCII(lhs_name, rhs_name) <
+                       0;
 
-        return lhs.item_sequence_number < rhs.item_sequence_number;
-      });
+              return lhs.item_sequence_number < rhs.item_sequence_number;
+            });
   for (const auto& child : sorted_children)
     result += DumpFrameState(child, indent + 4, false);
 
@@ -545,7 +545,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     printer_->set_capture_text_only(false);
   printer_->reset();
 
-  accumulated_web_test_runtime_flags_changes_.DictClear();
+  accumulated_web_test_runtime_flags_changes_.clear();
   web_test_runtime_flags_.Reset();
   main_window_render_view_hosts_.clear();
   main_window_render_process_hosts_.clear();
@@ -1231,9 +1231,9 @@ void WebTestControlHost::OnTestFinished() {
     main_window_->web_contents()->ExitFullscreen(/*will_cause_resize=*/false);
   devtools_bindings_.reset();
   devtools_protocol_test_bindings_.reset();
-  accumulated_web_test_runtime_flags_changes_.DictClear();
+  accumulated_web_test_runtime_flags_changes_.clear();
   web_test_runtime_flags_.Reset();
-  work_queue_states_.DictClear();
+  work_queue_states_.clear();
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
@@ -1658,12 +1658,12 @@ void WebTestControlHost::SimulateWebContentIndexDelete(const std::string& id) {
 }
 
 void WebTestControlHost::WebTestRuntimeFlagsChanged(
-    base::Value changed_web_test_runtime_flags) {
+    base::Value::Dict changed_web_test_runtime_flags) {
   const int render_process_id = receiver_bindings_.current_context();
 
   // Stash the accumulated changes for future, not-yet-created renderers.
-  accumulated_web_test_runtime_flags_changes_.MergeDictionary(
-      &changed_web_test_runtime_flags);
+  accumulated_web_test_runtime_flags_changes_.Merge(
+      changed_web_test_runtime_flags);
   web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
       accumulated_web_test_runtime_flags_changes_);
 
@@ -1735,7 +1735,7 @@ void WebTestControlHost::RequestWorkItem() {
                                               ->GetRenderViewHost()
                                               ->GetProcess();
   if (work_queue_.empty()) {
-    work_queue_states_.SetBoolPath(kDictKeyWorkQueueHasItems, false);
+    work_queue_states_.SetByDottedPath(kDictKeyWorkQueueHasItems, false);
     GetWebTestRenderThreadRemote(main_frame_process)
         ->ReplicateWorkQueueStates(work_queue_states_.Clone());
   } else {
@@ -1746,8 +1746,8 @@ void WebTestControlHost::RequestWorkItem() {
 }
 
 void WebTestControlHost::WorkQueueStatesChanged(
-    base::Value changed_work_queue_states) {
-  work_queue_states_.MergeDictionary(&changed_work_queue_states);
+    base::Value::Dict changed_work_queue_states) {
+  work_queue_states_.Merge(std::move(changed_work_queue_states));
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

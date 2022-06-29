@@ -40,11 +40,11 @@ class WebTestRenderThreadObserver : public RenderThreadObserver,
   // mojom::WebTestRenderThread implementation.
   void SetupRendererProcessForNonTestWindow() override;
   void ReplicateWebTestRuntimeFlagsChanges(
-      base::Value changed_layout_test_runtime_flags) override;
+      base::Value::Dict changed_layout_test_runtime_flags) override;
   void TestFinishedFromSecondaryRenderer() override;
   void ResetRendererAfterWebTest() override;
   void ProcessWorkItem(mojom::WorkItemPtr work_item) override;
-  void ReplicateWorkQueueStates(base::Value work_queue_states) override;
+  void ReplicateWorkQueueStates(base::Value::Dict work_queue_states) override;
 
   // Helper to bind this class as the mojom::WebTestRenderThread.
   void OnWebTestRenderThreadAssociatedRequest(
