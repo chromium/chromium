@@ -489,8 +489,7 @@ def _OutputComment(f, comment):
 
 def _LoadJSONFile(json_file):
   with codecs.open(json_file, 'r', encoding='utf-8') as f:
-    text = f.read()
-  return ast.literal_eval(text)
+    return json.load(f)
 
 
 def _GetSupportedChromeUserPolicies(policies, protobuf_type):
