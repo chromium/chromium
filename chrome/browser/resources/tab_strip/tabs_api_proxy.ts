@@ -38,6 +38,11 @@ export interface TabsApiProxy {
   isVisible(): boolean;
 
   /**
+   * @return Object with CSS variables as keys and rgba strings as values
+   */
+  getColors(): Promise<{colors: {[key: string]: string}}>;
+
+  /**
    * @return Object with CSS variables as keys and pixel lengths as values
    */
   getLayout(): Promise<{layout: {[key: string]: string}}>;
@@ -125,6 +130,10 @@ export class TabsApiProxyImpl implements TabsApiProxy {
     // TODO(crbug.com/1234500): Move this call out of tabs_api_proxy
     // since it's not related to tabs API.
     return document.visibilityState === 'visible';
+  }
+
+  getColors() {
+    return this.handler.getThemeColors();
   }
 
   getLayout() {

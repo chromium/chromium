@@ -64,7 +64,7 @@
 }
 
 #chip:focus #title {
-  box-shadow: 0 0 0 2px var(--color-web-ui-tab-strip-focus-outline);
+  box-shadow: 0 0 0 2px var(--tabstrip-focus-outline-color);
   outline: none;
 }
 
@@ -115,7 +115,7 @@
 }
 
 :host([getting-drag-image_]) #tabGroup {
-  background: var(--color-web-ui-tab-strip-background);
+  background: var(--tabstrip-background-color);
   border-radius: var(--tabstrip-tab-border-radius);
   box-shadow: var(--tabstrip-tab-dragging-shadow);
   height: var(--tabstrip-tab-height);
@@ -124,8 +124,7 @@
 }
 
 :host([getting-drag-image_]) ::slotted(tabstrip-tab) {
-  --tabstrip-tab-active-border-color:
-      var(--color-web-ui-tab-strip-tab-separator);
+  --tabstrip-tab-active-border-color: var(--tabstrip-tab-separator-color);
 }
 
 :host([getting-drag-image_]) ::slotted(tabstrip-tab:first-child) {
@@ -166,7 +165,7 @@
 }
 
 :host([dragging]) #dragPlaceholder {
-  background: var(--color-web-ui-tab-strip-tab-background);
+  background: var(--tabstrip-tab-background-color);
   border-radius: var(--tabstrip-tab-border-radius);
   height: var(--tabstrip-tab-height);
   opacity: 0.5;

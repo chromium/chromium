@@ -16,6 +16,7 @@ generate_grd("build_grd") {
 
   public_deps = [
     ":build_ts_grdp",
+    "cr_components/color_change_listener:build_grdp",
     "css:build_grdp",
     "html:build_grdp",
     "images:build_grdp",
@@ -33,6 +34,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
+    "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
   ]
 
   if (!is_chromeos_ash && !is_android) {
@@ -107,14 +109,8 @@ generate_grd("build_grd") {
   }
 
   if (!is_android && !is_ios) {
-    public_deps += [
-      "cr_components/color_change_listener:build_grdp",
-      "//third_party/lottie:build_grdp",
-    ]
-    grdp_files += [
-      "$root_gen_dir/third_party/lottie/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
-    ]
+    public_deps += [ "//third_party/lottie:build_grdp" ]
+    grdp_files += [ "$root_gen_dir/third_party/lottie/resources.grdp" ]
   }
 }
 

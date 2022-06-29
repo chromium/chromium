@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-    <link rel="stylesheet" href="chrome://theme/colors.css">
     <title>$i18n{tabListTitle}</title>
     <style>
       html {
@@ -15,6 +14,7 @@
         --google-blue-300-rgb: 138, 180, 248;
         --google-blue-500-rgb: 66, 133, 244;
 
+        --tabstrip-background-color: $i18n{frameColor};
         --tabstrip-tab-border-radius: 8px;
         --tabstrip-tab-active-border-color: rgb(var(--google-blue-500-rgb));
 
@@ -22,7 +22,7 @@
       }
 
       body {
-        background: var(--color-web-ui-tab-strip-background);
+        background: var(--tabstrip-background-color);
         height: 100%;
         margin: 0;
         overflow: hidden;
@@ -42,14 +42,17 @@
       ::-webkit-scrollbar-track,
       ::-webkit-scrollbar,
       ::-webkit-scrollbar-track-piece {
-        background: var(--color-web-ui-tab-strip-background);
+        background: var(--tabstrip-background-color);
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
       }
 
       ::-webkit-scrollbar-thumb {
-        background: var(--color-web-ui-tab-strip-scrollbar-thumb);
-        border-inline-end: solid 16px var(--color-web-ui-tab-strip-background);
-        border-inline-start:
-            solid 16px var(--color-web-ui-tab-strip-background);
+        background: rgba(var(--tabstrip-scrollbar-thumb-color-rgb), .7);
+        border-inline-end: solid 16px var(--tabstrip-background-color);
+        border-inline-start: solid 16px var(--tabstrip-background-color);
       }
 </if>
     </style>
