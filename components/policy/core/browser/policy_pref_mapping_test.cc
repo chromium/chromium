@@ -633,6 +633,12 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
                                          pref_case->check_for_recommended();
           const bool check_mandatory = pref_case->check_for_mandatory();
 
+          LOG(INFO) << "policy: " << test_case->name()
+                    << "\t test_case_index: " << i
+                    << "\t pref_name: " << pref_case->pref()
+                    << "\t check_mandatory: " << check_mandatory
+                    << "\t check_recommended: " << check_recommended;
+
           EXPECT_TRUE(check_recommended || check_mandatory)
               << "pref has to be checked for recommended and/or mandatory "
                  "values";
@@ -664,8 +670,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           ASSERT_TRUE(expected_value);
 
           if (check_recommended) {
-            SCOPED_TRACE(::testing::Message() << "checking recommended policy");
-
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
                 provider, policies, pref_mapping->policies_settings(),
                 POLICY_LEVEL_RECOMMENDED));
@@ -677,7 +681,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           }
 
           if (check_mandatory) {
-            SCOPED_TRACE(::testing::Message() << "checking mandatory policy");
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
                 provider, policies, pref_mapping->policies_settings(),
                 POLICY_LEVEL_MANDATORY));
