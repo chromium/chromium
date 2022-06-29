@@ -10,8 +10,8 @@
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/completion_suggestion_label_view.h"
+#include "chrome/browser/ash/input_method/ui/completion_suggestion_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
-#include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,7 +68,8 @@ class SuggestionWindowViewTest
 
   size_t GetHighlightedCount() const {
     const auto& children =
-        suggestion_window_view_->candidate_area_for_testing()->children();
+        suggestion_window_view_->multiple_candidate_area_for_testing()
+            ->children();
     return std::count_if(
         children.cbegin(), children.cend(),
         [](const views::View* v) { return !!v->background(); });
@@ -76,7 +77,8 @@ class SuggestionWindowViewTest
 
   absl::optional<int> GetHighlightedIndex() const {
     const auto& children =
-        suggestion_window_view_->candidate_area_for_testing()->children();
+        suggestion_window_view_->multiple_candidate_area_for_testing()
+            ->children();
     const auto it =
         std::find_if(children.cbegin(), children.cend(),
                      [](const views::View* v) { return !!v->background(); });
@@ -310,7 +312,8 @@ TEST_P(SuggestionWindowViewTest, DisplaysCorrectOrientationLayout) {
   suggestion_window_view_->ShowMultipleCandidates(window_);
   views::BoxLayout::Orientation layout_orientation =
       static_cast<views::BoxLayout*>(
-          suggestion_window_view_->GetLayoutManager())
+          suggestion_window_view_->multiple_candidate_area_for_testing()
+              ->GetLayoutManager())
           ->GetOrientation();
   EXPECT_EQ(layout_orientation, expected_orientation);
 }
