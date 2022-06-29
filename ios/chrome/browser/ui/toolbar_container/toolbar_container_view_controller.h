@@ -31,7 +31,7 @@ enum class ToolbarContainerOrientation { kTopToBottom, kBottomToTop };
 @property(nonatomic, strong) NSArray<UIViewController*>* toolbars;
 
 // The height range of the overall stack.  It is calculated using the collapsed
-// and expanded heights of the views managed by |toolbars|.
+// and expanded heights of the views managed by `toolbars`.
 @property(nonatomic, readonly)
     const toolbar_container::HeightRange& heightRange;
 

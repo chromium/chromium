@@ -14,11 +14,11 @@
 // A constraint that scales between a collapsed and expanded height value.
 @interface CollapsingToolbarHeightConstraint : NSLayoutConstraint
 
-// Returns a constraint that manages the height of |view|.  If |view| conforms
-// to ToolbarCollapsing, updating |progress| will scale between its collapsed
-// and expanded heights.  Otherwise, the constraint will lock |view|'s height
+// Returns a constraint that manages the height of `view`.  If `view` conforms
+// to ToolbarCollapsing, updating `progress` will scale between its collapsed
+// and expanded heights.  Otherwise, the constraint will lock `view`'s height
 // to its intrinisic content height.  The height range can be increased using
-// |additionalHeight|.
+// `additionalHeight`.
 + (nullable instancetype)constraintWithView:(nonnull UIView*)view;
 
 // Used to add additional height to the toolbar.
@@ -29,8 +29,8 @@
 // The height range for the constraint.  If the constrained view conforms to
 // ToolbarCollapsing, the range will be populated using the collapsed and
 // expanded toolbar heights from that protocol, otherwise the intrinsic content
-// height is used.  |additionalHeight| and is added to the max height, and
-// optionally added to the min height if |collapsesAdditionalHeight| is NO.
+// height is used.  `additionalHeight` and is added to the max height, and
+// optionally added to the min height if `collapsesAdditionalHeight` is NO.
 @property(nonatomic, readonly)
     const toolbar_container::HeightRange& heightRange;
 
