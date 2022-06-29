@@ -328,15 +328,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
 
   if (group_model_factory)
     group_model_ = group_model_factory->Create(this);
-
-  constexpr base::TimeDelta kTabScrubbingHistogramIntervalTime =
-      base::Seconds(30);
-
-  last_tab_switch_timestamp_ = base::TimeTicks::Now();
-  tab_scrubbing_interval_timer_.Start(
-      FROM_HERE, kTabScrubbingHistogramIntervalTime,
-      base::BindRepeating(&TabStripModel::RecordTabScrubbingMetrics,
-                          base::Unretained(this)));
+  scrubbing_metrics_.Init();
 }
 
 TabStripModel::~TabStripModel() {
@@ -595,23 +587,7 @@ void TabStripModel::ActivateTabAt(int index,
   CHECK(ContainsIndex(index));
   TRACE_EVENT0("ui", "TabStripModel::ActivateTabAt");
 
-  // Maybe increment count of tabs 'scrubbed' by mouse or key press for
-  // histogram data.
-  if (user_gesture.type == TabStripUserGestureDetails::GestureType::kMouse ||
-      user_gesture.type == TabStripUserGestureDetails::GestureType::kKeyboard) {
-    constexpr base::TimeDelta kMaxTimeConsideredScrubbing =
-        base::Milliseconds(1500);
-    base::TimeDelta elapsed_time_since_tab_switch =
-        base::TimeTicks::Now() - last_tab_switch_timestamp_;
-    if (elapsed_time_since_tab_switch <= kMaxTimeConsideredScrubbing) {
-      if (user_gesture.type == TabStripUserGestureDetails::GestureType::kMouse)
-        ++tabs_scrubbed_by_mouse_press_count_;
-      else if (user_gesture.type ==
-               TabStripUserGestureDetails::GestureType::kKeyboard)
-        ++tabs_scrubbed_by_key_press_count_;
-    }
-  }
-  last_tab_switch_timestamp_ = base::TimeTicks::Now();
+  scrubbing_metrics_.IncrementPressCount(user_gesture);
 
   TabSwitchEventLatencyRecorder::EventType event_type;
   switch (user_gesture.type) {
@@ -641,15 +617,6 @@ void TabStripModel::ActivateTabAt(int index,
           ? TabStripModelObserver::CHANGE_REASON_USER_GESTURE
           : TabStripModelObserver::CHANGE_REASON_NONE,
       /*triggered_by_other_operation=*/false);
-}
-
-void TabStripModel::RecordTabScrubbingMetrics() {
-  UMA_HISTOGRAM_COUNTS_10000("Tabs.ScrubbedInInterval.MousePress",
-                             tabs_scrubbed_by_mouse_press_count_);
-  UMA_HISTOGRAM_COUNTS_10000("Tabs.ScrubbedInInterval.KeyPress",
-                             tabs_scrubbed_by_key_press_count_);
-  tabs_scrubbed_by_mouse_press_count_ = 0;
-  tabs_scrubbed_by_key_press_count_ = 0;
 }
 
 int TabStripModel::MoveWebContentsAt(int index,
