@@ -386,7 +386,7 @@ void FeedStream::SetStreamStale(const StreamType& stream_type, bool is_stale) {
   if (stream_metadata.is_known_stale() != is_stale) {
     stream_metadata.set_is_known_stale(is_stale);
     if (is_stale) {
-      SetStreamViewContentIds(metadata_, stream_type, {});
+      SetStreamViewContentHashes(metadata_, stream_type, {});
     }
     SetMetadata(metadata);
   }
@@ -1123,8 +1123,8 @@ bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
   // ViewContentIds to whatever the current set is. This can happen if the
   // surface already shown is refreshed.
   if (stream.model && stream.surfaces.HasSurfaceShowingContent()) {
-    SetMetadata(SetStreamViewContentIds(metadata_, stream_type,
-                                        stream.model->GetContentIds()));
+    SetMetadata(SetStreamViewContentHashes(metadata_, stream_type,
+                                           stream.model->GetContentIds()));
     return false;
   }
   return true;

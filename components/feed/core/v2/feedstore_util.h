@@ -70,13 +70,15 @@ const Metadata::StreamMetadata* FindMetadataForStream(
 Metadata::StreamMetadata& MetadataForStream(
     Metadata& metadata,
     const feed::StreamType& stream_type);
-absl::optional<Metadata> SetStreamViewContentIds(
+absl::optional<Metadata> SetStreamViewContentHashes(
     const Metadata& metadata,
     const feed::StreamType& stream_type,
-    const feed::ContentIdSet& content_ids);
-feed::ContentIdSet GetContentIds(const StreamData& stream_data);
-feed::ContentIdSet GetViewContentIds(const Metadata& metadata,
-                                     const feed::StreamType& stream_type);
+    const feed::ContentHashSet& content_hashes);
+feed::ContentHashSet GetContentIds(const StreamData& stream_data);
+feed::ContentHashSet GetViewContentIds(const Metadata& metadata,
+                                       const feed::StreamType& stream_type);
+int32_t ContentHashFromPrefetchMetadata(
+    const feedwire::PrefetchMetadata& prefetch_metadata);
 
 }  // namespace feedstore
 

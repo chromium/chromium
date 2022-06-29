@@ -295,7 +295,7 @@ const std::string& StreamModel::GetNextPageToken() const {
 base::Time StreamModel::GetLastAddedTime() const {
   return feedstore::GetLastAddedTime(stream_data_);
 }
-ContentIdSet StreamModel::GetContentIds() const {
+ContentHashSet StreamModel::GetContentIds() const {
   return feedstore::GetContentIds(stream_data_);
 }
 

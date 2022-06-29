@@ -360,16 +360,16 @@ stream_data: {
   shared_state_ids {
     content_domain: "render_data"
   }
-  content_ids: 3328940074512586021
-  content_ids: 8191455549164721606
-  content_ids: -8109602013173974591
-  content_ids: -8979410608587540000
-  content_ids: -8421826555441408245
-  content_ids: -3490122365494686813
-  content_ids: 2741853109953412745
-  content_ids: 586433679892097787
-  content_ids: 790985792726953756
-  content_ids: 7324025093440047528
+  content_hashes: 934967784
+  content_hashes: 1272916258
+  content_hashes: 3242987079
+  content_hashes: 1955343871
+  content_hashes: 3258315382
+  content_hashes: 3546053313
+  content_hashes: 1640265464
+  content_hashes: 2920920940
+  content_hashes: 3805198647
+  content_hashes: 3846950793
 }
 content: {
   content_id {

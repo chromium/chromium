@@ -167,7 +167,7 @@ class StreamModel {
   base::Time GetLastAddedTime() const;
   // Returns a set of content IDs contained. This remains constant even
   // after data operations or next-page requests.
-  ContentIdSet GetContentIds() const;
+  ContentHashSet GetContentIds() const;
 
   // Outputs a string representing the model state for debugging or testing.
   std::string DumpStateForTesting();

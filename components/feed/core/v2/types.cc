@@ -189,30 +189,30 @@ void LoadLatencyTimes::StepComplete(StepKind kind) {
   last_time_ = now;
 }
 
-ContentIdSet::ContentIdSet() = default;
-ContentIdSet::~ContentIdSet() = default;
-ContentIdSet::ContentIdSet(base::flat_set<int64_t> content_ids)
-    : content_ids_(std::move(content_ids)) {}
-ContentIdSet::ContentIdSet(const ContentIdSet&) = default;
-ContentIdSet::ContentIdSet(ContentIdSet&&) = default;
-ContentIdSet& ContentIdSet::operator=(const ContentIdSet&) = default;
-ContentIdSet& ContentIdSet::operator=(ContentIdSet&&) = default;
-bool ContentIdSet::ContainsAllOf(const ContentIdSet& items) const {
-  for (int64_t id : items.content_ids_) {
-    if (!content_ids_.contains(id))
+ContentHashSet::ContentHashSet() = default;
+ContentHashSet::~ContentHashSet() = default;
+ContentHashSet::ContentHashSet(base::flat_set<uint32_t> content_hashes)
+    : content_hashes_(std::move(content_hashes)) {}
+ContentHashSet::ContentHashSet(const ContentHashSet&) = default;
+ContentHashSet::ContentHashSet(ContentHashSet&&) = default;
+ContentHashSet& ContentHashSet::operator=(const ContentHashSet&) = default;
+ContentHashSet& ContentHashSet::operator=(ContentHashSet&&) = default;
+bool ContentHashSet::ContainsAllOf(const ContentHashSet& items) const {
+  for (uint32_t id : items.content_hashes_) {
+    if (!content_hashes_.contains(id))
       return false;
   }
   return true;
 }
-bool ContentIdSet::IsEmpty() const {
-  return content_ids_.empty();
+bool ContentHashSet::IsEmpty() const {
+  return content_hashes_.empty();
 }
-bool ContentIdSet::operator==(const ContentIdSet& rhs) const {
-  return content_ids_ == rhs.content_ids_;
+bool ContentHashSet::operator==(const ContentHashSet& rhs) const {
+  return content_hashes_ == rhs.content_hashes_;
 }
-std::ostream& operator<<(std::ostream& s, const ContentIdSet& id_set) {
+std::ostream& operator<<(std::ostream& s, const ContentHashSet& id_set) {
   s << "{";
-  for (int64_t id : id_set.values()) {
+  for (uint32_t id : id_set.values()) {
     s << id << ", ";
   }
   s << "}";

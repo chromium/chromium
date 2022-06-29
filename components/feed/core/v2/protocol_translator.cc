@@ -343,8 +343,12 @@ RefreshResponseData TranslateWireResponse(
       chrome_response_metadata.logging_enabled());
   result->stream_data.set_privacy_notice_fulfilled(
       chrome_response_metadata.privacy_notice_fulfilled());
+
   for (const feedstore::Content& content : result->content) {
-    result->stream_data.add_content_ids(content.content_id().id());
+    for (auto& metadata : content.prefetch_metadata()) {
+      result->stream_data.add_content_hashes(
+          feedstore::ContentHashFromPrefetchMetadata(metadata));
+    }
   }
 
   absl::optional<std::string> session_id = absl::nullopt;

@@ -66,8 +66,8 @@ message StreamData {
   bool privacy_notice_fulfilled = 9;
   // Stream ID. Should match the id value stored in the record's key.
   string stream_id = 10;
-  // List of unique IDs representing content contained in the stream.
-  repeated int64 content_ids = 11;
+  // List of IDs representing content contained in the stream.
+  repeated uint32 content_hashes = 11;
   // Root EventID provided by the server.
   bytes root_event_id = 12;
   // The unix timestamp in milliseconds that the feed response is produced on
@@ -93,9 +93,9 @@ message Metadata {
     bool is_known_stale = 3;
     // If this stream has been viewed before, this is the list of content in the
     // stream
-    // (`StreamData.content_ids`). This is used to determine whether the user
+    // (`StreamData.content_hashes`). This is used to determine whether the user
     // has already seen a stored stream's data.
-    repeated int64 view_content_ids = 4;
+    repeated uint32 view_content_hashes = 4;
 
     message ContentLifetime {
       int64 stale_age_ms = 1;

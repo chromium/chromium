@@ -15,6 +15,15 @@
 #include "components/feed/core/v2/protocol_translator.h"
 
 namespace feed {
+namespace {
+void AddContentHashes(const feedstore::Content& content,
+                      feedstore::StreamData& stream_data) {
+  for (auto& metadata : content.prefetch_metadata()) {
+    stream_data.add_content_hashes(
+        feedstore::ContentHashFromPrefetchMetadata(metadata));
+  }
+}
+}  // namespace
 
 base::Time kTestTimeEpoch = base::Time::UnixEpoch();
 AccountInfo TestAccountInfo() {
@@ -250,8 +259,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
       privacy_notice_fulfilled);
 
   for (int i = 0; i < num_cards; ++i) {
-    initial_update->stream_data.add_content_ids(
-        initial_update->content[i].content_id().id());
+    AddContentHashes(initial_update->content[i], initial_update->stream_data);
   }
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
   feedstore::SetLastServerResponseTime(last_server_response_time,
@@ -293,8 +301,9 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
-  initial_update->stream_data.add_content_ids(MakeContent(i).content_id().id());
-  initial_update->stream_data.add_content_ids(MakeContent(j).content_id().id());
+
+  AddContentHashes(MakeContent(i), initial_update->stream_data);
+  AddContentHashes(MakeContent(j), initial_update->stream_data);
 
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
   feedstore::SetLastServerResponseTime(last_server_response_time,
