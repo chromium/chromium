@@ -2,22 +2,25 @@
   :host {
     margin-top: 10px;
     position: relative;
+    --emoji-background: transparent;
   }
 
-
-  :host([v2-enabled]:not([use-flex-layout])) {
-    --emoji-size: var(--v2-emoji-size);
-    --emoji-spacing: var(--v2-emoji-spacing);
+  /* Base styles. */
+  .emoji-button {
+    background: var(--emoji-background);
+    border: none;
+    cursor: pointer;
+    height: 100%;
   }
 
-  /* TODO(b/233268914): Allow adding per emoji category style.
-   * The refactor should make setting styles per emoji category
-   * (e.g. emoji, emoticon, symbol) easy. Also, base styles need to be
-   * defined for common parts of different emoji categories styles.
-   */
+  .emoji-button-container {
+    height: var(--emoji-size);
+    position: relative;
+    width: var(--emoji-size);
+  }
 
   /* Grid layout styles. */
-  :host(:not([use-flex-layout])) #emoji {
+  .grid-layout {
     display: grid;
     gap: var(--emoji-spacing);
     grid-auto-rows: max-content;
@@ -25,50 +28,39 @@
     justify-items: center;
   }
 
-  :host(:not([use-flex-layout])) {
-    --emoji-button-button-style: {
-      background: var(--emoji-background);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: block;
-      font-family: 'Noto Color Emoji';
-      font-size: 19px;
-      height: 100%;
-      line-height: var(--emoji-size);
-      outline: none;
-      padding: 0;
-      text-align: center;
-      user-select: none;
-      width: 100%;
-    };
-    --emoji-button-height: var(--emoji-size);
-    --emoji-button-width: var(--emoji-size);
+  .grid-layout .emoji-button {
+    border-radius: 50%;
+    display: block;
+    font-family: 'Noto Color Emoji';
+    font-size: 19px;
+    line-height: var(--emoji-size);
+    outline: none;
+    padding: 0;
+    text-align: center;
+    user-select: none;
+    width: 100%;
   }
 
   /* Flex layout styles. */
-  :host([use-flex-layout]) #emoji {
+  .flex-layout {
     display: flex;
     flex-wrap: wrap;
     gap: 12px 20px;
   }
 
-  :host([use-flex-layout]) {
-    --emoji-button-button-style: {
-      background: var(--emoji-background);
-      border: none;
-      color: var(--cros-text-color-primary);
-      cursor: pointer;
-      font-family: 'Noto Sans CJK JP';
-      font-size: 13px;
-      height: 100%;
-      padding: 6px;
-      width: max-content;
-    };
-    --emoji-button-height: var(--emoji-size);
-    --emoji-button-width: max-content;
+  .flex-layout .emoji-button-container {
+    width: max-content;
   }
 
+  .flex-layout .emoji-button {
+    color: var(--cros-text-color-primary);
+    font-family: 'Noto Sans CJK JP';
+    font-size: 13px;
+    padding: 6px;
+    width: max-content;
+  }
+
+  /* Heading styles */
   #heading {
     color: var(--cros-text-color-secondary);
     display: flex;
@@ -141,21 +133,6 @@
   #clear-recents-hover:hover {
     background-color: var(--cros-button-background-color-secondary-hover);
     border: 2px solid var(--cros-button-background-color-secondary-hover);
-  }
-
-  .emoji-button-container {
-    --emoji-background: transparent;
-    /* Fixed height and width are required for buttons that have variants,
-     * Otherwise, when showing variants, buttons' positions will be moved.
-     */
-    height: var(--emoji-button-height);
-    position: relative;
-    width: var(--emoji-button-width);
-  }
-
-  .emoji-button {
-    /* TODO(b/233130994): Remove this CSS mixin and use classes instead. */
-    @apply --emoji-button-button-style;
   }
 
   .emoji-button:focus,
@@ -241,7 +218,10 @@
   Note that the click and context menu listeners are shared among all the
   elements to improve efficiency and performance.
   -->
-<div id="emoji" on-click="onEmojiClick" on-contextmenu="onEmojiContextMenu">
+<div id="palette"
+  class$="[[getLayoutClassName(layoutType, category)]]"
+  on-click="onEmojiClick"
+  on-contextmenu="onEmojiContextMenu">
   <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[data]]">
     <div class="emoji-button-container">

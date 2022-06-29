@@ -4,14 +4,26 @@
     /* Fixed height and width are required for buttons that have variants,
      * Otherwise, when showing variants, buttons' positions will be moved.
      */
-    height: var(--emoji-button-height);
+    height: var(--emoji-size);
     position: relative;
-    width: var(--emoji-button-width);
+    width:  var(--emoji-size);
   }
 
   #emoji-button {
-    /* TODO(b/233130994): Remove this CSS mixin and use classes instead. */
-    @apply --emoji-button-button-style;
+    background: var(--emoji-background);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: block;
+    font-family: 'Noto Color Emoji';
+    font-size: 19px;
+    height: 100%;
+    line-height: var(--emoji-size);
+    outline: none;
+    padding: 0;
+    text-align: center;
+    user-select: none;
+    width: 100%;
   }
 
   #emoji-button:focus,

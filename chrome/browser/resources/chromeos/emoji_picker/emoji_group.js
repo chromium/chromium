@@ -8,6 +8,19 @@ import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer
 import {createCustomEvent, EMOJI_VARIANTS_SHOWN, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
+/**
+ * @enum {string}
+ */
+export const EmojiGroupLayoutType = {
+  GRID_LAYOUT: 'grid-layout',
+  FLEX_LAYOUT: 'flex-layout'
+};
+
+const DEFAULT_CATEGORY_LAYOUTS = {
+  [CategoryEnum.EMOJI]: EmojiGroupLayoutType.GRID_LAYOUT,
+  [CategoryEnum.EMOTICON]: EmojiGroupLayoutType.FLEX_LAYOUT,
+};
+
 export class EmojiGroupComponent extends PolymerElement {
   static get is() {
     return 'emoji-group';
@@ -25,27 +38,25 @@ export class EmojiGroupComponent extends PolymerElement {
       preferred: {type: Object, value: {}},
       /** @type {boolean} */
       clearable: {type: Boolean, value: false},
-      /** @type {boolean} */
-      showClearRecents: {type: Boolean, value: false},
-      /** @private {?EmojiVariants} */
-      focusedEmoji: {type: Object, value: null},
       /** @type {string} */
       category: {
         type: String,
         value: CategoryEnum.EMOJI,
-        readonly: true,
+        readonly: true
       },
+      /** @type {?string} */
+      layoutType: {
+        type: String,
+        value: null
+      },
+      /** @type {boolean} */
+      showClearRecents: {type: Boolean, value: false},
+      /** @private {?EmojiVariants} */
+      focusedEmoji: {type: Object, value: null},
       /** @private {?number} */
       shownEmojiVariantIndex: {type: Number, value: null},
       /** @private {?boolean} */
       isLangEnglish: {type: Boolean, value: false},
-      /** @type {boolean} */
-      useFlexLayout: {
-        type: Boolean,
-        value: false,
-        readonly: true,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -217,6 +228,24 @@ export class EmojiGroupComponent extends PolymerElement {
     } else {
       return 'emoji-button';
     }
+  }
+
+  /**
+   * Returns HTML class attribute of an emoji groups.
+   *
+   * @param {EmojiGroupLayoutType} layoutType Layout type of the group.
+   * @param {CategoryEnum} category Category of the data.
+   * @returns {string} HTML class attribute of the button.
+   */
+  getLayoutClassName(layoutType, category) {
+    if(layoutType) {
+      return layoutType;
+    }
+
+    // If layout type is not provided then choose a default value based
+    // on the category.
+    return DEFAULT_CATEGORY_LAYOUTS[category] ||
+            EmojiGroupLayoutType.GRID_LAYOUT;
   }
 
   /**

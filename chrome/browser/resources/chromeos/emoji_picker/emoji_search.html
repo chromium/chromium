@@ -16,26 +16,14 @@
    * emoji-group.
    */
   :host(:not([v2-enabled])) emoji-button {
-    --emoji-button-button-style: {
-      background: var(--emoji-background);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: block;
-      font-family: 'Noto Color Emoji';
-      font-size: 19px;
-      height: 100%;
-      line-height: var(--emoji-size);
-      outline: none;
-      padding: 0;
-      text-align: center;
-      user-select: none;
-      width: 100%;
-    };
-    --emoji-button-height: var(--emoji-size);
-    --emoji-button-width: var(--emoji-size);
     --emoji-hover-background: transparent;
     margin-inline-end: 12px;
+  }
+
+  /* The following needs to be in sync with emoji_picker.html */
+  :host([v2-enabled]) emoji-group[category='emoji'] {
+    --emoji-size: var(--v2-emoji-size);
+    --emoji-spacing: var(--v2-emoji-spacing);
   }
 
   cr-search-field {
@@ -72,6 +60,7 @@
     display: flex;
     margin-inline-end: var(--emoji-picker-search-margins);
   }
+
   .result:focus,
   .result:active {
     border-color: var(--cros-focus-ring-color);
@@ -83,7 +72,6 @@
   .result:hover {
     background-color: var(--cros-ripple-color);
   }
-
 
   .name {
     color: var(--cr-primary-text-color);
@@ -109,6 +97,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
   #search-shadow {
     background-color: var(--cros-bg-color);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
@@ -160,12 +149,8 @@
     width: 240px;
   }
 
-  #emoji-result {
-    width: var(--v2-search-content-width);
-  }
-
-  #emoticon-result {
-    margin-top: 12px;
+  /* TODO(b/233133645): emoji-groups margins need to match the design. */
+  #search-results {
     width: var(--v2-search-content-width);
   }
 </style>
@@ -209,7 +194,7 @@
           category="emoji">
         </emoji-group>
         <emoji-group id="emoticon-result" data="[[emoticonResults]]"
-          category="emoticon" use-flex-layout>
+          category="emoticon">
         </emoji-group>
       </div>
     </template>
