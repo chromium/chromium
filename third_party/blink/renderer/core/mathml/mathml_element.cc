@@ -49,7 +49,6 @@ bool MathMLElement::IsPresentationAttribute(const QualifiedName& name) const {
       name == mathml_names::kMathbackgroundAttr ||
       name == mathml_names::kMathvariantAttr ||
       name == mathml_names::kScriptlevelAttr ||
-      name == mathml_names::kDisplayAttr ||
       name == mathml_names::kDisplaystyleAttr)
     return true;
   return Element::IsPresentationAttribute(name);
@@ -115,19 +114,6 @@ void MathMLElement::CollectStyleForPresentationAttribute(
             style, CSSPropertyID::kMathDepth, scriptLevel,
             CSSPrimitiveValue::UnitType::kNumber);
       }
-    }
-  } else if (name == mathml_names::kDisplayAttr &&
-             HasTagName(mathml_names::kMathTag)) {
-    if (EqualIgnoringASCIICase(value, "inline")) {
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
-                                              CSSValueID::kMath);
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
-                                              CSSValueID::kCompact);
-    } else if (EqualIgnoringASCIICase(value, "block")) {
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
-                                              "block math");
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
-                                              CSSValueID::kNormal);
     }
   } else if (name == mathml_names::kDisplaystyleAttr) {
     if (EqualIgnoringASCIICase(value, "false")) {

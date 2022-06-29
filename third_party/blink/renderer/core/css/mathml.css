@@ -50,10 +50,13 @@ math {
   math-style: compact;
   math-depth: 0;
 }
-
-math[display="block"] {
-    display: block math;
-    text-align: center;
+math[display="block" i] {
+  display: block math;
+  math-style: normal;
+}
+math[display="inline" i] {
+  display: inline math;
+  math-style: compact;
 }
 
 :-internal-spatial-navigation-interest {
