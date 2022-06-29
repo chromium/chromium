@@ -99,12 +99,6 @@ void RecordDownloadPromptStatus(DownloadPromptStatus status) {
   base::UmaHistogramEnumeration("MobileDownload.DownloadPromptStatus", status,
                                 DownloadPromptStatus::MAX_VALUE);
 }
-
-void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status) {
-  base::UmaHistogramEnumeration("MobileDownload.DownloadLaterPromptStatus",
-                                status);
-}
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -15,14 +15,4 @@ enum class DownloadPromptStatus {
   MAX_VALUE
 };
 
-// The status of the download later prompt.
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.download
-enum class DownloadLaterPromptStatus {
-  kShowInitial,     // Show the prompt because it hasn't been shown before.
-  kShowPreference,  // Show the prompt because user indicated preference.
-  kDontShow,        // Don't show the prompt because user indicated preference.
-  kMaxValue = kDontShow
-};
-
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_PROMPT_STATUS_H_

@@ -175,9 +175,6 @@ void RecordDownloadStartPerProfileType(Profile* profile);
 #if BUILDFLAG(IS_ANDROID)
 // Records whether the download dialog is shown to the user.
 void RecordDownloadPromptStatus(DownloadPromptStatus status);
-
-// Records whether the download later dialog is shown to the user.
-void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

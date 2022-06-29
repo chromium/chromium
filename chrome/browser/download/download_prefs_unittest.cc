@@ -60,11 +60,6 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester;
 
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Download prefs are registered when creating the profile.
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
@@ -73,18 +68,10 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
   // Download prompt prefs should be registered correctly.
   histogram_tester.ExpectBucketCount("MobileDownload.DownloadPromptStatus",
                                      DownloadPromptStatus::SHOW_INITIAL, 1);
-  histogram_tester.ExpectBucketCount("MobileDownload.DownloadLaterPromptStatus",
-                                     DownloadPromptStatus::SHOW_INITIAL, 1);
   int prompt_status = profile.GetTestingPrefService()->GetInteger(
       prefs::kPromptForDownloadAndroid);
   EXPECT_EQ(prompt_status,
             static_cast<int>(DownloadPromptStatus::SHOW_INITIAL));
-
-  int download_later_prompt_status =
-      profile.GetTestingPrefService()->GetInteger(
-          prefs::kDownloadLaterPromptStatus);
-  EXPECT_EQ(download_later_prompt_status,
-            static_cast<int>(DownloadLaterPromptStatus::kShowInitial));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -686,36 +673,9 @@ TEST(DownloadPrefsTest, DownloadPathWithMigrationFromOldFormat) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-TEST(DownloadPrefsTest, DownloadLaterPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile;
-  DownloadPrefs prefs(&profile);
-
-  EXPECT_TRUE(prefs.PromptDownloadLater());
-  EXPECT_FALSE(prefs.HasDownloadLaterPromptShown());
-
-  profile.GetPrefs()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kShowPreference));
-  EXPECT_TRUE(prefs.PromptDownloadLater());
-  EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
-
-  profile.GetPrefs()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kDontShow));
-  EXPECT_FALSE(prefs.PromptDownloadLater());
-  EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
-}
-
-// Verfies the returned value of PromptForDownload() and PromptDownloadLater()
+// Verfies the returned value of PromptForDownload()
 // when prefs::kPromptForDownload is managed by enterprise policy,
 TEST(DownloadPrefsTest, ManagedPromptForDownload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   profile.GetTestingPrefService()->SetManagedPref(
@@ -723,17 +683,12 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   DownloadPrefs prefs(&profile);
 
   profile.GetPrefs()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kShowPreference));
-  profile.GetPrefs()->SetInteger(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(DownloadPromptStatus::DONT_SHOW));
-  EXPECT_FALSE(prefs.PromptDownloadLater());
   EXPECT_TRUE(prefs.PromptForDownload());
 
   profile.GetTestingPrefService()->SetManagedPref(
       prefs::kPromptForDownload, std::make_unique<base::Value>(false));
-  EXPECT_FALSE(prefs.PromptDownloadLater());
   EXPECT_FALSE(prefs.PromptForDownload());
 }
 

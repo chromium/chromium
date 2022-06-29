@@ -1822,10 +1822,6 @@ const char kOpenPdfDownloadInSystemReader[] =
 // ask the user where they want to download the file (only for Android).
 const char kPromptForDownloadAndroid[] = "download.prompt_for_download_android";
 
-// The prompt status for the download later dialog.
-const char kDownloadLaterPromptStatus[] =
-    "download.download_later_prompt_status";
-
 // Boolean which specifies whether we should display the missing SD card error.
 // This is only applicable for Android.
 const char kShowMissingSdCardErrorAndroid[] =

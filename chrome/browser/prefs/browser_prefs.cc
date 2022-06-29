@@ -766,6 +766,12 @@ const char kImprovedShortcutsNotificationShownCount[] =
 const char kPrivacySandboxPreferencesReconciled[] =
     "privacy_sandbox.preferences_reconciled";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 06/2022.
+const char kDownloadLaterPromptStatus[] =
+    "download.download_later_prompt_status";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1002,6 +1008,10 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   registry->RegisterBooleanPref(kPrivacySandboxPreferencesReconciled, false);
+
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kDownloadLaterPromptStatus, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -1954,6 +1964,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   // Added 06/2022.
   syncer::MigrateSyncRequestedPrefPostMice(profile_prefs);
+  profile_prefs->ClearPref(kDownloadLaterPromptStatus);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

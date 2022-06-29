@@ -601,7 +601,6 @@ extern const char kOpenPdfDownloadInSystemReader[];
 #endif
 #if BUILDFLAG(IS_ANDROID)
 extern const char kPromptForDownloadAndroid[];
-extern const char kDownloadLaterPromptStatus[];
 extern const char kShowMissingSdCardErrorAndroid[];
 extern const char kIncognitoReauthenticationForAndroid[];
 #endif

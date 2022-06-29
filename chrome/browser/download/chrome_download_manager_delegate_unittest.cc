@@ -331,12 +331,6 @@ void ChromeDownloadManagerDelegateTest::SetUp() {
 #if BUILDFLAG(IS_ANDROID)
   pref_service_->SetInteger(prefs::kPromptForDownloadAndroid,
                             static_cast<int>(DownloadPromptStatus::DONT_SHOW));
-
-  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
-    pref_service_->SetInteger(
-        prefs::kDownloadLaterPromptStatus,
-        static_cast<int>(DownloadLaterPromptStatus::kDontShow));
-  }
 #endif
 }
 

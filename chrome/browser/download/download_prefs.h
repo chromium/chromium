@@ -158,7 +158,6 @@ class DownloadPrefs {
   BooleanPrefMember prompt_for_download_;
 #if BUILDFLAG(IS_ANDROID)
   IntegerPrefMember prompt_for_download_android_;
-  IntegerPrefMember prompt_for_download_later_;
 #endif
 
   FilePathPrefMember download_path_;

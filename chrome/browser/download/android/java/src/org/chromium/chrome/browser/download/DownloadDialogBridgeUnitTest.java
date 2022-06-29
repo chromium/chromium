@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogCoordinat
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogProperties;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.net.ConnectionType;
@@ -107,8 +106,6 @@ public class DownloadDialogBridgeUnitTest {
         mBridge =
                 new DownloadDialogBridge(FAKE_NATIVE_HOLDER, mDownloadLaterDialog, mLocationDialog);
         mBridge.setPrefServiceForTesting(mPrefService);
-        when(mPrefService.getInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS))
-                .thenReturn(DownloadLaterPromptStatus.SHOW_INITIAL);
     }
 
     @After

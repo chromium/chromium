@@ -1347,7 +1347,6 @@ android_library("chrome_unit_test_java") {
     "javatests/src/org/chromium/chrome/browser/download/DownloadForegroundServiceTest.java",
     "javatests/src/org/chromium/chrome/browser/download/DownloadNotificationServiceTest.java",
     "javatests/src/org/chromium/chrome/browser/download/SystemDownloadNotifierTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogTest.java",
     "javatests/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogTest.java",
     "javatests/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImplTest.java",
     "javatests/src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandlerTest.java",

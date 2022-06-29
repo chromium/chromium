@@ -202,12 +202,6 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   prompt_for_download_android_.Init(prefs::kPromptForDownloadAndroid, prefs);
   RecordDownloadPromptStatus(
       static_cast<DownloadPromptStatus>(*prompt_for_download_android_));
-  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
-    prompt_for_download_later_.Init(prefs::kDownloadLaterPromptStatus, prefs);
-    RecordDownloadLaterPromptStatus(
-        static_cast<DownloadLaterPromptStatus>(*prompt_for_download_later_));
-  }
-
 #endif
   download_path_.Init(prefs::kDownloadDefaultDirectory, prefs);
   save_file_path_.Init(prefs::kSaveFileDefaultDirectory, prefs);
@@ -309,13 +303,6 @@ void DownloadPrefs::RegisterProfilePrefs(
       static_cast<int>(download_prompt_status),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
-    registry->RegisterIntegerPref(
-        prefs::kDownloadLaterPromptStatus,
-        static_cast<int>(DownloadLaterPromptStatus::kShowInitial),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
-
   registry->RegisterBooleanPref(prefs::kShowMissingSdCardErrorAndroid, true);
 #endif
 }
@@ -410,27 +397,10 @@ bool DownloadPrefs::PromptForDownload() const {
 }
 
 bool DownloadPrefs::PromptDownloadLater() const {
-#if BUILDFLAG(IS_ANDROID)
-  if (prompt_for_download_.IsManaged())
-    return false;
-
-  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
-    return *prompt_for_download_later_ !=
-           static_cast<int>(DownloadLaterPromptStatus::kDontShow);
-  }
-#endif
-
   return false;
 }
 
 bool DownloadPrefs::HasDownloadLaterPromptShown() const {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
-    return *prompt_for_download_later_ !=
-           static_cast<int>(DownloadLaterPromptStatus::kShowInitial);
-  }
-#endif
-
   return false;
 }
 
