@@ -14,8 +14,8 @@
 // generation feature.
 @interface QRGeneratorCoordinator : ChromeCoordinator
 
-// Initializes an instance with a base |viewController|, the current |browser|,
-// the |title| and |URL| of a webpage to generate a QR code for, and a |handler|
+// Initializes an instance with a base `viewController`, the current `browser`,
+// the `title` and `URL` of a webpage to generate a QR code for, and a `handler`
 // to handle commands execution.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

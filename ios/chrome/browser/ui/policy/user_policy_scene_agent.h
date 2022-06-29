@@ -53,7 +53,7 @@ class UserPolicySigninService;
 @interface UserPolicySceneAgent : ObservingSceneAgent
 
 - (instancetype)init NS_UNAVAILABLE;
-// Initialize the scene state agent with a |sceneUIProvider| to provide the UI
+// Initialize the scene state agent with a `sceneUIProvider` to provide the UI
 // objects of the scene.
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
                             authService:(AuthenticationService*)authService

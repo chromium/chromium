@@ -24,7 +24,7 @@
 }
 
 // Cancels TTS audio playback, and sends a kTTSDidStopPlayingNotification
-// notification if |sendNotification| is YES.
+// notification if `sendNotification` is YES.
 - (void)cancelPlaybackAndSendNotification:(BOOL)sendNotification;
 
 @end

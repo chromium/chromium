@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// Generate a QR code image for |data| and scaling it to have its height and
-// width equal to |imageLength| in points.
+// Generate a QR code image for `data` and scaling it to have its height and
+// width equal to `imageLength` in points.
 UIImage* GenerateQRCode(NSData* data, CGFloat imageLength);
 
 #endif  // IOS_CHROME_BROWSER_UI_QR_GENERATOR_QR_GENERATOR_UTIL_H_

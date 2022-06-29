@@ -53,7 +53,7 @@
 
 #pragma mark Private
 
-// Starts the TTS player sending |notification|.
+// Starts the TTS player sending `notification`.
 - (void)audioReadyForPlayback:(NSNotification*)notification {
   self.TTSPlayer =
       base::mac::ObjCCastStrict<TextToSpeechPlayer>(notification.object);

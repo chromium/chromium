@@ -19,26 +19,26 @@
 // Interface for printing.
 @interface PrintController : NSObject <WebStatePrinter>
 
-// |baseViewController| is the default VC to present print preview in case it
+// `baseViewController` is the default VC to present print preview in case it
 // is not specified in the command.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Shows print UI for |view| with |title|.
-// Print preview will be presented on top of |baseViewController|.
+// Shows print UI for `view` with `title`.
+// Print preview will be presented on top of `baseViewController`.
 - (void)printView:(UIView*)view
              withTitle:(NSString*)title
     baseViewController:(UIViewController*)baseViewController;
 
-// Shows print UI for |image| with |title|.
-// Print preview will be presented on top of |baseViewController|.
+// Shows print UI for `image` with `title`.
+// Print preview will be presented on top of `baseViewController`.
 - (void)printImage:(UIImage*)image
                  title:(NSString*)title
     baseViewController:(UIViewController*)baseViewController;
 
-// Dismisses the print dialog with animation if |animated|.
+// Dismisses the print dialog with animation if `animated`.
 - (void)dismissAnimated:(BOOL)animated;
 
 @end

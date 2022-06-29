@@ -13,8 +13,8 @@
 #error "This file requires ARC support."
 #endif
 
-// Test delegate helper; the delegate callback sets the |presented| and
-// |dismissed| property.
+// Test delegate helper; the delegate callback sets the `presented` and
+// `dismissed` property.
 @interface TestContainedPresenterDelegate : NSObject<ContainedPresenterDelegate>
 @property(nonatomic) BOOL presented;
 @property(nonatomic) BOOL dismissed;

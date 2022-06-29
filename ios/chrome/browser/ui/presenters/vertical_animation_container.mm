@@ -135,11 +135,11 @@ NSTimeInterval kAnimationDuration = 0.2;
                      completion:completion];
   } else {
     // Just execute the completion block synchronously if the dismissal isn't
-    // animated. |animations| isn't called because (a) -cleanupAfterDismissal
+    // animated. `animations` isn't called because (a) -cleanupAfterDismissal
     // removes the presented view controller from the view hierarchy, and (b)
     // in some contexts a non-animated dismissal may occur when the base view
     // controller is no longer on screen, and the constraint activation in
-    // |animations| will crash.
+    // `animations` will crash.
     completion(YES);
   }
 }
