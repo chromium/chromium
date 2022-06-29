@@ -23,6 +23,8 @@
 #include "skia/ext/image_operations.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -153,6 +155,8 @@ class ShelfAppButton::AppStatusIndicatorView
       public views::View,
       public ShelfAppButtonAnimation::Observer {
  public:
+  METADATA_HEADER(AppStatusIndicatorView);
+
   AppStatusIndicatorView() {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
@@ -290,6 +294,9 @@ class ShelfAppButton::AppStatusIndicatorView
   std::unique_ptr<gfx::SlideAnimation> status_change_animation_;
   base::TimeTicks animation_end_time_;  // For attention throbbing underline.
 };
+
+BEGIN_METADATA(ShelfAppButton, AppStatusIndicatorView, views::View)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // ShelfAppButton
