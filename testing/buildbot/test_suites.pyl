@@ -2044,6 +2044,7 @@
           'shards': 40,
         },
       },
+      'cast_runner_integration_tests': {},
       'content_browsertests': {
         'args': [
           '--',
