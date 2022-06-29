@@ -37,6 +37,7 @@ const base::Feature kEnableLauncherSearchNormalization{
     "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+// DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
 const base::Feature kForceShowContinueSection{
     "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",

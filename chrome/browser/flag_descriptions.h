@@ -3084,9 +3084,6 @@ extern const char kProjectorAnnotatorDescription[];
 extern const char kProjectorExcludeTranscriptName[];
 extern const char kProjectorExcludeTranscriptDescription[];
 
-extern const char kForceShowContinueSectionName[];
-extern const char kForceShowContinueSectionDescription[];
-
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
@@ -3250,9 +3247,6 @@ extern const char kLauncherNudgeDescription[];
 
 extern const char kLauncherNudgeShortIntervalName[];
 extern const char kLauncherNudgeShortIntervalDescription[];
-
-extern const char kLauncherNudgeSessionResetName[];
-extern const char kLauncherNudgeSessionResetDescription[];
 
 extern const char kLauncherPulsingBlocksRefreshName[];
 extern const char kLauncherPulsingBlocksRefreshDescription[];

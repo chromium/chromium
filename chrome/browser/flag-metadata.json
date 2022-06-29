@@ -3433,11 +3433,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "force-show-continue-section",
-    "owners":["anasalazar@chromium.org", "gzadina@google.com"],
-    "expiry_milestone": 104
-  },
-  {
     "name": "force-show-update-menu-badge",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which
@@ -4014,11 +4009,6 @@
   {
     "name": "launcher-nudge",
     "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 104
-  },
-  {
-    "name": "launcher-nudge-session-reset",
-    "owners":["anasalazar@chromium.org", "wcwang@chromium.org"],
     "expiry_milestone": 104
   },
   {

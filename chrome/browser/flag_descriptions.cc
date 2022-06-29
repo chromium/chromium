@@ -5393,12 +5393,6 @@ const char kProjectorExcludeTranscriptName[] =
 const char kProjectorExcludeTranscriptDescription[] =
     "Support excluding segment of Projector recording by excluding transcript";
 
-const char kForceShowContinueSectionName[] =
-    "App Launcher: Force Continue Section Suggestions";
-const char kForceShowContinueSectionDescription[] =
-    "Forces the continue section of the app launcher to show. If there are no "
-    "file suggestions available, the suggestions will be faked.";
-
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =
@@ -5672,12 +5666,6 @@ const char kLauncherNudgeShortIntervalName[] =
     "Enable short intervals for launcher nudge";
 const char kLauncherNudgeShortIntervalDescription[] =
     "Enables short intervals for launcher nudge for testing";
-
-const char kLauncherNudgeSessionResetName[] =
-    "Enable resetting launcher nudge data";
-const char kLauncherNudgeSessionResetDescription[] =
-    "When enabled, this will reset the launcher nudge shown data on every new "
-    "user session, allowing the nudge to be shown again.";
 
 const char kLauncherPulsingBlocksRefreshName[] =
     "Launcher pulsing blocks' new UI";
