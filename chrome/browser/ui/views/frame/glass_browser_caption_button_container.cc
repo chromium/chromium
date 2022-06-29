@@ -189,9 +189,12 @@ void GlassBrowserCaptionButtonContainer::OnWidgetBoundsChanged(
 }
 
 void GlassBrowserCaptionButtonContainer::UpdateButtons() {
+  minimize_button_->SetVisible(frame_view_->browser_view()->CanMinimize());
+
   const bool is_maximized = frame_view_->IsMaximized();
-  restore_button_->SetVisible(is_maximized);
-  maximize_button_->SetVisible(!is_maximized);
+  const bool can_maximize = frame_view_->browser_view()->CanMaximize();
+  restore_button_->SetVisible(is_maximized && can_maximize);
+  maximize_button_->SetVisible(!is_maximized && can_maximize);
 
   // In touch mode, windows cannot be taken out of fullscreen or tiled mode, so
   // the maximize/restore button should be disabled.
