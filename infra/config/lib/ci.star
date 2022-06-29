@@ -303,6 +303,8 @@ ci = struct(
 
 rbe_instance = struct(
     DEFAULT = "rbe-chromium-trusted",
+    DEFAULT_CQ = "rbe-chromium-untrusted",
+    TEST_CQ = "rbe-chromium-untrusted-test",
     GVISOR_SHADOW = "rbe-chromium-gvisor-shadow",
 )
 

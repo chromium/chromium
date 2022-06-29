@@ -916,6 +916,120 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Comparison Android (reclient)(CQ)",
+    console_view_entry = consoles.console_view_entry(
+        category = "android|cq",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison Android CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 250,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.builder(
+    name = "Comparison Linux (reclient)(CQ)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|cq",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 6 * time.hour,
+    reclient_cache_silo = "Comparison Linux CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 250,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.builder(
+    name = "Comparison Mac (reclient)(CQ)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|cq",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison Mac CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 250,
+    os = os.MAC_DEFAULT,
+    cores = None,
+)
+
+ci.builder(
+    name = "Comparison Windows (8 cores) (reclient)(CQ)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|cq",
+        short_name = "re",
+    ),
+    cores = 8,
+    goma_jobs = 80,
+    executable = "recipe:reclient_goma_comparison",
+    reclient_cache_silo = "Comparison Windows 8 cores CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 80,
+    os = os.WINDOWS_DEFAULT,
+)
+
+ci.builder(
+    name = "Comparison Windows (reclient)(CQ)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|cq",
+        short_name = "re",
+    ),
+    cores = 32,
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 6 * time.hour,
+    reclient_cache_silo = "Comparison Windows CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 250,
+    os = os.WINDOWS_DEFAULT,
+)
+
+ci.builder(
+    name = "Comparison Simple Chrome (reclient)(CQ)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "cros x64|cq",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 250,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.builder(
+    name = "Comparison ios (reclient)(CQ)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "ios|cq",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison ios CQ - cache siloed",
+    reclient_instance = rbe_instance.TEST_CQ,
+    reclient_jobs = 250,
+    os = os.MAC_DEFAULT,
+    cores = None,
+    xcode = xcode.x13main,
+)
+
+ci.builder(
     name = "Linux Builder (j-500) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
