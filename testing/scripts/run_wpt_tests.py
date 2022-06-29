@@ -28,10 +28,10 @@ BLINK_TOOLS_DIR = os.path.join(
     SRC_DIR, 'third_party', 'blink', 'tools')
 
 if BLINK_TOOLS_DIR not in sys.path:
-  sys.path.append(BLINK_TOOLS_DIR)
+    sys.path.append(BLINK_TOOLS_DIR)
 
 if BUILD_ANDROID not in sys.path:
-  sys.path.append(BUILD_ANDROID)
+    sys.path.append(BUILD_ANDROID)
 
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.port.android import (
@@ -58,15 +58,13 @@ except ImportError:
     _ANDROID_ENABLED = False
 
 
-# pylint: disable=super-with-arguments
 def _make_pass_through_action(dest, map_arg=lambda arg: arg):
     class PassThroughAction(argparse.Action):
         def __init__(self, option_strings, dest, nargs=None, **kwargs):
             if nargs is not None and not isinstance(nargs, int):
                 raise ValueError('nargs {} not supported for {}'.format(
                     nargs, option_strings))
-            super(PassThroughAction, self).__init__(option_strings, dest,
-                                                    nargs=nargs, **kwargs)
+            super().__init__(option_strings, dest, nargs=nargs, **kwargs)
 
         def __call__(self, parser, namespace, values, option_string=None):
             if not option_string:
@@ -99,291 +97,290 @@ BinaryPassThroughAction = _make_pass_through_action(
 
 
 class WPTAdapter(wpt_common.BaseWptScriptAdapter):
+    def __init__(self):
+        self._metadata_dir = None
+        super().__init__()
+        # Parent adapter adds extra arguments, so it is safe to parse the
+        # arguments and set options here.
+        try:
+            self.parse_args()
+            product_cls = _product_registry[self.options.product_name]
+            self.product = product_cls(self.host,
+                                       self.options,
+                                       self.select_python_executable())
+        except ValueError as exc:
+            self._parser.error(str(exc))
 
-  def __init__(self):
-    self._metadata_dir = None
-    super(WPTAdapter, self).__init__()
-    # Parent adapter adds extra arguments, so it is safe to parse the arguments
-    # and set options here.
-    try:
-      self.parse_args()
-      product_cls = _product_registry[self.options.product_name]
-      self.product = product_cls(self.host,
-                                 self.options,
-                                 self.select_python_executable())
-    except ValueError as exc:
-      self._parser.error(str(exc))
+    def parse_args(self, args=None):
+        super().parse_args(args)
+        if not hasattr(self.options, 'wpt_args'):
+            self.options.wpt_args = []
+        logging.basicConfig(
+            level=self.log_level,
+            # Align level name for easier reading.
+            format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s',
+            force=True)
 
-  def parse_args(self, args=None):
-    super(WPTAdapter, self).parse_args(args)
-    if not hasattr(self.options, 'wpt_args'):
-        self.options.wpt_args = []
-    logging.basicConfig(
-        level=self.log_level,
-        # Align level name for easier reading.
-        format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s',
-        force=True)
-
-  @property
-  def rest_args(self):
-    rest_args = super(WPTAdapter, self).rest_args
-
-    rest_args.extend([
-      '--webdriver-arg=--enable-chrome-logs',
-      # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
-      # '--symbols-path'.
-      '--headless',
-      # Exclude webdriver tests for now. The CI runs them separately.
-      '--exclude=webdriver',
-      '--exclude=infrastructure/webdriver',
-      '--binary-arg=--host-resolver-rules='
-          'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
-      '--binary-arg=--enable-experimental-web-platform-features',
-      '--binary-arg=--enable-blink-features=MojoJS,MojoJSTest',
-      '--binary-arg=--enable-blink-test-features',
-      '--binary-arg=--disable-field-trial-config',
-      '--binary-arg=--enable-features=DownloadService<DownloadServiceStudy',
-      '--binary-arg=--force-fieldtrials=DownloadServiceStudy/Enabled',
-      '--binary-arg=--force-fieldtrial-params=DownloadServiceStudy.Enabled:'
-      'start_up_delay_ms/0',
-    ])
-    rest_args.extend(self.product.wpt_args)
-
-    # if metadata was created then add the metadata directory
-    # to the list of wpt arguments
-    if self._metadata_dir:
-      rest_args.extend(['--metadata', self._metadata_dir])
-
-    if self.options.test_filter:
-      for pattern in self.options.test_filter.split(':'):
+    @property
+    def rest_args(self):
+        rest_args = super().rest_args
         rest_args.extend([
-          '--include',
-          self.path_finder.strip_wpt_path(pattern),
+            '--webdriver-arg=--enable-chrome-logs',
+            # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary'
+            # and '--symbols-path'.
+            '--headless',
+            # Exclude webdriver tests for now. The CI runs them separately.
+            '--exclude=webdriver',
+            '--exclude=infrastructure/webdriver',
+            '--binary-arg=--host-resolver-rules='
+                'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
+            '--binary-arg=--enable-experimental-web-platform-features',
+            '--binary-arg=--enable-blink-features=MojoJS,MojoJSTest',
+            '--binary-arg=--enable-blink-test-features',
+            '--binary-arg=--disable-field-trial-config',
+            '--binary-arg=--enable-features='
+                'DownloadService<DownloadServiceStudy',
+            '--binary-arg=--force-fieldtrials=DownloadServiceStudy/Enabled',
+            '--binary-arg=--force-fieldtrial-params='
+                'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
         ])
+        rest_args.extend(self.product.wpt_args)
 
-    rest_args.extend(self.options.wpt_args)
-    return rest_args
+        # if metadata was created then add the metadata directory
+        # to the list of wpt arguments
+        if self._metadata_dir:
+            rest_args.extend(['--metadata', self._metadata_dir])
 
-  def _maybe_build_metadata(self):
-    metadata_builder_cmd = [
-      self.select_python_executable(),
-      self.path_finder.path_from_blink_tools('build_wpt_metadata.py'),
-      '--metadata-output-dir=%s' % self._metadata_dir,
-    ]
-    if self.options.ignore_default_expectations:
-      metadata_builder_cmd += [ '--ignore-default-expectations' ]
-    metadata_builder_cmd.extend(self.product.metadata_builder_args)
-    return common.run_command(metadata_builder_cmd)
+        if self.options.test_filter:
+            for pattern in self.options.test_filter.split(':'):
+              rest_args.extend([
+                  '--include',
+                  self.path_finder.strip_wpt_path(pattern),
+              ])
 
-  @property
-  def log_level(self):
-    if self.options.verbose >= 2:
-      return logging.DEBUG
-    if self.options.verbose >= 1:
-      return logging.INFO
-    return logging.WARNING
+        rest_args.extend(self.options.wpt_args)
+        return rest_args
 
-  def run_test(self):
-    with contextlib.ExitStack() as stack:
-      tmp_dir = stack.enter_context(self.fs.mkdtemp())
-      # Manually remove the temporary directory's contents recursively after the
-      # tests complete. Otherwise, `mkdtemp()` raise an error.
-      stack.callback(self.fs.rmtree, tmp_dir)
-      stack.enter_context(self.product.test_env())
-      self._metadata_dir = os.path.join(tmp_dir, 'metadata_dir')
-      metadata_command_ret = self._maybe_build_metadata()
-      if metadata_command_ret != 0:
-        return metadata_command_ret
+    def _maybe_build_metadata(self):
+        metadata_builder_cmd = [
+            self.select_python_executable(),
+            self.path_finder.path_from_blink_tools('build_wpt_metadata.py'),
+            '--metadata-output-dir=%s' % self._metadata_dir,
+        ]
+        if self.options.ignore_default_expectations:
+            metadata_builder_cmd += [ '--ignore-default-expectations' ]
+        metadata_builder_cmd.extend(self.product.metadata_builder_args)
+        return common.run_command(metadata_builder_cmd)
 
-      # If there is no metadata then we need to create an
-      # empty directory to pass to wptrunner
-      if not os.path.exists(self._metadata_dir):
-        os.makedirs(self._metadata_dir)
-      return super(WPTAdapter, self).run_test()
+    @property
+    def log_level(self):
+        if self.options.verbose >= 2:
+            return logging.DEBUG
+        if self.options.verbose >= 1:
+            return logging.INFO
+        return logging.WARNING
 
-  def clean_up_after_test_run(self):
-    # Avoid having a dangling reference to the temp directory
-    # which was deleted
-    self._metadata_dir = None
+    def run_test(self):
+        with contextlib.ExitStack() as stack:
+            tmp_dir = stack.enter_context(self.fs.mkdtemp())
+            # Manually remove the temporary directory's contents recursively
+            # after the tests complete. Otherwise, `mkdtemp()` raise an error.
+            stack.callback(self.fs.rmtree, tmp_dir)
+            stack.enter_context(self.product.test_env())
+            self._metadata_dir = os.path.join(tmp_dir, 'metadata_dir')
+            metadata_command_ret = self._maybe_build_metadata()
+            if metadata_command_ret != 0:
+                return metadata_command_ret
 
-  def add_extra_arguments(self, parser):
-    super(WPTAdapter, self).add_extra_arguments(parser)
-    parser.description = __doc__
-    self.add_metadata_arguments(parser)
-    self.add_binary_arguments(parser)
-    self.add_test_arguments(parser)
-    if _ANDROID_ENABLED:
-        self.add_android_arguments(parser)
-    parser.add_argument(
-        '-p',
-        '--product',
-        dest='product_name',
-        default='chrome',
-        # The parser converts the value before checking if it is in choices,
-        # so we avoid looking up the class right away.
-        choices=sorted(_product_registry, key=len),
-        help='Product (browser or browser component) to test.')
-    parser.add_argument(
-        '--webdriver-binary',
-        help=('Path of the webdriver binary.'
-              'It needs to have the same major version '
-              'as the browser binary or APK.'))
-    parser.add_argument(
-        '--webdriver-arg',
-        action=WPTPassThroughAction,
-        help='WebDriver args.')
-    parser.add_argument(
-        '-j',
-        '--processes',
-        '--child-processes',
-        type=lambda processes: max(0, int(processes)),
-        default=1,
-        help=('Number of drivers to start in parallel. '
-              '(For Android, this number is the number of emulators started. '
-              'The actual number of devices tested may be higher '
-              'if physical devices are available.)'))
+            # If there is no metadata then we need to create an
+            # empty directory to pass to wptrunner
+            if not os.path.exists(self._metadata_dir):
+                os.makedirs(self._metadata_dir)
+            return super().run_test()
 
-  def add_metadata_arguments(self, parser):
-      group = parser.add_argument_group(
-          'Metadata Builder',
-          'Options for building WPT metadata from web test expectations.')
-      group.add_argument(
-          '--additional-expectations',
-          metavar='EXPECTATIONS_FILE',
-          action='append',
-          default=[],
-          help='Paths to additional test expectations files.')
-      group.add_argument(
-          '--ignore-default-expectations',
-          action='store_true',
-          help='Do not use the default set of TestExpectations files.')
-      group.add_argument(
-          '--ignore-browser-specific-expectations',
-          action='store_true',
-          default=False,
-          help='Ignore browser-specific expectation files.')
-      return group
+    def clean_up_after_test_run(self):
+        # Avoid having a dangling reference to the temp directory
+        # which was deleted
+        self._metadata_dir = None
 
-  def add_binary_arguments(self, parser):
-      group = parser.add_argument_group(
-          'Binary Configuration',
-          'Options for configuring the binary under test.')
-      group.add_argument(
-          '--enable-features',
-          metavar='FEATURES',
-          action=BinaryPassThroughAction,
-          help='Chromium features to enable during testing.')
-      group.add_argument(
-          '--disable-features',
-          metavar='FEATURES',
-          action=BinaryPassThroughAction,
-          help='Chromium features to disable during testing.')
-      group.add_argument(
-          '--force-fieldtrials',
-          metavar='TRIALS',
-          action=BinaryPassThroughAction,
-          help='Force trials for Chromium features.')
-      group.add_argument(
-          '--force-fieldtrial-params',
-          metavar='TRIAL_PARAMS',
-          action=BinaryPassThroughAction,
-          help='Force trial params for Chromium features.')
-      return group
+    def add_extra_arguments(self, parser):
+        super().add_extra_arguments(parser)
+        parser.description = __doc__
+        self.add_metadata_arguments(parser)
+        self.add_binary_arguments(parser)
+        self.add_test_arguments(parser)
+        if _ANDROID_ENABLED:
+            self.add_android_arguments(parser)
+        parser.add_argument(
+            '-p',
+            '--product',
+            dest='product_name',
+            default='chrome',
+            # The parser converts the value before checking if it is in choices,
+            # so we avoid looking up the class right away.
+            choices=sorted(_product_registry, key=len),
+            help='Product (browser or browser component) to test.')
+        parser.add_argument(
+            '--webdriver-binary',
+            help=('Path of the webdriver binary.'
+                  'It needs to have the same major version '
+                  'as the browser binary or APK.'))
+        parser.add_argument(
+            '--webdriver-arg',
+            action=WPTPassThroughAction,
+            help='WebDriver args.')
+        parser.add_argument(
+            '-j',
+            '--processes',
+            '--child-processes',
+            type=lambda processes: max(0, int(processes)),
+            default=1,
+            help=('Number of drivers to start in parallel. (For Android, '
+                  'this number is the number of emulators started.)'
+                  'The actual number of devices tested may be higher '
+                  'if physical devices are available.)'))
 
-  def add_test_arguments(self, parser):
-      group = parser.add_argument_group(
-          'Test Selection',
-          'Options for selecting tests to run.')
-      group.add_argument(
-          '--include',
-          metavar='TEST_OR_DIR',
-          action=WPTPassThroughAction,
-          help=('Test(s) to run. '
-                "Defaults to all tests, if '--default-exclude' not provided."))
-      group.add_argument(
-          '--include-file',
-          action=WPTPassThroughAction,
-          help='A file listing test(s) to run.')
-      group.add_argument(
-          '--test-filter',
-          '--gtest_filter',
-          metavar='TESTS_OR_DIRS',
-          help='Colon-separated list of test names (URL prefixes).')
-      return group
+    def add_metadata_arguments(self, parser):
+        group = parser.add_argument_group(
+            'Metadata Builder',
+            'Options for building WPT metadata from web test expectations.')
+        group.add_argument(
+            '--additional-expectations',
+            metavar='EXPECTATIONS_FILE',
+            action='append',
+            default=[],
+            help='Paths to additional test expectations files.')
+        group.add_argument(
+            '--ignore-default-expectations',
+            action='store_true',
+            help='Do not use the default set of TestExpectations files.')
+        group.add_argument(
+            '--ignore-browser-specific-expectations',
+            action='store_true',
+            default=False,
+            help='Ignore browser-specific expectation files.')
+        return group
 
-  def add_mode_arguments(self, parser):
-      group = super(WPTAdapter, self).add_mode_arguments(parser)
-      group.add_argument(
-          '--list-tests',
-          nargs=0,
-          action=WPTPassThroughAction,
-          help='List all tests that will run.')
-      return group
+    def add_binary_arguments(self, parser):
+        group = parser.add_argument_group(
+            'Binary Configuration',
+            'Options for configuring the binary under test.')
+        group.add_argument(
+            '--enable-features',
+            metavar='FEATURES',
+            action=BinaryPassThroughAction,
+            help='Chromium features to enable during testing.')
+        group.add_argument(
+            '--disable-features',
+            metavar='FEATURES',
+            action=BinaryPassThroughAction,
+            help='Chromium features to disable during testing.')
+        group.add_argument(
+            '--force-fieldtrials',
+            metavar='TRIALS',
+            action=BinaryPassThroughAction,
+            help='Force trials for Chromium features.')
+        group.add_argument(
+            '--force-fieldtrial-params',
+            metavar='TRIAL_PARAMS',
+            action=BinaryPassThroughAction,
+            help='Force trial params for Chromium features.')
+        return group
 
-  def add_output_arguments(self, parser):
-      group = super(WPTAdapter, self).add_output_arguments(parser)
-      group.add_argument(
-          '--log-raw',
-          metavar='RAW_REPORT_FILE',
-          action=WPTPassThroughAction,
-          help='Log raw report.')
-      group.add_argument(
-          '--log-html',
-          metavar='HTML_REPORT_FILE',
-          action=WPTPassThroughAction,
-          help='Log html report.')
-      group.add_argument(
-          '--log-xunit',
-          metavar='XUNIT_REPORT_FILE',
-          action=WPTPassThroughAction,
-          help='Log xunit report.')
-      return group
+    def add_test_arguments(self, parser):
+        group = parser.add_argument_group(
+            'Test Selection',
+            'Options for selecting tests to run.')
+        group.add_argument(
+            '--include',
+            metavar='TEST_OR_DIR',
+            action=WPTPassThroughAction,
+            help=('Test(s) to run. Defaults to all tests, '
+                  "if '--default-exclude' not provided."))
+        group.add_argument(
+            '--include-file',
+            action=WPTPassThroughAction,
+            help='A file listing test(s) to run.')
+        group.add_argument(
+            '--test-filter',
+            '--gtest_filter',
+            metavar='TESTS_OR_DIRS',
+            help='Colon-separated list of test names (URL prefixes).')
+        return group
 
-  def add_android_arguments(self, parser):
-      group = parser.add_argument_group(
-          'Android',
-          'Options for configuring Android devices and tooling.')
-      add_emulator_args(group)
-      group.add_argument(
-          '--browser-apk',
-          # Aliases for backwards compatibility.
-          '--chrome-apk',
-          '--system-webview-shell',
-          '--weblayer-shell',
-          help=('Path to the browser APK to install and run. '
-                '(For WebView and WebLayer, this value is the shell. '
-                'Defaults to an on-device APK if not provided.)'))
-      group.add_argument(
-          '--webview-provider',
-          help=('Path to a WebView provider APK to install. '
-                '(WebView only.)'))
-      group.add_argument(
-          '--additional-apk',
-          # Aliases for backwards compatibility.
-          '--weblayer-support',
-          action='append',
-          default=[],
-          help='Paths to additional APKs to install.')
-      group.add_argument(
-          '--release-channel',
-          help='Install WebView from release channel. (WebView only.)')
-      group.add_argument(
-          '--package-name',
-          # Aliases for backwards compatibility.
-          '--chrome-package-name',
-          help='Package name to run tests against.')
-      group.add_argument(
-          '--adb-binary',
-          type=os.path.realpath,
-          help='Path to adb binary to use.')
-      return group
+    def add_mode_arguments(self, parser):
+        group = super().add_mode_arguments(parser)
+        group.add_argument(
+            '--list-tests',
+            nargs=0,
+            action=WPTPassThroughAction,
+            help='List all tests that will run.')
+        return group
 
-  def wpt_product_name(self):
-    # `self.product` may not be set yet, so `self.product.name` is unavailable.
-    # `self._options.product_name` may be an alias, so we need to translate it
-    # into its wpt-accepted name.
-    product_cls = _product_registry[self._options.product_name]
-    return product_cls.name
+    def add_output_arguments(self, parser):
+        group = super().add_output_arguments(parser)
+        group.add_argument(
+            '--log-raw',
+            metavar='RAW_REPORT_FILE',
+            action=WPTPassThroughAction,
+            help='Log raw report.')
+        group.add_argument(
+            '--log-html',
+            metavar='HTML_REPORT_FILE',
+            action=WPTPassThroughAction,
+            help='Log html report.')
+        group.add_argument(
+            '--log-xunit',
+            metavar='XUNIT_REPORT_FILE',
+            action=WPTPassThroughAction,
+            help='Log xunit report.')
+        return group
+
+    def add_android_arguments(self, parser):
+        group = parser.add_argument_group(
+            'Android',
+            'Options for configuring Android devices and tooling.')
+        add_emulator_args(group)
+        group.add_argument(
+            '--browser-apk',
+            # Aliases for backwards compatibility.
+            '--chrome-apk',
+            '--system-webview-shell',
+            '--weblayer-shell',
+            help=('Path to the browser APK to install and run. '
+                  '(For WebView and WebLayer, this value is the shell. '
+                  'Defaults to an on-device APK if not provided.)'))
+        group.add_argument(
+            '--webview-provider',
+            help=('Path to a WebView provider APK to install. '
+                  '(WebView only.)'))
+        group.add_argument(
+            '--additional-apk',
+            # Aliases for backwards compatibility.
+            '--weblayer-support',
+            action='append',
+            default=[],
+            help='Paths to additional APKs to install.')
+        group.add_argument(
+            '--release-channel',
+            help='Install WebView from release channel. (WebView only.)')
+        group.add_argument(
+            '--package-name',
+            # Aliases for backwards compatibility.
+            '--chrome-package-name',
+            help='Package name to run tests against.')
+        group.add_argument(
+            '--adb-binary',
+            type=os.path.realpath,
+            help='Path to adb binary to use.')
+        return group
+
+    def wpt_product_name(self):
+        # `self.product` may not be set yet, so `self.product.name` is
+        # unavailable. `self._options.product_name` may be an alias, so we need
+        # to translate it into its wpt-accepted name.
+        product_cls = _product_registry[self._options.product_name]
+        return product_cls.name
 
 
 class Product:
@@ -470,7 +467,7 @@ class Chrome(Product):
 
     @property
     def wpt_args(self):
-        wpt_args = list(super(Chrome, self).wpt_args)
+        wpt_args = list(super().wpt_args)
         wpt_args.extend([
             '--binary=%s' % self.binary,
             '--processes=%d' % self._options.processes,
@@ -479,7 +476,7 @@ class Chrome(Product):
 
     @property
     def metadata_builder_args(self):
-        args = list(super(Chrome, self).metadata_builder_args)
+        args = list(super().metadata_builder_args)
         path_to_wpt_root = self._path_finder.path_from_web_tests(
             self._path_finder.wpt_prefix())
         # TODO(crbug/1299650): Strip trailing '/'. Otherwise,
@@ -494,7 +491,7 @@ class Chrome(Product):
 
     @property
     def expectations(self):
-        expectations = list(super(Chrome, self).expectations)
+        expectations = list(super().expectations)
         expectations.append(
             self._path_finder.path_from_web_tests('WPTOverrideExpectations'))
         return expectations
@@ -517,7 +514,7 @@ class Chrome(Product):
         default_binary = 'chromedriver'
         if self._host.platform.is_win():
             default_binary += '.exe'
-        return (super(Chrome, self).webdriver_binary
+        return (super().webdriver_binary
                 or self._path_from_target(default_binary))
 
 
@@ -533,13 +530,12 @@ def _install_apk(device, path):
 
 class ChromeAndroidBase(Product):
     def __init__(self, host, options, python_executable=None):
-        super(ChromeAndroidBase, self).__init__(host, options,
-                                                python_executable)
+        super().__init__(host, options, python_executable)
         self.devices = {}
 
     @contextlib.contextmanager
     def test_env(self):
-        with super(ChromeAndroidBase, self).test_env():
+        with super().test_env():
             devil_chromium.Initialize(adb_path=self._options.adb_binary)
             if not self._options.adb_binary:
                 self._options.adb_binary = devil_env.config.FetchPath('adb')
@@ -555,7 +551,7 @@ class ChromeAndroidBase(Product):
 
     @property
     def wpt_args(self):
-        wpt_args = list(super(ChromeAndroidBase, self).wpt_args)
+        wpt_args = list(super().wpt_args)
         for serial in self.devices:
             wpt_args.append('--device-serial=%s' % serial)
         package_name = self.get_browser_package_name()
@@ -567,7 +563,7 @@ class ChromeAndroidBase(Product):
 
     @property
     def metadata_builder_args(self):
-        args = list(super(ChromeAndroidBase, self).metadata_builder_args)
+        args = list(super().metadata_builder_args)
         args.extend([
             '--android-product=%s' % self.name,
             '--use-subtest-results',
@@ -576,7 +572,7 @@ class ChromeAndroidBase(Product):
 
     @property
     def expectations(self):
-        expectations = list(super(ChromeAndroidBase, self).expectations)
+        expectations = list(super().expectations)
         expectations.append(ANDROID_DISABLED_TESTS)
         maybe_path = PRODUCTS_TO_EXPECTATION_FILE_PATHS.get(self.name)
         if (maybe_path
@@ -603,7 +599,7 @@ class ChromeAndroidBase(Product):
     def webdriver_binary(self):
         default_binary = self._path_from_target('clang_x64',
                                                             'chromedriver')
-        return super(ChromeAndroidBase, self).webdriver_binary or default_binary
+        return super().webdriver_binary or default_binary
 
     def get_browser_package_name(self):
         """Get the name of the package to run tests against.
@@ -677,12 +673,12 @@ class WebLayer(ChromeAndroidBase):
 
     @property
     def wpt_args(self):
-        args = list(super(WebLayer, self).wpt_args)
+        args = list(super().wpt_args)
         args.append('--test-type=testharness')
         return args
 
     def get_browser_package_name(self):
-        return (super(WebLayer, self).get_browser_package_name()
+        return (super().get_browser_package_name()
                 or 'org.chromium.weblayer.shell')
 
     def get_version_provider_package_name(self):
@@ -690,7 +686,7 @@ class WebLayer(ChromeAndroidBase):
             support_apk = self._options.additional_apk[0]
             with contextlib.suppress(apk_helper.ApkHelperError):
                 return apk_helper.GetPackageName(support_apk)
-        return super(WebLayer, self).get_version_provider_package_name()
+        return super().get_version_provider_package_name()
 
 
 class WebView(ChromeAndroidBase):
@@ -710,7 +706,7 @@ class WebView(ChromeAndroidBase):
             self._python_executable)
 
     def _validate_options(self):
-        super(WebView, self)._validate_options()
+        super()._validate_options()
         if not self._options.webview_provider \
                 and not self._options.release_channel:
             raise ValueError(
@@ -718,7 +714,7 @@ class WebView(ChromeAndroidBase):
                 "'--release-channel' to install WebView.")
 
     def get_browser_package_name(self):
-        return (super(WebView, self).get_browser_package_name()
+        return (super().get_browser_package_name()
                 or 'org.chromium.webview_shell')
 
     def get_version_provider_package_name(self):
@@ -728,11 +724,11 @@ class WebView(ChromeAndroidBase):
         if self._options.webview_provider:
             with contextlib.suppress(apk_helper.ApkHelperError):
                 return apk_helper.GetPackageName(self._options.webview_provider)
-        return super(WebView, self).get_version_provider_package_name()
+        return super().get_version_provider_package_name()
 
     def provision_device(self, device):
         self._tasks.enter_context(self._install_webview(device))
-        super(WebView, self).provision_device(device)
+        super().provision_device(device)
 
 
 class ChromeAndroid(ChromeAndroidBase):
@@ -740,7 +736,7 @@ class ChromeAndroid(ChromeAndroidBase):
     aliases = ['clank']
 
     def _validate_options(self):
-        super(ChromeAndroid, self)._validate_options()
+        super()._validate_options()
         if not self._options.package_name and not self._options.browser_apk:
             raise ValueError(
                 "Must provide either '--package-name' or '--browser-apk' "
@@ -748,17 +744,17 @@ class ChromeAndroid(ChromeAndroidBase):
 
 
 def add_emulator_args(parser):
-  parser.add_argument(
-      '--avd-config',
-      type=os.path.realpath,
-      help=('Path to the avd config. Required for Android products. '
-            '(See //tools/android/avd/proto for message definition '
-            'and existing *.textpb files.)'))
-  parser.add_argument(
-      '--emulator-window',
-      action='store_true',
-      default=False,
-      help='Enable graphical window display on the emulator.')
+    parser.add_argument(
+        '--avd-config',
+        type=os.path.realpath,
+        help=('Path to the avd config. Required for Android products. '
+              '(See //tools/android/avd/proto for message definition '
+              'and existing *.textpb files.)'))
+    parser.add_argument(
+        '--emulator-window',
+        action='store_true',
+        default=False,
+        help='Enable graphical window display on the emulator.')
 
 
 def _make_product_registry():
@@ -780,30 +776,30 @@ _product_registry = _make_product_registry()
 
 @contextlib.contextmanager
 def get_device(args):
-  with get_devices(args) as devices:
-    yield None if not devices else devices[0]
+    with get_devices(args) as devices:
+        yield None if not devices else devices[0]
 
 
 @contextlib.contextmanager
 def get_devices(args):
-  if not _ANDROID_ENABLED:
-    raise Exception('Android is not available')
-  instances = []
-  try:
-    if args.avd_config:
-      avd_config = avd.AvdConfig(args.avd_config)
-      logger.warning('Installing emulator from %s', args.avd_config)
-      avd_config.Install()
-      for _ in range(max(args.processes, 1)):
-        instance = avd_config.CreateInstance()
-        instance.Start(writable_system=True, window=args.emulator_window)
-        instances.append(instance)
+    if not _ANDROID_ENABLED:
+        raise Exception('Android is not available')
+    instances = []
+    try:
+        if args.avd_config:
+          avd_config = avd.AvdConfig(args.avd_config)
+          logger.warning('Installing emulator from %s', args.avd_config)
+          avd_config.Install()
+          for _ in range(max(args.processes, 1)):
+              instance = avd_config.CreateInstance()
+              instance.Start(writable_system=True, window=args.emulator_window)
+              instances.append(instance)
 
-    #TODO(weizhong): when choose device, make sure abi matches with target
-    yield device_utils.DeviceUtils.HealthyDevices()
-  finally:
-    for instance in instances:
-      instance.Stop()
+        #TODO(weizhong): when choose device, make sure abi matches with target
+        yield device_utils.DeviceUtils.HealthyDevices()
+    finally:
+        for instance in instances:
+            instance.Stop()
 
 
 def main():
