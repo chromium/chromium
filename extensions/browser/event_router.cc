@@ -848,6 +848,10 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
          ExtensionsBrowserClient::Get()->IsSameContext(
              browser_context_, event->restrict_to_browser_context));
 
+  // Don't dispatch events to observers if the browser is shutting down.
+  if (browser_context_->ShutdownStarted())
+    return;
+
   for (TestObserver& observer : test_observers_)
     observer.OnWillDispatchEvent(*event);
 

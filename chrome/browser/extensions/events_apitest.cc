@@ -10,15 +10,19 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
-#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 
@@ -104,6 +108,88 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
   // Sanity check: app.runtime.onLaunched should have a lazy listener.
   EXPECT_TRUE(
       event_router->HasLazyEventListenerForTesting("app.runtime.onLaunched"));
+}
+
+namespace {
+
+class ProfileDestructionWatcher : public ProfileObserver {
+ public:
+  ProfileDestructionWatcher() = default;
+
+  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
+  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
+      delete;
+
+  ~ProfileDestructionWatcher() override = default;
+
+  void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
+  void WaitForDestruction() { run_loop_.Run(); }
+  bool will_be_destroyed() const { return will_be_destroyed_; }
+
+ private:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    DCHECK(!will_be_destroyed_) << "Double profile destruction";
+    will_be_destroyed_ = true;
+    observed_profiles_.RemoveObservation(profile);
+    run_loop_.Quit();
+
+    // Broadcast an event to the event router. Since a shutdown is occurring, it
+    // should be ignored and cause no problems.
+    EventRouter* event_router = EventRouter::Get(profile);
+    event_router->BroadcastEvent(std::make_unique<Event>(
+        events::FOR_TEST, "tabs.onActivated", base::Value::List()));
+  }
+
+  bool will_be_destroyed_ = false;
+  base::RunLoop run_loop_;
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
+};
+
+}  // namespace
+
+// Tests that events broadcast right after a profile has started to be destroyed
+// do not cause a crash. Regression test for crbug.com/1335837.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
+  // Minimize background page expiration time for testing purposes.
+  ProcessManager::SetEventPageIdleTimeForTesting(1);
+  ProcessManager::SetEventPageSuspendingTimeForTesting(1);
+
+  // Load extension.
+  constexpr char kManifest[] = R"({
+    "name": "Test",
+    "manifest_version": 2,
+    "version": "1.0",
+    "background": {"scripts": ["background.js"], "persistent": false}
+  })";
+  constexpr char kBackground[] = R"(
+    chrome.tabs.onActivated.addListener(activeInfo => {});
+    chrome.test.notifyPass();
+  )";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_pack_extension(true);
+  ResultCatcher catcher;
+  auto extension = loader.LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(catcher.GetNextResult());
+
+  // Verify that an event was registered.
+  EventRouter* event_router = EventRouter::Get(profile());
+  EXPECT_TRUE(event_router->ExtensionHasEventListener(extension->id(),
+                                                      "tabs.onActivated"));
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
+
+  // Dispatch event after starting profile destruction.
+  ProfileDestructionWatcher watcher;
+  watcher.Watch(profile());
+  profile()->MaybeSendDestroyedNotification();
+  watcher.WaitForDestruction();
+  ASSERT_TRUE(watcher.will_be_destroyed());
 }
 
 class EventsApiTest : public ExtensionApiTest {
