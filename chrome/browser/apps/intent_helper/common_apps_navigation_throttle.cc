@@ -85,7 +85,7 @@ bool IsAppDisabled(const std::string& app_id) {
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
-  for (auto app_id : app_ids) {
+  for (const auto& app_id : app_ids) {
     if (app_id == ash::kChromeUITrustedProjectorSwaAppId)
       return false;
   }
@@ -281,7 +281,7 @@ bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
       apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
           url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
 
-  for (auto app_id : app_ids) {
+  for (const auto& app_id : app_ids) {
     if (IsAppDisabled(app_id)) {
       return true;
     }
