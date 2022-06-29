@@ -167,22 +167,15 @@ public class WebViewLayoutTest {
                 + "webexposed/global-interface-listing.html", mTestActivity);
 
         // Process all expectations files.
-        String blinkExpected = readFile(PATH_BLINK_PREFIX + "platform/generic/"
-                + "webexposed/global-interface-listing-expected.txt");
-        String blinkPlatformSpecificExpected = readFile(PATH_BLINK_PREFIX
-                + "platform/generic/"
-                + "webexposed/global-interface-listing-platform-specific-expected.txt");
         String webviewExcluded =
                 readFile(PATH_WEBVIEW_PREFIX + "webexposed/not-webview-exposed.txt");
 
-        HashMap<String, HashSet<String>> blinkInterfacesMap = buildHashMap(blinkExpected);
         HashMap<String, HashSet<String>> webviewExcludedInterfacesMap =
                 buildHashMap(webviewExcluded);
-        blinkInterfacesMap = buildHashMap(blinkPlatformSpecificExpected, blinkInterfacesMap);
 
         // Wait for web test to finish running. Note we should wait for the web test to finish
         // running after processing all expectations files. All the expectations files have
-        // a combined total of 9000 lines and combined size of 216 KB. It is better to process
+        // a combined total of 300 lines and combined size of 12 KB. It is better to process
         // the expectations files in parallel with the web test run.
         mTestActivity.waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
@@ -197,8 +190,6 @@ public class WebViewLayoutTest {
         for (HashMap.Entry<String, HashSet<String>> entry :
                 webviewExcludedInterfacesMap.entrySet()) {
             String interfaceS = entry.getKey();
-            HashSet<String> subsetBlink = blinkInterfacesMap.get(interfaceS);
-            Assert.assertNotNull("Interface " + interfaceS + " not exposed in blink", subsetBlink);
 
             HashSet<String> subsetWebView = webviewInterfacesMap.get(interfaceS);
             HashSet<String> subsetExcluded = entry.getValue();
@@ -208,9 +199,6 @@ public class WebViewLayoutTest {
             }
 
             for (String property : subsetExcluded) {
-                Assert.assertTrue(
-                        "Interface " + interfaceS + "." + property + " not exposed in blink",
-                        subsetBlink.contains(property));
                 if (subsetWebView != null && subsetWebView.contains(property)) {
                     unexpected.append(interfaceS + "." + property + "\n");
                 }
