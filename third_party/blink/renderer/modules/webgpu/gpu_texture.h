@@ -31,11 +31,7 @@ class GPUTexture : public DawnObject<WGPUTexture> {
                                 WGPUTextureUsage usage,
                                 ExceptionState& exception_state);
 
-  GPUTexture(GPUDevice* device,
-             WGPUTexture texture,
-             WGPUTextureDimension dimension,
-             WGPUTextureFormat format,
-             WGPUTextureUsage usage);
+  GPUTexture(GPUDevice* device, WGPUTexture texture);
   GPUTexture(GPUDevice* device,
              WGPUTextureFormat format,
              WGPUTextureUsage usage,

@@ -5,31 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_CANVAS_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_CANVAS_CONTEXT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_swap_chain.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
 namespace blink {
 
 class GPUAdapter;
+class GPUDevice;
 class GPUCanvasConfiguration;
 class GPUSwapChain;
 class GPUTexture;
+class TextureAlphaClearer;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 // A GPUCanvasContext does little by itself and basically just binds a canvas
 // and a GPUSwapChain together and forwards calls from one to the other.
-class GPUCanvasContext : public CanvasRenderingContext {
+class GPUCanvasContext : public CanvasRenderingContext,
+                         public WebGPUSwapBufferProvider::Client {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   class Factory : public CanvasRenderingContextFactory {
 
    public:
-    Factory();
+    Factory() = default;
 
     Factory(const Factory&) = delete;
     Factory& operator=(const Factory&) = delete;
@@ -55,8 +59,14 @@ class GPUCanvasContext : public CanvasRenderingContext {
   // CanvasRenderingContext implementation
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
+  // Produces a snapshot of the current contents of the swap chain if possible.
+  // If that texture has already been sent to the compositor, will produce a
+  // snapshot of the just released texture associated to this gpu context.
+  // todo(crbug/1267243) Make snapshot always return the current frame.
   scoped_refptr<StaticBitmapImage> GetImage() final;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) final;
+  // Copies the back buffer to given shared image resource provider which must
+  // be webgpu compatible. Returns true on success.
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) final;
   void SetIsInHiddenPage(bool) override {}
@@ -74,6 +84,10 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
   // OffscreenCanvas-specific methods
   bool PushFrame() final;
+  // Returns a StaticBitmapImage backed by a texture containing the current
+  // contents of the front buffer. This is done without any pixel copies. The
+  // texture in the ImageBitmap is from the active ContextProvider on the
+  // WebGPUSwapBufferProvider.
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
 
   bool IsOffscreenCanvas() const {
@@ -91,16 +105,37 @@ class GPUCanvasContext : public CanvasRenderingContext {
                             GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
+  // WebGPUSwapBufferProvider::Client implementation
+  void OnTextureTransferred() override;
+
  private:
-  void ReconfigureSwapchain(gfx::Size size);
+  void UnconfigureInternal();
+  void ResizeSwapbuffers(gfx::Size size);
+  void InitializeAlphaModePipeline(WGPUTextureFormat format);
+
+  scoped_refptr<StaticBitmapImage> SnapshotInternal(
+      const WGPUTexture& texture,
+      const gfx::Size& size) const;
+
+  bool CopyTextureToResourceProvider(
+      const WGPUTexture& texture,
+      const gfx::Size& size,
+      CanvasResourceProvider* resource_provider) const;
+
+  // Can't use DawnObjectBase, because the device can be reconfigured.
+  const DawnProcTable& GetProcs() const;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
+      const;
 
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
-  Member<GPUSwapChain> swapchain_;
-  Member<GPUDevice> configured_device_;
-  WGPUTextureUsage usage_;
-  WGPUTextureFormat format_;
+  Member<GPUDevice> device_;
+  Member<GPUTexture> texture_;
   V8GPUCanvasAlphaMode::Enum alpha_mode_;
+  std::unique_ptr<TextureAlphaClearer> alpha_clearer_;
+  scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
+
+  gfx::Size size_;
 
   bool stopped_ = false;
 

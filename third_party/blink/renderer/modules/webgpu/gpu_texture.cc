@@ -120,9 +120,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
 
   GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
-      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
-      dawn_desc.dimension, dawn_desc.format,
-      static_cast<WGPUTextureUsage>(dawn_desc.usage));
+      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc));
   if (webgpu_desc->hasLabel())
     texture->setLabel(webgpu_desc->label());
   return texture;
@@ -140,9 +138,7 @@ GPUTexture* GPUTexture::CreateError(GPUDevice* device) {
                                           WGPUErrorFilter_Validation);
   GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
-      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
-      dawn_desc.dimension, dawn_desc.format,
-      static_cast<WGPUTextureUsage>(dawn_desc.usage));
+      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc));
   device->GetProcs().devicePopErrorScope(device->GetHandle(),
                                          &popErrorDiscardCallback, nullptr);
 
@@ -243,15 +239,11 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
                                           std::move(mailbox_texture));
 }
 
-GPUTexture::GPUTexture(GPUDevice* device,
-                       WGPUTexture texture,
-                       WGPUTextureDimension dimension,
-                       WGPUTextureFormat format,
-                       WGPUTextureUsage usage)
+GPUTexture::GPUTexture(GPUDevice* device, WGPUTexture texture)
     : DawnObject<WGPUTexture>(device, texture),
-      dimension_(dimension),
-      format_(format),
-      usage_(usage) {}
+      dimension_(GetProcs().textureGetDimension(GetHandle())),
+      format_(GetProcs().textureGetFormat(GetHandle())),
+      usage_(GetProcs().textureGetUsage(GetHandle())) {}
 
 GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTextureFormat format,

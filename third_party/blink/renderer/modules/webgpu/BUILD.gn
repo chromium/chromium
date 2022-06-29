@@ -76,8 +76,6 @@ blink_modules_sources("webgpu") {
     "gpu_supported_features.h",
     "gpu_supported_limits.cc",
     "gpu_supported_limits.h",
-    "gpu_swap_chain.cc",
-    "gpu_swap_chain.h",
     "gpu_texture.cc",
     "gpu_texture.h",
     "gpu_texture_usage.h",
