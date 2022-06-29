@@ -6,7 +6,7 @@
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -16,7 +16,7 @@
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
-class ShimlessRMAIntegrationTest : public SystemWebAppIntegrationTest {
+class ShimlessRMAIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   ShimlessRMAIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(

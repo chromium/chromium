@@ -5,7 +5,7 @@
 #include "ash/webui/scanning/url_constants.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -19,7 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using ScanningAppIntegrationTest = SystemWebAppIntegrationTest;
+using ScanningAppIntegrationTest = ash::SystemWebAppIntegrationTest;
 
 // Test that the Scanning App installs and launches correctly by running some
 // spot checks on the manifest.

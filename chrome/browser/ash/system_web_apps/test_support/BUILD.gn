@@ -66,6 +66,16 @@ source_set("test_support_ui") {
     "system_web_app_browsertest_base.h",
   ]
 
+  # TODO(crbug.com/1321984): Remove `if` after we compile out SWAs. We need this
+  # because the integration test uses ui/aura/window.h which is not available on
+  # macOS.
+  if (is_chromeos_ash) {
+    sources += [
+      "system_web_app_integration_test.cc",
+      "system_web_app_integration_test.h",
+    ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [

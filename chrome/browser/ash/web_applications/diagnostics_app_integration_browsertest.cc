@@ -6,8 +6,8 @@
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -31,7 +31,7 @@ const char kFromChromeLaunch[] = "Apps.DefaultAppLaunch.FromChromeInternal";
 const size_t kUsedWithSuccess = 2;
 }  // namespace
 
-class DiagnosticsAppIntegrationTest : public SystemWebAppIntegrationTest {
+class DiagnosticsAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   DiagnosticsAppIntegrationTest() {
     scoped_feature_list_.InitAndEnableFeature(

@@ -12,7 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
@@ -35,7 +35,7 @@ const char kTestJs[] =
 
 const char kEmptyHtml[] = "<head></head><body></body>";
 
-class DemoModeAppIntegrationTest : public SystemWebAppIntegrationTest {
+class DemoModeAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   DemoModeAppIntegrationTest() {
     scoped_feature_list_.InitAndEnableFeature(chromeos::features::kDemoModeSWA);

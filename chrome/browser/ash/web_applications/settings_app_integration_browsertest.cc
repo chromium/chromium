@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -18,7 +18,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class SettingsAppIntegrationTest : public SystemWebAppIntegrationTest {};
+class SettingsAppIntegrationTest : public ash::SystemWebAppIntegrationTest {};
 
 // Test that the Settings App installs and launches correctly.
 IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsApp) {

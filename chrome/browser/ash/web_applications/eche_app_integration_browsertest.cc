@@ -7,7 +7,7 @@
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -20,7 +20,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
+class EcheAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   EcheAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(

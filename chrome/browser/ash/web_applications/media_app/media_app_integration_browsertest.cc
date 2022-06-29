@@ -26,8 +26,8 @@
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/platform_util.h"
@@ -100,7 +100,7 @@ constexpr char kDomExceptionScript[] =
     "new "
     "CustomEvent('simulate-unhandled-rejection-with-dom-exception-for-test'));";
 
-class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
+class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   MediaAppIntegrationTest() {
     feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesPdf);

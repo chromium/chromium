@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -17,6 +17,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+
+namespace ash {
 
 SystemWebAppIntegrationTest::SystemWebAppIntegrationTest()
     : SystemWebAppManagerBrowserTest(false /* install_mock */) {}
@@ -86,3 +88,5 @@ void SystemWebAppIntegrationTest::LaunchAppWithFileWithoutWaiting(
   params.launch_files.push_back(file_path);
   LaunchAppWithoutWaiting(std::move(params));
 }
+
+}  // namespace ash

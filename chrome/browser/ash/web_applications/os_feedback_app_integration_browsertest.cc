@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -29,7 +29,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-class OSFeedbackAppIntegrationTest : public SystemWebAppIntegrationTest {
+class OSFeedbackAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   OSFeedbackAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures({ash::features::kOsFeedback}, {});
