@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -440,6 +441,10 @@ bool PageSchedulerImpl::RequestBeginMainFrameNotExpected(bool new_state) {
   if (!delegate_)
     return false;
   return delegate_->RequestBeginMainFrameNotExpected(new_state);
+}
+
+scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler() {
+  return main_thread_scheduler_->CreateWidgetScheduler();
 }
 
 bool PageSchedulerImpl::IsAudioPlaying() const {

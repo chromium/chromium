@@ -20,6 +20,7 @@ namespace blink {
 
 namespace scheduler {
 class WebAgentGroupScheduler;
+class WidgetScheduler;
 }  // namespace scheduler
 
 class PLATFORM_EXPORT PageScheduler {
@@ -86,6 +87,9 @@ class PLATFORM_EXPORT PageScheduler {
   // Guaranteed to be non-null for real PageScheduler implementation, but may
   // be null in unit tests.
   virtual VirtualTimeController* GetVirtualTimeController() = 0;
+
+  // Creates a WebWidgetScheduler implementation.
+  virtual scoped_refptr<scheduler::WidgetScheduler> CreateWidgetScheduler() = 0;
 };
 
 }  // namespace blink

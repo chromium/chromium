@@ -42,10 +42,10 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/raster_dark_mode_filter_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc {
@@ -75,9 +75,10 @@ class UkmRecorderFactoryImpl : public cc::UkmRecorderFactory {
 
 }  // namespace
 
-LayerTreeView::LayerTreeView(LayerTreeViewDelegate* delegate,
-                             scheduler::WebThreadScheduler* scheduler)
-    : web_main_thread_scheduler_(scheduler),
+LayerTreeView::LayerTreeView(
+    LayerTreeViewDelegate* delegate,
+    scoped_refptr<scheduler::WidgetScheduler> scheduler)
+    : widget_scheduler_(std::move(scheduler)),
       animation_host_(cc::AnimationHost::CreateMainInstance()),
       dark_mode_filter_(std::make_unique<RasterDarkModeFilterImpl>(
           GetCurrentDarkModeSettings())),
@@ -189,8 +190,7 @@ void LayerTreeView::DidUpdateLayers() {
 void LayerTreeView::BeginMainFrame(const viz::BeginFrameArgs& args) {
   if (!delegate_)
     return;
-  if (web_main_thread_scheduler_)
-    web_main_thread_scheduler_->WillBeginFrame(args);
+  widget_scheduler_->WillBeginFrame(args);
   delegate_->BeginMainFrame(args.frame_time);
 }
 
@@ -208,15 +208,15 @@ void LayerTreeView::OnDeferCommitsChanged(bool status,
 }
 
 void LayerTreeView::BeginMainFrameNotExpectedSoon() {
-  if (!delegate_ || !web_main_thread_scheduler_)
+  if (!delegate_)
     return;
-  web_main_thread_scheduler_->BeginFrameNotExpectedSoon();
+  widget_scheduler_->BeginFrameNotExpectedSoon();
 }
 
 void LayerTreeView::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {
-  if (!delegate_ || !web_main_thread_scheduler_)
+  if (!delegate_)
     return;
-  web_main_thread_scheduler_->BeginMainFrameNotExpectedUntil(time);
+  widget_scheduler_->BeginMainFrameNotExpectedUntil(time);
 }
 
 void LayerTreeView::UpdateLayerTreeHost() {
@@ -279,8 +279,7 @@ void LayerTreeView::WillCommit(const cc::CommitState&) {
     return;
   delegate_->WillCommitCompositorFrame();
   if (base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
-    if (web_main_thread_scheduler_)
-      web_main_thread_scheduler_->DidCommitFrameToCompositor();
+    widget_scheduler_->DidCommitFrameToCompositor();
   }
 }
 
@@ -290,8 +289,7 @@ void LayerTreeView::DidCommit(base::TimeTicks commit_start_time,
     return;
   delegate_->DidCommitCompositorFrame(commit_start_time, commit_finish_time);
   if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
-    if (web_main_thread_scheduler_)
-      web_main_thread_scheduler_->DidCommitFrameToCompositor();
+    widget_scheduler_->DidCommitFrameToCompositor();
   }
 }
 
@@ -395,9 +393,10 @@ void LayerTreeView::ReportEventLatency(
 }
 
 void LayerTreeView::DidRunBeginMainFrame() {
-  if (!delegate_ || !web_main_thread_scheduler_)
+  if (!delegate_)
     return;
-  web_main_thread_scheduler_->DidRunBeginMainFrame();
+
+  widget_scheduler_->DidRunBeginMainFrame();
 }
 
 void LayerTreeView::DidSubmitCompositorFrame() {}

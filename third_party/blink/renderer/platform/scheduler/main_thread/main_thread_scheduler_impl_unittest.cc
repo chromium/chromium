@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
-#include "third_party/blink/public/platform/scheduler/web_widget_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -67,7 +66,7 @@ using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using InputEventState = WebThreadScheduler::InputEventState;
+using InputEventState = WidgetScheduler::InputEventState;
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
@@ -228,7 +227,7 @@ void RepostingUpdateClockIdleTestTask(
   test_task_runner->AdvanceMockTickClock(advance_time);
 }
 
-void WillBeginFrameIdleTask(WebThreadScheduler* scheduler,
+void WillBeginFrameIdleTask(MainThreadSchedulerImpl* scheduler,
                             uint64_t sequence_number,
                             const base::TickClock* clock,
                             base::TimeTicks deadline) {
@@ -1020,7 +1019,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler_;
   std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
-  std::unique_ptr<WebWidgetScheduler> widget_scheduler_;
+  scoped_refptr<WidgetScheduler> widget_scheduler_;
 
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;

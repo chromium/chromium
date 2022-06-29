@@ -1035,7 +1035,9 @@ TEST_F(EventHandlingWebFrameWidgetSimTest, NonRafAlignedEventWithoutUpdate) {
   GetTestWebFrameWidget().set_event_causes_update(false);
 
   GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
-      std::make_unique<WebKeyboardEvent>());
+      std::make_unique<WebKeyboardEvent>(
+          WebInputEvent::Type::kRawKeyDown, WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests()));
   EXPECT_EQ(TestSwapPromise::State::kBroken, swap_promise_state);
 }
 
@@ -1052,7 +1054,9 @@ TEST_F(EventHandlingWebFrameWidgetSimTest,
   GetTestWebFrameWidget().set_event_causes_update(false);
 
   GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
-      std::make_unique<WebKeyboardEvent>());
+      std::make_unique<WebKeyboardEvent>(
+          WebInputEvent::Type::kRawKeyDown, WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests()));
   EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
 
   GetTestWebFrameWidget().CompositeAndWaitForPresentation(Compositor());
@@ -1069,7 +1073,9 @@ TEST_F(EventHandlingWebFrameWidgetSimTest, NonRafAlignedEventWithUpdate) {
   GetTestWebFrameWidget().set_event_causes_update(true);
 
   GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
-      std::make_unique<WebKeyboardEvent>());
+      std::make_unique<WebKeyboardEvent>(
+          WebInputEvent::Type::kRawKeyDown, WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests()));
   EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
 
   GetTestWebFrameWidget().CompositeAndWaitForPresentation(Compositor());

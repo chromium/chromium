@@ -31,11 +31,9 @@ struct PresentationFeedback;
 
 namespace blink {
 namespace scheduler {
-class WebWidgetScheduler;
-class WebThreadScheduler;
+class WidgetScheduler;
 }  // namespace scheduler
 
-class AgentGroupScheduler;
 class SynchronousCompositorRegistry;
 class SynchronousCompositorProxyRegistry;
 class ThreadScheduler;
@@ -80,7 +78,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
           frame_widget_input_handler,
       bool never_composited,
       ThreadScheduler* compositor_thread_scheduler,
-      AgentGroupScheduler& agent_group_scheduler,
+      scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
       bool needs_input_handler,
       bool allow_scroll_resampling);
 
@@ -186,13 +184,14 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   ~WidgetInputHandlerManager() override;
 
  private:
-  WidgetInputHandlerManager(base::WeakPtr<WidgetBase> widget,
-                            base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-                                frame_widget_input_handler,
-                            bool never_composited,
-                            ThreadScheduler* compositor_thread_scheduler,
-                            AgentGroupScheduler& agent_group_scheduler,
-                            bool allow_scroll_resampling);
+  WidgetInputHandlerManager(
+      base::WeakPtr<WidgetBase> widget,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+          frame_widget_input_handler,
+      bool never_composited,
+      ThreadScheduler* compositor_thread_scheduler,
+      scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
+      bool allow_scroll_resampling);
   void InitInputHandler();
   void InitOnInputHandlingThread(
       const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
@@ -281,8 +280,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
       frame_widget_input_handler_;
-  std::unique_ptr<scheduler::WebWidgetScheduler> widget_scheduler_;
-  scheduler::WebThreadScheduler* main_thread_scheduler_;
+  scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
 
   // InputHandlerProxy is only interacted with on the compositor
   // thread.

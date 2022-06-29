@@ -838,9 +838,7 @@ WidgetInputHandlerManager* TestWebFrameWidget::GetWidgetInputHandlerManager()
 }
 
 void TestWebFrameWidget::FlushInputHandlerTasks() {
-  auto* main_task_runner = static_cast<scheduler::FakeTaskRunner*>(
-      GetWidgetInputHandlerManager()->main_task_runner_for_testing());
-  main_task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 }
 
 void TestWebFrameWidget::DispatchThroughCcInputHandler(

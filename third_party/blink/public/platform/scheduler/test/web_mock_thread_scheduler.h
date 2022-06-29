@@ -39,23 +39,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(CreateAgentGroupScheduler,
                std::unique_ptr<WebAgentGroupScheduler>());
   MOCK_METHOD0(GetCurrentAgentGroupScheduler, WebAgentGroupScheduler*());
-  MOCK_METHOD0(NewRenderWidgetSchedulingState,
-               std::unique_ptr<WebRenderWidgetSchedulingState>());
-  MOCK_METHOD1(WillBeginFrame, void(const viz::BeginFrameArgs&));
-  MOCK_METHOD0(BeginFrameNotExpectedSoon, void());
-  MOCK_METHOD1(BeginMainFrameNotExpectedUntil, void(base::TimeTicks));
-  MOCK_METHOD0(DidCommitFrameToCompositor, void());
-  MOCK_METHOD2(DidHandleInputEventOnCompositorThread,
-               void(const WebInputEvent&, InputEventState));
-  MOCK_METHOD2(WillPostInputEventToMainThread,
-               void(WebInputEvent::Type, const WebInputEventAttribution&));
-  MOCK_METHOD2(WillHandleInputEventOnMainThread,
-               void(WebInputEvent::Type, const WebInputEventAttribution&));
-  MOCK_METHOD2(DidHandleInputEventOnMainThread,
-               void(const WebInputEvent&, WebInputEventResult));
-  MOCK_METHOD0(DidAnimateForInputOnCompositorThread, void());
-  MOCK_METHOD0(DidScheduleBeginMainFrame, void());
-  MOCK_METHOD0(DidRunBeginMainFrame, void());
   MOCK_METHOD1(SetRendererHidden, void(bool));
   MOCK_METHOD1(SetRendererBackgrounded, void(bool));
   MOCK_METHOD0(PauseRenderer, std::unique_ptr<RendererPauseHandle>());

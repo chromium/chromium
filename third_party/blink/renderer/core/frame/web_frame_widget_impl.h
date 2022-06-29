@@ -331,8 +331,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void NotifyCoreAnimationErrorCode(
       base::OnceCallback<void(gfx::CALayerResult)> callback) override;
 #endif
-  scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
-      override;
   void WaitForDebuggerWhenShown() override;
   void SetTextZoomFactor(float text_zoom_factor) override;
   float TextZoomFactor() override;

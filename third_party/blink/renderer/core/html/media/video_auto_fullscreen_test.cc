@@ -70,9 +70,9 @@ class VideoAutoFullscreen : public testing::Test,
  public:
   VideoAutoFullscreen() : ScopedVideoAutoFullscreenForTest(true) {}
   void SetUp() override {
-    web_view_helper_.Initialize(&web_frame_client_);
     frame_host_.Init(
         web_frame_client_.GetRemoteNavigationAssociatedInterfaces());
+    web_view_helper_.Initialize(&web_frame_client_);
     GetWebView()->GetSettings()->SetAutoplayPolicy(
         mojom::AutoplayPolicy::kUserGestureRequired);
 

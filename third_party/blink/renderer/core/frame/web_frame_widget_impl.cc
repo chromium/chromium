@@ -50,7 +50,6 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -1628,9 +1627,7 @@ void WebFrameWidgetImpl::SetEventListenerProperties(
     if (!has_touch_handlers_ || *has_touch_handlers_ != has_touch_handlers) {
       has_touch_handlers_ = has_touch_handlers;
 
-      // Can be null when running tests.
-      if (auto* scheduler_state = widget_base_->RendererWidgetSchedulingState())
-        scheduler_state->SetHasTouchHandler(has_touch_handlers);
+      widget_base_->WidgetScheduler()->SetHasTouchHandler(has_touch_handlers);
       // Set touch event consumers based on whether there are touch event
       // handlers or the page has hit testable scrollbars.
       auto touch_event_consumers = mojom::blink::TouchEventConsumers::New(
@@ -2017,7 +2014,7 @@ void WebFrameWidgetImpl::InitializeCompositing(
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
-      agent_group_scheduler, screen_infos, settings,
+      *GetPage()->GetPageScheduler(), screen_infos, settings,
       input_handler_weak_ptr_factory_.GetWeakPtr());
 
   LocalFrameView* frame_view;
@@ -3095,11 +3092,6 @@ void WebFrameWidgetImpl::NotifySwapAndPresentationTime(
                                                   ->GetTaskRunnerProvider()
                                                   ->MainThreadTaskRunner(),
                                               this));
-}
-
-scheduler::WebRenderWidgetSchedulingState*
-WebFrameWidgetImpl::RendererWidgetSchedulingState() {
-  return widget_base_->RendererWidgetSchedulingState();
 }
 
 void WebFrameWidgetImpl::WaitForDebuggerWhenShown() {
