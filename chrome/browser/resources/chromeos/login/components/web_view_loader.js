@@ -126,6 +126,8 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
   // fire either 'onErrorOccurred' or 'onCompleted' before the timer runs out.
   // See: https://developer.chrome.com/extensions/webRequest
   onTimeoutError_() {
+    console.warn('Loading %s timed out', this.url_);
+
     // Return if we are no longer monitoring requests. Confidence check.
     if (!this.isPerformingRequests_) {
       return;
@@ -144,6 +146,8 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
    * @param {!Object} details
    */
   onErrorOccurred_(details) {
+    console.warn(
+        'Failed to load ' + details.url + ' with error ' + details.error);
     if (!this.isPerformingRequests_) {
       return;
     }
@@ -173,14 +177,17 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
       } else {
         this.loadAfterBackoff();
       }
+      console.info('Loading ' + this.url_ + ' has completed with HTTP error.');
     } else {
       // Success!
+      console.info('Loading ' + this.url_ + ' has completed successfully.');
       this.clearInternalState();
     }
   }
 
   // Loads the URL into the webview and starts a timer.
   loadWithFallbackTimer() {
+    console.info('Trying to load ' + this.url_);
     // Clear previous timer and perform a load.
     window.clearTimeout(this.loadTimer_);
     this.loadTimer_ =
@@ -189,6 +196,7 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
   }
 
   loadAfterBackoff() {
+    console.info('Trying to reload ' + this.url_);
     window.clearTimeout(this.backOffTimer_);
     this.backOffTimer_ = window.setTimeout(
         this.tryLoadOnline.bind(this), ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS);
