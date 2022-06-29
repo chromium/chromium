@@ -710,8 +710,8 @@ class GpuMessageHandler
   void OnGpuSwitched(gl::GpuPreference) override;
 
   // Messages
-  void OnBrowserBridgeInitialized(const base::ListValue* list);
-  void OnCallAsync(const base::ListValue* list);
+  void OnBrowserBridgeInitialized(const base::Value::List& list);
+  void OnCallAsync(const base::Value::List& list);
 
   // Submessages dispatched from OnCallAsync
   std::unique_ptr<base::Value> OnRequestClientInfo(
@@ -744,17 +744,16 @@ GpuMessageHandler::~GpuMessageHandler() {
 void GpuMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "browserBridgeInitialized",
       base::BindRepeating(&GpuMessageHandler::OnBrowserBridgeInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "callAsync", base::BindRepeating(&GpuMessageHandler::OnCallAsync,
                                        base::Unretained(this)));
 }
 
-void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
-  const base::Value::List& args_list = args->GetList();
+void GpuMessageHandler::OnCallAsync(const base::Value::List& args_list) {
   DCHECK_GE(args_list.size(), static_cast<size_t>(2));
   // unpack args into requestId, submessage and submessageArgs
   const base::Value& requestId = args_list[0];
@@ -791,7 +790,7 @@ void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
 }
 
 void GpuMessageHandler::OnBrowserBridgeInitialized(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Watch for changes in GPUInfo
