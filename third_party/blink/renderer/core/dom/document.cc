@@ -4265,6 +4265,14 @@ void Document::UpdateBaseURL() {
 
 // [spec] https://html.spec.whatwg.org/C/#fallback-base-url
 KURL Document::FallbackBaseURL() const {
+  const bool is_parent_cross_origin =
+      GetFrame() && GetFrame()->IsCrossOriginToParentOrOuterDocument();
+  // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
+  // ParentDocument() is not correct.
+  // We avoid using it when it is cross-origin, to avoid leaking cross-origin.
+  const Document* same_origin_parent =
+      is_parent_cross_origin ? nullptr : ParentDocument();
+
   // [spec] 1. If document is an iframe srcdoc document, then return the
   //           document base URL of document's browsing context's container
   //           document.
@@ -4287,10 +4295,8 @@ KURL Document::FallbackBaseURL() const {
       return execution_context_->BaseURL();
     }
 
-    // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
-    // ParentDocument() is not correct.
-    if (Document* parent = ParentDocument()) {
-      return parent->BaseURL();
+    if (same_origin_parent) {
+      return same_origin_parent->BaseURL();
     }
   }
 

@@ -41,11 +41,6 @@ virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-fr
 http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
 virtual/fledge/http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
 
-# Cross-site leaks are more important without site isolation, leading to
-# different failures.
-crbug.com/1336904 virtual/no-auto-wpt-origin-isolation/external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Failure ]
-crbug.com/1336904 external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Failure ]
-
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
