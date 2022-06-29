@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notreached.h"
 #include "extensions/browser/api/audio/audio_service.h"
 
 #include <stddef.h>
@@ -85,27 +84,19 @@ class AudioServiceImpl : public AudioService,
   void RemoveObserver(AudioService::Observer* observer) override;
 
   // Start to query audio device information.
-  bool GetDevices(const api::audio::DeviceFilter* filter,
-                  DeviceInfoList* devices_out) override;
-  bool GetDevices(
+  void GetDevices(
       const api::audio::DeviceFilter* filter,
       base::OnceCallback<void(bool, DeviceInfoList)> callback) override;
-  bool SetActiveDeviceLists(const DeviceIdList* input_devices,
-                            const DeviceIdList* output_devives) override;
-  bool SetActiveDeviceLists(const DeviceIdList* input_devices,
+  void SetActiveDeviceLists(const DeviceIdList* input_devices,
                             const DeviceIdList* output_devives,
                             base::OnceCallback<void(bool)> callback) override;
-  bool SetDeviceSoundLevel(const std::string& device_id,
-                           int level_value) override;
-  bool SetDeviceSoundLevel(const std::string& device_id,
+  void SetDeviceSoundLevel(const std::string& device_id,
                            int level_value,
                            base::OnceCallback<void(bool)> callback) override;
-  bool SetMute(bool is_input, bool value) override;
-  bool SetMute(bool is_input,
+  void SetMute(bool is_input,
                bool value,
                base::OnceCallback<void(bool)> callback) override;
-  bool GetMute(bool is_input, bool* value) override;
-  bool GetMute(bool is_input,
+  void GetMute(bool is_input,
                base::OnceCallback<void(bool, bool)> callback) override;
 
  protected:
@@ -165,10 +156,14 @@ void AudioServiceImpl::RemoveObserver(AudioService::Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-bool AudioServiceImpl::GetDevices(const api::audio::DeviceFilter* filter,
-                                  DeviceInfoList* devices_out) {
-  if (!cras_audio_handler_)
-    return false;
+void AudioServiceImpl::GetDevices(
+    const api::audio::DeviceFilter* filter,
+    base::OnceCallback<void(bool, DeviceInfoList)> callback) {
+  DeviceInfoList devices_out;
+  if (!cras_audio_handler_) {
+    std::move(callback).Run(false, std::move(devices_out));
+    return;
+  }
 
   ash::AudioDeviceList devices;
   cras_audio_handler_->GetAudioDevices(&devices);
@@ -187,35 +182,34 @@ bool AudioServiceImpl::GetDevices(const api::audio::DeviceFilter* filter,
       continue;
     if (!device.is_input && !accept_output)
       continue;
-    devices_out->push_back(ToAudioDeviceInfo(device));
+    devices_out.push_back(ToAudioDeviceInfo(device));
   }
 
-  return true;
+  std::move(callback).Run(true, std::move(devices_out));
 }
 
-bool AudioServiceImpl::GetDevices(
-    const api::audio::DeviceFilter* filter,
-    base::OnceCallback<void(bool, DeviceInfoList)> callback) {
-  // Not used in ash-chrome while chrome.audio API impl is synchronous.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceImpl::SetActiveDeviceLists(
+void AudioServiceImpl::SetActiveDeviceLists(
     const DeviceIdList* input_devices,
-    const DeviceIdList* output_devives) {
+    const DeviceIdList* output_devives,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK(cras_audio_handler_);
-  if (!cras_audio_handler_)
-    return false;
+  if (!cras_audio_handler_) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   CrasAudioHandler::NodeIdList input_nodes;
-  if (input_devices && !GetAudioNodeIdList(*input_devices, true, &input_nodes))
-    return false;
+  if (input_devices &&
+      !GetAudioNodeIdList(*input_devices, true, &input_nodes)) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   CrasAudioHandler::NodeIdList output_nodes;
   if (output_devives &&
       !GetAudioNodeIdList(*output_devives, false, &output_nodes)) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   bool success = true;
@@ -228,83 +222,62 @@ bool AudioServiceImpl::SetActiveDeviceLists(
     success = success && cras_audio_handler_->SetActiveInputNodes(input_nodes);
     DCHECK(success);
   }
-  return success;
+  std::move(callback).Run(success);
 }
 
-bool AudioServiceImpl::SetActiveDeviceLists(
-    const DeviceIdList* input_devices,
-    const DeviceIdList* output_devives,
-    base::OnceCallback<void(bool)> callback) {
-  // Not used in ash-chrome while chrome.audio API impl is synchronous.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceImpl::SetDeviceSoundLevel(const std::string& device_id,
-                                           int level_value) {
-  DCHECK(cras_audio_handler_);
-  if (!cras_audio_handler_)
-    return false;
-
-  const AudioDevice* device =
-      cras_audio_handler_->GetDeviceFromId(GetIdFromStr(device_id));
-  if (!device)
-    return false;
-
-  if (level_value != -1) {
-    cras_audio_handler_->SetVolumeGainPercentForDevice(device->id, level_value);
-    return true;
-  }
-
-  return false;
-}
-
-bool AudioServiceImpl::SetDeviceSoundLevel(
+void AudioServiceImpl::SetDeviceSoundLevel(
     const std::string& device_id,
     int level_value,
     base::OnceCallback<void(bool)> callback) {
-  // Not used in ash-chrome while chrome.audio API impl is synchronous.
-  NOTREACHED();
-  return false;
+  DCHECK(cras_audio_handler_);
+  if (!cras_audio_handler_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const AudioDevice* device =
+      cras_audio_handler_->GetDeviceFromId(GetIdFromStr(device_id));
+  if (!device) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (level_value != -1) {
+    cras_audio_handler_->SetVolumeGainPercentForDevice(device->id, level_value);
+    std::move(callback).Run(true);
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
-bool AudioServiceImpl::SetMute(bool is_input, bool value) {
+void AudioServiceImpl::SetMute(bool is_input,
+                               bool value,
+                               base::OnceCallback<void(bool)> callback) {
   DCHECK(cras_audio_handler_);
-  if (!cras_audio_handler_)
-    return false;
+  if (!cras_audio_handler_) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   if (is_input)
     cras_audio_handler_->SetInputMute(value);
   else
     cras_audio_handler_->SetOutputMute(value);
-  return true;
+
+  std::move(callback).Run(true);
 }
 
-bool AudioServiceImpl::SetMute(bool is_input,
-                               bool value,
-                               base::OnceCallback<void(bool)> callback) {
-  // Not used in ash-chrome while chrome.audio API impl is synchronous.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceImpl::GetMute(bool is_input, bool* value) {
-  DCHECK(cras_audio_handler_);
-  if (!cras_audio_handler_)
-    return false;
-
-  if (is_input)
-    *value = cras_audio_handler_->IsInputMuted();
-  else
-    *value = cras_audio_handler_->IsOutputMuted();
-  return true;
-}
-
-bool AudioServiceImpl::GetMute(bool is_input,
+void AudioServiceImpl::GetMute(bool is_input,
                                base::OnceCallback<void(bool, bool)> callback) {
-  // Not used in ash-chrome while chrome.audio API impl is synchronous.
-  NOTREACHED();
-  return false;
+  DCHECK(cras_audio_handler_);
+  if (!cras_audio_handler_) {
+    std::move(callback).Run(false, false);
+    return;
+  }
+
+  const bool is_muted_result = is_input ? cras_audio_handler_->IsInputMuted()
+                                        : cras_audio_handler_->IsOutputMuted();
+  std::move(callback).Run(true, is_muted_result);
 }
 
 uint64_t AudioServiceImpl::GetIdFromStr(const std::string& id_str) {

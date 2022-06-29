@@ -83,19 +83,26 @@ void AudioServiceAsh::BindReceiver(
 void AudioServiceAsh::GetDevices(mojom::DeviceFilterPtr filter,
                                  GetDevicesCallback callback) {
   DCHECK(service_);
-  absl::optional<std::vector<mojom::AudioDeviceInfoPtr>> result;
   const auto ext_filter = extensions::ConvertDeviceFilterFromMojom(filter);
-  std::vector<extensions::api::audio::AudioDeviceInfo> devices_src;
 
-  if (service_->GetDevices(ext_filter.get(), &devices_src)) {
-    result.emplace();  // construct empty vector in-place
-    result->reserve(devices_src.size());
-    std::transform(devices_src.begin(), devices_src.end(),
-                   std::back_inserter(result.value()),
-                   extensions::ConvertAudioDeviceInfoToMojom);
-  }
+  auto extapi_callback = base::BindOnce(
+      [](GetDevicesCallback crosapi_callback, bool success,
+         std::vector<extensions::api::audio::AudioDeviceInfo> devices_src) {
+        absl::optional<std::vector<mojom::AudioDeviceInfoPtr>> result;
 
-  std::move(callback).Run(std::move(result));
+        if (success) {
+          result.emplace();  // construct empty vector in-place
+          result->reserve(devices_src.size());
+          std::transform(devices_src.begin(), devices_src.end(),
+                         std::back_inserter(result.value()),
+                         extensions::ConvertAudioDeviceInfoToMojom);
+        }
+
+        std::move(crosapi_callback).Run(std::move(result));
+      },
+      std::move(callback));
+
+  service_->GetDevices(ext_filter.get(), std::move(extapi_callback));
 }
 
 void AudioServiceAsh::GetMute(mojom::StreamType stream_type,
@@ -108,9 +115,7 @@ void AudioServiceAsh::GetMute(mojom::StreamType stream_type,
   }
 
   const bool is_input = (stream_type == mojom::StreamType::kInput);
-  bool is_muted = false;
-  const bool success = service_->GetMute(is_input, &is_muted);
-  std::move(callback).Run(success, is_muted);
+  service_->GetMute(is_input, std::move(callback));
 }
 
 void AudioServiceAsh::SetActiveDeviceLists(
@@ -122,9 +127,8 @@ void AudioServiceAsh::SetActiveDeviceLists(
   const extensions::DeviceIdList* output_devices =
       ids ? &(ids->outputs) : nullptr;
 
-  const bool success =
-      service_->SetActiveDeviceLists(input_devices, output_devices);
-  std::move(callback).Run(success);
+  service_->SetActiveDeviceLists(input_devices, output_devices,
+                                 std::move(callback));
 }
 
 void AudioServiceAsh::SetMute(mojom::StreamType stream_type,
@@ -138,20 +142,18 @@ void AudioServiceAsh::SetMute(mojom::StreamType stream_type,
   }
 
   const bool is_input = (stream_type == mojom::StreamType::kInput);
-  const bool success = service_->SetMute(is_input, is_muted);
-  std::move(callback).Run(success);
+  service_->SetMute(is_input, is_muted, std::move(callback));
 }
 
 void AudioServiceAsh::SetProperties(const std::string& id,
                                     mojom::AudioDevicePropertiesPtr properties,
                                     SetPropertiesCallback callback) {
   DCHECK(service_);
-
-  bool success = false;
   if (properties) {
-    success = service_->SetDeviceSoundLevel(id, properties->level);
+    service_->SetDeviceSoundLevel(id, properties->level, std::move(callback));
+  } else {
+    std::move(callback).Run(false);
   }
-  std::move(callback).Run(success);
 }
 
 void AudioServiceAsh::AddAudioChangeObserver(

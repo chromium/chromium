@@ -27,27 +27,19 @@ class AudioServiceLacros : public AudioService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  bool GetDevices(const api::audio::DeviceFilter* filter,
-                  DeviceInfoList* devices_out) override;
-  bool GetDevices(
+  void GetDevices(
       const api::audio::DeviceFilter* filter,
       base::OnceCallback<void(bool, DeviceInfoList)> callback) override;
-  bool SetActiveDeviceLists(const DeviceIdList* input_devices,
-                            const DeviceIdList* output_devives) override;
-  bool SetActiveDeviceLists(const DeviceIdList* input_devices,
+  void SetActiveDeviceLists(const DeviceIdList* input_devices,
                             const DeviceIdList* output_devives,
                             base::OnceCallback<void(bool)> callback) override;
-  bool SetDeviceSoundLevel(const std::string& device_id,
-                           int level_value) override;
-  bool SetDeviceSoundLevel(const std::string& device_id,
+  void SetDeviceSoundLevel(const std::string& device_id,
                            int level_value,
                            base::OnceCallback<void(bool)> callback) override;
-  bool SetMute(bool is_input, bool value) override;
-  bool SetMute(bool is_input,
+  void SetMute(bool is_input,
                bool value,
                base::OnceCallback<void(bool)> callback) override;
-  bool GetMute(bool is_input, bool* value) override;
-  bool GetMute(bool is_input,
+  void GetMute(bool is_input,
                base::OnceCallback<void(bool, bool)> callback) override;
 
  private:

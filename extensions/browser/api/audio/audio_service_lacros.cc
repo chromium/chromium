@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/audio/audio_service_lacros.h"
 
-#include "base/notreached.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/api/audio/audio_service_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -85,19 +84,14 @@ AudioServiceLacros::AudioServiceLacros() {
 
 AudioServiceLacros::~AudioServiceLacros() = default;
 
-bool AudioServiceLacros::GetDevices(const api::audio::DeviceFilter* filter,
-                                    DeviceInfoList* devices_out) {
-  // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceLacros::GetDevices(
+void AudioServiceLacros::GetDevices(
     const api::audio::DeviceFilter* filter,
     base::OnceCallback<void(bool, DeviceInfoList)> extapi_callback) {
   if (!IsAudioCrosapiAvailable()) {
     LOG(ERROR) << "GetDevices. " << kServiceNotAvailableErrorMsg;
-    return false;
+    DeviceInfoList devices_empty;
+    std::move(extapi_callback).Run(false, std::move(devices_empty));
+    return;
   }
 
   auto crosapi_callback = base::BindOnce(
@@ -122,95 +116,65 @@ bool AudioServiceLacros::GetDevices(
 
   GetAudioCrosapi().GetDevices(std::move(crosapi_filter),
                                std::move(crosapi_callback));
-  return true;
 }
 
-bool AudioServiceLacros::SetActiveDeviceLists(
-    const DeviceIdList* input_devices,
-    const DeviceIdList* output_devives) {
-  // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceLacros::SetActiveDeviceLists(
+void AudioServiceLacros::SetActiveDeviceLists(
     const DeviceIdList* input_devices,
     const DeviceIdList* output_devives,
     base::OnceCallback<void(bool)> callback) {
   if (!IsAudioCrosapiAvailable()) {
     LOG(ERROR) << "SetActiveDevices. " << kServiceNotAvailableErrorMsg;
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   auto ids = ConvertDeviceIdListsToMojom(input_devices, output_devives);
-
   GetAudioCrosapi().SetActiveDeviceLists(std::move(ids), std::move(callback));
-  return true;
 }
 
-bool AudioServiceLacros::SetDeviceSoundLevel(const std::string& device_id,
-                                             int level_value) {
-  // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceLacros::SetDeviceSoundLevel(
+void AudioServiceLacros::SetDeviceSoundLevel(
     const std::string& device_id,
     int level_value,
     base::OnceCallback<void(bool)> callback) {
   if (!IsAudioCrosapiAvailable()) {
     LOG(ERROR) << "SetDeviceSoundLevel. " << kServiceNotAvailableErrorMsg;
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   auto properties = crosapi::mojom::AudioDeviceProperties::New(level_value);
-
   GetAudioCrosapi().SetProperties(device_id, std::move(properties),
                                   std::move(callback));
-  return true;
 }
 
-bool AudioServiceLacros::SetMute(bool is_input, bool value) {
-  // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceLacros::SetMute(bool is_input,
+void AudioServiceLacros::SetMute(bool is_input,
                                  bool value,
                                  base::OnceCallback<void(bool)> callback) {
   if (!IsAudioCrosapiAvailable()) {
     LOG(ERROR) << "SetMute. " << kServiceNotAvailableErrorMsg;
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   crosapi::mojom::StreamType stream_type =
       is_input ? crosapi::mojom::StreamType::kInput
                : crosapi::mojom::StreamType::kOutput;
   GetAudioCrosapi().SetMute(stream_type, value, std::move(callback));
-  return true;
 }
 
-bool AudioServiceLacros::GetMute(bool is_input, bool* value) {
-  // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
-  NOTREACHED();
-  return false;
-}
-
-bool AudioServiceLacros::GetMute(
+void AudioServiceLacros::GetMute(
     bool is_input,
     base::OnceCallback<void(bool, bool)> callback) {
   if (!IsAudioCrosapiAvailable()) {
     LOG(ERROR) << "GetMute. " << kServiceNotAvailableErrorMsg;
-    return false;
+    std::move(callback).Run(false, false);
+    return;
   }
 
   crosapi::mojom::StreamType stream_type =
       is_input ? crosapi::mojom::StreamType::kInput
                : crosapi::mojom::StreamType::kOutput;
   GetAudioCrosapi().GetMute(stream_type, std::move(callback));
-  return true;
 }
 
 AudioService::Ptr AudioService::CreateInstance(

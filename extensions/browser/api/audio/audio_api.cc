@@ -17,12 +17,7 @@
 #include "extensions/common/api/audio.h"
 
 namespace {
-const char* const kGetDevicesErrorMsg =
-    "Error occurred when querying audio device information.";
-const char* const kSetActiveDevicesErrorMsg = "Failed to set active devices.";
 const char* const kLevelPropErrorMsg = "Could not set volume/gain properties";
-const char* const kSetMuteErrorMsg = "Could not set mute state.";
-const char* const kGetMuteErrorMsg = "Could not get mute state.";
 }  // namespace
 
 namespace extensions {
@@ -120,27 +115,17 @@ ExtensionFunction::ResponseAction AudioGetDevicesFunction::Run() {
       AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
   DCHECK(service);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (service->GetDevices(
-          params->filter.get(),
-          base::BindOnce(&AudioGetDevicesFunction::OnResponse, this))) {
-    return RespondLater();
-  }
-  return RespondNow(Error(kGetDevicesErrorMsg));
-
-#else
-  std::vector<api::audio::AudioDeviceInfo> devices;
-  if (!service->GetDevices(params->filter.get(), &devices)) {
-    return RespondNow(Error(kGetDevicesErrorMsg));
-  }
-
-  return RespondNow(ArgumentList(audio::GetDevices::Results::Create(devices)));
-#endif
+  service->GetDevices(
+      params->filter.get(),
+      base::BindOnce(&AudioGetDevicesFunction::OnResponse, this));
+  return RespondLater();
 }
 
 void AudioGetDevicesFunction::OnResponse(
     bool success,
     std::vector<api::audio::AudioDeviceInfo> devices) {
+  const char* const kGetDevicesErrorMsg =
+      "Error occurred when querying audio device information.";
   if (success) {
     Respond(ArgumentList(audio::GetDevices::Results::Create(devices)));
   } else {
@@ -159,22 +144,14 @@ ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
       AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
   DCHECK(service);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (service->SetActiveDeviceLists(
-          params->ids.input.get(), params->ids.output.get(),
-          base::BindOnce(&AudioSetActiveDevicesFunction::OnResponse, this))) {
-    return RespondLater();
-  }
-#else
-  if (service->SetActiveDeviceLists(params->ids.input.get(),
-                                    params->ids.output.get())) {
-    return RespondNow(NoArguments());
-  }
-#endif
-  return RespondNow(Error(kSetActiveDevicesErrorMsg));
+  service->SetActiveDeviceLists(
+      params->ids.input.get(), params->ids.output.get(),
+      base::BindOnce(&AudioSetActiveDevicesFunction::OnResponse, this));
+  return RespondLater();
 }
 
 void AudioSetActiveDevicesFunction::OnResponse(bool success) {
+  const char* const kSetActiveDevicesErrorMsg = "Failed to set active devices.";
   if (success) {
     Respond(NoArguments());
   } else {
@@ -183,6 +160,7 @@ void AudioSetActiveDevicesFunction::OnResponse(bool success) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
 ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
   std::unique_ptr<audio::SetProperties::Params> params(
       audio::SetProperties::Params::Create(args()));
@@ -195,18 +173,12 @@ ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
   bool level_set = !!params->properties.level;
   int level_value = level_set ? *params->properties.level : -1;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (level_set &&
-      service->SetDeviceSoundLevel(
-          params->id, level_value,
-          base::BindOnce(&AudioSetPropertiesFunction::OnResponse, this))) {
+  if (level_set) {
+    service->SetDeviceSoundLevel(
+        params->id, level_value,
+        base::BindOnce(&AudioSetPropertiesFunction::OnResponse, this));
     return RespondLater();
   }
-#else
-  if (level_set && service->SetDeviceSoundLevel(params->id, level_value)) {
-    return RespondNow(NoArguments());
-  }
-#endif
   return RespondNow(Error(kLevelPropErrorMsg));
 }
 
@@ -219,6 +191,7 @@ void AudioSetPropertiesFunction::OnResponse(bool success) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
 ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
   std::unique_ptr<audio::SetMute::Params> params(
       audio::SetMute::Params::Create(args()));
@@ -230,22 +203,13 @@ ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
 
   const bool is_input = (params->stream_type == audio::STREAM_TYPE_INPUT);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (service->SetMute(
-          is_input, params->is_muted,
-          base::BindOnce(&AudioSetMuteFunction::OnResponse, this))) {
-    return RespondLater();
-  }
-  return RespondNow(Error(kSetMuteErrorMsg));
-#else
-  if (!service->SetMute(is_input, params->is_muted)) {
-    return RespondNow(Error(kSetMuteErrorMsg));
-  }
-  return RespondNow(NoArguments());
-#endif
+  service->SetMute(is_input, params->is_muted,
+                   base::BindOnce(&AudioSetMuteFunction::OnResponse, this));
+  return RespondLater();
 }
 
 void AudioSetMuteFunction::OnResponse(bool success) {
+  const char* const kSetMuteErrorMsg = "Could not set mute state.";
   if (success) {
     Respond(NoArguments());
   } else {
@@ -254,6 +218,7 @@ void AudioSetMuteFunction::OnResponse(bool success) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
 ExtensionFunction::ResponseAction AudioGetMuteFunction::Run() {
   std::unique_ptr<audio::GetMute::Params> params(
       audio::GetMute::Params::Create(args()));
@@ -264,22 +229,13 @@ ExtensionFunction::ResponseAction AudioGetMuteFunction::Run() {
   DCHECK(service);
   const bool is_input = (params->stream_type == audio::STREAM_TYPE_INPUT);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (service->GetMute(
-          is_input, base::BindOnce(&AudioGetMuteFunction::OnResponse, this))) {
-    return RespondLater();
-  }
-  return RespondNow(Error(kGetMuteErrorMsg));
-#else
-  bool value = false;
-  if (!service->GetMute(is_input, &value)) {
-    return RespondNow(Error(kGetMuteErrorMsg));
-  }
-  return RespondNow(ArgumentList(audio::GetMute::Results::Create(value)));
-#endif
+  service->GetMute(is_input,
+                   base::BindOnce(&AudioGetMuteFunction::OnResponse, this));
+  return RespondLater();
 }
 
 void AudioGetMuteFunction::OnResponse(bool success, bool is_muted) {
+  const char* const kGetMuteErrorMsg = "Could not get mute state.";
   if (success) {
     Respond(ArgumentList(audio::GetMute::Results::Create(is_muted)));
   } else {

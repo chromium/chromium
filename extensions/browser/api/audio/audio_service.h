@@ -34,7 +34,7 @@ class AudioService {
     virtual void OnDevicesChanged(const DeviceInfoList&) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   using Ptr = std::unique_ptr<AudioService>;
@@ -45,27 +45,21 @@ class AudioService {
   AudioService(const AudioService&) = delete;
   AudioService& operator=(const AudioService&) = delete;
 
-  virtual ~AudioService() {}
+  virtual ~AudioService() = default;
 
   // Called by listeners to this service to add/remove themselves as observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Retrieves list of audio devices that satisfy |filter|. Populates
-  // |devices_out| with retrieved devices.
+  // Retrieves list of audio devices that satisfy |filter|.
+  // Passes devices list into a |callback|.
   // If |filter->is_active| is set, |devices_out| will contain only devices
   // whose is-active state matches |filter->is_active| value.
   // If |filter->stream_types| is set, |devices_out| will contain only devices
   // whose stream type (INPUT for input devices, OUTPUT for output devices) is
   // contained in |filter->stream_types|.
   // Returns whether the list of devices was successfully retrieved.
-  virtual bool GetDevices(const api::audio::DeviceFilter* filter,
-                          DeviceInfoList* devices_out) = 0;
-
-  // Same as above, but passes retrieved devices list into a |callback|.
-  // TODO: Remove deprecated methods, unify ash and lacros code to both use
-  // callback approach (b/235198864)
-  virtual bool GetDevices(
+  virtual void GetDevices(
       const api::audio::DeviceFilter* filter,
       base::OnceCallback<void(bool, DeviceInfoList)> callback) = 0;
 
@@ -75,51 +69,37 @@ class AudioService {
   // set of active devices will remain unchanged.
   // If either list is empty, all active devices of associated type will be
   // deactivated.
-  // Returns whether the operation succeeded - on failure there will be no
-  // changes to active devices.
+  // Returns whether the operation succeeded into a |callback| - on failure
+  // there will be no changes to active devices.
   // Note that device ID lists should contain only existing device ID of
   // appropriate type in order for the method to succeed.
-  virtual bool SetActiveDeviceLists(const DeviceIdList* input_devices,
-                                    const DeviceIdList* output_devives) = 0;
-
-  // Same as above, but also passes if operation succeeded into a |callback|.
-  virtual bool SetActiveDeviceLists(
+  virtual void SetActiveDeviceLists(
       const DeviceIdList* input_devices,
       const DeviceIdList* output_devives,
       base::OnceCallback<void(bool)> callback) = 0;
 
   // Set the sound level properties (volume or gain) of a device.
-  virtual bool SetDeviceSoundLevel(const std::string& device_id,
-                                   int level_value) = 0;
-
-  // Same as above, but also passes if operation succeeded into a |callback|.
-  virtual bool SetDeviceSoundLevel(const std::string& device_id,
+  // Passes if operation succeeded into a |callback|.
+  virtual void SetDeviceSoundLevel(const std::string& device_id,
                                    int level_value,
                                    base::OnceCallback<void(bool)> callback) = 0;
 
   // Sets mute property for audio input (if |is_input| is true) or output (if
-  // |is_input| is false).
-  virtual bool SetMute(bool is_input, bool value) = 0;
-
-  // Same as above, but also passes if operation succeeded into a |callback|.
-  virtual bool SetMute(bool is_input,
+  // |is_input| is false). Passes if operation succeeded into a |callback|.
+  virtual void SetMute(bool is_input,
                        bool value,
                        base::OnceCallback<void(bool)> callback) = 0;
 
   // Gets mute property for audio input (if |is_input| is true) or output (if
   // |is_input| is false).
-  // The mute value is returned via |mute| argument.
-  // The method returns whether the value was successfully fetched.
-  virtual bool GetMute(bool is_input, bool* mute) = 0;
-
-  // Same as above, but passes mute value into a |callback|.
+  // The mute value is passed into a |callback|.
   // First bool indicates if operation succeeded.
   // Second bool is the mute value.
-  virtual bool GetMute(bool is_input,
+  virtual void GetMute(bool is_input,
                        base::OnceCallback<void(bool, bool)> callback) = 0;
 
  protected:
-  AudioService() {}
+  AudioService() = default;
 };
 
 }  // namespace extensions
