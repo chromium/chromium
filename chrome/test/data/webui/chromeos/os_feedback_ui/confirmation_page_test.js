@@ -151,6 +151,7 @@ export function confirmationPageTest() {
     // Verify buttons.
     assertEquals(
         'Send new report', getElementContent(page, '#buttonNewReport'));
+    assertTrue(page.i18nExists('buttonNewReport'));
     assertEquals('Done', getElementContent(page, '#buttonDone'));
   }
 
