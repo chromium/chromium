@@ -75,7 +75,7 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   [button tap];
 }
 
-// Checks |expectedStatesForPermissions| matches the actual states for
+// Checks `expectedStatesForPermissions` matches the actual states for
 // permissions of the active web state; checks will fail if there is no active
 // web state.
 - (void)checkStatesForPermissions:

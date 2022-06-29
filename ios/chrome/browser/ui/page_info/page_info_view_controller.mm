@@ -254,7 +254,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 #pragma mark - Private
 
-// Returns the navigationItem titleView for |siteURL|.
+// Returns the navigationItem titleView for `siteURL`.
 - (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
   UILabel* labelURL = [[UILabel alloc] init];
   labelURL.lineBreakMode = NSLineBreakByTruncatingHead;

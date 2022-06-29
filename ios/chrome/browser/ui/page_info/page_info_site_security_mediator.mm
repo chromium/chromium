@@ -34,7 +34,7 @@ NSString* kSecurityIconDangerous = @"security_icon_dangerous";
 NSString* kSecurityIconNotSecure = @"security_icon_not_secure";
 NSString* kSecurityIconSecure = @"security_icon_secure";
 
-// Build the certificate details based on the |SSLStatus| and the |URL|.
+// Build the certificate details based on the `SSLStatus` and the `URL`.
 NSString* BuildCertificateDetailString(web::SSLStatus& SSLStatus,
                                        const GURL& URL) {
   NSMutableString* certificateDetails = [NSMutableString
@@ -53,7 +53,7 @@ NSString* BuildCertificateDetailString(web::SSLStatus& SSLStatus,
   return certificateDetails;
 }
 
-// Returns a messages, based on the |messagesComponents|, joined by a spacing.
+// Returns a messages, based on the `messagesComponents`, joined by a spacing.
 NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   DCHECK(messageComponents.count > 0);
   NSMutableString* message =
@@ -123,8 +123,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     return dataHolder;
   }
 
-  // It is possible to have |SECURITY_STYLE_AUTHENTICATION_BROKEN| and non-error
-  // |cert_status| for WKWebView because |security_style| and |cert_status|
+  // It is possible to have `SECURITY_STYLE_AUTHENTICATION_BROKEN` and non-error
+  // `cert_status` for WKWebView because `security_style` and `cert_status`
   // are
   // calculated using different API, which may lead to different cert
   // verification results.
