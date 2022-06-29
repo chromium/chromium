@@ -654,7 +654,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 mNavbar.animate().alpha(1.f).setDuration(NAVBAR_FADE_DURATION_MS);
             }
         } else {
-            mNavbar.animate().alpha(0.f).setDuration(NAVBAR_FADE_DURATION_MS);
+            if (mNavbar != null) mNavbar.animate().alpha(0.f).setDuration(NAVBAR_FADE_DURATION_MS);
         }
         showNavbarButtons(show);
     }
