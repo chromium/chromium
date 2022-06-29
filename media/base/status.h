@@ -624,13 +624,13 @@ class MEDIA_EXPORT TypedStatus {
 
   UKMPackedType PackForUkm() const {
     internal::UKMPackHelper result;
+    // the group field is a crc16 hash of the constant name of the status,
+    // and is not controlled by the user or browser session in any way. These
+    // strings will always be something like "DecoderStatus" or "PipelineStatus"
+    // and represent the name of the enum that we record in the |group| field.
     result.bits.group = crc16(Traits::Group().data());
     result.bits.code = static_cast<StatusCodeType>(code());
-    if (data_) {
-      result.bits.extra_data =
-          internal::StatusTraitsHelper<Traits>::PackExtraData(*data_);
-    }
-
+    result.bits.extra_data = 0;
     return result.packed;
   }
 };

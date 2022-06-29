@@ -655,7 +655,7 @@ TEST_F(StatusTest, UKMSerializerTest) {
   result.ToUKM(builder);
   ASSERT_EQ(builder.status.bits.code,
             static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
-  ASSERT_EQ(builder.status.bits.extra_data, 154u);
+  ASSERT_EQ(builder.status.bits.extra_data, 0u);
 
   // Wrap the code with extra data to ensure that |.root.extra_data| is
   // serialized.
@@ -665,7 +665,7 @@ TEST_F(StatusTest, UKMSerializerTest) {
   ASSERT_NE(builder.root.packed, 0u);
   ASSERT_EQ(builder.root.bits.code,
             static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
-  ASSERT_EQ(builder.root.bits.extra_data, 154u);
+  ASSERT_EQ(builder.root.bits.extra_data, 0u);
   ASSERT_NE(builder.status.packed, 0u);
   ASSERT_EQ(builder.status.bits.code,
             static_cast<StatusCodeType>(SerializeStatus::Codes::kBar));
@@ -677,7 +677,7 @@ TEST_F(StatusTest, UKMSerializerTest) {
   ASSERT_NE(builder.root.packed, 0u);
   ASSERT_EQ(builder.root.bits.code,
             static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
-  ASSERT_EQ(builder.root.bits.extra_data, 154u);
+  ASSERT_EQ(builder.root.bits.extra_data, 0u);
   ASSERT_NE(builder.status.packed, 0u);
   ASSERT_EQ(builder.status.bits.code,
             static_cast<StatusCodeType>(SerializeStatus::Codes::kBar));
