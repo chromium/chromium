@@ -95,7 +95,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
   }
 
   base::UmaHistogramTimes(
-      "Histogram.Clusters.Backend.QueryAnnotatedVisitsLatency",
+      "History.Clusters.Backend.QueryAnnotatedVisitsLatency",
       base::TimeTicks::Now() -
           history_service_get_annotated_visits_to_cluster_start_time_);
 
