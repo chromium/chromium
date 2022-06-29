@@ -162,6 +162,7 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
 
 SidePanelCoordinator::~SidePanelCoordinator() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
+  view_state_observers_.Clear();
 }
 
 void SidePanelCoordinator::Show(
@@ -206,6 +207,16 @@ void SidePanelCoordinator::Show(
                             base::Unretained(this)));
 }
 
+void SidePanelCoordinator::AddSidePanelViewStateObserver(
+    SidePanelViewStateObserver* observer) {
+  view_state_observers_.AddObserver(observer);
+}
+
+void SidePanelCoordinator::RemoveSidePanelViewStateObserver(
+    SidePanelViewStateObserver* observer) {
+  view_state_observers_.RemoveObserver(observer);
+}
+
 void SidePanelCoordinator::Close() {
   if (!GetContentView())
     return;
@@ -242,6 +253,11 @@ void SidePanelCoordinator::Close() {
     browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
   header_combobox_ = nullptr;
   SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
+
+  for (SidePanelViewStateObserver& view_state_observer :
+       view_state_observers_) {
+    view_state_observer.OnSidePanelDidClose();
+  }
 }
 
 void SidePanelCoordinator::Toggle() {
@@ -477,6 +493,12 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
   absl::optional<SidePanelEntry::Id> selected_id = GetSelectedId();
   combobox_model_->RemoveItem(entry->id());
+
+  // If the active global entry is the entry being deregistered, reset
+  // last_active_global_entry_id_.
+  if (entry->id() == last_active_global_entry_id_) {
+    last_active_global_entry_id_ = absl::nullopt;
+  }
 
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one

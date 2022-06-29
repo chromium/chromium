@@ -20,6 +20,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using testing::_;
 
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
@@ -116,11 +120,48 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   std::vector<raw_ptr<SidePanelRegistry>> contextual_registries_;
 };
 
+class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
+ public:
+  MOCK_METHOD(void, OnSidePanelDidClose, (), (override));
+};
+
 TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
   coordinator_->Toggle();
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
 
   coordinator_->Toggle();
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+}
+
+TEST_F(SidePanelCoordinatorTest,
+       ClosingSidePanelCallsOnSidePanelClosedObserver) {
+  MockSidePanelViewStateObserver view_state_observer;
+  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(1);
+  coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
+  coordinator_->Show();
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  coordinator_->Close();
+
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+}
+
+TEST_F(SidePanelCoordinatorTest, RemovingObserverDoesNotIncrementCount) {
+  MockSidePanelViewStateObserver view_state_observer;
+  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(1);
+  coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
+  coordinator_->Show();
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  coordinator_->Close();
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  coordinator_->Show();
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  coordinator_->RemoveSidePanelViewStateObserver(&view_state_observer);
+
+  coordinator_->Close();
   EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
 }
 
@@ -700,6 +741,30 @@ TEST_F(SidePanelCoordinatorTest, ShouldNotRecreateTheSameEntry) {
   ASSERT_EQ(1, count);
   coordinator_->Show(SidePanelEntry::Id::kLens);
   ASSERT_EQ(1, count);
+}
+
+// closes side panel if the active entry is de-registered when open
+TEST_F(SidePanelCoordinatorTest, GlobalEntryDeregisteredWhenVisible) {
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  global_registry_->Deregister(SidePanelEntry::Id::kBookmarks);
+
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_FALSE(GetLastActiveEntryId().has_value());
+}
+
+// resets last active entry id if active global entry de-registers when closed
+TEST_F(SidePanelCoordinatorTest, GlobalEntryDeregisteredWhenClosed) {
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  coordinator_->Close();
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  global_registry_->Deregister(SidePanelEntry::Id::kBookmarks);
+
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_FALSE(GetLastActiveEntryId().has_value());
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing

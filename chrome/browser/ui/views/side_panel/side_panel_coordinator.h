@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 
 class BrowserView;
 class SidePanelComboboxModel;
@@ -61,6 +63,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelEntry::Id GetComboboxDisplayedEntryIdForTesting() const;
 
   bool IsSidePanelShowing();
+
+  void AddSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
+
+  void RemoveSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
 
  private:
   friend class SidePanelCoordinatorTest;
@@ -142,6 +148,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // their availability in the observed side panel registries.
   std::unique_ptr<SidePanelComboboxModel> combobox_model_;
   raw_ptr<views::Combobox> header_combobox_ = nullptr;
+
+  base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
 
   // TODO(pbos): Add awareness of tab registries here. This probably needs to
   // know the tab registry it's currently monitoring.

@@ -4834,6 +4834,7 @@ static_library("ui") {
       "views/side_panel/side_panel_registry_observer.h",
       "views/side_panel/side_panel_util.cc",
       "views/side_panel/side_panel_util.h",
+      "views/side_panel/side_panel_view_state_observer.h",
       "views/side_panel/side_panel_web_ui_view.cc",
       "views/side_panel/side_panel_web_ui_view.h",
       "views/side_panel/user_note/user_note_ui_coordinator.cc",
