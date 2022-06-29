@@ -56,6 +56,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
@@ -1174,11 +1177,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                                        PROMO_ACTION_NO_SIGNIN_PROMO
                         completion:nil];
       break;
-    case SettingsItemTypeAccount:
+    case SettingsItemTypeAccount: {
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
-      controller = [[AccountsTableViewController alloc] initWithBrowser:_browser
-                                              closeSettingsOnAddAccount:NO];
+      AccountsTableViewController* accountsTableViewController =
+          [[AccountsTableViewController alloc] initWithBrowser:_browser
+                                     closeSettingsOnAddAccount:NO];
+      accountsTableViewController.applicationCommandsHandler =
+          self.applicationCommandsHandler;
+      controller = accountsTableViewController;
       break;
+    }
     case SettingsItemTypeGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showGoogleServices];
@@ -1270,10 +1278,17 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       controller = [[BandwidthManagementTableViewController alloc]
           initWithBrowserState:_browserState];
       break;
-    case SettingsItemTypeAboutChrome:
+    case SettingsItemTypeAboutChrome: {
       base::RecordAction(base::UserMetricsAction("AboutChrome"));
-      controller = [[AboutChromeTableViewController alloc] init];
+      AboutChromeTableViewController* aboutChromeTableViewController =
+          [[AboutChromeTableViewController alloc] init];
+      aboutChromeTableViewController.applicationCommandsHandler =
+          self.applicationCommandsHandler;
+      aboutChromeTableViewController.snackbarCommandsHandler =
+          self.snackbarCommandsHandler;
+      controller = aboutChromeTableViewController;
       break;
+    }
     case SettingsItemTypeMemoryDebugging:
     case SettingsItemTypeViewSource:
       // Taps on these don't do anything. They have a switch as accessory view
@@ -1603,7 +1618,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  [self.dispatcher showSignin:command baseViewController:self];
+  [self.applicationCommandsHandler showSignin:command baseViewController:self];
 }
 
 #pragma mark Sign in
@@ -1624,7 +1639,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                    completion(success);
                  [weakSelf didFinishSignin:success];
                }];
-  [self.dispatcher showSignin:command baseViewController:self];
+  [self.applicationCommandsHandler showSignin:command baseViewController:self];
 }
 
 - (void)didFinishSignin:(BOOL)signedIn {

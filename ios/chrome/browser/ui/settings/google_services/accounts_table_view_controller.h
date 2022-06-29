@@ -17,6 +17,9 @@ class Browser;
 @interface AccountsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
+// ApplicationCommands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
 // `browser` must not be nil.
 // If `closeSettingsOnAddAccount` is YES, then this account table view
 // controller will close the settings view when an account is added.

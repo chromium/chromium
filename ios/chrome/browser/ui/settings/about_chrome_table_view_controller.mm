@@ -15,7 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/settings/cells/version_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -179,15 +180,13 @@ const CGFloat kDefaultHeight = 70;
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
   message.category = @"version copied";
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.dispatcher showSnackbarMessage:message bottomOffset:0];
+  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - Private methods
 
 - (void)openURL:(GURL)URL {
-  BlockToOpenURL(self, self.dispatcher)(URL);
+  BlockToOpenURL(self, self.applicationCommandsHandler)(URL);
 }
 
 - (std::string)versionString {

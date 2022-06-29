@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
@@ -2085,6 +2086,18 @@ bool IsSigninForcedByPolicy() {
   // Assume that settings always wants the dispatcher from the main BVC.
   return static_cast<id<ApplicationCommands, BrowserCommands>>(
       self.mainInterface.browser->GetCommandDispatcher());
+}
+
+- (id<ApplicationCommands>)handlerForApplicationCommands {
+  // Assume that settings always wants the dispatcher from the main BVC.
+  return HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
+                            ApplicationCommands);
+}
+
+- (id<SnackbarCommands>)handlerForSnackbarCommands {
+  // Assume that settings always wants the dispatcher from the main BVC.
+  return HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
+                            SnackbarCommands);
 }
 
 #pragma mark - TabGridCoordinatorDelegate

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
@@ -560,13 +561,13 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     }
     case ItemTypeChangePasswordButton:
       if (!self.tableView.editing) {
-        DCHECK(self.commandsHandler);
+        DCHECK(self.applicationCommandsHandler);
         DCHECK(self.password.changePasswordURL.is_valid());
         OpenNewTabCommand* command = [OpenNewTabCommand
             commandWithURLFromChrome:self.password.changePasswordURL];
         UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                                 PasswordCheckInteraction::kChangePassword);
-        [self.commandsHandler closeSettingsUIAndOpenURL:command];
+        [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
     case ItemTypeDuplicateCredentialButton:
@@ -996,12 +997,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   TriggerHapticFeedbackForNotification(success
                                            ? UINotificationFeedbackTypeSuccess
                                            : UINotificationFeedbackTypeError);
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.commandsHandler showSnackbarWithMessage:message
-                                     buttonText:nil
-                                  messageAction:nil
-                               completionAction:nil];
+  [self.snackbarCommandsHandler showSnackbarWithMessage:message
+                                             buttonText:nil
+                                          messageAction:nil
+                                       completionAction:nil];
 
   if ([self.tableView indexPathForSelectedRow]) {
     [self.tableView

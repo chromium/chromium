@@ -36,6 +36,7 @@
 #include "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -571,6 +572,16 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 - (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
     handlerForSettings {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<ApplicationCommands>)handlerForApplicationCommands {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<SnackbarCommands>)handlerForSnackbarCommands {
   NOTREACHED();
   return nil;
 }

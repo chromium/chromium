@@ -14,10 +14,17 @@ class Browser;
 @protocol BrowsingDataCommands;
 @protocol SettingsMainPageCommands;
 @class SigninInteractionController;
+@protocol SnackbarCommands;
 
 // This class is the TableView for the application settings.
 @interface SettingsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
+
+// ApplicationCommands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// SnackbarCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Initializes a new SettingsTableViewController. `browser` must not
 // be nil and must not be associated with an off the record browser state.

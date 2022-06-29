@@ -14,6 +14,7 @@
 @protocol PasswordDetailsHandler;
 @protocol PasswordDetailsTableViewControllerDelegate;
 @protocol ReauthenticationProtocol;
+@protocol SnackbarCommands;
 
 // Denotes the credential type that is being displayed by the view controller.
 typedef NS_ENUM(NSInteger, CredentialType) {
@@ -47,12 +48,11 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 @property(nonatomic, weak) id<PasswordDetailsTableViewControllerDelegate>
     delegate;
 
-// Dispatcher for this ViewController.
-// TODO(crbug.com/1323778): This class needs to have an explicit
-// id<SnacbarCommands> handler property instead of using BrowserCommands. There
-// will also be an explicit (separate) ApplicationCommands handler.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands>
-    commandsHandler;
+// ApplicationCommands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// SnackbarCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Module containing the reauthentication mechanism for interactions
 // with password.

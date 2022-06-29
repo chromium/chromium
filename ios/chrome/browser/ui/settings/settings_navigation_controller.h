@@ -14,6 +14,7 @@ class Browser;
 @protocol BrowserCommands;
 @protocol BrowsingDataCommands;
 @protocol ImportDataControllerDelegate;
+@protocol SnackbarCommands;
 @protocol UserFeedbackDataSource;
 
 // The accessibility identifier for the settings' "Done" button.
@@ -34,6 +35,14 @@ extern NSString* const kSettingsDoneButtonId;
 // controllers when they are created.
 - (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
     handlerForSettings;
+
+// Asks the delegate for an ApplicationCommands handler that can be passed into
+// child view controllers when they are created.
+- (id<ApplicationCommands>)handlerForApplicationCommands;
+
+// Asks the delegate for a SnackbarCommands handler that can be passed into
+// child view controllers when they are created.
+- (id<SnackbarCommands>)handlerForSnackbarCommands;
 
 @end
 

@@ -136,8 +136,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation AccountsTableViewController
 
-@synthesize dispatcher = _dispatcher;
-
 - (instancetype)initWithBrowser:(Browser*)browser
       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount {
   DCHECK(browser);
@@ -488,8 +486,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                callback:^(BOOL success) {
                  [weakSelf handleDidAddAccount:success];
                }];
-  DCHECK(self.dispatcher);
-  [self.dispatcher showSignin:command baseViewController:self];
+  [self.applicationCommandsHandler showSignin:command baseViewController:self];
 }
 
 - (void)handleDidAddAccount:(BOOL)success {
@@ -498,7 +495,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self allowUserInteraction];
   [self handleAuthenticationOperationDidFinish];
   if (success && _closeSettingsOnAddAccount) {
-    [self.dispatcher closeSettingsUI];
+    [self.applicationCommandsHandler closeSettingsUI];
   }
 }
 
@@ -787,11 +784,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
-  // Subclass must have a valid dispatcher assigned.
-  DCHECK(self.dispatcher);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
+  [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
 }
 
 @end

@@ -105,6 +105,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   SettingsTableViewController* controller = [[SettingsTableViewController alloc]
       initWithBrowser:browser
            dispatcher:[delegate handlerForSettings]];
+  controller.applicationCommandsHandler =
+      [delegate handlerForApplicationCommands];
+  controller.snackbarCommandsHandler = [delegate handlerForSnackbarCommands];
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller
                          browser:browser
@@ -121,7 +124,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   AccountsTableViewController* controller =
       [[AccountsTableViewController alloc] initWithBrowser:browser
                                  closeSettingsOnAddAccount:YES];
-  controller.dispatcher = [delegate handlerForSettings];
+  controller.applicationCommandsHandler =
+      [delegate handlerForApplicationCommands];
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller
                          browser:browser
@@ -740,7 +744,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   AccountsTableViewController* controller =
       [[AccountsTableViewController alloc] initWithBrowser:self.browser
                                  closeSettingsOnAddAccount:NO];
-  controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
+  controller.applicationCommandsHandler =
+      [self.settingsNavigationDelegate handlerForApplicationCommands];
   [self pushViewController:controller animated:YES];
 }
 

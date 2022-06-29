@@ -11,12 +11,16 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,8 +43,26 @@ class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return [[AccountsTableViewController alloc] initWithBrowser:browser_.get()
-                                      closeSettingsOnAddAccount:NO];
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
+
+    AccountsTableViewController* controller =
+        [[AccountsTableViewController alloc] initWithBrowser:browser_.get()
+                                   closeSettingsOnAddAccount:NO];
+    controller.applicationCommandsHandler = mockApplicationCommandHandler;
+    return controller;
   }
 
   // Identity Services

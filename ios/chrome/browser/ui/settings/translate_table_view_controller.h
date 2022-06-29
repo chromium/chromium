@@ -8,12 +8,13 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 class PrefService;
+@protocol SnackbarCommands;
 
 // Controller for the UI that allows the user to control Translate settings.
 @interface TranslateTableViewController : SettingsRootTableViewController
 
-// TODO(crbug.com/1323778): This class needs to have an explicit
-// id<SnackbarCommands> handler property.
+// SnackbarCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // `prefs` must not be nil.
 - (instancetype)initWithPrefs:(PrefService*)prefs NS_DESIGNATED_INITIALIZER;

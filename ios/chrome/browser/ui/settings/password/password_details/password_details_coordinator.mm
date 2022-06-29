@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
@@ -57,9 +58,6 @@
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 
-// Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
-
 @end
 
 @implementation PasswordDetailsCoordinator
@@ -90,8 +88,6 @@
         !_password.federation_origin.opaque()) {
       _credentialType = CredentialTypeFederation;
     }
-    _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
-        browser->GetCommandDispatcher());
   }
   return self;
 }
@@ -106,7 +102,10 @@
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
-  self.viewController.commandsHandler = self.dispatcher;
+  self.viewController.applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.viewController.snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
   self.viewController.reauthModule = self.reauthenticationModule;
 
   [self.baseNavigationController pushViewController:self.viewController
@@ -148,7 +147,12 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 action:^{
-                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                  id<ApplicationCommands> applicationCommandsHandler =
+                      HandlerForProtocol(
+                          weakSelf.browser->GetCommandDispatcher(),
+                          ApplicationCommands);
+                  [applicationCommandsHandler
+                      closeSettingsUIAndOpenURL:command];
                 }
                  style:UIAlertActionStyleDefault];
 
