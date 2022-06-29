@@ -18,6 +18,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
