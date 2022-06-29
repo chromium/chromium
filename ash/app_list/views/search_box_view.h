@@ -203,9 +203,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
 
-  // Updates search_box() text to match |selected_result|. Should be called
-  // when the selected search result changes.
-  void UpdateSearchBoxTextForSelectedResult(SearchResult* selected_result);
+  // Updates search_box() for the |selected_result|. Should be called when the
+  // selected search result changes.
+  void UpdateSearchBoxForSelectedResult(SearchResult* selected_result);
 
   // Returns true if the event to trigger autocomplete should be handled.
   bool ShouldProcessAutocomplete();

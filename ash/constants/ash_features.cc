@@ -206,7 +206,7 @@ const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
 
 // Enables or disables extended autocomplete results.
 const base::Feature kAutocompleteExtendedSuggestions{
-    "AutocompleteExtendedSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
+    "AutocompleteExtendedSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables params tuning experiment for autocorrect on ChromeOS.
 const base::Feature kAutocorrectParamsTuning{"AutocorrectParamsTuning",

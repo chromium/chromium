@@ -58,7 +58,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -113,6 +113,40 @@ SearchBoxView::PlaceholderTextType SelectPlaceholderText() {
     return kGamingPlaceholders[rand() % std::size(kGamingPlaceholders)];
   }
   return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
+}
+
+std::u16string GetCategoryName(SearchResult* search_result) {
+  switch (search_result->category()) {
+    case ash::AppListSearchResultCategory::kApps:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APPS);
+    case ash::AppListSearchResultCategory::kAppShortcuts:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APP_SHORTCUTS);
+    case ash::AppListSearchResultCategory::kWeb:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_WEB);
+    case ash::AppListSearchResultCategory::kFiles:
+      return (l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_FILES));
+    case ash::AppListSearchResultCategory::kSettings:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SETTINGS);
+    case ash::AppListSearchResultCategory::kHelp:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_HELP);
+    case ash::AppListSearchResultCategory::kPlayStore:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_PLAY_STORE);
+    case ash::AppListSearchResultCategory::kSearchAndAssistant:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SEARCH_AND_ASSISTANT);
+    case ash::AppListSearchResultCategory::kGames:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_GAMES);
+    case ash::AppListSearchResultCategory::kUnknown:
+      return std::u16string();
+  }
 }
 
 bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
@@ -416,7 +450,7 @@ const char* SearchBoxView::GetClassName() const {
 }
 
 void SearchBoxView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  SearchBoxViewBase::OnThemeChanged();
   SetupAssistantButton();
   SetupCloseButton();
   OnWallpaperColorsChanged();
@@ -541,7 +575,7 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
     if (delegate()->CanSelectSearchResults() &&
         result_selection_controller_->MoveSelection(*evt) ==
             ResultSelectionController::MoveResult::kResultChanged) {
-      UpdateSearchBoxTextForSelectedResult(
+      UpdateSearchBoxForSelectedResult(
           result_selection_controller_->selected_result()->result());
     }
 
@@ -607,9 +641,9 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
   const int horizontal_right_padding =
       horizontal_spacing -
       (GetSearchBoxButtonSize() - GetSearchBoxIconSize()) / 2;
-  box_layout()->set_inside_border_insets(
+  box_layout_view()->SetInsideBorderInsets(
       gfx::Insets::TLBR(0, horizontal_spacing, 0, horizontal_right_padding));
-  box_layout()->set_between_child_spacing(horizontal_spacing);
+  box_layout_view()->SetBetweenChildSpacing(horizontal_spacing);
   InvalidateLayout();
   UpdateBackground(target_state);
 }
@@ -702,8 +736,9 @@ void SearchBoxView::ProcessAutocomplete(
           return false;
         // Don't set autocomplete text if the highlighted text is the same as
         // before.
-        if (autocomplete_text.substr(highlight_range_.start()) ==
-            search_box()->GetSelectedText()) {
+        if (autocomplete_text.length() > highlight_range_.start() &&
+            autocomplete_text.substr(highlight_range_.start()) ==
+                search_box()->GetSelectedText()) {
           return false;
         }
         return true;
@@ -728,18 +763,26 @@ void SearchBoxView::ProcessAutocomplete(
     return;
   }
 
-  // Record whether the user's query is a substring of the search result. Used
-  // to determine whether we should add substring matching to CrOS search
-  // autocomplete.
-  if (IsSubstringCaseInsensitive(details, user_typed_text) &&
-      is_valid_autocomplete_text(details)) {
-    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kSubstringMatch);
-    // TODO(crbug.com/1334821): Maybe enable substring match autocomplete.
-  } else if (IsSubstringCaseInsensitive(search_text, user_typed_text) &&
-             is_valid_autocomplete_text(search_text)) {
-    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kSubstringMatch);
-    // TODO(crbug.com/1334821): Maybe enable substring match autocomplete.
+  if (is_valid_autocomplete_text(search_text)) {
+    // Setup autocomplete ghost text for eligible search_text.
+    if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
+      MaybeSetAutocompleteGhostText(
+          first_result_view->result()->title(),
+          GetCategoryName(first_result_view->result()));
+    }
+
+    if (IsSubstringCaseInsensitive(search_text, user_typed_text)) {
+      // user_typed_text is a substring of search_text and is eligible for
+      // autocompletion.
+      RecordAutocompleteMatchMetric(SearchBoxTextMatch::kSubstringMatch);
+    } else {
+      // user_typed_text does not match search_text but is eligible for
+      // autocompletion.
+      RecordAutocompleteMatchMetric(
+          SearchBoxTextMatch::kAutocompletedWithoutMatch);
+    }
   } else {
+    // search_text is not eligible for autocompletion.
     RecordAutocompleteMatchMetric(SearchBoxTextMatch::kNoMatch);
   }
 
@@ -949,6 +992,9 @@ void SearchBoxView::SetAutocompleteText(
   // The |kValueChanged| type lets ChromeVox know that it should scan
   // |node_data| for "Value".
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+
+  if (features::IsAutocompleteExtendedSuggestionsEnabled())
+    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
 void SearchBoxView::UpdateQuery(const std::u16string& new_query) {
@@ -963,6 +1009,8 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   SetA11yActiveDescendant(absl::nullopt);
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
+  if (features::IsAutocompleteExtendedSuggestionsEnabled())
+    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
 void SearchBoxView::SetA11yActiveDescendant(
@@ -1013,7 +1061,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
     search_box()->RequestFocus();
     if (result_selection_controller_->MoveSelection(key_event) ==
         ResultSelectionController::MoveResult::kResultChanged) {
-      UpdateSearchBoxTextForSelectedResult(
+      UpdateSearchBoxForSelectedResult(
           result_selection_controller_->selected_result()->result());
     }
     return true;
@@ -1096,7 +1144,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       SetA11yActiveDescendant(absl::nullopt);
       break;
     case ResultSelectionController::MoveResult::kResultChanged:
-      UpdateSearchBoxTextForSelectedResult(
+      UpdateSearchBoxForSelectedResult(
           result_selection_controller_->selected_result()->result());
       break;
   }
@@ -1135,7 +1183,7 @@ bool SearchBoxView::HandleGestureEvent(views::Textfield* sender,
   return SearchBoxViewBase::HandleGestureEvent(sender, gesture_event);
 }
 
-void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
+void SearchBoxView::UpdateSearchBoxForSelectedResult(
     SearchResult* selected_result) {
   if (selected_result->result_type() ==
       AppListSearchResultType::kInternalPrivacyInfo) {
@@ -1143,14 +1191,20 @@ void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
     return;
   }
 
-  if (selected_result->result_type() == AppListSearchResultType::kOmnibox &&
-      !selected_result->is_omnibox_search() &&
-      !selected_result->details().empty()) {
-    // For url (non-search) results, use details to ensure that the url is
-    // displayed.
-    search_box()->SetText(selected_result->details());
+  if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
+    ClearAutocompleteText();
+    MaybeSetAutocompleteGhostText(selected_result->title(),
+                                  GetCategoryName(selected_result));
   } else {
-    search_box()->SetText(selected_result->title());
+    if (selected_result->result_type() == AppListSearchResultType::kOmnibox &&
+        !selected_result->is_omnibox_search() &&
+        !selected_result->details().empty()) {
+      // For url (non-search) results, use details to ensure that the url is
+      // displayed.
+      search_box()->SetText(selected_result->details());
+    } else {
+      search_box()->SetText(selected_result->title());
+    }
   }
 }
 

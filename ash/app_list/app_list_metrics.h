@@ -227,13 +227,17 @@ enum class AppListUserAction {
 // result. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
 enum class SearchBoxTextMatch {
-  // The user entered query is not a substring of the first search result.
+  // The user entered query does not match the first search result. Autocomplete
+  // is not triggered.
   kNoMatch = 0,
   // The user entered query matches the prefix of the first search result.
   kPrefixMatch = 1,
   // The user entered query is a substring of the first search result.
   kSubstringMatch = 2,
-  kMaxValue = kSubstringMatch,
+  // The user's query does not match the first search result but autocomplete is
+  // triggered.
+  kAutocompletedWithoutMatch = 3,
+  kMaxValue = kAutocompletedWithoutMatch,
 };
 
 // Parameters to call RecordAppListAppLaunched. Passed to code that does not
