@@ -2231,6 +2231,8 @@ crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape
 crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html [ Failure Pass ]
 crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html [ Failure Pass ]
 
+crbug.com/1339541 [ Linux ] compositing/framesets/composited-frame-alignment.html [ Pass Failure ]
+
 crbug.com/424365 external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-024.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-008.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-006.html [ Failure ]
