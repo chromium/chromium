@@ -5963,7 +5963,7 @@
   {
     "name": "touch-drag-and-context-menu",
     "owners": [ "wenyufu", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 106
   },
   {
     "name": "touch-selection-strategy",
