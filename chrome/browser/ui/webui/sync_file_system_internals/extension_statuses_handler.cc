@@ -35,17 +35,17 @@ namespace {
 // ExtensionStatusesHandler and FileMetadataHandler.
 void ConvertExtensionStatusToDictionary(
     const base::WeakPtr<extensions::ExtensionService>& extension_service,
-    base::OnceCallback<void(const base::ListValue&)> callback,
+    base::OnceCallback<void(const base::Value::List)> callback,
     const std::map<GURL, std::string>& status_map) {
   if (!extension_service) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(extension_service->profile());
 
-  base::ListValue list;
+  base::Value::List list;
   for (auto itr = status_map.begin(); itr != status_map.end(); ++itr) {
     std::string extension_id = itr->first.HostNoBrackets();
 
@@ -60,10 +60,10 @@ void ConvertExtensionStatusToDictionary(
     dict.Set("extensionID", extension_id);
     dict.Set("extensionName", extension->name());
     dict.Set("status", itr->second);
-    list.GetList().Append(std::move(dict));
+    list.Append(std::move(dict));
   }
 
-  std::move(callback).Run(list);
+  std::move(callback).Run(std::move(list));
 }
 
 }  // namespace
@@ -74,7 +74,7 @@ ExtensionStatusesHandler::ExtensionStatusesHandler(Profile* profile)
 ExtensionStatusesHandler::~ExtensionStatusesHandler() {}
 
 void ExtensionStatusesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getExtensionStatuses",
       base::BindRepeating(&ExtensionStatusesHandler::HandleGetExtensionStatuses,
                           base::Unretained(this)));
@@ -83,20 +83,20 @@ void ExtensionStatusesHandler::RegisterMessages() {
 // static
 void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
     Profile* profile,
-    base::OnceCallback<void(const base::ListValue&)> callback) {
+    base::OnceCallback<void(const base::Value::List)> callback) {
   DCHECK(profile);
 
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile);
   if (!sync_service) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
   if (!extension_service) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
@@ -106,21 +106,19 @@ void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
 }
 
 void ExtensionStatusesHandler::HandleGetExtensionStatuses(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  DCHECK(args);
   GetExtensionStatusesAsDictionary(
       profile_,
-      base::BindOnce(
-          &ExtensionStatusesHandler::DidGetExtensionStatuses,
-          weak_ptr_factory_.GetWeakPtr(),
-          args->GetListDeprecated()[0].GetString() /* callback_id */));
+      base::BindOnce(&ExtensionStatusesHandler::DidGetExtensionStatuses,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     args[0].GetString() /* callback_id */));
 }
 
-void ExtensionStatusesHandler::DidGetExtensionStatuses(
-    std::string callback_id,
-    const base::ListValue& list) {
-  ResolveJavascriptCallback(base::Value(callback_id), list);
+void ExtensionStatusesHandler::DidGetExtensionStatuses(std::string callback_id,
+                                                       base::Value::List list) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(list)));
 }
 
 }  // namespace syncfs_internals

@@ -33,20 +33,20 @@ FileMetadataHandler::FileMetadataHandler(Profile* profile)
 FileMetadataHandler::~FileMetadataHandler() {}
 
 void FileMetadataHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getExtensions",
       base::BindRepeating(&FileMetadataHandler::HandleGetExtensions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getFileMetadata",
       base::BindRepeating(&FileMetadataHandler::HandleGetFileMetadata,
                           base::Unretained(this)));
 }
 
-void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
+void FileMetadataHandler::HandleGetFileMetadata(const base::Value::List& args) {
   AllowJavascript();
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
-  std::string extension_id = args->GetListDeprecated()[1].GetString();
+  std::string callback_id = args[0].GetString();
+  std::string extension_id = args[1].GetString();
   if (extension_id.empty()) {
     LOG(WARNING) << "GetFileMetadata() Extension ID wasn't given";
     return;
@@ -76,19 +76,18 @@ void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
+void FileMetadataHandler::HandleGetExtensions(const base::Value::List& args) {
   AllowJavascript();
-  DCHECK(args);
   ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
-      profile_,
-      base::BindOnce(
-          &FileMetadataHandler::DidGetExtensions, weak_factory_.GetWeakPtr(),
-          args->GetListDeprecated()[0].GetString() /* callback_id */));
+      profile_, base::BindOnce(&FileMetadataHandler::DidGetExtensions,
+                               weak_factory_.GetWeakPtr(),
+                               args[0].GetString() /* callback_id */));
 }
 
 void FileMetadataHandler::DidGetExtensions(std::string callback_id,
-                                           const base::ListValue& list) {
-  ResolveJavascriptCallback(base::Value(callback_id), list);
+                                           base::Value::List list) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(list)));
 }
 
 void FileMetadataHandler::DidGetFileMetadata(std::string callback_id,

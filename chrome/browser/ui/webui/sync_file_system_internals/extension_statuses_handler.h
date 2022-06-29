@@ -30,15 +30,15 @@ class ExtensionStatusesHandler : public content::WebUIMessageHandler {
   // extension drop down.
   static void GetExtensionStatusesAsDictionary(
       Profile* profile,
-      base::OnceCallback<void(const base::ListValue&)> callback);
+      base::OnceCallback<void(const base::Value::List)> callback);
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
  private:
-  void HandleGetExtensionStatuses(const base::ListValue* args);
+  void HandleGetExtensionStatuses(const base::Value::List& args);
   void DidGetExtensionStatuses(std::string callback_id,
-                               const base::ListValue& list);
+                               const base::Value::List list);
 
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ExtensionStatusesHandler> weak_ptr_factory_{this};
