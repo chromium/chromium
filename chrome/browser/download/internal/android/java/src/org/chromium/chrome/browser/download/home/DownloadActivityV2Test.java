@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -50,6 +51,7 @@ import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
@@ -431,6 +433,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "https://crbug.com/1338140")
     public void testRenameItem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
 
