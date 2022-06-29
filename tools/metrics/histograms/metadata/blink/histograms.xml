@@ -2324,44 +2324,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.SetInnerHtml.ConversionTime" units="microseconds"
-    expires_after="2022-12-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@chromium.org</owner>
-  <summary>
-    Time spent converting the v8 string to a blink string when Element.innerHTML
-    is set.
-
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
-  </summary>
-</histogram>
-
-<histogram name="Blink.SetInnerHtml.ExecutionTime" units="microseconds"
-    expires_after="2022-12-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@chromium.org</owner>
-  <summary>
-    Time spent processing html string supplied to Element.innerHTML. This
-    specifically captures the time in Element.SetInnerHTML.
-
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
-  </summary>
-</histogram>
-
-<histogram name="Blink.SetInnerHtml.StringLength" units="length"
-    expires_after="2022-12-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@chromium.org</owner>
-  <summary>
-    Length of the string supplied to Element.innerHTML.
-
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Sms.BackendAvailability"
     enum="WebOTPBackendAvailability" expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>

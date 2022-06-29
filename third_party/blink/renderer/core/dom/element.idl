@@ -101,9 +101,7 @@ dictionary IsVisibleOptions {
     // TODO(mkwst): Write a spec for the `TrustedHTML` variants.
     // TODO(lyf): Change the type to `[TreatNullAs=xxx] HTMLString` after
     // https://crbug.com/1058762 has been fixed.
-    // TODO(https://crbug.com/1335986): Custom setter is needed to collect
-    // metrics, and can be removed once metrics are captured.
-    [Custom=Setter, CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
+    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
     [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
 
