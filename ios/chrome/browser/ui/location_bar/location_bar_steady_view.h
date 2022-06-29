@@ -28,7 +28,7 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Sets the location image. If |locationImage| is nil, hides the image view.
+// Sets the location image. If `locationImage` is nil, hides the image view.
 - (void)setLocationImage:(UIImage*)locationImage;
 
 // Sets the location label's text.
@@ -37,14 +37,14 @@
 // Sets the location label's text and styles it as if it were placeholder text.
 - (void)setLocationLabelPlaceholderText:(NSString*)string;
 
-// Displays the location badge view if |display| is YES, hides it if
-// |display| is NO. Will animate change if |animated| is YES.
+// Displays the location badge view if `display` is YES, hides it if
+// `display` is NO. Will animate change if `animated` is YES.
 - (void)displayBadgeView:(BOOL)display animated:(BOOL)animated;
 
 // Reorients the badgeView's position depending on FullScreen mode.
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed;
 
-// Toggles |enabled| state of the trailing button and updates accessibility
+// Toggles `enabled` state of the trailing button and updates accessibility
 // appropriately.
 - (void)enableTrailingButton:(BOOL)enabled;
 

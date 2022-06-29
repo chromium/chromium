@@ -87,7 +87,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                       URLDragDataSource> {
   // API endpoint for omnibox.
   std::unique_ptr<WebOmniboxEditControllerImpl> _editController;
-  // Observer that updates |viewController| for fullscreen events.
+  // Observer that updates `viewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _omniboxFullscreenUIUpdater;
   // Observer that updates BadgeViewController for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _badgeFullscreenUIUpdater;
@@ -316,8 +316,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     LoadJavaScriptURL(url, self.browserState,
                       self.webStateList->GetActiveWebState());
   } else {
-    // TODO(crbug.com/785244): Is it ok to call |cancelOmniboxEdit| after
-    // |loadURL|?  It doesn't seem to be causing major problems.  If we call
+    // TODO(crbug.com/785244): Is it ok to call `cancelOmniboxEdit` after
+    // `loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the
     // call to load.
     web::NavigationManager::WebLoadParams web_params =
@@ -515,7 +515,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return [result copy];
 }
 
-// Navigate to |query| from omnibox.
+// Navigate to `query` from omnibox.
 - (void)loadURLForQuery:(const std::u16string&)query {
   GURL searchURL;
   metrics::OmniboxInputType type = AutocompleteInput::Parse(

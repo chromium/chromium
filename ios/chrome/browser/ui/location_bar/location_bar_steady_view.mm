@@ -65,7 +65,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 @property(nonatomic, readonly) CGFloat trailingButtonTrailingSpacing;
 
 // Constraints to pin the badge view to the right next to the
-// |locationContainerView|.
+// `locationContainerView`.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* badgeViewFullScreenEnabledConstraints;
 
@@ -344,7 +344,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     [self.locationButton addSubview:_badgeView];
     // Adding InfobarBadge button as an accessibility element behind location
     // label. Thus, there should be at least one object already in
-    // |accessibleElements|.
+    // `accessibleElements`.
     DCHECK_GT([self.accessibleElements count], 0U);
     [self.accessibleElements insertObject:_badgeView atIndex:1];
 
@@ -400,7 +400,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   if (display) {
     // Adding InfobarBadge button as an accessibility element behind location
     // label. Thus, there should be at least one object alreading in
-    // |accessibleElements|.
+    // `accessibleElements`.
     DCHECK([self.accessibleElements count] > 0);
     if ([self.accessibleElements indexOfObject:self.badgeView] == NSNotFound) {
       [self.accessibleElements insertObject:self.badgeView atIndex:1];

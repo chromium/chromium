@@ -83,10 +83,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // Stores whether the clipboard currently stores copied content.
 @property(nonatomic, assign) BOOL hasCopiedContent;
 // Stores the current content type in the clipboard. This is only valid if
-// |hasCopiedContent| is YES.
+// `hasCopiedContent` is YES.
 @property(nonatomic, assign) ClipboardContentType copiedContentType;
 // Stores whether the cached clipboard state is currently being updated. See
-// |-updateCachedClipboardState| for more information.
+// `-updateCachedClipboardState` for more information.
 @property(nonatomic, assign) BOOL isUpdatingCachedClipboardState;
 
 // Starts voice search, updating the NamedGuide to be constrained to the
@@ -539,7 +539,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.delegate recordShareButtonPressed];
 }
 
-// Updates the cached clipboard content type and calls |completion| when the
+// Updates the cached clipboard content type and calls `completion` when the
 // update process is finished.  If this is called while an update is already in
 // progress, it will return NO and the completion will never be called.
 // Otherwise, returns YES.
