@@ -582,7 +582,7 @@ const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
 
 // Enables Polymer3 for OOBE and AddPerson flows.
 const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 // Enables Polymer3 for only the 'Add Person' flow on the login screen.
 const base::Feature kOobeAddPersonPolymer3{"OobeAddPersonPolymer3",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
