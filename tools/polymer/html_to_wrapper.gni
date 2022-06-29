@@ -52,5 +52,9 @@ template("html_to_wrapper") {
         invoker.template,
       ]
     }
+
+    if (defined(invoker.minify) && invoker.minify) {
+      args += [ "--minify" ]
+    }
   }
 }
