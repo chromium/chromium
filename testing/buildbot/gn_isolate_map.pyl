@@ -1612,8 +1612,8 @@
     "label": "//sandbox/linux:sandbox_linux_unittests",
     "type": "console_test_launcher",
   },
-  "sandbox_mac_unittests": {
-    "label": "//sandbox/mac:sandbox_mac_unittests",
+  "sandbox_unittests": {
+    "label": "//sandbox:sandbox_unittests",
     "type": "console_test_launcher",
   },
   "sbox_integration_tests": {

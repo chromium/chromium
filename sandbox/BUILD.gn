@@ -32,6 +32,10 @@ test("sandbox_unittests") {
     "//sandbox/policy:tests",
     "//testing/gtest",
   ]
+
+  if (is_mac) {
+    deps += [ "//sandbox/mac:sandbox_unittests" ]
+  }
 }
 
 # Meta-target that forwards to the proper platform one.

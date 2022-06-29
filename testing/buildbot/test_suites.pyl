@@ -4475,7 +4475,7 @@
 
     'mac_specific_chromium_gtests': {
       'power_sampler_unittests': {},
-      'sandbox_mac_unittests': {},
+      'sandbox_unittests': {},
       'updater_tests': {
         'args': [
           # Timeouts based on empirical observations of test runtimes, 2021-07.

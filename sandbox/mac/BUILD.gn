@@ -62,7 +62,9 @@ component("system_services") {
   defines = [ "SEATBELT_IMPLEMENTATION" ]
 }
 
-test("sandbox_mac_unittests") {
+source_set("sandbox_unittests") {
+  testonly = true
+
   sources = [
     "mojom/mojom_traits_unittest.cc",
     "sandbox_mac_compiler_unittest.mm",
@@ -84,7 +86,6 @@ test("sandbox_mac_unittests") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//mojo/core/test:run_all_unittests",
-    "//sandbox/policy:tests",
     "//testing/gtest",
   ]
 }

@@ -6887,8 +6887,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_mac_unittests",
-        "test_id_prefix": "ninja://sandbox/mac:sandbox_mac_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {
@@ -98894,8 +98894,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_mac_unittests",
-        "test_id_prefix": "ninja://sandbox/mac:sandbox_mac_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -100623,8 +100623,8 @@
           "expiration": 21600,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_mac_unittests",
-        "test_id_prefix": "ninja://sandbox/mac:sandbox_mac_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {
@@ -102038,8 +102038,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_mac_unittests",
-        "test_id_prefix": "ninja://sandbox/mac:sandbox_mac_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {
@@ -102955,8 +102955,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_mac_unittests",
-        "test_id_prefix": "ninja://sandbox/mac:sandbox_mac_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {
