@@ -38,7 +38,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                  adjust_inline_size_if_needed) {
     if (parent_space.ShouldPropagateChildBreakValues())
       SetShouldPropagateChildBreakValues();
-    SetIsRepeatable(parent_space.IsRepeatable());
+    if (parent_space.IsRepeatable())
+      SetIsRepeatable(/*is_repeatable*/ true);
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
