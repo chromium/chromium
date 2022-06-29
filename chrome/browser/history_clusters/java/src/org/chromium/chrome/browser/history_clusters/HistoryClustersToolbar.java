@@ -47,5 +47,7 @@ class HistoryClustersToolbar extends SelectableListToolbar<PropertyModel> {
     void setSearchText(String text) {
         mSearchText.setText(text);
         mSearchText.setSelection(text.length());
+        hideKeyboard();
+        mSearchText.clearFocus();
     }
 }
