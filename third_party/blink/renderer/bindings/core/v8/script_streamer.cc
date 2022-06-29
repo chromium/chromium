@@ -1077,10 +1077,7 @@ class InlineSourceStream final
 BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
     const String& text,
     v8::ScriptCompiler::CompileOptions compile_options) {
-  // TODO(crbug.com/1338413): This IsolatedCopy() call was added to keep TSan
-  // happy, but seems like it shouldn't be needed since WTF::String is now
-  // thread safe.
-  auto stream = std::make_unique<InlineSourceStream>(text.IsolatedCopy());
+  auto stream = std::make_unique<InlineSourceStream>(text);
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream), text.Is8Bit()
                              ? v8::ScriptCompiler::StreamedSource::ONE_BYTE
