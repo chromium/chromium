@@ -1952,9 +1952,14 @@ test("blink_platform_unittests") {
   }
 
   if (is_android) {
-    # Required because of an indirect dependency on //media/base/android via
-    # platform/media:unit_tests.
-    deps += [ "//media/base/android:media_java" ]
+    deps += [
+      # Required because of an indirect dependency on //media/base/android via
+      # platform/media:unit_tests.
+      "//media/base/android:media_java",
+
+      # Required to disable broken tests.
+      "//testing/buildbot/filters:blink_platform_unittests",
+    ]
   }
 }
 
