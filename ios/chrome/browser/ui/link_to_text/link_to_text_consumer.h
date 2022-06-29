@@ -10,7 +10,7 @@
 // Protocol for communicating link-to-text updates.
 @protocol LinkToTextConsumer
 
-// Invoked when a link-to-text was successfully generated, with |payload|
+// Invoked when a link-to-text was successfully generated, with `payload`
 // containing all the information around that deep-link.
 - (void)generatedPayload:(LinkToTextPayload*)payload;
 
