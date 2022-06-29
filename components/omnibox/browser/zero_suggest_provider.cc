@@ -505,17 +505,13 @@ AutocompleteMatch ZeroSuggestProvider::MatchForCurrentText() {
   // gets dropped as soon as the user types something.
   AutocompleteInput tmp(GetInput(false));
   tmp.UpdateText(permanent_text_, std::u16string::npos, tmp.parts());
-  const std::u16string description =
-      (base::FeatureList::IsEnabled(omnibox::kDisplayTitleForCurrentUrl))
-          ? current_title_
-          : std::u16string();
 
   // We pass a nullptr as the |history_url_provider| parameter now to force
   // VerbatimMatch to do a classification, since the text can be a search query.
   // TODO(tommycli): Simplify this - probably just bypass VerbatimMatchForURL.
   AutocompleteMatch match =
       VerbatimMatchForURL(this, client(), tmp, GURL(current_query_),
-                          description, results_.verbatim_relevance);
+                          current_title_, results_.verbatim_relevance);
   match.provider = this;
   return match;
 }

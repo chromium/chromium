@@ -15,7 +15,6 @@ namespace omnibox {
 // You can create a new category if none of the existing ones fit.
 extern const base::Feature kExperimentalKeywordMode;
 extern const base::Feature kImageSearchSuggestionThumbnail;
-extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
 extern const base::Feature kAndroidAuxiliarySearch;
 
