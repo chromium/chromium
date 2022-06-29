@@ -379,4 +379,108 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
                 contents, content::JsReplace(kFetchScript, restricted_url)));
 }
 
+// Tests that content scripts matching iframes contained within an offscreen
+// document execute.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
+                       ContentScriptsInNestedIframes) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  // Load an extension that executes a content script on http://allowed.example.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "content_scripts": [{
+             "matches": ["http://allowed.example/*"],
+             "all_frames": true,
+             "run_at": "document_end",
+             "js": ["content_script.js"]
+           }]
+         })";
+  static constexpr char kOffscreenHtml[] =
+      R"(<html>
+           <iframe id="allowed-frame" name="allowed-frame"></iframe>
+           <iframe id="restricted-frame" name="restricted-frame"></iframe>
+         </html>)";
+  static constexpr char kContentScriptJs[] =
+      R"(let d = document.createElement('div');
+         d.id = 'script-div';
+         d.textContent = 'injection';
+         document.body.appendChild(d);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), kOffscreenHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScriptJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
+  content::WebContents* contents = offscreen_document->host_contents();
+
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.example", "/title1.html");
+  const GURL restricted_url =
+      embedded_test_server()->GetURL("restricted.example", "/title2.html");
+
+  // Returns the frame with the matching name within the offscreen document.
+  auto get_frame_with_name = [contents](const std::string& name) {
+    return content::FrameMatchingPredicate(
+        contents->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
+  };
+
+  // We annoyingly cannot use content::NavigateIframeToURL() because it
+  // internally uses eval(), which violates the offscreen document's CSP. So,
+  // we roll our own navigation helper.
+  auto navigate_frame = [contents](const std::string& frame_id,
+                                   const GURL& target_url) {
+    static constexpr char kNavigateScript[] =
+        R"({
+             let iframe = document.getElementById($1);
+             iframe.src = $2;
+           })";
+    content::TestNavigationObserver load_observer(contents);
+    content::ExecuteScriptAsyncWithoutUserGesture(
+        contents, content::JsReplace(kNavigateScript, frame_id, target_url));
+    load_observer.Wait();
+  };
+
+  // A helper function to retrieve the text content of the expected injected
+  // div, if the div exists.
+  auto get_script_div_in_frame = [](content::RenderFrameHost* frame) {
+    static constexpr char kGetScriptDiv[] =
+        R"(var d = document.getElementById('script-div');
+           domAutomationController.send(d ? d.textContent : '<no div>');)";
+    std::string result;
+    EXPECT_TRUE(
+        content::ExecuteScriptAndExtractString(frame, kGetScriptDiv, &result));
+    return result;
+  };
+
+  // Navigate a frame to a URL that matches an extension content script; the
+  // content script should inject.
+  {
+    navigate_frame("allowed-frame", allowed_url);
+    content::RenderFrameHost* allowed_frame =
+        get_frame_with_name("allowed-frame");
+    ASSERT_TRUE(allowed_frame);
+    EXPECT_EQ(allowed_url, allowed_frame->GetLastCommittedURL());
+    EXPECT_EQ("injection", get_script_div_in_frame(allowed_frame));
+  }
+
+  // Now, navigate a frame to a URL that does *not* match the script; the
+  // script shouldn't inject.
+  {
+    navigate_frame("restricted-frame", restricted_url);
+    content::RenderFrameHost* restricted_frame =
+        get_frame_with_name("restricted-frame");
+    ASSERT_TRUE(restricted_frame);
+    EXPECT_EQ(restricted_url, restricted_frame->GetLastCommittedURL());
+    EXPECT_EQ("<no div>", get_script_div_in_frame(restricted_frame));
+  }
+}
+
 }  // namespace extensions
