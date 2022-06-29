@@ -39,10 +39,10 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -141,12 +141,12 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
-    chromeos::VmPluginDispatcherClient::InitializeFake();
+    VmPluginDispatcherClient::InitializeFake();
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     fake_concierge_client_ = FakeConciergeClient::Get();
     fake_vm_plugin_dispatcher_client_ =
-        static_cast<chromeos::FakeVmPluginDispatcherClient*>(
-            chromeos::VmPluginDispatcherClient::Get());
+        static_cast<FakeVmPluginDispatcherClient*>(
+            VmPluginDispatcherClient::Get());
 
     mock_disk_mount_manager_ =
         new testing::NiceMock<disks::MockDiskMountManager>;
@@ -158,7 +158,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   ~CrosUsbDetectorTest() override {
     disks::DiskMountManager::Shutdown();
-    chromeos::VmPluginDispatcherClient::Shutdown();
+    VmPluginDispatcherClient::Shutdown();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
@@ -294,7 +294,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   ash::FakeCiceroneClient* fake_cicerone_client_;
   FakeConciergeClient* fake_concierge_client_;
-  chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
+  FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;

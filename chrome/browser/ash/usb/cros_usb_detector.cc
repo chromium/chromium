@@ -448,7 +448,7 @@ CrosUsbDetector::CrosUsbDetector() {
   fastboot_device_filter_->protocol_code = kFastbootProtocol;
 
   ConciergeClient::Get()->AddVmObserver(this);
-  chromeos::VmPluginDispatcherClient::Get()->AddObserver(this);
+  VmPluginDispatcherClient::Get()->AddObserver(this);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
 }
 
@@ -456,7 +456,7 @@ CrosUsbDetector::~CrosUsbDetector() {
   DCHECK_EQ(this, g_cros_usb_detector);
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
   ConciergeClient::Get()->RemoveVmObserver(this);
-  chromeos::VmPluginDispatcherClient::Get()->RemoveObserver(this);
+  VmPluginDispatcherClient::Get()->RemoveObserver(this);
   g_cros_usb_detector = nullptr;
 }
 

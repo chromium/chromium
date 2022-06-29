@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 
 #include <string>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -21,7 +21,7 @@
 
 namespace dispatcher = vm_tools::plugin_dispatcher;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 VmPluginDispatcherClient* g_instance = nullptr;
@@ -230,4 +230,4 @@ VmPluginDispatcherClient* VmPluginDispatcherClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

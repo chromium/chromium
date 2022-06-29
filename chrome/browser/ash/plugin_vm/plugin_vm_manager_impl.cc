@@ -122,11 +122,11 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
 PluginVmManagerImpl::PluginVmManagerImpl(Profile* profile)
     : profile_(profile),
       owner_id_(ash::ProfileHelper::GetUserIdHashFromProfile(profile)) {
-  chromeos::VmPluginDispatcherClient::Get()->AddObserver(this);
+  ash::VmPluginDispatcherClient::Get()->AddObserver(this);
 }
 
 PluginVmManagerImpl::~PluginVmManagerImpl() {
-  chromeos::VmPluginDispatcherClient::Get()->RemoveObserver(this);
+  ash::VmPluginDispatcherClient::Get()->RemoveObserver(this);
 }
 
 void PluginVmManagerImpl::OnPrimaryUserSessionStarted() {
@@ -135,7 +135,7 @@ void PluginVmManagerImpl::OnPrimaryUserSessionStarted() {
   request.set_vm_name_uuid(kPluginVmName);
 
   // Probe the dispatcher.
-  chromeos::VmPluginDispatcherClient::Get()->ListVms(
+  ash::VmPluginDispatcherClient::Get()->ListVms(
       std::move(request),
       base::BindOnce(
           [](absl::optional<vm_tools::plugin_dispatcher::ListVmResponse>
@@ -226,8 +226,8 @@ void PluginVmManagerImpl::StopPluginVm(const std::string& name, bool force) {
   }
 
   // TODO(juwa): This may not work if the vm is STARTING|CONTINUING|RESUMING.
-  chromeos::VmPluginDispatcherClient::Get()->StopVm(std::move(request),
-                                                    base::DoNothing());
+  ash::VmPluginDispatcherClient::Get()->StopVm(std::move(request),
+                                               base::DoNothing());
 }
 
 void PluginVmManagerImpl::RelaunchPluginVm() {
@@ -245,7 +245,7 @@ void PluginVmManagerImpl::RelaunchPluginVm() {
   request.set_vm_name_uuid(kPluginVmName);
 
   // TODO(dtor): This may not work if the vm is STARTING|CONTINUING|RESUMING.
-  chromeos::VmPluginDispatcherClient::Get()->SuspendVm(
+  ash::VmPluginDispatcherClient::Get()->SuspendVm(
       std::move(request),
       base::BindOnce(&PluginVmManagerImpl::OnSuspendVmForRelaunch,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -456,7 +456,7 @@ void PluginVmManagerImpl::OnStartDispatcher(
   request.set_owner_id(owner_id_);
   request.set_vm_name_uuid(kPluginVmName);
 
-  chromeos::VmPluginDispatcherClient::Get()->ListVms(
+  ash::VmPluginDispatcherClient::Get()->ListVms(
       std::move(request),
       base::BindOnce(&PluginVmManagerImpl::OnListVms,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -536,7 +536,7 @@ void PluginVmManagerImpl::StartVm() {
   request.set_owner_id(owner_id_);
   request.set_vm_name_uuid(kPluginVmName);
 
-  chromeos::VmPluginDispatcherClient::Get()->StartVm(
+  ash::VmPluginDispatcherClient::Get()->StartVm(
       std::move(request), base::BindOnce(&PluginVmManagerImpl::OnStartVm,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
@@ -578,7 +578,7 @@ void PluginVmManagerImpl::ShowVm() {
   request.set_owner_id(owner_id_);
   request.set_vm_name_uuid(kPluginVmName);
 
-  chromeos::VmPluginDispatcherClient::Get()->ShowVm(
+  ash::VmPluginDispatcherClient::Get()->ShowVm(
       std::move(request), base::BindOnce(&PluginVmManagerImpl::OnShowVm,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
@@ -718,7 +718,7 @@ void PluginVmManagerImpl::StopVmForUninstall() {
   request.set_stop_mode(
       vm_tools::plugin_dispatcher::VmStopMode::VM_STOP_MODE_SHUTDOWN);
 
-  chromeos::VmPluginDispatcherClient::Get()->StopVm(
+  ash::VmPluginDispatcherClient::Get()->StopVm(
       std::move(request),
       base::BindOnce(&PluginVmManagerImpl::OnStopVmForUninstall,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -46,6 +46,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"
@@ -72,7 +73,6 @@
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -171,7 +171,7 @@ void InitializeDBus() {
   InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
   InitializeDBusClient<chromeos::VirtualFileProviderClient>(bus);
-  InitializeDBusClient<chromeos::VmPluginDispatcherClient>(bus);
+  InitializeDBusClient<VmPluginDispatcherClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
   // signals sent from the session manager. This needs to happen before
@@ -227,7 +227,7 @@ void ShutdownDBus() {
     bluez::BluezDBusManager::Shutdown();
   }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
-  chromeos::VmPluginDispatcherClient::Shutdown();
+  VmPluginDispatcherClient::Shutdown();
   chromeos::VirtualFileProviderClient::Shutdown();
   UpstartClient::Shutdown();
   UserDataAuthClient::Shutdown();

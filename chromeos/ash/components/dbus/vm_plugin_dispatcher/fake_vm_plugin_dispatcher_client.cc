@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeVmPluginDispatcherClient::FakeVmPluginDispatcherClient() = default;
 
@@ -88,4 +88,4 @@ void FakeVmPluginDispatcherClient::NotifyVmStateChanged(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
