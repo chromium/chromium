@@ -28,13 +28,6 @@ class PortAllocator : public cricket::BasicPortAllocator {
     return transport_context_;
   }
 
-  // TODO(crbug.com/1337249): Remove std::string version once WebRTC has fully
-  // adopted the absl::string_view version.
-  cricket::PortAllocatorSession* CreateSessionInternal(
-      const std::string& content_name,
-      int component,
-      const std::string& ice_ufrag,
-      const std::string& ice_pwd) override;
   cricket::PortAllocatorSession* CreateSessionInternal(
       absl::string_view content_name,
       int component,

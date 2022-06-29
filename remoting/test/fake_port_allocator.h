@@ -31,13 +31,6 @@ class FakePortAllocator : public cricket::BasicPortAllocator {
   ~FakePortAllocator() override;
 
   // cricket::BasicPortAllocator overrides.
-  // TODO(crbug.com/1337249): Remove std::string version once WebRTC has fully
-  // adopted the absl::string_view version.
-  cricket::PortAllocatorSession* CreateSessionInternal(
-      const std::string& content_name,
-      int component,
-      const std::string& ice_username_fragment,
-      const std::string& ice_password) override;
   cricket::PortAllocatorSession* CreateSessionInternal(
       absl::string_view content_name,
       int component,

@@ -53,16 +53,6 @@ PortAllocator::PortAllocator(
 PortAllocator::~PortAllocator() = default;
 
 cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
-    const std::string& content_name,
-    int component,
-    const std::string& ice_username_fragment,
-    const std::string& ice_password) {
-  return CreateSessionInternal(absl::string_view(content_name), component,
-                               absl::string_view(ice_username_fragment),
-                               absl::string_view(ice_password));
-}
-
-cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
     absl::string_view content_name,
     int component,
     absl::string_view ice_username_fragment,
