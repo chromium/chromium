@@ -145,6 +145,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   Persistent<MemoryCache> global_memory_cache_;
   scoped_refptr<const SecurityOrigin> security_origin_;
   Persistent<ResourceFetcher> fetcher_;

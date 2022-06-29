@@ -39,7 +39,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
@@ -565,14 +564,9 @@ void ResourceLoader::Start() {
   }
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kStarted,
                                absl::nullopt, request.GetUkmSourceId(),
-                               recorder.get(), resource_);
+                               fetcher_->ukm_recorder(), resource_);
   }
   if (resource_->GetResourceRequest().IsDownloadToNetworkCacheOnly()) {
     // The download-to-cache requests are throttled in net/, they are fire-and
@@ -1000,15 +994,10 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kResponseReceived,
                                response.HttpStatusCode(),
-                               request.GetUkmSourceId(), recorder.get(),
-                               resource_);
+                               request.GetUkmSourceId(),
+                               fetcher_->ukm_recorder(), resource_);
   }
 
   ResourceType resource_type = resource_->GetType();
@@ -1246,18 +1235,13 @@ void ResourceLoader::DidFinishLoading(
   resource_->SetDecodedBodyLength(decoded_body_length);
 
   if (pervasive_payload_requested.has_value()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto ukm_recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     ukm::SourceId ukm_source_id =
         resource_->GetResourceRequest().GetUkmSourceId();
     ukm::builders::Network_CacheTransparency builder(ukm_source_id);
     builder.SetFoundPervasivePayload(pervasive_payload_requested.value());
     builder.SetTotalBytesFetched(
         ukm::GetExponentialBucketMinForBytes(encoded_data_length));
-    builder.Record(ukm_recorder.get());
+    builder.Record(fetcher_->ukm_recorder());
   }
 
   response_end_time_for_error_cases_ = response_end_time;
@@ -1304,14 +1288,9 @@ void ResourceLoader::DidFail(const WebURLError& error,
   response_end_time_for_error_cases_ = response_end_time;
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kFailed,
                                error.reason(), request.GetUkmSourceId(),
-                               recorder.get(), resource_);
+                               fetcher_->ukm_recorder(), resource_);
   }
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);

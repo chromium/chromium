@@ -543,6 +543,13 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       allow_stale_resources_(false),
       image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
+
+  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      pending_recorder.InitWithNewPipeAndPassReceiver());
+  ukm_recorder_ =
+      std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
+
   if (IsMainThread())
     MainThreadFetchersSet().insert(this);
 }

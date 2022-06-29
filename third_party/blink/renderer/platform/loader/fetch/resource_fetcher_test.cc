@@ -200,6 +200,9 @@ class ResourceFetcherTest : public testing::Test {
   }
 
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {

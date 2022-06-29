@@ -112,6 +112,9 @@ class ResourceLoaderTest : public testing::Test {
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
   }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
@@ -819,7 +822,6 @@ class ResourceLoaderCacheTransparencyTest : public ResourceLoaderTest {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 };

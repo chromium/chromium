@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
@@ -318,6 +319,9 @@ class PLATFORM_EXPORT ResourceFetcher
     early_hints_preloaded_resources_ = std::move(resources);
   }
 
+  // Access the UKMRecorder.
+  ukm::MojoUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {
@@ -496,6 +500,8 @@ class PLATFORM_EXPORT ResourceFetcher
   bool stale_while_revalidate_enabled_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<ResourceFetcher> weak_ptr_factory_{this};
