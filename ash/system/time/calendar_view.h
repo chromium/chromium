@@ -375,6 +375,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Whether the Calendar View is scrolling.
   bool is_calendar_view_scrolling_ = false;
 
+  // If the Calendar View destructor is being called.
+  bool is_destroying_ = false;
+
   // Timer that fires when the calendar view is settled on, i.e. finished
   // scrolling to, a currently-visible month
   base::RetainingOneShotTimer scrolling_settled_timer_;
