@@ -214,10 +214,10 @@ bool SharedImageBackingFactoryOzone::IsSupported(
   if (used_by_webgpu && !CanImportNativePixmapToWebGPU()) {
     return false;
   }
-  if (used_by_gl && !ui::OzonePlatform::GetInstance()
-                         ->GetSurfaceFactoryOzone()
-                         ->GetCurrentGLOzone()
-                         ->CanImportNativePixmap()) {
+  ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
+                              ->GetSurfaceFactoryOzone()
+                              ->GetCurrentGLOzone();
+  if (used_by_gl && (!gl_ozone || !gl_ozone->CanImportNativePixmap())) {
     return false;
   }
 
