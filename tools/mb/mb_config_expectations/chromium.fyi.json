@@ -104,6 +104,34 @@
       }
     }
   },
+  "Comparison Mac arm64 (reclient)": {
+    "goma": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "enable_nacl": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "target_cpu": "arm64",
+        "use_goma": true
+      }
+    },
+    "reclient": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "enable_nacl": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "target_cpu": "arm64",
+        "use_remoteexec": true
+      }
+    }
+  },
   "Comparison Simple Chrome (reclient)": {
     "goma": {
       "args_file": "//build/args/chromeos/amd64-generic-vm.gni",

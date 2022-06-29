@@ -16,6 +16,11 @@
       "all"
     ]
   },
+  "Comparison Mac arm64 (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Comparison Simple Chrome (reclient)": {
     "additional_compile_targets": [
       "chromiumos_preflight"
