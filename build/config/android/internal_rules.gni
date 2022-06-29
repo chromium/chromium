@@ -95,6 +95,7 @@ _desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_andro
 _robolectric_jar_path =
     "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
 _lint_jar_path = "//third_party/android_lint/lint.jar"
+_custom_lint_jar_path = "//third_party/android_lint/custom_lint.jar"
 
 # Put the bug number in the target name so that false-positives have a hint in
 # the error message about why non-existent dependencies are there.
@@ -1037,6 +1038,7 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
       inputs = [
         _lint_jar_path,
+        _custom_lint_jar_path,
         _backported_methods,
       ]
 
@@ -1047,6 +1049,8 @@ if (enable_java_templates) {
         rebase_path(depfile, root_build_dir),
         "--lint-jar-path",
         rebase_path(_lint_jar_path, root_build_dir),
+        "--custom-lint-jar-path",
+        rebase_path(_custom_lint_jar_path, root_build_dir),
         "--cache-dir",
         rebase_path(_cache_dir, root_build_dir),
         "--lint-gen-dir",

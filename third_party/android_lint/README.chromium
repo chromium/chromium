@@ -10,7 +10,10 @@ Description:
 Android lint is used to scan Android source code for potential bugs.
 
 Local Modifications:
-None
+* For the custom lint jar:
+  * This is required only when CustomLint.java changes.
+autoninja -C out/Debug third_party/android_lint:custom_lint_java
+cp out/Debug/obj/third_party/android_lint/custom_lint_java.javac.jar third_party/android_lint/custom_lint.jar
 
 What version is this:
   * New instances are uploaded by the packager bot:
@@ -18,3 +21,4 @@ What version is this:
   * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  * New versions need to be manually added by updating //DEPS.
