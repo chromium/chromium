@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 

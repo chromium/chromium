@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_HERMES_METRICS_UTIL_H_
-#define CHROMEOS_NETWORK_HERMES_METRICS_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_
 
 #include "base/component_export.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
@@ -38,4 +38,4 @@ using ::chromeos::hermes_metrics::LogInstallPendingProfileResult;
 using ::chromeos::hermes_metrics::LogRequestPendingProfilesResult;
 }  // namespace ash::hermes_metrics
 
-#endif  // CHROMEOS_NETWORK_HERMES_METRICS_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_

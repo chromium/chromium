@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole.h"
 
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 
 NearbyConnectionsFirewallHole::NearbyConnectionsFirewallHole(
     std::unique_ptr<chromeos::FirewallHole> firewall_hole)

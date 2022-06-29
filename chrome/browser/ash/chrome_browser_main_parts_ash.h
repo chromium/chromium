@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/zram_writeback_controller.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chromeos/network/fast_transition_observer.h"
+#include "chromeos/ash/components/network/fast_transition_observer.h"
 
 class AssistantBrowserDelegateImpl;
 class AssistantStateClient;

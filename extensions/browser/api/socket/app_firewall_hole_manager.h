@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
 namespace content {

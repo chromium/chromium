@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 
 namespace dbus {
 class ObjectPath;

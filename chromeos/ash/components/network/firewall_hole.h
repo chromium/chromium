@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_FIREWALL_HOLE_H_
-#define CHROMEOS_NETWORK_FIREWALL_HOLE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_
 
 #include <stdint.h>
 
@@ -65,4 +65,4 @@ namespace ash {
 using ::chromeos::FirewallHole;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_FIREWALL_HOLE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_

@@ -22,7 +22,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connect.h"

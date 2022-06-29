@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_DEVICE_STATE_H_
-#define CHROMEOS_NETWORK_DEVICE_STATE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_DEVICE_STATE_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_DEVICE_STATE_H_
 
 #include <stdint.h>
 
 #include "base/values.h"
-#include "chromeos/network/managed_state.h"
+#include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/network/network_util.h"
 
 namespace chromeos {
@@ -148,4 +148,4 @@ namespace ash {
 using ::chromeos::DeviceState;
 }
 
-#endif  // CHROMEOS_NETWORK_DEVICE_STATE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_DEVICE_STATE_H_

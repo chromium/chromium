@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 

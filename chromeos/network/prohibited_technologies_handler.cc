@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

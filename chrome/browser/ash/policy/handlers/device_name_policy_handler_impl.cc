@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 
 namespace policy {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/network/network_event_log.h"

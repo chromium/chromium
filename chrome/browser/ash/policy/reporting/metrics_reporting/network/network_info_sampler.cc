@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 
 #include <iterator>
 #include <memory>
@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 #include "chromeos/ash/components/network/onc/onc_merger.h"
 #include "chromeos/ash/components/network/onc/onc_translator.h"
@@ -32,7 +33,6 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_event_log.h"

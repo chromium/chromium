@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_COMPONENTS_SYNC_WIFI_NETWORK_TEST_HELPER_H_
 #define CHROMEOS_COMPONENTS_SYNC_WIFI_NETWORK_TEST_HELPER_H_
 
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"

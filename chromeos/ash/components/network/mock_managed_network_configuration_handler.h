@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {

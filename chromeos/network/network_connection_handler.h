@@ -16,7 +16,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_observer.h"

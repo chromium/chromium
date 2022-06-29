@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
-#define CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
@@ -70,4 +70,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_

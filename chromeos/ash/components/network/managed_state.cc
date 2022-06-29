@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/managed_state.h"
+#include "chromeos/ash/components/network/managed_state.h"
 
 #include <stdint.h>
 
@@ -10,7 +10,7 @@
 
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"

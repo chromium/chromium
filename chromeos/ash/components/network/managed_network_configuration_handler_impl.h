@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
-#define CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_profile_observer.h"
 #include "chromeos/network/policy_applicator.h"
@@ -341,4 +341,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_

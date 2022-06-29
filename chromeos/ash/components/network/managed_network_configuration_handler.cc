@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
-#include "chromeos/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/network/network_ui_data.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

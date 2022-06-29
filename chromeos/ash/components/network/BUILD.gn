@@ -15,10 +15,13 @@ source_set("network") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
     "//chromeos/components/feature_usage",
     "//chromeos/components/onc",
     "//chromeos/dbus/hermes",
+    "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
     "//components/device_event_log",
@@ -28,11 +31,16 @@ source_set("network") {
     "//crypto",
     "//dbus",
     "//net",
+    "//services/preferences/public/cpp",
   ]
 
   # Allow circular dependency from sub-directories of
   # chromeos/ash/components/network.
-  allow_circular_includes_from = [ "//chromeos/ash/components/network/onc" ]
+  allow_circular_includes_from = [
+    "//chromeos/ash/components/network/metrics",
+    "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
+  ]
   sources = [
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
@@ -62,6 +70,24 @@ source_set("network") {
     "client_cert_resolver.h",
     "client_cert_util.cc",
     "client_cert_util.h",
+    "device_state.cc",
+    "device_state.h",
+    "fast_transition_observer.cc",
+    "fast_transition_observer.h",
+    "firewall_hole.cc",
+    "firewall_hole.h",
+    "geolocation_handler.cc",
+    "geolocation_handler.h",
+    "hermes_metrics_util.cc",
+    "hermes_metrics_util.h",
+    "managed_cellular_pref_handler.cc",
+    "managed_cellular_pref_handler.h",
+    "managed_network_configuration_handler.cc",
+    "managed_network_configuration_handler.h",
+    "managed_network_configuration_handler_impl.cc",
+    "managed_network_configuration_handler_impl.h",
+    "managed_state.cc",
+    "managed_state.h",
   ]
 }
 
@@ -126,11 +152,14 @@ source_set("unit_tests") {
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
     "//chromeos/network",
     "//components/onc",
     "//components/prefs:test_support",
+    "//components/proxy_config",
+    "//components/sync_preferences:test_support",
     "//crypto",
     "//crypto:test_support",
     "//net",
@@ -152,5 +181,11 @@ source_set("unit_tests") {
     "certificate_helper_unittest.cc",
     "client_cert_resolver_unittest.cc",
     "client_cert_util_unittest.cc",
+    "device_state_unittest.cc",
+    "fast_transition_observer_unittest.cc",
+    "firewall_hole_unittest.cc",
+    "geolocation_handler_unittest.cc",
+    "managed_cellular_pref_handler_unittest.cc",
+    "managed_network_configuration_handler_unittest.cc",
   ]
 }

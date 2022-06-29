@@ -9,8 +9,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/network/geolocation_handler.h"
 #endif
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"

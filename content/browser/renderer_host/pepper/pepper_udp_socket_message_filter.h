@@ -35,7 +35,7 @@
 struct PP_NetAddress_Private;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

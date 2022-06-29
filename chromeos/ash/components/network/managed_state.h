@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_MANAGED_STATE_H_
-#define CHROMEOS_NETWORK_MANAGED_STATE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_STATE_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_STATE_H_
 
 #include <stdint.h>
 
@@ -154,4 +154,4 @@ namespace ash {
 using ::chromeos::ManagedState;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_MANAGED_STATE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_STATE_H_

@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "chromeos/network/managed_state.h"
+#include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"

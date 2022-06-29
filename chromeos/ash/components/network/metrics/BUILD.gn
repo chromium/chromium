@@ -8,7 +8,10 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 source_set("metrics") {
   # Due to circular dependency, others should depend on via chromeos/network.
-  visibility = [ "//chromeos/network" ]
+  visibility = [
+    "//chromeos/ash/components/network",
+    "//chromeos/network",
+  ]
 
   configs += [ "//chromeos/network:network_config" ]
   deps = [

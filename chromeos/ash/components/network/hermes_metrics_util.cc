@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/hermes_metrics_util.h"
+#include "chromeos/ash/components/network/hermes_metrics_util.h"
 
 #include "base/metrics/histogram_functions.h"
 
