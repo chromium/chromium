@@ -98,21 +98,14 @@ bool AreWebAppsEnabled(const Profile* profile) {
   if (!profile || profile->IsSystemProfile())
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In guest sessions the OTR profile is the main one.
-  if (profile->IsGuestSession())
-    return profile->IsOffTheRecord();
-#endif
-
-  if (profile->IsOffTheRecord())
-    return false;
+  const Profile* original_profile = profile->GetOriginalProfile();
+  DCHECK(!original_profile->IsOffTheRecord());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Web Apps should not be installed to the ChromeOS system profiles.
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(original_profile)) {
     return false;
   }
-
   // Disable Web Apps if running any kiosk app.
   auto* user_manager = user_manager::UserManager::Get();
   if (user_manager && user_manager->IsLoggedInAsAnyKioskApp()) {
@@ -148,17 +141,21 @@ content::BrowserContext* GetBrowserContextForWebApps(
     content::BrowserContext* context) {
   // Use original profile to create only one KeyedService instance.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile)
+  if (!profile) {
+    return nullptr;
+  }
+  Profile* original_profile = profile->GetOriginalProfile();
+  if (!AreWebAppsEnabled(original_profile))
     return nullptr;
 
-  if (AreWebAppsEnabled(profile))
-    return profile;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Use OTR profile for Guest Session.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord() ? profile : nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  Profile* original_profile = profile->GetOriginalProfile();
-  if (AreWebAppsEnabled(original_profile))
-    return original_profile;
-
-  return nullptr;
+  return original_profile;
 }
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(

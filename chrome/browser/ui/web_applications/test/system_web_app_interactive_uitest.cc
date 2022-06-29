@@ -810,15 +810,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(), GetStartUrl());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  // Incognito WebContents don't have app IDs.
-  // TODO(crbug.com/1135863): Decide what should happen with SWA URLs and
-  // incognito windows.
-  if (!browser()->profile()->IsOffTheRecord()) {
-    // Verifies the tab has an associated tab helper for System App's AppId.
-    EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
-              *web_app::GetAppIdForSystemWebApp(browser()->profile(),
-                                                GetMockAppType()));
-  }
+  // Verifies the tab has an associated tab helper for System App's AppId.
+  EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
+            *web_app::GetAppIdForSystemWebApp(browser()->profile(),
+                                              GetMockAppType()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
