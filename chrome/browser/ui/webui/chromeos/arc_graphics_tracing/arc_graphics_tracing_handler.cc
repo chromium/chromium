@@ -90,9 +90,7 @@ std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
     return std::make_pair(base::Value(), "Failed to read last tracing model");
 
   arc::ArcTracingGraphicsModel graphics_model;
-  base::DictionaryValue* dictionary = nullptr;
-  model->GetAsDictionary(&dictionary);
-  if (!graphics_model.LoadFromValue(*dictionary)) {
+  if (!graphics_model.LoadFromValue(model->GetDict())) {
     UpdateStatistics(Action::kInitialLoadFailed);
     return std::make_pair(base::Value(), "Failed to load last tracing model");
   }
@@ -226,11 +224,11 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
   graphics_model.set_app_icon_png(icon_png);
   graphics_model.set_platform(base::GetLinuxDistro());
   graphics_model.set_timestamp(timestamp);
-  std::unique_ptr<base::DictionaryValue> model = graphics_model.Serialize();
+  base::Value::Dict model = graphics_model.Serialize();
 
   std::string json_content;
   base::JSONWriter::WriteWithOptions(
-      *model, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content);
+      model, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content);
   DCHECK(!json_content.empty());
 
   if (!base::WriteFile(model_path, json_content.c_str(),
@@ -239,7 +237,8 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
   }
 
   UpdateStatistics(Action::kBuildSucceeded);
-  return std::make_pair(std::move(*model), "Tracing model is ready");
+  return std::make_pair(base::Value(std::move(model)),
+                        "Tracing model is ready");
 }
 
 std::pair<base::Value, std::string> LoadGraphicsModel(
@@ -253,9 +252,10 @@ std::pair<base::Value, std::string> LoadGraphicsModel(
     return std::make_pair(base::Value(), "Failed to load tracing model");
   }
 
-  std::unique_ptr<base::DictionaryValue> model = graphics_model.Serialize();
+  base::Value::Dict model = graphics_model.Serialize();
   UpdateStatistics(Action::kLoadSucceeded);
-  return std::make_pair(std::move(*model), "Tracing model is loaded");
+  return std::make_pair(base::Value(std::move(model)),
+                        "Tracing model is loaded");
 }
 
 std::string GetJavascriptDomain(ArcGraphicsTracingMode mode) {

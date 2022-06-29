@@ -102,7 +102,7 @@ base::Value BuildTracingModel(
   graphics_model.set_timestamp(timestamp);
   graphics_model.Build(common_model);
 
-  return std::move(*graphics_model.Serialize());
+  return base::Value(graphics_model.Serialize());
 }
 
 }  // namespace

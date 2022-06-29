@@ -15,7 +15,7 @@
 
 namespace arc {
 
-// |ArcTracingEvent| is a wrapper over |base::DictionaryValue| that is used to
+// |ArcTracingEvent| is a wrapper over |base::Value::Dict| that is used to
 // represent trace event in Chrome. |ArcTracingEvent| is hierarchical and
 // can contain children. Setter methods are used to convert system trace events
 // that are not dictionary based to the common Chrome format.
@@ -28,7 +28,7 @@ class ArcTracingEvent {
     kOverlap,  // event overlaps with compared event.
   };
 
-  explicit ArcTracingEvent(base::Value dictionary);
+  explicit ArcTracingEvent(base::Value::Dict dictionary);
 
   ArcTracingEvent(const ArcTracingEvent&) = delete;
   ArcTracingEvent& operator=(const ArcTracingEvent&) = delete;
@@ -82,11 +82,11 @@ class ArcTracingEvent {
   // Gets timestamp of the end of the event.
   uint64_t GetEndTimestamp() const;
 
-  // Returns base representation of the event as a |base::DictionaryValue|.
-  const base::DictionaryValue* GetDictionary() const;
+  // Returns base representation of the event as a |base::Value::Dict|.
+  const base::Value::Dict* GetDictionary() const;
 
-  // Returns set of arguments as a |base::DictionaryValue|.
-  const base::DictionaryValue* GetArgs() const;
+  // Returns set of arguments as a |base::Value::Dict|.
+  const base::Value::Dict* GetArgs() const;
 
   // Gets argument as string. Return |default_value| if not found.
   std::string GetArgAsString(const std::string& name,
@@ -123,7 +123,7 @@ class ArcTracingEvent {
 
  private:
   std::vector<std::unique_ptr<ArcTracingEvent>> children_;
-  base::Value dictionary_;
+  base::Value::Dict dictionary_;
 };
 
 }  // namespace arc

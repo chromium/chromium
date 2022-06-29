@@ -151,11 +151,12 @@ void FakeArcSupport::UnsetMessageHost() {
 
 void FakeArcSupport::PostMessageFromNativeHost(
     const std::string& message_string) {
-  std::unique_ptr<base::DictionaryValue> message = base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(message_string));
-  DCHECK(message);
+  absl::optional<base::Value> parsed_json =
+      base::JSONReader::Read(message_string);
+  DCHECK(parsed_json);
 
-  const std::string* action = message->FindStringKey("action");
+  const base::Value::Dict& message = parsed_json->GetDict();
+  const std::string* action = message.FindString("action");
   if (!action) {
     NOTREACHED() << message_string;
     return;
@@ -165,7 +166,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
   if (*action == "initialize") {
     // Do nothing as emulation.
   } else if (*action == "showPage") {
-    const std::string* page = message->FindStringKey("page");
+    const std::string* page = message.FindString("page");
     if (!page) {
       NOTREACHED() << message_string;
       return;
@@ -176,38 +177,38 @@ void FakeArcSupport::PostMessageFromNativeHost(
       ui_page_ = ArcSupportHost::UIPage::ARC_LOADING;
     } else if (*page == "active-directory-auth") {
       ui_page_ = ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH;
-      const base::Value* federation_url = message->FindPathOfType(
-          {"options", "federationUrl"}, base::Value::Type::STRING);
-      const base::Value* device_management_url_prefix = message->FindPathOfType(
-          {"options", "deviceManagementUrlPrefix"}, base::Value::Type::STRING);
+      const std::string* federation_url =
+          message.FindStringByDottedPath("options.federationUrl");
+      const std::string* device_management_url_prefix =
+          message.FindStringByDottedPath("options.deviceManagementUrlPrefix");
       if (!federation_url || !device_management_url_prefix) {
         NOTREACHED() << message_string;
         return;
       }
-      active_directory_auth_federation_url_ = federation_url->GetString();
+      active_directory_auth_federation_url_ = *federation_url;
       active_directory_auth_device_management_url_prefix_ =
-          device_management_url_prefix->GetString();
+          *device_management_url_prefix;
     } else {
       NOTREACHED() << message_string;
     }
   } else if (*action == "showErrorPage") {
     ui_page_ = ArcSupportHost::UIPage::ERROR;
   } else if (*action == "setMetricsMode") {
-    absl::optional<bool> opt = message->FindBoolKey("enabled");
+    absl::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
     metrics_mode_ = opt.value();
   } else if (*action == "setBackupAndRestoreMode") {
-    absl::optional<bool> opt = message->FindBoolKey("enabled");
+    absl::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
     backup_and_restore_mode_ = opt.value();
   } else if (*action == "setLocationServiceMode") {
-    absl::optional<bool> opt = message->FindBoolKey("enabled");
+    absl::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
       NOTREACHED() << message_string;
       return;

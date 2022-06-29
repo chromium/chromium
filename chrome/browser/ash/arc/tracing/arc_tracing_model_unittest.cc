@@ -358,7 +358,8 @@ TEST_F(ArcTracingModelTest, SystemTraceEventCpuEventProcessing) {
 }
 
 TEST_F(ArcTracingModelTest, Event) {
-  const ArcTracingEvent event(base::JSONReader::Read(kTestEvent).value());
+  const ArcTracingEvent event(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
 
   EXPECT_EQ(4640, event.GetPid());
   EXPECT_EQ(4641, event.GetTid());
@@ -375,7 +376,8 @@ TEST_F(ArcTracingModelTest, Event) {
 }
 
 TEST_F(ArcTracingModelTest, EventId2) {
-  const ArcTracingEvent event(base::JSONReader::Read(kTestEvent2).value());
+  const ArcTracingEvent event(
+      std::move(base::JSONReader::Read(kTestEvent2)->GetDict()));
 
   EXPECT_EQ(17518, event.GetPid());
   EXPECT_EQ(17518, event.GetTid());
@@ -390,19 +392,23 @@ TEST_F(ArcTracingModelTest, EventId2) {
 }
 
 TEST_F(ArcTracingModelTest, EventClassification) {
-  const ArcTracingEvent event(base::JSONReader::Read(kTestEvent).value());
+  const ArcTracingEvent event(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
 
-  ArcTracingEvent event_before(base::JSONReader::Read(kTestEvent).value());
+  ArcTracingEvent event_before(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event_before.SetTimestamp(event.GetTimestamp() - event.GetDuration());
   EXPECT_EQ(ArcTracingEvent::Position::kBefore,
             event.ClassifyPositionOf(event_before));
 
-  ArcTracingEvent event_after(base::JSONReader::Read(kTestEvent).value());
+  ArcTracingEvent event_after(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event_after.SetTimestamp(event.GetTimestamp() + event.GetDuration());
   EXPECT_EQ(ArcTracingEvent::Position::kAfter,
             event.ClassifyPositionOf(event_after));
 
-  ArcTracingEvent event_inside(base::JSONReader::Read(kTestEvent).value());
+  ArcTracingEvent event_inside(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event_inside.SetTimestamp(event.GetTimestamp() + 1);
   event_inside.SetDuration(event.GetDuration() - 2);
   EXPECT_EQ(ArcTracingEvent::Position::kInside,
@@ -410,7 +416,8 @@ TEST_F(ArcTracingModelTest, EventClassification) {
   EXPECT_EQ(ArcTracingEvent::Position::kInside,
             event.ClassifyPositionOf(event));
 
-  ArcTracingEvent event_overlap(base::JSONReader::Read(kTestEvent).value());
+  ArcTracingEvent event_overlap(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event_overlap.SetTimestamp(event.GetTimestamp() + 1);
   EXPECT_EQ(ArcTracingEvent::Position::kOverlap,
             event.ClassifyPositionOf(event_overlap));
@@ -425,17 +432,18 @@ TEST_F(ArcTracingModelTest, EventClassification) {
 }
 
 TEST_F(ArcTracingModelTest, EventAppendChild) {
-  ArcTracingEvent event(base::JSONReader::Read(kTestEvent).value());
+  ArcTracingEvent event(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
 
   // Impossible to append the even that is bigger than target.
   std::unique_ptr<ArcTracingEvent> event_overlap =
       std::make_unique<ArcTracingEvent>(
-          base::JSONReader::Read(kTestEvent).value());
+          std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event_overlap->SetTimestamp(event.GetTimestamp() + 1);
   EXPECT_FALSE(event.AppendChild(std::move(event_overlap)));
 
   std::unique_ptr<ArcTracingEvent> event1 = std::make_unique<ArcTracingEvent>(
-      base::JSONReader::Read(kTestEvent).value());
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event1->SetTimestamp(event.GetTimestamp() + 4);
   event1->SetDuration(2);
   EXPECT_TRUE(event.AppendChild(std::move(event1)));
@@ -443,7 +451,7 @@ TEST_F(ArcTracingModelTest, EventAppendChild) {
 
   // Impossible to append the event that is before last child.
   std::unique_ptr<ArcTracingEvent> event2 = std::make_unique<ArcTracingEvent>(
-      base::JSONReader::Read(kTestEvent).value());
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event2->SetTimestamp(event.GetTimestamp());
   event2->SetDuration(2);
   EXPECT_FALSE(event.AppendChild(std::move(event2)));
@@ -451,7 +459,7 @@ TEST_F(ArcTracingModelTest, EventAppendChild) {
 
   // Append child to child
   std::unique_ptr<ArcTracingEvent> event3 = std::make_unique<ArcTracingEvent>(
-      base::JSONReader::Read(kTestEvent).value());
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event3->SetTimestamp(event.GetTimestamp() + 5);
   event3->SetDuration(1);
   EXPECT_TRUE(event.AppendChild(std::move(event3)));
@@ -460,7 +468,7 @@ TEST_F(ArcTracingModelTest, EventAppendChild) {
 
   // Append next immediate child.
   std::unique_ptr<ArcTracingEvent> event4 = std::make_unique<ArcTracingEvent>(
-      base::JSONReader::Read(kTestEvent).value());
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   event4->SetTimestamp(event.GetTimestamp() + 6);
   event4->SetDuration(2);
   EXPECT_TRUE(event.AppendChild(std::move(event4)));
@@ -468,7 +476,8 @@ TEST_F(ArcTracingModelTest, EventAppendChild) {
 }
 
 TEST_F(ArcTracingModelTest, EventMatcher) {
-  const ArcTracingEvent event(base::JSONReader::Read(kTestEvent).value());
+  const ArcTracingEvent event(
+      std::move(base::JSONReader::Read(kTestEvent)->GetDict()));
   // Nothing is specified. It matches any event.
   EXPECT_TRUE(ArcTracingEventMatcher().Match(event));
 

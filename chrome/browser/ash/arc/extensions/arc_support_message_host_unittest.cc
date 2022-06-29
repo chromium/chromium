@@ -49,16 +49,14 @@ class TestObserver : public ArcSupportMessageHost::Observer {
 
   ~TestObserver() override = default;
 
-  void OnMessage(const base::DictionaryValue& message) override {
-    values_.push_back(message.CreateDeepCopy());
+  void OnMessage(const base::Value::Dict& message) override {
+    values_.push_back(message.Clone());
   }
 
-  const std::vector<std::unique_ptr<base::DictionaryValue>>& values() const {
-    return values_;
-  }
+  const std::vector<base::Value::Dict>& values() const { return values_; }
 
  private:
-  std::vector<std::unique_ptr<base::DictionaryValue>> values_;
+  std::vector<base::Value::Dict> values_;
 };
 
 class ArcSupportMessageHostTest : public testing::Test {
@@ -101,22 +99,22 @@ class ArcSupportMessageHostTest : public testing::Test {
 };
 
 TEST_F(ArcSupportMessageHostTest, SendMessage) {
-  base::DictionaryValue value;
-  value.SetStringKey("foo", "bar");
-  value.SetBoolKey("baz", true);
+  base::Value::Dict value;
+  value.Set("foo", "bar");
+  value.Set("baz", true);
 
   message_host()->SendMessage(value);
 
   ASSERT_EQ(1u, client()->messages().size());
-  std::unique_ptr<base::Value> recieved_value =
-      base::JSONReader::ReadDeprecated(client()->messages()[0]);
-  EXPECT_EQ(value, *recieved_value);
+  absl::optional<base::Value> recieved_value =
+      base::JSONReader::Read(client()->messages()[0]);
+  EXPECT_EQ(value, recieved_value->GetDict());
 }
 
 TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
-  base::DictionaryValue value;
-  value.SetStringKey("foo", "bar");
-  value.SetBoolKey("baz", true);
+  base::Value::Dict value;
+  value.Set("foo", "bar");
+  value.Set("baz", true);
 
   TestObserver observer;
   message_host()->SetObserver(&observer);
@@ -128,7 +126,7 @@ TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
   message_host()->SetObserver(nullptr);
 
   ASSERT_EQ(1u, observer.values().size());
-  EXPECT_EQ(value, *observer.values()[0]);
+  EXPECT_EQ(value, observer.values()[0]);
 }
 
 }  // namespace arc
