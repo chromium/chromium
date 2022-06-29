@@ -116,6 +116,7 @@ component("gtk") {
   deps = [
     ":gtk_stubs",
     "//base",
+    "//printing/buildflags",
     "//skia",
 
     # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking

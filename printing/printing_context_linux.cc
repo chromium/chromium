@@ -13,7 +13,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/print_dialog_gtk_interface.h"
+#include "printing/print_dialog_linux_interface.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 
@@ -21,13 +21,7 @@ namespace printing {
 
 namespace {
 
-// Function pointer for creating print dialogs. `callback` is only used when
-// `show_dialog` is true.
-PrintDialogGtkInterface* (*create_dialog_func_)(PrintingContextLinux* context) =
-    nullptr;
-
-// Function pointer for determining paper size.
-gfx::Size (*get_pdf_paper_size_)(PrintingContextLinux* context) = nullptr;
+static PrintingContextLinuxDelegate* g_delegate = nullptr;
 
 }  // namespace
 
@@ -54,20 +48,9 @@ PrintingContextLinux::~PrintingContextLinux() {
 }
 
 // static
-void PrintingContextLinux::SetCreatePrintDialogFunction(
-    PrintDialogGtkInterface* (*create_dialog_func)(
-        PrintingContextLinux* context)) {
-  DCHECK(create_dialog_func);
-  DCHECK(!create_dialog_func_);
-  create_dialog_func_ = create_dialog_func;
-}
-
-// static
-void PrintingContextLinux::SetPdfPaperSizeFunction(
-    gfx::Size (*get_pdf_paper_size)(PrintingContextLinux* context)) {
-  DCHECK(get_pdf_paper_size);
-  DCHECK(!get_pdf_paper_size_);
-  get_pdf_paper_size_ = get_pdf_paper_size;
+void PrintingContextLinuxDelegate::SetInstance(
+    PrintingContextLinuxDelegate* delegate) {
+  g_delegate = delegate;
 }
 
 void PrintingContextLinux::AskUserForSettings(int max_pages,
@@ -91,19 +74,19 @@ mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
 
   ResetSettings();
 
-  if (!create_dialog_func_)
+  if (!g_delegate)
     return mojom::ResultCode::kSuccess;
 
   if (!print_dialog_)
-    print_dialog_ = create_dialog_func_(this);
+    print_dialog_ = g_delegate->CreatePrintDialog(this);
   print_dialog_->UseDefaultSettings();
 
   return mojom::ResultCode::kSuccess;
 }
 
 gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
-  if (get_pdf_paper_size_)
-    return get_pdf_paper_size_(this);
+  if (g_delegate)
+    return g_delegate->GetPdfPaperSize(this);
 
   return gfx::Size();
 }
@@ -113,11 +96,11 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
-  if (!create_dialog_func_)
+  if (!g_delegate)
     return mojom::ResultCode::kSuccess;
 
   if (!print_dialog_)
-    print_dialog_ = create_dialog_func_(this);
+    print_dialog_ = g_delegate->CreatePrintDialog(this);
 
   // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_ will
   // remain non-null after this line.
@@ -156,7 +139,7 @@ mojom::ResultCode PrintingContextLinux::PrintDocument(
   DCHECK(in_print_job_);
   DCHECK(print_dialog_);
   // TODO(crbug.com/1252685)  Plumb error code back from
-  // `PrintDialogGtkInterface`.
+  // `PrintDialogLinuxInterface`.
   print_dialog_->PrintDocument(metafile, document_name_);
   return mojom::ResultCode::kSuccess;
 }
