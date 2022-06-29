@@ -452,13 +452,11 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     int64_t display_id = data_it.second->display_id.has_value()
                              ? data_it.second->display_id.value()
                              : display::kInvalidDisplayId;
-    if (data_it.second->intent.has_value()) {
-      DCHECK(data_it.second->intent.value());
+    if (data_it.second->intent) {
       ::full_restore::SaveAppLaunchInfo(
-          file_path,
-          std::make_unique<::app_restore::AppLaunchInfo>(
-              app_id, event_flags, data_it.second->intent.value()->Clone(),
-              arc_session_id, display_id));
+          file_path, std::make_unique<::app_restore::AppLaunchInfo>(
+                         app_id, event_flags, data_it.second->intent->Clone(),
+                         arc_session_id, display_id));
     } else {
       ::full_restore::SaveAppLaunchInfo(
           file_path, std::make_unique<::app_restore::AppLaunchInfo>(
@@ -640,11 +638,10 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
     window_id_to_session_id_[window_id] = arc_session_id;
   }
 
-  if (data_it->second->intent.has_value()) {
-    DCHECK(data_it->second->intent.value());
+  if (data_it->second->intent) {
     proxy->LaunchAppWithIntent(
         app_id, data_it->second->event_flag.value(),
-        apps::ConvertIntentToMojomIntent(data_it->second->intent.value()),
+        apps::ConvertIntentToMojomIntent(data_it->second->intent),
         apps::mojom::LaunchSource::kFromFullRestore, std::move(window_info));
   } else {
     proxy->Launch(app_id, data_it->second->event_flag.value(),

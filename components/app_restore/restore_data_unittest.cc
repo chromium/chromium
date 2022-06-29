@@ -270,10 +270,10 @@ class RestoreDataTest : public testing::Test {
     for (size_t i = 0; i < file_paths.size(); i++)
       EXPECT_EQ(file_paths[i], data->file_paths.value()[i]);
 
-    EXPECT_TRUE(data->intent.has_value());
-    EXPECT_EQ(intent->action, data->intent.value()->action);
-    EXPECT_EQ(intent->mime_type, data->intent.value()->mime_type);
-    EXPECT_EQ(intent->share_text, data->intent.value()->share_text);
+    EXPECT_TRUE(data->intent);
+    EXPECT_EQ(intent->action, data->intent->action);
+    EXPECT_EQ(intent->mime_type, data->intent->mime_type);
+    EXPECT_EQ(intent->share_text, data->intent->share_text);
 
     if (!app_type_browser)
       // This field should only be written if it is true.
@@ -666,10 +666,10 @@ TEST_F(RestoreDataTest, GetAppLaunchInfo) {
   EXPECT_EQ(base::FilePath(kFilePath1), app_launch_info->file_paths.value()[0]);
   EXPECT_EQ(base::FilePath(kFilePath2), app_launch_info->file_paths.value()[1]);
 
-  EXPECT_TRUE(app_launch_info->intent.has_value());
-  EXPECT_EQ(kIntentActionSend, app_launch_info->intent.value()->action);
-  EXPECT_EQ(kMimeType, app_launch_info->intent.value()->mime_type);
-  EXPECT_EQ(kShareText1, app_launch_info->intent.value()->share_text);
+  EXPECT_TRUE(app_launch_info->intent);
+  EXPECT_EQ(kIntentActionSend, app_launch_info->intent->action);
+  EXPECT_EQ(kMimeType, app_launch_info->intent->mime_type);
+  EXPECT_EQ(kShareText1, app_launch_info->intent->share_text);
 
   EXPECT_FALSE(app_launch_info->app_type_browser.has_value());
 }
