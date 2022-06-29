@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BASE_ALARM_MANAGER_H_
 #define CHROMECAST_BASE_ALARM_MANAGER_H_
 
-#include <functional>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -95,10 +94,7 @@ class AlarmManager {
                 scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Ordering alarms by earliest time.
-  struct alarm_compare
-      : public std::binary_function<std::unique_ptr<AlarmInfo>&,
-                                    std::unique_ptr<AlarmInfo>&,
-                                    bool> {
+  struct alarm_compare {
     bool operator()(const std::unique_ptr<AlarmInfo>& lhs,
                     const std::unique_ptr<AlarmInfo>& rhs) const {
       return lhs->time() > rhs->time();
