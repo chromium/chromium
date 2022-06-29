@@ -53,6 +53,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -2124,6 +2125,67 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationTest,
 
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
   // Should not crash at this point.
+}
+
+class DevToolsProtocolDeviceEmulationPrerenderTest
+    : public DevToolsProtocolDeviceEmulationTest {
+ public:
+  DevToolsProtocolDeviceEmulationPrerenderTest()
+      : prerender_helper_(base::BindRepeating(
+            &DevToolsProtocolDeviceEmulationPrerenderTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~DevToolsProtocolDeviceEmulationPrerenderTest() override = default;
+
+  void SetUpOnMainThread() override {
+    DevToolsProtocolDeviceEmulationTest::SetUpOnMainThread();
+    prerender_helper_.SetUp(embedded_test_server());
+  }
+
+  // WebContentsDelegate overrides.
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
+
+  WebContents* GetWebContents() const { return shell()->web_contents(); }
+
+ protected:
+  test::PrerenderTestHelper prerender_helper_;
+};
+
+// Setting frame size (through RWHV) is not supported on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DeviceSize DISABLED_DeviceSize
+#else
+#define MAYBE_DeviceSize DeviceSize
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationPrerenderTest,
+                       MAYBE_DeviceSize) {
+  SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  const gfx::Size original_size = GetViewSize();
+  const gfx::Size emulated_size =
+      gfx::Size(original_size.width() - 50, original_size.height() - 50);
+
+  EmulateDeviceSize(emulated_size);
+  EXPECT_EQ(emulated_size, GetViewSize());
+
+  // Start a prerender and ensure frame size isn't changed.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/devtools/navigation.html?prerender");
+  prerender_helper_.AddPrerender(prerender_url);
+  EXPECT_EQ(emulated_size, GetViewSize());
+
+  // Activate the prerendered page and ensure frame size isn't changed.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  EXPECT_EQ(emulated_size, GetViewSize());
+
+  SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
+  EXPECT_EQ(original_size, GetViewSize());
 }
 
 class DevToolsProtocolTouchTest : public DevToolsProtocolTest {
