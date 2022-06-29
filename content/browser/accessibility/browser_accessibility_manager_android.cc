@@ -237,6 +237,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       wcax->HandleCheckStateChanged(android_node->unique_id());
+      if (android_node->GetRole() == ax::mojom::Role::kToggleButton ||
+          android_node->GetRole() == ax::mojom::Role::kSwitch ||
+          android_node->GetRole() == ax::mojom::Role::kRadioButton) {
+        wcax->HandleStateDescriptionChanged(android_node->unique_id());
+      }
       break;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
       ui::AXNodeID focus_id =

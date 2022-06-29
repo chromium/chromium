@@ -296,6 +296,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleContentChanged(int32_t unique_id);
   void HandleFocusChanged(int32_t unique_id);
   void HandleCheckStateChanged(int32_t unique_id);
+  void HandleStateDescriptionChanged(int32_t unique_id);
   void HandleClicked(int32_t unique_id);
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);

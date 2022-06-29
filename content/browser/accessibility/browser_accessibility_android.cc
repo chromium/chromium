@@ -771,9 +771,11 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
   // exclusive with the on/off of toggle buttons below.
   if (IsCheckable() && !IsReportingCheckable()) {
     state_descs.push_back(GetCheckboxStateDescription());
-  } else if (GetRole() == ax::mojom::Role::kToggleButton) {
-    // For Toggle buttons, we will append "on"/"off" in the state description.
-    state_descs.push_back(GetToggleButtonStateDescription());
+  } else if (GetRole() == ax::mojom::Role::kToggleButton ||
+             GetRole() == ax::mojom::Role::kSwitch) {
+    // For Toggle buttons and switches, we will append "on"/"off" in the state
+    // description.
+    state_descs.push_back(GetToggleStateDescription());
   }
 
   // For radio buttons, we will communicate how many radio buttons are in the
@@ -833,11 +835,11 @@ std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
       values, nullptr);
 }
 
-std::u16string BrowserAccessibilityAndroid::GetToggleButtonStateDescription()
-    const {
+std::u16string BrowserAccessibilityAndroid::GetToggleStateDescription() const {
   content::ContentClient* content_client = content::GetContentClient();
 
-  // For checked Toggle buttons, we will return "on", otherwise "off".
+  // For checked Toggle buttons and switches, we will return "on", otherwise
+  // "off".
   if (IsChecked())
     return content_client->GetLocalizedString(IDS_AX_TOGGLE_BUTTON_ON);
 

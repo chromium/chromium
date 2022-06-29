@@ -236,7 +236,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaCheckedChanged() {
-        performTest("aria-checked-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-checked-changed.html", "aria-checked-changed-expected-android.txt");
     }
 
     @Test
@@ -407,7 +407,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaPressedChanged() {
-        performTest("aria-pressed-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-pressed-changed.html", "aria-pressed-changed-expected-android.txt");
     }
 
     @Test
@@ -897,7 +897,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_pressedStateChanged() {
-        performTest("pressed-state-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("pressed-state-changed.html", "pressed-state-changed-expected-android.txt");
     }
 
     @Test
