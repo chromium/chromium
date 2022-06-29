@@ -122,6 +122,31 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
 }
 
+// Check that the guest button is visible on user creation screen before
+// entering and after exiting the guest session.
+IN_PROC_BROWSER_TEST_F(GuestLoginTest,
+                       PRE_PRE_UserCreationGuestButtonVisibility) {
+  base::RunLoop restart_job_waiter;
+  FakeSessionManagerClient::Get()->set_restart_job_callback(
+      restart_job_waiter.QuitClosure());
+
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  StartGuestSession();
+
+  restart_job_waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_UserCreationGuestButtonVisibility) {
+  login_manager_.WaitForActiveSession();
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
+}
+
+IN_PROC_BROWSER_TEST_F(GuestLoginTest, UserCreationGuestButtonVisibility) {
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+}
+
 // The test verifies that clicking the Guest button multiple times doesn't
 // trigger extra userdataauth requests. A regression test for b/213835042.
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_MultipleClicks) {

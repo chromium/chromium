@@ -399,7 +399,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   onIsFirstSigninStepChanged(isFirstSigninStep) {
-    chrome.send('setIsFirstSigninStep', [isFirstSigninStep]);
+    if (this.isShown_) {
+      chrome.send('setIsFirstSigninStep', [isFirstSigninStep]);
+    }
   }
 
   /**
