@@ -25,9 +25,11 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
     return;
 
   coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_);
-  coordinator_->AddObserver(this);
+  if (coordinator_)
+    coordinator_->AddObserver(this);
   model_ = coordinator_->GetModel();
-  model_->AddObserver(this);
+  if (model_)
+    model_->AddObserver(this);
   delegate_ = static_cast<ReadAnythingPageHandler::Delegate*>(
       coordinator_->GetController());
   if (delegate_)
@@ -59,5 +61,5 @@ void ReadAnythingPageHandler::OnAXTreeDistilled(
 
 void ReadAnythingPageHandler::OnFontNameUpdated(
     const std::string& new_font_name) {
-  page_->OnFontNameChange(new_font_name);
+  page_->OnFontNameChange(std::move(new_font_name));
 }

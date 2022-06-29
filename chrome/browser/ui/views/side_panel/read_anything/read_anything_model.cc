@@ -8,28 +8,44 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
-ReadAnythingModel::ReadAnythingModel()
-    : font_model_(std::make_unique<ReadAnythingFontModel>()) {}
+ReadAnythingModel::ReadAnythingModel(std::string prefs_font_name)
+    : font_model_(std::make_unique<ReadAnythingFontModel>()) {
+  // If this profile has previously selected a preferred font name choice,
+  // check that it is still a valid font, and if so, make it the default.
+  if (font_model_->IsValidFontName(prefs_font_name)) {
+    font_model_->SetDefaultIndexFromPrefsFontName(prefs_font_name);
+    font_name_ = prefs_font_name;
+  }
+}
+
 ReadAnythingModel::~ReadAnythingModel() = default;
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
+  NotifyFontNameUpdated();
+  NotifyAXTreeDistilled();
 }
 
 void ReadAnythingModel::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void ReadAnythingModel::SetSelectedFontIndex(int new_index) {
-  font_name_ = font_model_->GetCurrentFontName(new_index);
+void ReadAnythingModel::SetSelectedFontByIndex(int new_index) {
+  // Check that the index is valid.
+  DCHECK(font_model_->IsValidFontIndex(new_index));
+
+  // Update state and notify listeners
+  font_name_ = font_model_->GetFontNameAt(new_index);
   NotifyFontNameUpdated();
 }
 
 void ReadAnythingModel::SetDistilledAXTree(
     ui::AXTreeUpdate snapshot,
     std::vector<ui::AXNodeID> content_node_ids) {
+  // Update state and notify listeners
   snapshot_ = std::move(snapshot);
   content_node_ids_ = std::move(content_node_ids);
   NotifyAXTreeDistilled();
@@ -58,9 +74,24 @@ ReadAnythingFontModel::ReadAnythingFontModel() {
   font_choices_.shrink_to_fit();
 }
 
+bool ReadAnythingFontModel::IsValidFontName(const std::string& font_name) {
+  return std::find(font_choices_.begin(), font_choices_.end(),
+                   base::UTF8ToUTF16(font_name)) != font_choices_.end();
+}
+
+bool ReadAnythingFontModel::IsValidFontIndex(int index) {
+  return index >= 0 && index <= GetItemCount();
+}
+
+void ReadAnythingFontModel::SetDefaultIndexFromPrefsFontName(
+    std::string prefs_font_name) {
+  auto it = std::find(font_choices_.begin(), font_choices_.end(),
+                      base::UTF8ToUTF16(prefs_font_name));
+  default_index_ = it - font_choices_.begin();
+}
+
 int ReadAnythingFontModel::GetDefaultIndex() const {
-  // TODO(1266555): This should be set on initialization based on Prefs.
-  return 0;
+  return default_index_;
 }
 
 int ReadAnythingFontModel::GetItemCount() const {
@@ -77,7 +108,7 @@ std::u16string ReadAnythingFontModel::GetDropDownTextAt(int index) const {
   return font_choices_.at(index);
 }
 
-std::string ReadAnythingFontModel::GetCurrentFontName(int index) {
+std::string ReadAnythingFontModel::GetFontNameAt(int index) {
   DCHECK(index >= 0 && index < GetItemCount());
   return base::UTF16ToUTF8(font_choices_.at(index));
 }

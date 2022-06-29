@@ -30,13 +30,13 @@ class MockReadAnythingCoordinatorObserver
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
   MOCK_METHOD(void,
+              OnFontNameUpdated,
+              (const std::string& new_font_name),
+              (override));
+  MOCK_METHOD(void,
               OnAXTreeDistilled,
               (const ui::AXTreeUpdate& snapshot,
                const std::vector<ui::AXNodeID>& content_node_ids),
-              (override));
-  MOCK_METHOD(void,
-              OnFontNameUpdated,
-              (const std::string& new_font_name),
               (override));
 };
 
@@ -119,7 +119,7 @@ TEST_F(ReadAnythingCoordinatorTest, ModelObserversReceiveNotifications) {
 
   GetModel()->SetDistilledAXTree(ui::AXTreeUpdate(),
                                  std::vector<ui::AXNodeID>());
-  GetModel()->SetSelectedFontIndex(3);
+  GetModel()->SetSelectedFontByIndex(3);
 
   GetModel()->RemoveObserver(&model_observer_);
 }

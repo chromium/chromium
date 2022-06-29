@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "ui/accessibility/ax_tree_update.h"
 
@@ -31,7 +32,12 @@ void ReadAnythingController::Activate(bool active) {
 }
 
 void ReadAnythingController::OnFontChoiceChanged(int new_choice) {
-  model_->SetSelectedFontIndex(new_choice);
+  std::string new_font_name;
+  model_->SetSelectedFontByIndex(new_choice);
+
+  browser_->profile()->GetPrefs()->SetString(
+      prefs::kAccessibilityReadAnythingFontName,
+      model_->GetFontModel()->GetFontNameAt(new_choice));
 }
 
 void ReadAnythingController::OnUIReady() {

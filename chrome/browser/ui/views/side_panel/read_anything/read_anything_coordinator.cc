@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,7 +23,12 @@
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser) {
   // Create the model.
-  model_ = std::make_unique<ReadAnythingModel>();
+  std::string prefs_font_name;
+  if (browser->profile() && browser->profile()->GetPrefs()) {
+    prefs_font_name = browser->profile()->GetPrefs()->GetString(
+        prefs::kAccessibilityReadAnythingFontName);
+  }
+  model_ = std::make_unique<ReadAnythingModel>(prefs_font_name);
 
   // Create the controller.
   controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);

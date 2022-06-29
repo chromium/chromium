@@ -266,6 +266,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -1420,6 +1421,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PhotosService::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   PromoService::RegisterProfilePrefs(registry);
+  RegisterReadAnythingProfilePrefs(registry);
   settings::SettingsUI::RegisterProfilePrefs(registry);
   send_tab_to_self::SendTabToSelfBubbleController::RegisterProfilePrefs(
       registry);

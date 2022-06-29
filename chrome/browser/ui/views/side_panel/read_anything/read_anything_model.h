@@ -30,7 +30,10 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   ReadAnythingFontModel& operator=(const ReadAnythingFontModel&) = delete;
   ~ReadAnythingFontModel() override;
 
-  std::string GetCurrentFontName(int index);
+  std::string GetFontNameAt(int index);
+  bool IsValidFontName(const std::string& font_name);
+  bool IsValidFontIndex(int index);
+  void SetDefaultIndexFromPrefsFontName(std::string prefs_font_name);
 
  protected:
   // ui::Combobox implementation:
@@ -42,6 +45,9 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
  private:
   // Styled font names for the drop down options in front-end.
   std::vector<std::u16string> font_choices_;
+
+  // Default index for drop down, either zero or populated from prefs.
+  int default_index_ = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,13 +61,13 @@ class ReadAnythingModel {
  public:
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnFontNameUpdated(const std::string& new_font_name) = 0;
     virtual void OnAXTreeDistilled(
         const ui::AXTreeUpdate& snapshot,
         const std::vector<ui::AXNodeID>& content_node_ids) = 0;
-    virtual void OnFontNameUpdated(const std::string& new_font_name) = 0;
   };
 
-  ReadAnythingModel();
+  explicit ReadAnythingModel(std::string prefs_font_name);
   ReadAnythingModel(const ReadAnythingModel&) = delete;
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
@@ -71,7 +77,7 @@ class ReadAnythingModel {
 
   void SetDistilledAXTree(ui::AXTreeUpdate snapshot,
                           std::vector<ui::AXNodeID> content_node_ids);
-  void SetSelectedFontIndex(int new_index);
+  void SetSelectedFontByIndex(int new_index);
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
 

@@ -48,10 +48,10 @@ class ReadAnythingPageHandler : public PageHandler,
   ~ReadAnythingPageHandler() override;
 
   // ReadAnythingModel::Observer:
+  void OnFontNameUpdated(const std::string& new_font_name) override;
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
-  void OnFontNameUpdated(const std::string& new_font_name) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
