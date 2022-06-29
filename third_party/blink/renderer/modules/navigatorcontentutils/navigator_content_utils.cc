@@ -49,8 +49,6 @@ const char NavigatorContentUtils::kSupplementName[] = "NavigatorContentUtils";
 
 namespace {
 
-const char kToken[] = "%s";
-
 // Verify custom handler URL security as described in steps 6 and 7
 // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
 static bool VerifyCustomHandlerURLSecurity(
@@ -137,25 +135,24 @@ bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
                                   const KURL& base_url,
                                   const String& user_url,
                                   String& error_message) {
-  // The specification requires that it is a SyntaxError if the "%s" token is
-  // not present.
-  int index = user_url.Find(kToken);
-  if (-1 == index) {
-    error_message =
-        "The url provided ('" + user_url + "') does not contain '%s'.";
-    return false;
+  StringUTF8Adaptor url_adaptor(user_url);
+  URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(
+      GURL(full_url), url_adaptor.AsStringPiece());
+  switch (code) {
+    case URLSyntaxErrorCode::kNoError:
+      return true;
+    case URLSyntaxErrorCode::kMissingToken:
+      error_message =
+          "The url provided ('" + user_url + "') does not contain '%s'.";
+      break;
+    case URLSyntaxErrorCode::kInvalidUrl:
+      error_message =
+          "The custom handler URL created by removing '%s' and prepending '" +
+          base_url.GetString() + "' is invalid.";
+      break;
   }
 
-  // It is also a SyntaxError if the custom handler URL, as created by removing
-  // the "%s" token and prepending the base url, does not resolve.
-  if (full_url.IsEmpty() || !full_url.IsValid()) {
-    error_message =
-        "The custom handler URL created by removing '%s' and prepending '" +
-        base_url.GetString() + "' is invalid.";
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
 NavigatorContentUtils& NavigatorContentUtils::From(Navigator& navigator,

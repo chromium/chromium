@@ -2903,6 +2903,37 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerDataURL) {
   contents()->SetDelegate(nullptr);
 }
 
+TEST_F(WebContentsImplTest, RegisterProtocolHandlerInvalidURLSyntax) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  GURL url("https://www.google.com");
+  GURL handler_url1("https://www.google.com/handler/%s");
+  GURL handler_url2("https://www.google.com/handler/");
+
+  contents()->NavigateAndCommit(url);
+
+  // Only the first call to RegisterProtocolHandler should register because the
+  // other call has a handler from a different origin.
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                handler_url1, true))
+      .Times(1);
+
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                handler_url2, true))
+      .Times(0);
+  {
+    contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url1,
+                                        /*user_gesture=*/true);
+  }
+  {
+    contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url2,
+                                        /*user_gesture=*/true);
+  }
+
+  contents()->SetDelegate(nullptr);
+}
+
 TEST_F(WebContentsImplTest, Bluetooth) {
   TestWebContentsObserver observer(contents());
   EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 0);

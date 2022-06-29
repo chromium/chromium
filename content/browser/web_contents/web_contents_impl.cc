@@ -332,8 +332,10 @@ bool AreValidRegisterProtocolHandlerArguments(
   if (!blink::IsValidCustomHandlerScheme(protocol, security_level))
     return false;
 
-  // TODO(jfernandez): Should we include syntax checks (step 3) as we do in the
-  // renderer process ?
+  blink::URLSyntaxErrorCode code =
+      blink::IsValidCustomHandlerURLSyntax(url, url.spec());
+  if (code != blink::URLSyntaxErrorCode::kNoError)
+    return false;
 
   // Verify custom handler URL security as described in steps 6 and 7
   if (!blink::IsAllowedCustomHandlerURL(url, security_level))
