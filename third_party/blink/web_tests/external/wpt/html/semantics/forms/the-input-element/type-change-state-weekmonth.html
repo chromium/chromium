@@ -70,6 +70,8 @@
     { type: "password", sanitizer: sanitizeText },
     { type: "datetime-local", sanitizer: sanitizeTemporal },
     { type: "date", sanitizer: sanitizeTemporal },
+    { type: "month", sanitizer: sanitizeTemporal },
+    { type: "week", sanitizer: sanitizeTemporal },
     { type: "time", sanitizer: sanitizeTemporal },
     { type: "number", sanitizer: sanitizeNumber },
     { type: "range", sanitizer: sanitizeRange },
@@ -100,7 +102,8 @@
 
   for (var i = 0; i < types.length; i++) {
     for (var j = 0; j < types.length; j++) {
-      if (types[i] != types[j]) {
+      const monthOrWeek = types[i].type === 'month' || types[i].type === 'week' || types[j].type === 'month' || types[j].type === 'week';
+      if ((types[i] != types[j]) && monthOrWeek) {
         test(function() {
           assert_implements(browserSupportsInputTypeOf(types[i].type), "Support for input type " + types[i].type + " is required for this test.");
           assert_implements(browserSupportsInputTypeOf(types[j].type), "Support for input type " + types[j].type + " is required for this test.");
