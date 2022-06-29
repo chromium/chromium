@@ -4595,6 +4595,7 @@ if (is_chromeos_lacros) {
     sources = [
       "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
+      "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
       "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
       "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",

@@ -73,9 +73,11 @@ crosapi::mojom::WallpaperLayout GetMojoLayoutEnum(
 
 crosapi::mojom::Wallpaper* GetWallpaperApi() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::Wallpaper>()
-      .get();
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Wallpaper>()) {
+    return nullptr;
+  }
+  return lacros_service->GetRemote<crosapi::mojom::Wallpaper>().get();
 #else
   return crosapi::CrosapiManager::Get()->crosapi_ash()->wallpaper_ash();
 #endif
@@ -231,7 +233,13 @@ void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
   settings->layout = GetMojoLayoutEnum(params_->details.layout);
   settings->filename = params_->details.filename;
 
-  GetWallpaperApi()->SetWallpaper(
+  auto* wallpaper_api = GetWallpaperApi();
+  if (!wallpaper_api) {
+    Respond(Error("Unsupported ChromeOS version."));
+    return;
+  }
+
+  wallpaper_api->SetWallpaper(
       std::move(settings), extension_id, extension_name,
       base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
                      this));

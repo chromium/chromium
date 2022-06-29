@@ -10,81 +10,81 @@ chrome.test.getConfig(function(config) {
   var baseURL = "http://a.com:" + config.testServer.port +
       "/extensions/api_test/wallpaper/";
 
+  var crosapiUnavailable = false;
+  if (config.customArg && config.customArg === "crosapi_unavailable") {
+    crosapiUnavailable = true;
+  }
+
   /*
    * Calls chrome.wallpaper.setWallpaper using an arraybuffer.
    * @param {string} filePath An extension relative file path.
    */
-  var testSetWallpaperFromArrayBuffer = function (filePath) {
+  var testSetWallpaperFromArrayBuffer = function (filePath, wantThumbnail) {
     // Loads an extension local file to an arraybuffer.
     var url = chrome.runtime.getURL(filePath);
     var wallpaperRequest = new XMLHttpRequest();
     wallpaperRequest.open('GET', url, true);
     wallpaperRequest.responseType = 'arraybuffer';
+
+    var callback;
+    if (crosapiUnavailable) {
+      callback = function() {
+        chrome.test.assertLastError("Unsupported ChromeOS version.");
+        chrome.test.succeed();
+      };
+    } else if (wantThumbnail) {
+      callback = function(thumbnail) {
+        chrome.test.assertFalse(thumbnail === undefined);
+        var buffer = new Uint8Array(thumbnail);
+        chrome.test.assertTrue(buffer.length > 0);
+        chrome.test.succeed("setWallpaper replied successfully.");
+      };
+    } else {
+      callback = function() {
+        chrome.test.succeed("setWallpaper replied successfully.");
+      };
+    }
+
     try {
-      wallpaperRequest.send(null);
       wallpaperRequest.onloadend = function(e) {
         if (wallpaperRequest.status === 200) {
           chrome.wallpaper.setWallpaper(
               {'data': wallpaperRequest.response,
                'layout': 'CENTER_CROPPED',
-               'filename': 'test'},
-              // Set wallpaper directly with an arraybuffer should pass.
-              pass()
-          );
+               'filename': 'test',
+               'thumbnail': wantThumbnail},
+               callback);
         } else {
           chrome.test.fail('Failed to load local file: ' + filePath + '.');
         }
       };
+      wallpaperRequest.send(null);
     } catch (e) {
       console.error(e);
       chrome.test.fail('An error thrown when requesting wallpaper.');
     }
   };
 
-  /*
-   * Calls chrome.wallpaper.setWallpaper using an URL.
-   * @param {string} relativeURL The relative URL of an online image.
-   * @param {boolean} success True if expecting the API call success.
-   * @param {string=} optExpectedError The expected error string if API call
-   *     failed. An error string must be provided if success is set to false.
-   */
-  var testSetWallpaperFromURL = function (relativeURL,
-                                          success,
-                                          optExpectedError) {
+  var testSetWallpaperFromURL = function (relativeURL) {
     var url = baseURL + relativeURL;
-    if (success) {
-      chrome.wallpaper.setWallpaper(
-          {'url': url,
-           'layout': 'CENTER_CROPPED',
-           'filename': 'test'},
-           // A valid url should set wallpaper correctly.
-           pass()
-      );
-    } else {
-      if (optExpectedError == undefined) {
-        chrome.test.fail('No expected error string is provided.');
-        return;
-      }
-      chrome.wallpaper.setWallpaper(
-         {'url': url,
-          'layout': 'CENTER_CROPPED',
-          'filename': 'test'},
-          // Expect a failure.
-          fail(optExpectedError));
-    }
-  };
 
-  var testSetWallpaperThumbnail = function(relativeURL) {
-    var url = baseURL + relativeURL;
+    var callback;
+    if (crosapiUnavailable) {
+      callback = function() {
+        chrome.test.assertLastError("Unsupported ChromeOS version.");
+        chrome.test.succeed();
+      };
+    } else {
+      callback = function() {
+        chrome.test.succeed("setWallpaper replied successfully.");
+      };
+    }
+
     chrome.wallpaper.setWallpaper(
-      { 'url': url,
-        'layout': 'CENTER_CROPPED',
-        'filename': 'test',
-        'thumbnail': true
-      }, pass(function(thumbnail) {
-        var buffer = new Uint8Array(thumbnail);
-        chrome.test.assertTrue(buffer.length > 0);
-      }));
+        {'url': url,
+         'layout': 'CENTER_CROPPED',
+         'filename': 'test'},
+         callback);
   };
 
   chrome.test.runTests([
@@ -95,31 +95,47 @@ chrome.test.getConfig(function(config) {
       testSetWallpaperFromArrayBuffer('test.png');
     },
     function setJpgWallpaperFromURL () {
-      testSetWallpaperFromURL('test.jpg', true);
+      testSetWallpaperFromURL('test.jpg');
     },
     function setPngWallpaperFromURL () {
-      testSetWallpaperFromURL('test.png', true);
+      testSetWallpaperFromURL('test.png');
     },
     function setNoExistingWallpaperFromURL () {
       // test1.jpg doesn't exist. Expect a 404 error.
-      var expectError =
+      var expectedError =
           'Downloading wallpaper test1.jpg failed. The response code is 404.';
-      testSetWallpaperFromURL('test1.jpg',
-                              false,
-                              expectError);
+      chrome.wallpaper.setWallpaper(
+          {'url': baseURL + 'test1.jpg',
+           'layout': 'CENTER_CROPPED',
+           'filename': 'test'},
+           fail(expectedError));
     },
     function newRequestCancelPreviousRequest() {
+      if (crosapiUnavailable) {
+        chrome.test.succeed("skipped.");
+        return;
+      }
+
       // The first request should be canceled. The wallpaper in the first
       // request is chosen from one of the high-resolution built-in wallpapers
       // to make sure the first setWallpaper request hasn't finished yet when
       // the second request sends out.
-      testSetWallpaperFromURL('test_image_high_resolution.jpg',
-                              false,
-                              'Set wallpaper was canceled.');
-      testSetWallpaperFromURL('test.jpg', true);
+
+      chrome.wallpaper.setWallpaper(
+          {'url': baseURL + 'test_image_high_resolution.jpg',
+           'layout': 'CENTER_CROPPED',
+           'filename': 'test'},
+           fail('Set wallpaper was canceled.'));
+
+      chrome.wallpaper.setWallpaper(
+          {'url': baseURL + 'test.jpg',
+           'layout': 'CENTER_CROPPED',
+           'filename': 'test'},
+           pass());
+
     },
     function getThumbnailAferSetWallpaper() {
-      testSetWallpaperThumbnail('test.jpg');
+      testSetWallpaperFromArrayBuffer('test.jpg', /*wantThumbnail=*/true);
     }
   ]);
 });
