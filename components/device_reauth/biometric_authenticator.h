@@ -10,27 +10,6 @@
 
 namespace device_reauth {
 
-// Different states for biometric availability for a given device. Either no
-// biometric hardware is available, hardware is available but the user has no
-// biometrics enrolled, or hardware is available and the user makes use of it.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class BiometricsAvailability {
-  kOtherError = 0,
-  kAvailable = 1,
-  kAvailableNoFallback = 2,
-  kNoHardware = 3,
-  kHwUnavailable = 4,
-  kNotEnrolled = 5,
-  kSecurityUpdateRequired = 6,
-  kAndroidVersionNotSupported = 7,
-
-  kMaxValue = kAndroidVersionNotSupported,
-};
-
 // The filling surface asking for biometric authentication.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -108,10 +87,8 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   BiometricAuthenticator(const BiometricAuthenticator&) = delete;
   BiometricAuthenticator& operator=(const BiometricAuthenticator&) = delete;
 
-  // Returns whether biometrics are available for a given device. Only if this
-  // returns kAvailable, callers can expect Authenticate() to succeed.
-  virtual BiometricsAvailability CanAuthenticate(
-      BiometricAuthRequester requester) = 0;
+  // Returns whether biometrics are available for a given device.
+  virtual bool CanAuthenticate(BiometricAuthRequester requester) = 0;
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.

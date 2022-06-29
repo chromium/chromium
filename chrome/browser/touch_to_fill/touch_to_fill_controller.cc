@@ -35,7 +35,6 @@ namespace {
 using ShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
 using autofill::mojom::SubmissionReadinessState;
-using device_reauth::BiometricsAvailability;
 using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
 

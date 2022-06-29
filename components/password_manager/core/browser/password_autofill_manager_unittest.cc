@@ -74,7 +74,6 @@ using autofill::SuggestionVectorMainTextsAre;
 using autofill::password_generation::PasswordGenerationType;
 using base::test::RunOnceCallback;
 using device_reauth::BiometricAuthRequester;
-using device_reauth::BiometricsAvailability;
 using favicon_base::FaviconImageCallback;
 using gfx::test::AreImagesEqual;
 using testing::_;
@@ -1572,7 +1571,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
     // The authenticator exists, but cannot be used for authentication.
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-        .WillOnce(Return(BiometricsAvailability::kNoHardware));
+        .WillOnce(Return(false));
 
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
@@ -1625,7 +1624,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     // The authenticator exists and is available.
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-        .WillOnce(Return(BiometricsAvailability::kAvailable));
+        .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
                 Authenticate(BiometricAuthRequester::kAutofillSuggestion, _))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
@@ -1681,7 +1680,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     // The authenticator exists and is available.
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-        .WillOnce(Return(BiometricsAvailability::kAvailable));
+        .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
                 Authenticate(BiometricAuthRequester::kAutofillSuggestion, _))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
@@ -1724,7 +1723,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   // The authenticator exists and is available.
   EXPECT_CALL(*authenticator_.get(),
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
 
@@ -1768,7 +1767,7 @@ TEST_F(PasswordAutofillManagerTest,
   // The authenticator exists and is available.
   EXPECT_CALL(*authenticator_.get(),
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
 
@@ -1813,7 +1812,7 @@ TEST_F(PasswordAutofillManagerTest,
   // The authenticator exists and is available.
   EXPECT_CALL(*authenticator_.get(),
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
 
