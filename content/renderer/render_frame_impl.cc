@@ -2290,10 +2290,6 @@ void RenderFrameImpl::DidCommitAndDrawCompositorFrame() {
 #endif
 }
 
-RenderView* RenderFrameImpl::GetRenderView() {
-  return render_view_;
-}
-
 RenderFrame* RenderFrameImpl::GetMainRenderFrame() {
   WebFrame* main_frame = GetWebView()->MainFrame();
   DCHECK(main_frame);

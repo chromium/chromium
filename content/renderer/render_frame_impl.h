@@ -340,7 +340,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // RenderFrame implementation:
-  RenderView* GetRenderView() override;
   RenderFrame* GetMainRenderFrame() override;
   RenderAccessibility* GetRenderAccessibility() override;
   std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter(

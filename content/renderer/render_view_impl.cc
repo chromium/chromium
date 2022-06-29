@@ -201,11 +201,6 @@ RenderViewImpl* RenderViewImpl::FromWebView(blink::WebView* webview) {
 }
 
 /*static*/
-RenderView* RenderView::FromWebView(blink::WebView* webview) {
-  return RenderViewImpl::FromWebView(webview);
-}
-
-/*static*/
 RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
   DCHECK(RenderThread::IsMainThread());
   RoutingIDViewMap* views = g_routing_id_view_map.Pointer();

@@ -247,7 +247,7 @@ void AwRenderFrameExt::DidCommitProvisionalLoad(
 }
 
 void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
-  if (element.IsNull() || !render_frame() || !render_frame()->GetRenderView())
+  if (element.IsNull() || !render_frame())
     return;
 
   auto data = mojom::HitTestData::New();
