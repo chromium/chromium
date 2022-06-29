@@ -19,7 +19,6 @@ preprocess_folder = "preprocessed"
 tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   defines = [ "enable_ink=$enable_ink" ]
   in_files = ts_files
@@ -44,7 +43,6 @@ html_to_wrapper("html_wrapper_files") {
 # which aren't passed to ts_library().
 print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
 preprocess_if_expr("preprocess_print_preview_html_css") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
   in_files = [

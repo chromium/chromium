@@ -50,7 +50,6 @@ preprocess_if_expr("preprocess_gen_v3") {
 }
 
 preprocess_if_expr("preprocess_v3") {
-  in_folder = "./"
   in_files = [
     "nearby_contact_manager.js",
     "nearby_metrics_logger.js",

@@ -139,7 +139,7 @@ preprocess_if_expr("preprocess_external_mojo") {
     "//ui/gfx/image/mojom:mojom_js",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
   ]
-  in_folder = "$root_gen_dir"
+  in_folder = root_gen_dir
 
   # It does not matter which preprocess folder these files are pasted into, as
   # they are not used for bundling; the purpose of this build rule is to

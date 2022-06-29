@@ -23,7 +23,6 @@ copy("copy_mojo") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "."
   in_files = [
     "media_history.ts",
     "media_data_table.ts",

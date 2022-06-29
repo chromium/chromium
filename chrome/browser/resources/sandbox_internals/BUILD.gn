@@ -16,7 +16,6 @@ if (is_win) {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
 }

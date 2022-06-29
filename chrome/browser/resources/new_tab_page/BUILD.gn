@@ -28,7 +28,6 @@ if (optimize_webui) {
 
 preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
   enable_removal_comments = enable_webui_inline_sourcemaps

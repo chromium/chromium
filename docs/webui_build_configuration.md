@@ -74,13 +74,18 @@ css_to_wrapper("css_wrapper_files") {
 This rule is used to preprocess files containing `<if expr="*">`. These
 expressions are most frequently used to enable code to only run on certain
 platforms.
+
+By default, reads input files from within the current directory and saves output
+in |target_gen_dir|.
 ```
 
 #### **Arguments**
 ```
 in_folder: specifies the input folder, where all input files are located.
+           Defaults to the folder where the BUILD.gn file resides.
 out_folder: specifies the folder that the preprocessed files should be placed
-            in. This must be a generated directory.
+            in. This must be a generated directory. Defaults to
+            |target_gen_dir|.
 in_files: specifies the list of input files to preprocess with respect to the
           |in_folder|.
 out_manifest: Specifies a file where the list of output files and their

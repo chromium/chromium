@@ -20,7 +20,6 @@ ts_files = [
 ]
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = preprocess_folder
   in_files = ts_files
 }

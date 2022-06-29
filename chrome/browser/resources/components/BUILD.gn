@@ -6,8 +6,6 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = target_gen_dir
   in_files = [ "components.ts" ]
 }
 

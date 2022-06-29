@@ -19,7 +19,6 @@ group("components") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [ "inline_login_browser_proxy.js" ]
 }

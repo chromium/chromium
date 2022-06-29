@@ -65,7 +65,6 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
@@ -76,7 +75,7 @@ preprocess_if_expr("preprocess_src") {
 
 preprocess_if_expr("preprocess_gen") {
   deps = [ ":web_components" ]
-  in_folder = "$target_gen_dir"
+  in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
@@ -106,7 +105,7 @@ preprocess_if_expr("preprocess_mojo") {
     "//chrome/browser/ui/webui/nearby_share:mojom_js",
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js__generator",
   ]
-  in_folder = "$root_gen_dir"
+  in_folder = root_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [

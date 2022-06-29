@@ -45,7 +45,6 @@ html_to_wrapper("html_wrapper_files") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   in_files = ts_files
   out_folder = "$target_gen_dir/$preprocess_folder"
 }

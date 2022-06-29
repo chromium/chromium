@@ -23,7 +23,6 @@ preprocess_if_expr("preprocess_gen") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "."
   out_folder = preprocess_folder
   in_files = [ "user_education_internals.ts" ]
 }
