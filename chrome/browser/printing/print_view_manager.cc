@@ -123,7 +123,7 @@ bool PrintViewManager::PrintForSystemDialogNow(
 #endif
 
   SetPrintingRFH(print_preview_rfh_);
-  GetPrintRenderFrame(print_preview_rfh_)->PrintForSystemDialog();
+  PrintForSystemDialogImpl();
   return true;
 }
 
@@ -501,6 +501,10 @@ void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {
     scripted_print_preview_rph_->SetBlocked(false);
     scripted_print_preview_rph_set_blocked_ = false;
   }
+}
+
+void PrintViewManager::PrintForSystemDialogImpl() {
+  GetPrintRenderFrame(print_preview_rfh_)->PrintForSystemDialog();
 }
 
 void PrintViewManager::PrintPreviewRejectedForTesting() {
