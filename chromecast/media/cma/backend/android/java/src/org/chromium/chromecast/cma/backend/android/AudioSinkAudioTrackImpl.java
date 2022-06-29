@@ -125,9 +125,6 @@ class AudioSinkAudioTrackImpl {
     // Additional padding for minimum buffer time, determined experimentally.
     private static final long MIN_BUFFERED_TIME_PADDING_US = 120000;
 
-    // Max retries for AudioTrackBuilder
-    private static final int MAX_RETRIES_FOR_AUDIO_TRACKS = 1;
-
     private final long mNativeAudioSinkAudioTrackImpl;
 
     private String mTag;
@@ -331,35 +328,31 @@ class AudioSinkAudioTrackImpl {
                         + "ms) usageType=" + usageType + " contentType=" + contentType
                         + " with session-id=" + sessionId);
 
-        // Retry if AudioTrack creation fails.
-        int retries = 0;
-        do {
-            AudioAttributes.Builder attributesBuilder = new AudioAttributes.Builder();
-            attributesBuilder.setContentType(contentType).setUsage(usageType);
-            if (mUseHwAvSync) {
-                attributesBuilder.setFlags(AudioAttributes.FLAG_HW_AV_SYNC);
-            }
-            AudioTrack.Builder builder = new AudioTrack.Builder();
-            builder.setBufferSizeInBytes(bufferSizeInBytes)
-                    .setTransferMode(AUDIO_MODE)
-                    .setAudioAttributes(attributesBuilder.build())
-                    .setAudioFormat(new AudioFormat.Builder()
-                                            .setEncoding(audioEncodingFormat)
-                                            .setSampleRate(mSampleRateInHz)
-                                            .setChannelMask(channelConfig)
-                                            .build());
-            if (isValidSessionId(sessionId)) builder.setSessionId(sessionId);
-            mAudioTrack = builder.build();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isValidSessionId(sessionId)) {
-                // The playback will not be started until Android AudioTrack has more data than
-                // the start threshold. Reduce the start threshold to 50ms in order to start
-                // playback as soon as possible after starting or resuming. Sometimes other
-                // native applications like Youtube will not push audio data until we play all
-                // pushed data before pausing. See b/237011415.
-                int startThresholdInFrames = START_THRESHOLD_MS * mSampleRateInHz / 1000;
-                mAudioTrack.setStartThresholdInFrames(startThresholdInFrames);
-            }
-        } while (mAudioTrack == null && retries++ < MAX_RETRIES_FOR_AUDIO_TRACKS);
+        AudioAttributes.Builder attributesBuilder = new AudioAttributes.Builder();
+        attributesBuilder.setContentType(contentType).setUsage(usageType);
+        if (mUseHwAvSync) {
+            attributesBuilder.setFlags(AudioAttributes.FLAG_HW_AV_SYNC);
+        }
+        AudioTrack.Builder builder = new AudioTrack.Builder();
+        builder.setBufferSizeInBytes(bufferSizeInBytes)
+                .setTransferMode(AUDIO_MODE)
+                .setAudioAttributes(attributesBuilder.build())
+                .setAudioFormat(new AudioFormat.Builder()
+                                        .setEncoding(audioEncodingFormat)
+                                        .setSampleRate(mSampleRateInHz)
+                                        .setChannelMask(channelConfig)
+                                        .build());
+        if (isValidSessionId(sessionId)) builder.setSessionId(sessionId);
+        mAudioTrack = builder.build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isValidSessionId(sessionId)) {
+            // The playback will not be started until Android AudioTrack has more data than
+            // the start threshold. Reduce the start threshold to 50ms in order to start
+            // playback as soon as possible after starting or resuming. Sometimes other
+            // native applications like Youtube will not push audio data until we play all
+            // pushed data before pausing. See b/237011415.
+            int startThresholdInFrames = START_THRESHOLD_MS * mSampleRateInHz / 1000;
+            mAudioTrack.setStartThresholdInFrames(startThresholdInFrames);
+        }
 
         // Allocated shared buffers.
         mPcmBuffer = ByteBuffer.allocateDirect(bytesPerBuffer);
