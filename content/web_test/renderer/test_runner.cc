@@ -181,23 +181,6 @@ class SynchronousResizeModeVisitor : public RenderViewVisitor {
   }
 };
 
-class SetAcceptLanguagesVisitor : public RenderViewVisitor {
- public:
-  explicit SetAcceptLanguagesVisitor(const std::string& accept_languages)
-      : accept_languages_(accept_languages) {}
-
-  bool Visit(RenderView* render_view) override {
-    blink::WebView* view = render_view->GetWebView();
-    blink::RendererPreferences prefs = view->GetRendererPreferences();
-    prefs.accept_languages = accept_languages_;
-    view->SetRendererPreferences(prefs);
-    return true;
-  }
-
- private:
-  const std::string& accept_languages_;
-};
-
 }  // namespace
 
 class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
@@ -3011,23 +2994,8 @@ void TestRunner::DisableMockScreenOrientation(blink::WebView* view) {
   fake_screen_orientation_impl_.SetDisabled(view, true);
 }
 
-std::string TestRunner::GetAcceptLanguages() const {
-  return web_test_runtime_flags_.accept_languages();
-}
-
 void TestRunner::SetAcceptLanguages(const std::string& accept_languages) {
-  if (accept_languages == GetAcceptLanguages())
-    return;
-
-  // TODO(danakj): IPC to WebTestControlHost, and have it change the
-  // WebContentsImpl::GetMutableRendererPrefs(). Then have the browser sync that
-  // to the window's RenderViews, instead of using WebTestRuntimeFlags for this.
-  web_test_runtime_flags_.set_accept_languages(accept_languages);
-  OnWebTestRuntimeFlagsChanged();
-
-  // Sets the accept language on the view of each open window.
-  SetAcceptLanguagesVisitor visitor(accept_languages);
-  RenderView::ForEach(&visitor);
+  GetWebTestControlHostRemote()->SetAcceptLanguages(accept_languages);
 }
 
 void TestRunner::DumpEditingCallbacks() {

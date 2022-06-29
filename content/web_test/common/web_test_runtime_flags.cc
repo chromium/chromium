@@ -30,8 +30,6 @@ void WebTestRuntimeFlags::Reset() {
   set_dump_selection_rect(false);
   set_dump_drag_image(false);
 
-  set_accept_languages("");
-
   set_dump_web_content_settings_client_callbacks(false);
   set_images_allowed(true);
   set_scripts_allowed(true);

@@ -157,7 +157,6 @@ class TestRunner {
   void FocusWindow(RenderFrame* main_frame, bool focus);
 
   // Methods used by WebViewTestClient and WebFrameTestClient.
-  std::string GetAcceptLanguages() const;
   bool ShouldStayOnPageAfterHandlingBeforeUnload() const;
   bool ShouldDumpAsCustomText() const;
   std::string CustomDumpText() const;

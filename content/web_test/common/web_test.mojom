@@ -322,4 +322,7 @@ interface WebTestControlHost {
   // Notifies the browser that the work queue states changed.
   WorkQueueStatesChanged(
       mojo_base.mojom.DictionaryValue changed_work_queue_states);
+
+  // Set Accept Languages via RendererPreferences on the WebContents.
+  SetAcceptLanguages(string accept_languages);
 };

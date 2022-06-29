@@ -568,6 +568,9 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     WebContentsObserver::Observe(main_window_->web_contents());
 
     default_prefs_ = main_window_->web_contents()->GetOrCreateWebPreferences();
+    default_accept_languages_ = main_window_->web_contents()
+                                    ->GetMutableRendererPrefs()
+                                    ->accept_languages;
   } else {
     // Set a different size first to reset the possibly inconsistent state
     // caused by the previous test using unfortunate synchronous resize mode.
@@ -579,6 +582,8 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     main_window_->ResizeWebContentForTests(
         gfx::ScaleToCeiledSize(window_size, 0.5f, 1));
     main_window_->ResizeWebContentForTests(window_size);
+
+    SetAcceptLanguages(default_accept_languages_);
 
     main_window_->web_contents()->SetWebPreferences(default_prefs_);
 
@@ -1748,6 +1753,18 @@ void WebTestControlHost::RequestWorkItem() {
 void WebTestControlHost::WorkQueueStatesChanged(
     base::Value::Dict changed_work_queue_states) {
   work_queue_states_.Merge(std::move(changed_work_queue_states));
+}
+
+void WebTestControlHost::SetAcceptLanguages(
+    const std::string& accept_languages) {
+  if (web_contents()->GetMutableRendererPrefs()->accept_languages ==
+      accept_languages) {
+    return;
+  }
+
+  web_contents()->GetMutableRendererPrefs()->accept_languages =
+      accept_languages;
+  web_contents()->SyncRendererPrefs();
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

@@ -256,6 +256,7 @@ class WebTestControlHost : public WebContentsObserver,
   void RequestWorkItem() override;
   void WorkQueueStatesChanged(
       base::Value::Dict changed_work_queue_states) override;
+  void SetAcceptLanguages(const std::string& accept_languages) override;
 
   void DiscardMainWindow();
   // Closes all windows opened by the test. This is every window but the main
@@ -345,6 +346,7 @@ class WebTestControlHost : public WebContentsObserver,
   // Stores the default test-adapted WebPreferences which is then used to fully
   // reset the main window's preferences if and when it is reused.
   blink::web_pref::WebPreferences default_prefs_;
+  std::string default_accept_languages_;
 
   // True if the WebPreferences of newly created RenderViewHost should be
   // overridden with prefs_.

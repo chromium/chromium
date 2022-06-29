@@ -100,9 +100,6 @@ class WebTestRuntimeFlags {
   // If true, the test runner will dump the drag image as pixel results.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_drag_image)
 
-  // Contents of Accept-Language HTTP header requested by the test.
-  DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(accept_languages)
-
   // Flags influencing behavior of WebTestContentSettingsClient.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(images_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(scripts_allowed)
