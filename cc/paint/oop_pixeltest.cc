@@ -331,10 +331,15 @@ class OopPixelTest : public testing::Test,
                     GLenum type,
                     const void* data) {
     GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+    gl->BeginSharedImageAccessDirectCHROMIUM(
+        texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
     gl->BindTexture(GL_TEXTURE_2D, texture);
     gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size.width(), size.height(),
                       format, type, data);
+
     gl->BindTexture(GL_TEXTURE_2D, 0);
+    gl->EndSharedImageAccessDirectCHROMIUM(texture);
+
     gl->DeleteTextures(1, &texture);
   }
 
