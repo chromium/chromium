@@ -65,6 +65,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tear down called once per test.
@@ -384,8 +385,7 @@ id<GREYMatcher> AddBookmarkButton() {
                                                      newFolderEnabled:YES];
 }
 
-// TODO(crbug.com/1335808): Failing on full-configs builder.
-- (void)DISABLED_testContextMenuForMultipleURLSelection {
+- (void)testContextMenuForMultipleURLSelection {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -474,8 +474,7 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All in Incognito functionality on multiple url selection.
-// TODO(crbug.com/1335808): Failing on full-configs builder.
-- (void)DISABLED_testContextMenuForMultipleURLOpenAllInIncognito {
+- (void)testContextMenuForMultipleURLOpenAllInIncognito {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
