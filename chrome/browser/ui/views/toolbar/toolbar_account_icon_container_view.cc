@@ -8,6 +8,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -88,7 +89,7 @@ SkColor ToolbarAccountIconContainerView::GetIconLabelBubbleInkDropColor()
 
 SkColor ToolbarAccountIconContainerView::GetIconLabelBubbleBackgroundColor()
     const {
-  return GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  return GetColorProvider()->GetColor(kColorToolbar);
 }
 
 float ToolbarAccountIconContainerView::GetPageActionInkDropVisibleOpacity()
