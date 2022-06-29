@@ -266,6 +266,7 @@ const OncFieldSignature wifi_with_state_fields[] = {
     {::onc::wifi::kFrequency, &kIntegerSignature},
     {::onc::wifi::kFrequencyList, &kIntegerListSignature},
     {::onc::wifi::kSignalStrength, &kIntegerSignature},
+    {::onc::wifi::kSignalStrengthRssi, &kIntegerSignature},
     {nullptr}};
 
 const OncFieldSignature cellular_payment_portal_fields[] = {

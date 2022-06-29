@@ -172,6 +172,7 @@ const FieldTranslationEntry wifi_fields[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::wifi::kSecurity, shill::kSecurityClassProperty },
     {::onc::wifi::kSignalStrength, shill::kSignalStrengthProperty},
+    {::onc::wifi::kSignalStrengthRssi, shill::kWifiSignalStrengthRssiProperty},
     {nullptr}};
 
 const FieldTranslationEntry cellular_apn_fields[] = {
