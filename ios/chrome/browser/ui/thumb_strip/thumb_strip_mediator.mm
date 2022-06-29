@@ -108,7 +108,7 @@
 
 #pragma mark - Privates
 
-// Remove |self.webViewScrollViewObserver| from the given |webState|. |webState|
+// Remove `self.webViewScrollViewObserver` from the given `webState`. `webState`
 // can be nullptr.
 - (void)removeObserverFromWebState:(web::WebState*)webState {
   if (webState && self.webViewScrollViewObserver) {
@@ -117,7 +117,7 @@
   }
 }
 
-// Add |self.webViewScrollViewObserver| to the given |webState|. |webState| can
+// Add `self.webViewScrollViewObserver` to the given `webState`. `webState` can
 // be nullptr.
 - (void)addObserverToWebState:(web::WebState*)webState {
   if (webState && self.webViewScrollViewObserver) {
