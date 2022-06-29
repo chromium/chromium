@@ -143,7 +143,7 @@ class PepperFileChooserHostTest : public RenderViewTest {
 TEST_F(PepperFileChooserHostTest, Show) {
   PP_Resource pp_resource = 123;
 
-  MockRendererPpapiHost host(view_, GetMainRenderFrame(), pp_instance());
+  MockRendererPpapiHost host(GetMainRenderFrame(), pp_instance());
   PepperFileChooserHost chooser(&host, pp_instance(), pp_resource);
 
   // Say there's a user gesture.
@@ -200,7 +200,7 @@ TEST_F(PepperFileChooserHostTest, Show) {
 TEST_F(PepperFileChooserHostTest, NoUserGesture) {
   PP_Resource pp_resource = 123;
 
-  MockRendererPpapiHost host(view_, GetMainRenderFrame(), pp_instance());
+  MockRendererPpapiHost host(GetMainRenderFrame(), pp_instance());
   PepperFileChooserHost chooser(&host, pp_instance(), pp_resource);
 
   // Say there's no user gesture.

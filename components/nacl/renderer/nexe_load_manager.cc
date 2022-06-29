@@ -67,7 +67,7 @@ static int GetRoutingID(PP_Instance instance) {
       content::RendererPpapiHost::GetForPPInstance(instance);
   if (!host)
     return 0;
-  return host->GetRoutingIDForWidget(instance);
+  return host->GetRoutingIDForFrame(instance);
 }
 
 std::string LookupAttribute(const std::map<std::string, std::string>& args,

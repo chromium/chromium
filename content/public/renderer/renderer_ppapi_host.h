@@ -39,7 +39,6 @@ class WebPluginContainer;
 namespace content {
 class PepperPluginInstance;
 class RenderFrame;
-class RenderView;
 
 // Interface that allows components in the embedder app to talk to the
 // PpapiHost in the renderer process.
@@ -73,10 +72,6 @@ class RendererPpapiHost {
   // instance is invalid.
   virtual RenderFrame* GetRenderFrameForInstance(PP_Instance instance) = 0;
 
-  // Returns the RenderView for the given plugin instance, or NULL if the
-  // instance is invalid.
-  virtual RenderView* GetRenderViewForInstance(PP_Instance instance) = 0;
-
   // Returns the WebPluginContainer for the given plugin instance, or NULL if
   // the instance is invalid.
   virtual blink::WebPluginContainer* GetContainerForInstance(
@@ -89,11 +84,9 @@ class RendererPpapiHost {
   // if there is no current user gesture.
   virtual bool HasUserGesture(PP_Instance instance) = 0;
 
-  // Returns the routing ID for the render widget containing the given
-  // instance. This will take into account the current Flash fullscreen state,
-  // so if there is a Flash fullscreen instance active, this will return the
-  // routing ID of the fullscreen widget. Returns 0 on failure.
-  virtual int GetRoutingIDForWidget(PP_Instance instance) = 0;
+  // Returns the routing ID for the render frame containing the given
+  // instance. Returns 0 on failure.
+  virtual int GetRoutingIDForFrame(PP_Instance instance) = 0;
 
   // Converts the given plugin coordinate to the containing RenderFrame. This
   // will take into account the current Flash fullscreen state so will use

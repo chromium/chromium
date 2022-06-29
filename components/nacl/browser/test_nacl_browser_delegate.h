@@ -26,7 +26,7 @@ class TestNaClBrowserDelegate : public NaClBrowserDelegate {
 
   ~TestNaClBrowserDelegate() override;
   void ShowMissingArchInfobar(int render_process_id,
-                              int render_view_id) override;
+                              int render_frame_id) override;
   bool DialogsAreSuppressed() override;
   bool GetCacheDirectory(base::FilePath* cache_dir) override;
   bool GetPluginDirectory(base::FilePath* plugin_dir) override;

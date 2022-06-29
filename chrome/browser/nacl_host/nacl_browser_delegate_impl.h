@@ -29,7 +29,7 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   ~NaClBrowserDelegateImpl() override;
 
   void ShowMissingArchInfobar(int render_process_id,
-                              int render_view_id) override;
+                              int render_frame_id) override;
   bool DialogsAreSuppressed() override;
   bool GetCacheDirectory(base::FilePath* cache_dir) override;
   bool GetPluginDirectory(base::FilePath* plugin_dir) override;
@@ -44,10 +44,10 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
 
  private:
-  // Creates a NaCl infobar and delegate for the given render process and view
+  // Creates a NaCl infobar and delegate for the given render process and frame
   // IDs.  Should be called on the UI thread.
   static void CreateInfoBarOnUiThread(int render_process_id,
-                                      int render_view_id);
+                                      int render_frame_id);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<URLPattern> debug_patterns_;

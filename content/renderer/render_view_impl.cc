@@ -135,7 +135,7 @@ void RenderViewImpl::Initialize(
       params->session_storage_namespace_id, params->base_background_color);
 
   g_view_map.Get().insert(std::make_pair(GetWebView(), this));
-  g_routing_id_view_map.Get().insert(std::make_pair(GetRoutingID(), this));
+  g_routing_id_view_map.Get().insert(std::make_pair(routing_id_, this));
 
   bool local_main_frame = params->main_frame->is_local_params();
 
@@ -155,7 +155,7 @@ void RenderViewImpl::Initialize(
     RenderFrameProxy::CreateFrameProxy(
         agent_scheduling_group_, params->main_frame->get_remote_params()->token,
         params->main_frame->get_remote_params()->routing_id,
-        params->opener_frame_token, GetRoutingID(), absl::nullopt,
+        params->opener_frame_token, routing_id_, absl::nullopt,
         blink::mojom::TreeScopeType::kDocument /* ignored for main frames */,
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(
@@ -385,7 +385,7 @@ WebView* RenderViewImpl::CreateView(
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
 
   view_params->opener_frame_token = creator->GetFrameToken();
-  DCHECK_EQ(GetRoutingID(), creator_frame->render_view()->GetRoutingID());
+  DCHECK_EQ(routing_id_, creator_frame->render_view()->routing_id_);
 
   view_params->window_was_opened_by_another_window = true;
   view_params->renderer_preferences = webview_->GetRendererPreferences();
@@ -437,10 +437,6 @@ WebView* RenderViewImpl::CreateView(
 }
 
 // RenderView implementation ---------------------------------------------------
-
-int RenderViewImpl::GetRoutingID() {
-  return routing_id_;
-}
 
 blink::WebView* RenderViewImpl::GetWebView() {
   return webview_;

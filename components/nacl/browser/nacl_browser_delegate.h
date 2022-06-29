@@ -32,7 +32,7 @@ class NaClBrowserDelegate {
   // Show an infobar to the user to indicate the client architecture was not
   // covered by the manifest.
   virtual void ShowMissingArchInfobar(int render_process_id,
-                                      int render_view_id) = 0;
+                                      int render_frame_id) = 0;
   // Returns whether dialogs are allowed. This is used to decide if to add the
   // command line switch kNoErrorDialogs.
   virtual bool DialogsAreSuppressed() = 0;

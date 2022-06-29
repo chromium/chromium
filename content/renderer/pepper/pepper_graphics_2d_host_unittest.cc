@@ -28,7 +28,7 @@ class PepperGraphics2DHostTest : public testing::Test {
     return PepperGraphics2DHost::ConvertToLogicalPixels(scale, op_rect, delta);
   }
 
-  PepperGraphics2DHostTest() : renderer_ppapi_host_(nullptr, nullptr, 12345) {}
+  PepperGraphics2DHostTest() : renderer_ppapi_host_(nullptr, 12345) {}
 
   ~PepperGraphics2DHostTest() override {
     ppapi::ProxyAutoLock proxy_lock;

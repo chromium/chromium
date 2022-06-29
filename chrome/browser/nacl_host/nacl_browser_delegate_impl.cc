@@ -50,10 +50,10 @@ NaClBrowserDelegateImpl::~NaClBrowserDelegateImpl() {
 }
 
 void NaClBrowserDelegateImpl::ShowMissingArchInfobar(int render_process_id,
-                                                     int render_view_id) {
+                                                     int render_frame_id) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CreateInfoBarOnUiThread, render_process_id,
-                                render_view_id));
+                                render_frame_id));
 }
 
 bool NaClBrowserDelegateImpl::DialogsAreSuppressed() {
@@ -171,13 +171,13 @@ NaClBrowserDelegateImpl::GetMapUrlToLocalFilePathCallback(
 
 // static
 void NaClBrowserDelegateImpl::CreateInfoBarOnUiThread(int render_process_id,
-                                                      int render_view_id) {
-  content::RenderViewHost* rvh =
-      content::RenderViewHost::FromID(render_process_id, render_view_id);
-  if (!rvh)
+                                                      int render_frame_id) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!rfh)
     return;
   content::WebContents* web_contents =
-      content::WebContents::FromRenderViewHost(rvh);
+      content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
   infobars::ContentInfoBarManager* infobar_manager =

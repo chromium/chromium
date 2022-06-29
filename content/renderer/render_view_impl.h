@@ -119,7 +119,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // RenderView implementation -------------------------------------------------
 
-  int GetRoutingID() override;
   blink::WebView* GetWebView() override;
 
   // Please do not add your stuff randomly to the end here. If there is an

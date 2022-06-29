@@ -43,9 +43,6 @@ class CONTENT_EXPORT RenderView {
   // been closed but not yet destroyed are excluded).
   static void ForEach(RenderViewVisitor* visitor);
 
-  // Get the routing ID of the view.
-  virtual int GetRoutingID() = 0;
-
   // Returns the associated WebView. May return NULL when the view is closing.
   virtual blink::WebView* GetWebView() = 0;
 
