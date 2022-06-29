@@ -49,36 +49,36 @@ using ::variations::prefs::kVariationsCrashStreak;
 bool g_skip_clean_shutdown_steps = false;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-// Records the the combined state of two distinct beacons' values in the given
+// Records the the combined state of two distinct beacons' values in a
 // histogram.
-void RecordBeaconConsistency(const std::string& histogram_name,
-                             absl::optional<bool> beacon_value1,
-                             absl::optional<bool> beacon_value2) {
+void RecordBeaconConsistency(
+    absl::optional<bool> beacon_file_beacon_value,
+    absl::optional<bool> platform_specific_beacon_value) {
   CleanExitBeaconConsistency consistency =
       CleanExitBeaconConsistency::kDirtyDirty;
 
-  if (!beacon_value1) {
-    if (!beacon_value2) {
+  if (!beacon_file_beacon_value) {
+    if (!platform_specific_beacon_value) {
       consistency = CleanExitBeaconConsistency::kMissingMissing;
     } else {
-      consistency = beacon_value2.value()
+      consistency = platform_specific_beacon_value.value()
                         ? CleanExitBeaconConsistency::kMissingClean
                         : CleanExitBeaconConsistency::kMissingDirty;
     }
-  } else if (!beacon_value2) {
-    consistency = beacon_value1.value()
+  } else if (!platform_specific_beacon_value) {
+    consistency = beacon_file_beacon_value.value()
                       ? CleanExitBeaconConsistency::kCleanMissing
                       : CleanExitBeaconConsistency::kDirtyMissing;
-  } else if (beacon_value1.value()) {
-    consistency = beacon_value2.value()
+  } else if (beacon_file_beacon_value.value()) {
+    consistency = platform_specific_beacon_value.value()
                       ? CleanExitBeaconConsistency::kCleanClean
                       : CleanExitBeaconConsistency::kCleanDirty;
   } else {
-    consistency = beacon_value2.value()
+    consistency = platform_specific_beacon_value.value()
                       ? CleanExitBeaconConsistency::kDirtyClean
                       : CleanExitBeaconConsistency::kDirtyDirty;
   }
-  base::UmaHistogramEnumeration(histogram_name, consistency);
+  base::UmaHistogramEnumeration("UMA.CleanExitBeaconConsistency3", consistency);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
@@ -262,8 +262,7 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
               ->GetBool());
     }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-    RecordBeaconConsistency("UMA.CleanExitBeaconConsistency3",
-                            beacon_file_beacon_value, backup_beacon_value);
+    RecordBeaconConsistency(beacon_file_beacon_value, backup_beacon_value);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   }
 
