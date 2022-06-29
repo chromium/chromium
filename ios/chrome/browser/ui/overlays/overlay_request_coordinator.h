@@ -23,7 +23,7 @@ class OverlayRequest;
 // instead of presentating over the container context.  Default value is NO.
 @property(class, nonatomic, readonly) BOOL showsOverlayUsingChildViewController;
 
-// Initializer for a coordinator for |request|.
+// Initializer for a coordinator for `request`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                    request:(OverlayRequest*)request
@@ -36,17 +36,17 @@ class OverlayRequest;
 
 // The OverlayRequestCoordinatorDelegate passed on initialization.  Used to
 // communicate when the overlay UI is finished being presented and dismissed.
-// Overlay UI presentation and dismissal may occur after |-start| and |-stop|,
+// Overlay UI presentation and dismissal may occur after `-start` and `-stop`,
 // even if the overlay is stopped without animation.
 @property(nonatomic, assign) OverlayRequestCoordinatorDelegate* delegate;
 
 // The request used to configure the overlay UI.
 @property(nonatomic, readonly) OverlayRequest* request;
 
-// The view controller that displays the UI for |request|.
+// The view controller that displays the UI for `request`.
 @property(nonatomic, readonly) UIViewController* viewController;
 
-// OverlayRequestCoordinator's |-start| and |-stop| need to support versions
+// OverlayRequestCoordinator's `-start` and `-stop` need to support versions
 // both with and without animation, as hidden overlays should be shown without
 // animation for subsequent presentations.
 - (void)startAnimated:(BOOL)animated;

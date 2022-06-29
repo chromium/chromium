@@ -59,14 +59,14 @@ TEST_F(OverlayContainerViewControllerTest, MoveToWindow) {
 // Verifies that the container view ignores touches that fall outside of any
 // subviews.
 TEST_F(OverlayContainerViewControllerTest, TouchHandling) {
-  // The container view will be laid out with |frame|.  A subview will be added
-  // to the view and laid out |subview_inset| from the edges of the view.
+  // The container view will be laid out with `frame`.  A subview will be added
+  // to the view and laid out `subview_inset` from the edges of the view.
   CGRect frame = CGRectMake(0.0, 0.0, 100.0, 100.0);
   CGFloat subview_inset = 25.0;
   CGRect subview_frame = CGRectInset(frame, subview_inset, subview_inset);
 
-  // |center| is the center of the container view, which will land in the center
-  // of the added subview.  |corner| is a point halfway between the container
+  // `center` is the center of the container view, which will land in the center
+  // of the added subview.  `corner` is a point halfway between the container
   // view's origin and the subview's origin.
   CGPoint center = CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
   CGPoint corner = CGPointMake(subview_inset / 2.0, subview_inset / 2.0);
@@ -81,8 +81,8 @@ TEST_F(OverlayContainerViewControllerTest, TouchHandling) {
   EXPECT_FALSE([view hitTest:corner withEvent:nil]);
   EXPECT_FALSE([view pointInside:corner withEvent:nil]);
 
-  // Verify that touches are handled and forwarded to |subview| when falling
-  // inside |subview|'s bounds.
+  // Verify that touches are handled and forwarded to `subview` when falling
+  // inside `subview`'s bounds.
   EXPECT_EQ([view hitTest:center withEvent:nil], subview);
   EXPECT_TRUE([view pointInside:center withEvent:nil]);
 

@@ -14,11 +14,11 @@ class OverlayRequestCoordinatorDelegate {
   OverlayRequestCoordinatorDelegate() = default;
   virtual ~OverlayRequestCoordinatorDelegate() = default;
 
-  // Called to notify the delegate that the UI for |request| has finished being
+  // Called to notify the delegate that the UI for `request` has finished being
   // presented.
   virtual void OverlayUIDidFinishPresentation(OverlayRequest* request) = 0;
 
-  // Called to notify the delegate that the UI for |request| is finished
+  // Called to notify the delegate that the UI for `request` is finished
   // being dismissed.
   virtual void OverlayUIDidFinishDismissal(OverlayRequest* request) = 0;
 };

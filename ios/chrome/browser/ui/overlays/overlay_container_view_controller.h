@@ -17,7 +17,7 @@
 // Delegate protocol for the container view.
 @protocol OverlayContainerViewControllerDelegate <NSObject>
 
-// Called when |containerViewController|'s view moves to a new window. Overlay
+// Called when `containerViewController`'s view moves to a new window. Overlay
 // presentation should not be attempted until the container is added to
 // a window.
 - (void)containerViewController:

@@ -17,16 +17,16 @@ class OverlayPresentationContextImpl;
 // UIViewController presentation context.  This is necessary due to UIKit's
 // custom UIViewController presentation implementation.  The only way to
 // present non-modally with UIModalPresentationStyleCustom is by using a custom
-// UIPresentationController whose |shouldPresentInFullscreen| property is NO.
+// UIPresentationController whose `shouldPresentInFullscreen` property is NO.
 // When such a presentation controller is provided, UIKit traverses the view
 // hierarchy to find the nearest presented UIViewController.  By presenting a
 // UIViewController over a child UIViewController whose
-// |definesPresentationContext| property is YES, this coordinator inserts a
+// `definesPresentationContext` property is YES, this coordinator inserts a
 // UIKit presentation context upon which custom presentation can occur.
 @interface OverlayPresentationContextCoordinator : ChromeCoordinator
 
-// Initializer for an overlay container that presents overlay for |browser| at
-// |modality|.
+// Initializer for an overlay container that presents overlay for `browser` at
+// `modality`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                        presentationContext:

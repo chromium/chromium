@@ -29,7 +29,7 @@
 
 using OverlayPresentationUtilTest = PlatformTest;
 
-// Tests that the frame returned by |ContainedModalFrameThatFit| fits in the
+// Tests that the frame returned by `ContainedModalFrameThatFit` fits in the
 // given view.
 TEST_F(OverlayPresentationUtilTest, TestContainedModalFrameThatFit) {
   TestModalPositioner* positioner = [[TestModalPositioner alloc] init];

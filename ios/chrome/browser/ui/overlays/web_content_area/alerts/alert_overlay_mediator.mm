@@ -102,7 +102,7 @@ using alert_overlays::AlertResponse;
 
 #pragma mark - Private
 
-// Sets a completion OverlayResponse after the button at |tappedButtonIndex|
+// Sets a completion OverlayResponse after the button at `tappedButtonIndex`
 // was tapped.
 - (void)setCompletionResponse:(size_t)tappedButtonIndex {
   AlertRequest* alertRequest = self.alertRequest;
@@ -120,7 +120,7 @@ using alert_overlays::AlertResponse;
   DCHECK(!convertedResponse || !convertedResponse->GetInfo<AlertResponse>());
 }
 
-// Returns the action block for the button at |index|.
+// Returns the action block for the button at `index`.
 - (void (^)(AlertAction* action))actionForButtonAtIndex:(size_t)index {
   __weak __typeof__(self) weakSelf = self;
   base::StringPiece actionName =

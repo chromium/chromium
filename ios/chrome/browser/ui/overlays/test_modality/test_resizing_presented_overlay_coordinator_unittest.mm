@@ -68,7 +68,7 @@ TEST_F(TestResizingPresentedOverlayCoordinatorTest, ViewSetup) {
            !view_controller.beingPresented;
   }));
 
-  // Verify that |coordinator_|'s presentation container view is resized to
+  // Verify that `coordinator_`'s presentation container view is resized to
   // kWindowFrame.
   UIView* container_view = view_controller.presentationController.containerView;
   CGRect container_view_frame =

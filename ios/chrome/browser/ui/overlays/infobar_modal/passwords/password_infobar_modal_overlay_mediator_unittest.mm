@@ -104,7 +104,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumer) {
             consumer.currentCredentialsSaved);
 }
 
-// Tests that |-updateCredentialsWithUsername:password:| dispatches an
+// Tests that `-updateCredentialsWithUsername:password:` dispatches an
 // UpdateCredentials response before accepting the infobar and dismissing the
 // overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, UpdateCredentials) {
@@ -136,7 +136,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, UpdateCredentials) {
   EXPECT_NSEQ(kPassword, password);
 }
 
-// Tests that |-neverSaveCredentialsForCurrentSite| dispatches a
+// Tests that `-neverSaveCredentialsForCurrentSite` dispatches a
 // NeverSaveCredentials response then stops the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, NeverSaveCredentials) {
   EXPECT_CALL(callback_receiver_,
@@ -146,7 +146,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, NeverSaveCredentials) {
   [mediator_ neverSaveCredentialsForCurrentSite];
 }
 
-// Tests that |-presentPasswordSettings| dispatches a PresentPasswordSettings
+// Tests that `-presentPasswordSettings` dispatches a PresentPasswordSettings
 // response then stops the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, PresentPasswordSettings) {
   EXPECT_CALL(callback_receiver_,

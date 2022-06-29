@@ -129,7 +129,7 @@ TEST_F(PermissionsInfobarModalOverlayMediatorTest, PermissionStatesUpdate) {
   }
 }
 
-// Tests that calling |updateStateForPermission:| updates both the consumer and
+// Tests that calling `updateStateForPermission:` updates both the consumer and
 // web state permissions.
 TEST_F(PermissionsInfobarModalOverlayMediatorTest,
        UpdatePermissionStatesThroughInfobarModal) {

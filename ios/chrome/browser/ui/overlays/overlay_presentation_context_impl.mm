@@ -125,7 +125,7 @@ void OverlayPresentationContextImpl::SetPresentationContextViewController(
   if (presentation_context_view_controller_ == view_controller)
     return;
   presentation_context_view_controller_ = view_controller;
-  // |view_controller| should not be provided to the context until it is fully
+  // `view_controller` should not be provided to the context until it is fully
   // presented in a window.
   DCHECK(!view_controller ||
          (view_controller.presentationController.containerView.window &&
@@ -190,7 +190,7 @@ void OverlayPresentationContextImpl::PrepareToShowOverlayUI(
   if (CanShowUIForRequest(request))
     return;
 
-  // Request the delegate to prepare for overlay UI with |required_capability|.
+  // Request the delegate to prepare for overlay UI with `required_capability`.
   UIPresentationCapabilities required_capabilities =
       GetRequiredPresentationCapabilities(request);
   [delegate_ updatePresentationContext:this
@@ -203,7 +203,7 @@ void OverlayPresentationContextImpl::ShowOverlayUI(
     OverlayDismissalCallback dismissal_callback) {
   DCHECK(!IsShowingOverlayUI());
   DCHECK(CanShowUIForRequest(request));
-  // Create the UI state for |request| if necessary.
+  // Create the UI state for `request` if necessary.
   if (!GetRequestUIState(request))
     states_[request] = std::make_unique<OverlayRequestUIState>(request);
   // Present the overlay UI and update the UI state.
@@ -225,14 +225,14 @@ void OverlayPresentationContextImpl::HideOverlayUI(OverlayRequest* request) {
 
 void OverlayPresentationContextImpl::CancelOverlayUI(
     OverlayRequest* request) {
-  // No cleanup required if there is no UI state for |request|.  This can
+  // No cleanup required if there is no UI state for `request`.  This can
   // occur when cancelling an OverlayRequest whose UI has never been
   // presented.
   OverlayRequestUIState* state = GetRequestUIState(request);
   if (!state)
     return;
 
-  // If the coordinator is not presenting the overlay UI for |state|, it can
+  // If the coordinator is not presenting the overlay UI for `state`, it can
   // be deleted immediately.
   if (!state->has_callback()) {
     states_.erase(request);

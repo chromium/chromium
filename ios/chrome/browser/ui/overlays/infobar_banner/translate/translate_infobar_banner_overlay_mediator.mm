@@ -74,7 +74,7 @@ NSString* const kTranslateImageName = @"infobar_translate_icon";
 }
 
 // Returns the title text of the banner depending on the
-// |self.config.translate_step()|.
+// `self.config.translate_step()`.
 - (NSString*)bannerTitleText {
   switch (self.config->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:
@@ -100,7 +100,7 @@ NSString* const kTranslateImageName = @"infobar_translate_icon";
 }
 
 // Returns the text of the banner and modal action button depending on the
-// |self.config.translate_step()|.
+// `self.config.translate_step()`.
 - (NSString*)infobarButtonText {
   switch (self.config->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:

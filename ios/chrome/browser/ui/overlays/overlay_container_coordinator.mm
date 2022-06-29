@@ -117,7 +117,7 @@
       needsContainer ? self.viewController : nil);
 
   // Start or stop the presentation context coordinator depending on whether
-  // it is required to support |capabilities|.
+  // it is required to support `capabilities`.
   if (capabilities &
       OverlayPresentationContext::UIPresentationCapabilities::kPresented) {
     // The coordinator cannot be started if its base UIViewController doesn't

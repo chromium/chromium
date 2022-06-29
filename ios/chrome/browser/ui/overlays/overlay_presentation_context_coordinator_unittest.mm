@@ -40,7 +40,7 @@ class OverlayPresentationContextCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
   ~OverlayPresentationContextCoordinatorTest() override {
-    // The browser needs to be destroyed before |context_| so that observers
+    // The browser needs to be destroyed before `context_` so that observers
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the
     // Browser and get destroyed after BrowserDestroyed() is called.

@@ -18,7 +18,7 @@ using password_modal::PasswordAction;
 
 namespace {
 // Returns the InfobarType that should be used to construct the
-// InfobarPasswordTableViewController for |action|.
+// InfobarPasswordTableViewController for `action`.
 InfobarType GetTableViewInfobarType(PasswordAction action) {
   switch (action) {
     case PasswordAction::kSave:

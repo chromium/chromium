@@ -9,7 +9,7 @@
 
 @interface OverlayRequestCoordinatorFactory (Initialization)
 // Initializer for a factory that supports the OverlayRequestCoordinator types
-// in |supportedOverlayClasses|.
+// in `supportedOverlayClasses`.
 - (instancetype)initWithBrowser:(Browser*)browser
     supportedOverlayRequestCoordinatorClasses:
         (NSArray<Class>*)supportedOverlayClasses;

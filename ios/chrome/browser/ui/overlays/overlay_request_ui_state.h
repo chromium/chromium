@@ -20,17 +20,17 @@ class OverlayRequestUIState {
   explicit OverlayRequestUIState(OverlayRequest* request);
   ~OverlayRequestUIState();
 
-  // Called when the OverlayPresenter requests the presentation of |request_|.
+  // Called when the OverlayPresenter requests the presentation of `request_`.
   // This may or may not correspond with an OverlayUIWasPresented() if the
-  // presentation context is inactive.  |presentation_callback| and
-  // |dismissal_callback| are stored in the state, and will be executed when
+  // presentation context is inactive.  `presentation_callback` and
+  // `dismissal_callback` are stored in the state, and will be executed when
   // OverlayUIWasPresented() and OverlayUIWasDismissed() are called.
   void OverlayPresentionRequested(
       OverlayPresentationCallback presentation_callback,
       OverlayDismissalCallback dismissal_callback);
 
   // Notifies the state that the UI is about to be presented using
-  // |coordinator|.
+  // `coordinator`.
   void OverlayUIWillBePresented(OverlayRequestCoordinator* coordinator);
 
   // Notifies the state that the UI was presented.

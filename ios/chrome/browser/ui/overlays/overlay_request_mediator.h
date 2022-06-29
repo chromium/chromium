@@ -20,7 +20,7 @@ class OverlayRequestSupport;
 @property(class, nonatomic, readonly)
     const OverlayRequestSupport* requestSupport;
 
-// Initializer for a mediator that sets ups its consumer with |request|'s
+// Initializer for a mediator that sets ups its consumer with `request`'s
 // config.
 - (instancetype)initWithRequest:(OverlayRequest*)request
     NS_DESIGNATED_INITIALIZER;

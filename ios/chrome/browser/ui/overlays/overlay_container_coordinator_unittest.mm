@@ -43,7 +43,7 @@ class OverlayContainerCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
   ~OverlayContainerCoordinatorTest() override {
-    // The browser needs to be destroyed before |context_| so that observers
+    // The browser needs to be destroyed before `context_` so that observers
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the
     // Browser and get destroyed after BrowserDestroyed() is called.
@@ -99,11 +99,11 @@ TEST_F(OverlayContainerCoordinatorTest, PresentationContextSetup) {
            !presented_view_controller.beingPresented;
   }));
 
-  // Once |presented_view_controller| is finished being presented, it should
+  // Once `presented_view_controller` is finished being presented, it should
   // update the presentation capabilities to allow presented overlay UI.
   EXPECT_TRUE(OverlayPresentationContextSupportsPresentedUI(context_.get()));
 
-  // Stop the container coordinator and wait for |presented_view_controller| to
+  // Stop the container coordinator and wait for `presented_view_controller` to
   // finish being dismissed, verifying that the context no longer supports
   // presented overlay UI.
   [coordinator_ stop];

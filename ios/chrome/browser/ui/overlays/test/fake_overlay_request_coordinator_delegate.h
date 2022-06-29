@@ -16,10 +16,10 @@ class FakeOverlayRequestCoordinatorDelegate
   FakeOverlayRequestCoordinatorDelegate();
   ~FakeOverlayRequestCoordinatorDelegate() override;
 
-  // Whether the overlay UI for |request| has been presented.
+  // Whether the overlay UI for `request` has been presented.
   bool HasUIBeenPresented(OverlayRequest* request) const;
 
-  // Whether the overlay UI for |request| has been dismissed.
+  // Whether the overlay UI for `request` has been dismissed.
   bool HasUIBeenDismissed(OverlayRequest* request) const;
 
   // OverlayRequestCoordinatorDelegate:

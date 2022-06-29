@@ -40,7 +40,7 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
     view_controller_ = [[OverlayPresentationContextViewController alloc] init];
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;
-    // Present |view_controller_| over |root_view_controller_| without animation
+    // Present `view_controller_` over `root_view_controller_` without animation
     // and wait for the presentation to finish.
     view_controller_.modalPresentationStyle =
         UIModalPresentationOverCurrentContext;
@@ -55,7 +55,7 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
     }));
   }
   ~OverlayPresentationContextViewControllerTest() override {
-    // Dismisses |view_controller_| and waits for the dismissal to finish.
+    // Dismisses `view_controller_` and waits for the dismissal to finish.
     __block bool dismissal_finished = NO;
     [root_view_controller_ dismissViewControllerAnimated:NO
                                               completion:^{
@@ -76,7 +76,7 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
   OverlayPresentationContextViewController* view_controller_ = nil;
 };
 
-// Tests that |view_controller_|'s frame is CGRectZero when there is no overlay
+// Tests that `view_controller_`'s frame is CGRectZero when there is no overlay
 // UI presented upon it.
 TEST_F(OverlayPresentationContextViewControllerTest, NoPresentedUI) {
   CGRect container_view_frame =
@@ -86,12 +86,12 @@ TEST_F(OverlayPresentationContextViewControllerTest, NoPresentedUI) {
   EXPECT_TRUE(CGRectEqualToRect(frame, CGRectZero));
 }
 
-// Tests that |view_controller_|'s frame is the same as its presenter while
+// Tests that `view_controller_`'s frame is the same as its presenter while
 // showing overlay UI presented over its context.
 TEST_F(OverlayPresentationContextViewControllerTest,
        PresentedOverCurrentContext) {
   // Create a fake overlay coordinator that presents its UI over
-  // |view_controller_|.
+  // `view_controller_`.
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
   TestPresentedOverlayCoordinator* coordinator =
@@ -110,7 +110,7 @@ TEST_F(OverlayPresentationContextViewControllerTest,
   }));
 
   // Verify that the presentation context is resized to
-  // |root_view_controller_|'s view.
+  // `root_view_controller_`'s view.
   UIView* root_view = root_view_controller_.view;
   CGRect root_window_frame = [root_view convertRect:root_view.bounds
                                              toView:nil];
@@ -135,12 +135,12 @@ TEST_F(OverlayPresentationContextViewControllerTest,
   EXPECT_TRUE(CGRectEqualToRect(view.frame, CGRectZero));
 }
 
-// Tests that |view_controller_|'s frame is the same as its presented view's
+// Tests that `view_controller_`'s frame is the same as its presented view's
 // container view if it is shown using custom UIViewController presentation that
 // resizes the contianer view.
 TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
   // Create a fake overlay coordinator that presents its UI over
-  // |view_controller_| and resizes its presentation container view to
+  // `view_controller_` and resizes its presentation container view to
   // kWindowFrame.
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestResizingPresentedOverlay>(
