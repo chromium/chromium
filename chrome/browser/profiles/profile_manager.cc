@@ -130,7 +130,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1435,11 +1434,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
                                    supervised_user_id);
   }
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(pmonette): Fix IsNewProfile() to handle the case where the profile is
-  // new even if the "Preferences" file already existed. (For example: The
-  // master_preferences file is dumped into the default profile on first run,
-  // before profile creation.)
-  if (profile->IsNewProfile() || first_run::IsChromeFirstRun()) {
+  if (profile->IsNewProfile()) {
     profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, false);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
