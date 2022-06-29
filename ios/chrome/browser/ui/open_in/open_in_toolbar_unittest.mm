@@ -10,13 +10,13 @@
 #error "This file requires ARC support."
 #endif
 
-// A class that counts the number of times the |dummyMethod:| method is called.
+// A class that counts the number of times the `dummyMethod:` method is called.
 @interface DummyObserver : NSObject
 
-// The number of times |dummyMethod:| is invoked.
+// The number of times `dummyMethod:` is invoked.
 @property(nonatomic, readonly) int dummyMethodCallCount;
 
-// The method whose invocation increases |dummyMethodCallCount| by one.
+// The method whose invocation increases `dummyMethodCallCount` by one.
 - (void)dummyMethod:(id)parameter;
 
 @end

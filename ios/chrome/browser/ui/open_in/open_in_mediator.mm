@@ -44,7 +44,7 @@
     _baseViewController = baseViewController;
     _browser = browser;
     _webStateList = browser->GetWebStateList();
-    // Set the delegates for all existing webstates in the |_webStateList|.
+    // Set the delegates for all existing webstates in the `_webStateList`.
     for (int i = 0; i < _webStateList->count(); i++) {
       web::WebState* webState = _webStateList->GetWebStateAt(i);
       OpenInTabHelper::FromWebState(webState)->SetDelegate(self);
@@ -86,8 +86,8 @@
 
 #pragma mark - OpenInTabHelperDelegate
 
-// Creates OpenInController and set its base view to the |webState| view. Then
-// enables the OpenIn view for the |webState|.
+// Creates OpenInController and set its base view to the `webState` view. Then
+// enables the OpenIn view for the `webState`.
 - (void)enableOpenInForWebState:(web::WebState*)webState
                 withDocumentURL:(const GURL&)documentURL
               suggestedFileName:(NSString*)suggestedFileName {
@@ -106,7 +106,7 @@
                   suggestedFilename:suggestedFileName];
 }
 
-// Disables the openIn view for the |webState|.
+// Disables the openIn view for the `webState`.
 - (void)disableOpenInForWebState:(web::WebState*)webState {
   if (_openInControllersForWebStates[webState])
     [_openInControllersForWebStates[webState] disable];

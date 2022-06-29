@@ -101,8 +101,8 @@ TEST_F(OpenInMediatorTest, MultipleWebStates) {
   [mediator_ destroyOpenInForWebState:web_state_1.get()];
   EXPECT_FALSE(web_state_1->GetView().subviews.count);
 
-  // Verify that destroying OpenIn for |web_state_1| doesn't affect
-  // |web_state_2|.
+  // Verify that destroying OpenIn for `web_state_1` doesn't affect
+  // `web_state_2`.
   EXPECT_EQ(1U, web_state_2->GetView().subviews.count);
 
   // Verify that calling disableAll remove any remaining views.
