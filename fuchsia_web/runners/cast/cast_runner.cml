@@ -15,8 +15,8 @@
     {
       protocol: [
         "chromium.cast.DataReset",
-        "fuchsia.web.FrameHost",
         "fuchsia.sys.Runner",
+        "fuchsia.web.FrameHost",
       ]
     }
   ],
@@ -24,8 +24,8 @@
     {
       protocol: [
         "chromium.cast.DataReset",
-        "fuchsia.web.FrameHost",
         "fuchsia.sys.Runner",
+        "fuchsia.web.FrameHost",
       ],
       from: "self",
     }
@@ -35,6 +35,12 @@
       directory: "config-data",
       rights: [ "r*" ],
       path: "/config/data",
+    },
+    {
+      availability: "optional",
+      directory: "config-data-for-testing",
+      rights: [ "r*" ],
+      path: "/config/data-for-testing",
     },
     {
       protocol: [

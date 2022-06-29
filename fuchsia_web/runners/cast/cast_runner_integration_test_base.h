@@ -24,6 +24,8 @@
 
 #if defined(USE_CFV1_LAUNCHER)
 #include "fuchsia_web/runners/cast/test/cast_runner_launcher_v1.h"  // nogncheck
+#else
+#include "fuchsia_web/runners/cast/test/cast_runner_launcher_v2.h"  // nogncheck
 #endif
 
 // The base class for cast runner integration tests; templated on the type of
@@ -34,6 +36,8 @@ class CastRunnerIntegrationTest : public testing::Test {
  public:
 #if defined(USE_CFV1_LAUNCHER)
   using Launcher = test::CastRunnerLauncherV1;
+#else
+  using Launcher = test::CastRunnerLauncherV2;
 #endif
 
   CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;

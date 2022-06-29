@@ -25,8 +25,6 @@
 
 namespace {
 
-constexpr char kEnableFrameHostComponent[] = "enable-frame-host-component";
-
 constexpr char kEnableCfv1Shim[] = "enable-cfv1-shim";
 
 }  // namespace
@@ -59,7 +57,7 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV1::StartCastRunner() {
   if (!(runner_features_ & kCastRunnerFeaturesVulkan))
     command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
   if (runner_features_ & kCastRunnerFeaturesFrameHost)
-    command_line.AppendSwitch(kEnableFrameHostComponent);
+    command_line.AppendSwitch(kEnableFrameHostComponentForTestsSwitch);
   if (runner_features_ & kCastRunnerFeaturesCfv1Shim)
     command_line.AppendSwitch(kEnableCfv1Shim);
 

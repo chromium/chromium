@@ -31,5 +31,6 @@ fidl_library("fidl") {
     "//chromecast/internal/*",
     "//fuchsia_web/runners:cast_runner_core",
     "//fuchsia_web/runners:cast_runner_test_core",
+    "//fuchsia_web/runners/cast/test:integration",
   ]
 }

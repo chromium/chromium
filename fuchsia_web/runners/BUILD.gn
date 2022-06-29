@@ -225,6 +225,47 @@ test("cast_runner_unittests") {
   data_deps = [ ":cast_runner_core" ]
 }
 
+test("cast_runner_integration_tests") {
+  sources = [
+    "cast/cast_runner_integration_test.cc",
+    "cast/cast_runner_integration_test_base.cc",
+    "cast/cast_runner_integration_test_base.h",
+    "common/modular/fake_component_context.cc",
+    "common/modular/fake_component_context.h",
+  ]
+  data = [ "cast/testdata" ]
+  deps = [
+    ":cast_runner_component",
+    ":cast_runner_core",
+    ":cast_runner_test_core",
+    "//base/test:test_support",
+    "//components/cast/message_port",
+    "//fuchsia_web/common/test:run_all_integration_tests",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/runners/cast/test:integration",
+    "//fuchsia_web/runners/common/modular",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+  package_deps = [ [
+        "//fuchsia_web/webengine:web_engine",
+        "web_engine",
+      ] ]
+  use_cfv1 = false
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/fonts.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//fuchsia_web/runners/cast/cast_runner_integration_test.shard.test-cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+  ]
+}
+
 test("cast_runner_integration_tests_cfv1") {
   sources = [
     "cast/cast_runner_integration_test.cc",
