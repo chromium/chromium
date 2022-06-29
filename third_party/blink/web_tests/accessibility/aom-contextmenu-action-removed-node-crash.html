@@ -9,8 +9,11 @@
 <script>
 test(function() {
   const target = document.getElementById("inner");
-  target.addEventListener("contextmenu", function() {
+  target.addEventListener("keydown", function(e) {
     document.getElementById("outer").style.display = "none";
+  });
+  target.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
   });
   const axTarget = accessibilityController.accessibleElementById("inner");
   axTarget.showMenu();

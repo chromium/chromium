@@ -5948,14 +5948,18 @@ bool AXObject::OnNativeShowContextMenuAction() {
   }
 
   ContextMenuAllowedScope scope;
-  document->GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
-      element, kMenuSourceKeyboard);
+  WebInputEventResult result =
+      document->GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
+          element, kMenuSourceKeyboard);
 
-  // The node may have ceased to exist due to the event handler actions
-  if (GetNode() &&
+  // The node may have ceased to exist due to the event handler actions, so we
+  // check its detached state. We also check the result of the contextMenu
+  // event: if it was consumed by the system, executing the default action, we
+  // don't synthesize the keyup event because it would not be produced normally;
+  // the system context menu captures it and never reaches the DOM.
+  if (!IsDetached() && result != WebInputEventResult::kHandledSystem &&
       RuntimeEnabledFeatures::
           SynthesizedKeyboardEventsForAccessibilityActionsEnabled()) {
-    // TODO: should we actually synthesize the mouseup event?
     KeyboardEvent* keyup =
         CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp,
                             ax::mojom::blink::Action::kShowContextMenu);
