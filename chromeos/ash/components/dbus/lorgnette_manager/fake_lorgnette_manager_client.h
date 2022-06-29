@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_LORGNETTE_MANAGER_FAKE_LORGNETTE_MANAGER_CLIENT_H_
-#define CHROMEOS_DBUS_LORGNETTE_MANAGER_FAKE_LORGNETTE_MANAGER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_LORGNETTE_MANAGER_FAKE_LORGNETTE_MANAGER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_LORGNETTE_MANAGER_FAKE_LORGNETTE_MANAGER_CLIENT_H_
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
     : public LorgnetteManagerClient {
@@ -61,6 +61,6 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
   absl::optional<std::vector<std::string>> scan_response_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_LORGNETTE_MANAGER_FAKE_LORGNETTE_MANAGER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_LORGNETTE_MANAGER_FAKE_LORGNETTE_MANAGER_CLIENT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 
 #include <memory>
 #include <string>
@@ -19,9 +19,9 @@
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "chromeos/dbus/common/pipe_reader.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
-#include "chromeos/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -29,7 +29,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 LorgnetteManagerClient* g_instance = nullptr;
@@ -561,4 +561,4 @@ LorgnetteManagerClient::~LorgnetteManagerClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

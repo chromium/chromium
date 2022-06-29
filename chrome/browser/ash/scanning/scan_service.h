@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

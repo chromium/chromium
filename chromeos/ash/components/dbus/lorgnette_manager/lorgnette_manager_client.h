@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
-#define CHROMEOS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
 
 #include <cstdint>
 #include <map>
@@ -12,11 +12,11 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 // LorgnetteManagerClient is used to communicate with the lorgnette
 // document scanning daemon.
@@ -89,6 +89,6 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   ~LorgnetteManagerClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_

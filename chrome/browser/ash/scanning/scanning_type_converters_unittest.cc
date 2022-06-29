@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

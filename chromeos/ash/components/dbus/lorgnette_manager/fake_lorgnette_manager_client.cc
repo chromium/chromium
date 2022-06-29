@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeLorgnetteManagerClient::FakeLorgnetteManagerClient() = default;
 
@@ -86,4 +86,4 @@ void FakeLorgnetteManagerClient::SetScanResponse(
   scan_response_ = scan_response;
 }
 
-}  // namespace chromeos
+}  // namespace ash

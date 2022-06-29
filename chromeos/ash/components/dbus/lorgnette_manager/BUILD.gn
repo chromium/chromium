@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+assert(is_chromeos_ash, "Non-Chrome-OS builds cannot depend on //chromeos/ash")
 
 component("lorgnette_manager") {
   defines = [ "IS_LORGNETTE_MANAGER_IMPL" ]
@@ -43,5 +44,5 @@ proto_library("lorgnette_proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto" ]
 
-  proto_out_dir = "chromeos/dbus/lorgnette"
+  proto_out_dir = "chromeos/ash/components/dbus/lorgnette"
 }

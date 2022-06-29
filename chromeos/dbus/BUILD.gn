@@ -16,7 +16,6 @@ component("dbus") {
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",
     "//chromeos/dbus/init",
-    "//chromeos/dbus/lorgnette_manager",
     "//chromeos/dbus/shill",
     "//dbus",
   ]
@@ -97,7 +96,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/fwupd:test_support",
     "//chromeos/dbus/gnubby:unit_tests",
     "//chromeos/dbus/hermes:test_support",
-    "//chromeos/dbus/lorgnette_manager:test_support",
     "//chromeos/dbus/oobe_config:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",

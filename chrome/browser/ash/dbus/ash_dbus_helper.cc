@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
@@ -60,7 +61,6 @@
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
@@ -147,7 +147,7 @@ void InitializeDBus() {
   InitializeDBusClient<InstallAttributesClient>(bus);
   InitializeDBusClient<IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
-  InitializeDBusClient<chromeos::LorgnetteManagerClient>(bus);
+  InitializeDBusClient<LorgnetteManagerClient>(bus);
   InitializeDBusClient<chromeos::MachineLearningClient>(bus);
   InitializeDBusClient<MediaAnalyticsClient>(bus);
   InitializeDBusClient<chromeos::MissiveClient>(bus);
@@ -257,7 +257,7 @@ void ShutdownDBus() {
   chromeos::MissiveClient::Shutdown();
   MediaAnalyticsClient::Shutdown();
   chromeos::MachineLearningClient::Shutdown();
-  chromeos::LorgnetteManagerClient::Shutdown();
+  LorgnetteManagerClient::Shutdown();
   KerberosClient::Shutdown();
   IpPeripheralServiceClient::Shutdown();
   InstallAttributesClient::Shutdown();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 
 #include <cstdint>
 #include <memory>
@@ -19,7 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -33,7 +33,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1079,4 +1079,4 @@ TEST_F(LorgnetteManagerClientTest, CancelScanJobCallFails) {
   run_loop.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash
