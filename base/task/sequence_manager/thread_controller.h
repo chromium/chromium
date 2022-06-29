@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/profiler/sample_metadata.h"
@@ -37,7 +38,7 @@ class SequencedTaskSource;
 // interface will become more concise.
 class ThreadController {
  public:
-  ThreadController();
+  explicit ThreadController(const TickClock* time_source);
   virtual ~ThreadController();
 
   // Sets the number of tasks executed in a single invocation of DoWork.
@@ -130,7 +131,7 @@ class ThreadController {
   // with MessageLoop.
 
   virtual bool RunsTasksInCurrentSequence() = 0;
-  virtual void SetTickClock(const TickClock* clock) = 0;
+  void SetTickClock(const TickClock* clock);
   virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
   virtual void RestoreDefaultTaskRunner() = 0;
   virtual void AddNestingObserver(RunLoop::NestingObserver* observer) = 0;
@@ -142,6 +143,15 @@ class ThreadController {
 
  protected:
   const scoped_refptr<AssociatedThreadId> associated_thread_;
+
+  // The source of TimeTicks for this ThreadController.
+  // Must only be accessed from the `associated_thread_`.
+  // TODO(scheduler-dev): This could be made
+  // `GUARDED_BY_CONTEXT(associated_thread_->thread_checker)` when
+  // switching MainThreadOnly to thread annotations and annotating all
+  // thread-affine ThreadController methods. Without that, this lone annotation
+  // would result in an inconsistent set of DCHECKs...
+  raw_ptr<const TickClock> time_source_;  // Not owned.
 
   // Tracks the state of each run-level (main and nested ones) in its associated
   // ThreadController. It does so using two high-level principles:

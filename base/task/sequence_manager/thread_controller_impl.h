@@ -54,7 +54,6 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
   bool RunsTasksInCurrentSequence() override;
-  void SetTickClock(const TickClock* clock) override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;
   scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void RestoreDefaultTaskRunner() override;
@@ -115,7 +114,6 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   }
 
   scoped_refptr<SingleThreadTaskRunner> message_loop_task_runner_;
-  raw_ptr<const TickClock> time_source_;
   RepeatingClosure immediate_do_work_closure_;
   RepeatingClosure delayed_do_work_closure_;
   CancelableRepeatingClosure cancelable_delayed_do_work_closure_;

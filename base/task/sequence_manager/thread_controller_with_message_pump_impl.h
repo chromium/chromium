@@ -65,7 +65,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetNextDelayedDoWork(LazyNow* lazy_now,
                             absl::optional<WakeUp> wake_up) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
-  void SetTickClock(const TickClock* clock) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) override;
@@ -182,8 +181,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   std::unique_ptr<MessagePump> pump_;
 
   TaskAnnotator task_annotator_;
-
-  raw_ptr<const TickClock> time_source_;  // Not owned.
 
   // Non-null provider of id state for identifying distinct work items executed
   // by the message loop (task, event, etc.). Cached on the class to avoid TLS

@@ -27,12 +27,12 @@ ThreadControllerImpl::ThreadControllerImpl(
     SequenceManagerImpl* funneled_sequence_manager,
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     const TickClock* time_source)
-    : funneled_sequence_manager_(funneled_sequence_manager),
+    : ThreadController(time_source),
+      funneled_sequence_manager_(funneled_sequence_manager),
       task_runner_(task_runner),
       message_loop_task_runner_(funneled_sequence_manager
                                     ? funneled_sequence_manager->GetTaskRunner()
                                     : nullptr),
-      time_source_(time_source),
       work_deduplicator_(associated_thread_) {
   if (task_runner_ || funneled_sequence_manager_)
     work_deduplicator_.BindToCurrentThread();
@@ -132,10 +132,6 @@ void ThreadControllerImpl::SetNextDelayedDoWork(
 
 bool ThreadControllerImpl::RunsTasksInCurrentSequence() {
   return task_runner_->RunsTasksInCurrentSequence();
-}
-
-void ThreadControllerImpl::SetTickClock(const TickClock* clock) {
-  time_source_ = clock;
 }
 
 void ThreadControllerImpl::SetDefaultTaskRunner(

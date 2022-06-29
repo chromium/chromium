@@ -81,7 +81,8 @@ void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
-    : work_deduplicator_(associated_thread_), time_source_(settings.clock) {}
+    : ThreadController(settings.clock),
+      work_deduplicator_(associated_thread_) {}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -195,10 +196,6 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     // task.
     pump_->ScheduleDelayedWork({run_time, lazy_now->Now()});
   }
-}
-
-void ThreadControllerWithMessagePumpImpl::SetTickClock(const TickClock* clock) {
-  time_source_ = clock;
 }
 
 bool ThreadControllerWithMessagePumpImpl::RunsTasksInCurrentSequence() {

@@ -5,16 +5,23 @@
 #include "base/task/sequence_manager/thread_controller.h"
 
 #include "base/check.h"
+#include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace sequence_manager {
 namespace internal {
 
-ThreadController::ThreadController()
-    : associated_thread_(AssociatedThreadId::CreateUnbound()) {}
+ThreadController::ThreadController(const TickClock* time_source)
+    : associated_thread_(AssociatedThreadId::CreateUnbound()),
+      time_source_(time_source) {}
 
 ThreadController::~ThreadController() = default;
+
+void ThreadController::SetTickClock(const TickClock* clock) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  time_source_ = clock;
+}
 
 ThreadController::RunLevelTracker::RunLevelTracker(
     const ThreadController& outer)
