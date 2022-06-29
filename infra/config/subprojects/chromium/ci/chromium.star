@@ -465,7 +465,9 @@ ci.builder(
             ],
         },
     },
-    tree_closing = True,
+    # TODO(b/237558786): Make this builder close the tree once its builds are
+    # back to stable.
+    tree_closing = False,
 )
 
 ci.builder(
