@@ -2678,10 +2678,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_V2_20211130",
+                    "name": "EnabledPageInfoOnly_20220629",
                     "params": {
-                        "trust_signals_message_delay_ms": "5000",
-                        "trust_signals_site_engagement_threshold": "15"
+                        "trust_signals_message_disabled": "true"
                     },
                     "enable_features": [
                         "CommerceMerchantViewer",
@@ -2689,17 +2688,6 @@
                     ],
                     "disable_features": [
                         "IPH_PageInfoStoreInfo"
-                    ]
-                },
-                {
-                    "name": "Enabled_V1_20211130",
-                    "params": {
-                        "delete_all_merchants_on_clear_history": "true",
-                        "trust_signals_message_delay_ms": "20000",
-                        "trust_signals_site_engagement_threshold": "15"
-                    },
-                    "enable_features": [
-                        "CommerceMerchantViewer"
                     ]
                 }
             ]
