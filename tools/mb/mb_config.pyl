@@ -603,6 +603,7 @@
       'Android Builder Perf': 'official_goma_minimal_symbols_android',
       'Android arm64 Builder Perf': 'official_goma_minimal_symbols_android_arm64',
       'android-builder-perf': 'official_goma_minimal_symbols_android',
+      'android-builder-perf-pgo': 'official_goma_minimal_symbols_android',
       'android_arm64-builder-perf': 'official_goma_minimal_symbols_android_arm64',
       'android_arm64-builder-perf-pgo': 'official_goma_minimal_symbols_android_arm64_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size',

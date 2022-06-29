@@ -724,6 +724,21 @@ BUILDERS = {
             'os': 'Android',
         },
     },
+    'android-go-perf-pgo': {
+        'tests': [{
+            'name': 'performance_test_suite',
+            'isolate': 'performance_test_suite_android_clank_chrome',
+        }],
+        'platform':
+        'android-chrome',
+        'dimension': {
+            'device_os': 'OMB1.180119.001',
+            'device_type': 'gobo',
+            'device_os_flavor': 'google',
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+        },
+    },
     'android-go_webview-perf': {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
@@ -738,6 +753,19 @@ BUILDERS = {
         },
     },
     'android-pixel2_webview-perf': {
+        'tests': [{
+            'isolate': 'performance_webview_test_suite',
+        }],
+        'platform': 'android-webview-google',
+        'dimension': {
+            'pool': 'chrome.tests.perf-webview',
+            'os': 'Android',
+            'device_type': 'walleye',
+            'device_os': 'OPM1.171019.021',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel2_webview-perf-pgo': {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
         }],
@@ -778,6 +806,21 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel2-perf-pgo': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_monochrome_64_32_bundle',
+        }],
+        'platform':
+        'android-chrome-64-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'walleye',
+            'device_os': 'OPM1.171019.021',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-pixel4_webview-perf': {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
@@ -792,6 +835,19 @@ BUILDERS = {
         },
     },
     'android-pixel4_weblayer-perf': {
+        'tests': [{
+            'isolate': 'performance_weblayer_test_suite',
+        }],
+        'platform': 'android-weblayer-trichrome-google-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf-weblayer',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'RP1A.201105.002',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel4_weblayer-perf-pgo': {
         'tests': [{
             'isolate': 'performance_weblayer_test_suite',
         }],
@@ -819,7 +875,39 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel4-perf-pgo': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_bundle',
+        }],
+        'platform':
+        'android-trichrome-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'RP1A.201105.002',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-pixel4a_power-perf': {
+        'tests': [{
+            'isolate': 'performance_test_suite_android_clank_chrome',
+            'extra_args': [
+                '--experimental-tbmv3-metrics',
+            ],
+        }],
+        'platform':
+        'android-chrome',
+        'dimension': {
+            'pool': 'chrome.tests.pinpoint',  # Sharing Pinpoint pool
+            'os': 'Android',
+            'device_type': 'sunfish',
+            'device_os': 'RQ1D.201205.012',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel4a_power-perf-pgo': {
         'tests': [{
             'isolate': 'performance_test_suite_android_clank_chrome',
             'extra_args': [
@@ -862,7 +950,50 @@ BUILDERS = {
             # they are since in pool 'unassigned'.
         },
     },
+    'win-10_laptop_low_end-perf-pgo': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-10-18363.476',
+            'gpu': '8086:1616-20.19.15.5070',
+        },
+    },
     'win-10-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10-18363.476',
+            'gpu': '8086:5912-27.20.100.8681',
+            'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
+        },
+    },
+    'win-10-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -910,7 +1041,55 @@ BUILDERS = {
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
+    'win-10_amd_laptop-perf-pgo': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10-19043.1052',
+            'gpu': '1002:1638-30.0.13033.1000',
+            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
+        },
+    },
     'mac-laptop_low_end-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'x86-64',
+            'gpu':
+            '8086:1626',
+            'os':
+            'Mac-12.3',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
+        },
+    },
+    'mac-laptop_low_end-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -952,7 +1131,43 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
         },
     },
+    'mac-m1_mini_2020-perf-pgo': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu': 'arm',
+            'mac_model': 'Macmini9,1',
+            'os': 'Mac',
+            'pool': 'chrome.tests.perf',
+        },
+    },
     'linux-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'linux',
+        'dimension': {
+            'gpu': '10de:1cb3-440.100',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests.perf',
+            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
+        },
+    },
+    'linux-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -989,6 +1204,30 @@ BUILDERS = {
         },
     },
     'mac-laptop_high_end-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'x86-64',
+            'gpu':
+            '1002:6821-4.0.20-3.2.8',
+            'os':
+            'Mac-11.6.1',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G',
+        },
+    },
+    'mac-laptop_high_end-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
