@@ -168,6 +168,14 @@ Simply specify two different study configurations in the study:
 }
 ```
 
-## Presubmit
-The presubmit tool will ensure that your changes follow the correct ordering and
-format.
+## Formatting
+
+Run the following command to auto-format the `fieldtrial_testing_config.json`
+configuration file:
+
+```shell
+python3 testing/variations/PRESUBMIT.py testing/variations/fieldtrial_testing_config.json
+```
+
+The presubmit tool will also ensure that your changes follow the correct
+ordering and format.
