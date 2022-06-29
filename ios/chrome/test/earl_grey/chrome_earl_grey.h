@@ -716,6 +716,9 @@ UIWindow* GetAnyKeyWindow();
 // clearing Browsing data.
 - (void)resetBrowsingDataPrefs;
 
+// Resets data for the local state pref with |prefName|.
+- (void)resetDataForLocalStatePref:(const std::string&)prefName;
+
 #pragma mark - Pasteboard Utilities (EG2)
 
 // Verifies that |text| was copied to the pasteboard.

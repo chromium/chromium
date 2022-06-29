@@ -1367,6 +1367,11 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface resetBrowsingDataPrefs];
 }
 
+- (void)resetDataForLocalStatePref:(const std::string&)prefName {
+  return [ChromeEarlGreyAppInterface
+      resetDataForLocalStatePref:base::SysUTF8ToNSString(prefName)];
+}
+
 #pragma mark - Pasteboard Utilities (EG2)
 
 - (void)verifyStringCopied:(NSString*)text {

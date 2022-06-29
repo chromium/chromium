@@ -1196,6 +1196,12 @@ NSString* SerializedValue(const base::Value* value) {
   prefs->ClearPref(browsing_data::prefs::kDeleteFormData);
 }
 
++ (void)resetDataForLocalStatePref:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  prefService->ClearPref(path);
+}
+
 #pragma mark - Unified Consent utilities
 
 + (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled {

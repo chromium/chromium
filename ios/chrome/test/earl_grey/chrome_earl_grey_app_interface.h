@@ -583,6 +583,9 @@
 // clearing Browsing data.
 + (void)resetBrowsingDataPrefs;
 
+// Resets data for the local state pref with |prefName|.
++ (void)resetDataForLocalStatePref:(NSString*)prefName;
+
 #pragma mark - Unified Consent utilities
 
 // Enables or disables URL-keyed anonymized data collection.
