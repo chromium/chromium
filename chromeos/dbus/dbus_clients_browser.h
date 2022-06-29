@@ -27,7 +27,6 @@ class FwupdClient;
 class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
-class OobeConfigurationClient;
 
 // Owns D-Bus clients.
 // TODO(jamescook): Rename this class. "Browser" refers to the browser process
@@ -62,7 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<GnubbyClient> gnubby_client_;
   std::unique_ptr<ImageBurnerClient> image_burner_client_;
   std::unique_ptr<ImageLoaderClient> image_loader_client_;
-  std::unique_ptr<OobeConfigurationClient> oobe_configuration_client_;
 };
 
 }  // namespace chromeos

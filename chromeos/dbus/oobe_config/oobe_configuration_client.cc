@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "chromeos/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/dbus/oobe_config/oobe_config.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -17,6 +17,9 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
+namespace {
+
+OobeConfigurationClient* g_instance = nullptr;
 
 // The OobeConfigurationClient used in production.
 
@@ -41,7 +44,6 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         oobe_config::kOobeConfigRestoreServiceName,
@@ -88,9 +90,38 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
   base::WeakPtrFactory<OobeConfigurationClientImpl> weak_ptr_factory_{this};
 };
 
+}  // namespace
+
 // static
-std::unique_ptr<OobeConfigurationClient> OobeConfigurationClient::Create() {
-  return std::make_unique<OobeConfigurationClientImpl>();
+OobeConfigurationClient* OobeConfigurationClient::Get() {
+  return g_instance;
+}
+
+// static
+void OobeConfigurationClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new OobeConfigurationClientImpl())->Init(bus);
+}
+
+// static
+void OobeConfigurationClient::InitializeFake() {
+  (new FakeOobeConfigurationClient())->Init(nullptr);
+}
+
+// static
+void OobeConfigurationClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+OobeConfigurationClient::OobeConfigurationClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+OobeConfigurationClient::~OobeConfigurationClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

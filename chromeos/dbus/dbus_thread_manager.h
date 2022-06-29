@@ -28,7 +28,6 @@ class EasyUnlockClient;
 class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
-class OobeConfigurationClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
@@ -76,7 +75,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   GnubbyClient* GetGnubbyClient();
   ImageBurnerClient* GetImageBurnerClient();
   ImageLoaderClient* GetImageLoaderClient();
-  OobeConfigurationClient* GetOobeConfigurationClient();
 
  private:
   DBusThreadManager();
