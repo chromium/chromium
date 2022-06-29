@@ -24,7 +24,7 @@ class VideoFrame;
 
 namespace test {
 
-class FrameRenderer;
+class FrameRendererDummy;
 
 // The test VDA video decoder translates between the media::VideoDecoder and the
 // media::VideoDecodeAccelerator interfaces. This makes it possible to run
@@ -37,7 +37,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   TestVDAVideoDecoder(bool use_vd_vda,
                       OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
                       const gfx::ColorSpace& target_color_space,
-                      FrameRenderer* const frame_renderer,
+                      FrameRendererDummy* const frame_renderer,
                       bool linear_output = false);
 
   TestVDAVideoDecoder(const TestVDAVideoDecoder&) = delete;
@@ -114,7 +114,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   const gfx::ColorSpace target_color_space_;
 
   // Frame renderer used to manage GL context.
-  const raw_ptr<FrameRenderer> frame_renderer_;
+  const raw_ptr<FrameRendererDummy> frame_renderer_;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Whether the decoder output buffers should be allocated with a linear

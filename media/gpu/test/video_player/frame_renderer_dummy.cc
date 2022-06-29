@@ -72,16 +72,6 @@ void FrameRendererDummy::Destroy() {
   DCHECK(pending_frames_.empty());
 }
 
-bool FrameRendererDummy::AcquireGLContext() {
-  // As no actual rendering is done we don't have a GLContext to acquire.
-  return true;
-}
-
-gl::GLContext* FrameRendererDummy::GetGLContext() {
-  // As no actual rendering is done we don't have a GLContext.
-  return nullptr;
-}
-
 void FrameRendererDummy::RenderFrame(scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 

@@ -85,7 +85,6 @@ source_set("test_helpers") {
 static_library("video_player") {
   testonly = true
   sources = [
-    "video_player/frame_renderer.h",
     "video_player/frame_renderer_dummy.cc",
     "video_player/frame_renderer_dummy.h",
     "video_player/test_vda_video_decoder.cc",

@@ -27,7 +27,7 @@ class VideoFrame;
 namespace test {
 
 class EncodedDataHelper;
-class FrameRenderer;
+class FrameRendererDummy;
 class VideoFrameProcessor;
 
 // The supported video decoding implementation.
@@ -69,7 +69,7 @@ class VideoDecoderClient {
   // event will be thrown.
   static std::unique_ptr<VideoDecoderClient> Create(
       const VideoPlayer::EventCallback& event_cb,
-      std::unique_ptr<FrameRenderer> frame_renderer,
+      std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const VideoDecoderClientConfig& config);
 
@@ -79,7 +79,7 @@ class VideoDecoderClient {
   // Wait until the renderer has finished rendering all queued frames.
   void WaitForRenderer();
   // Get the frame renderer associated with the video decoder client.
-  FrameRenderer* GetFrameRenderer() const;
+  FrameRendererDummy* GetFrameRenderer() const;
 
   // Initialize the video decoder for the specified |video|. This function can
   // be called multiple times and needs to be called before Play().
@@ -108,7 +108,7 @@ class VideoDecoderClient {
 
   VideoDecoderClient(
       const VideoPlayer::EventCallback& event_cb,
-      std::unique_ptr<FrameRenderer> renderer,
+      std::unique_ptr<FrameRendererDummy> renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const VideoDecoderClientConfig& config);
 
@@ -156,7 +156,7 @@ class VideoDecoderClient {
   bool FireEvent(VideoPlayerEvent event);
 
   VideoPlayer::EventCallback event_cb_;
-  std::unique_ptr<FrameRenderer> frame_renderer_;
+  std::unique_ptr<FrameRendererDummy> frame_renderer_;
   std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors_;
 
   std::unique_ptr<media::VideoDecoder> decoder_;

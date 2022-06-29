@@ -15,7 +15,7 @@
 #include "media/base/waiting.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"
-#include "media/gpu/test/video_player/frame_renderer.h"
+#include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "media/gpu/test/video_player/test_vda_video_decoder.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/media_buildflags.h"
@@ -47,7 +47,7 @@ void CallbackThunk(
 
 VideoDecoderClient::VideoDecoderClient(
     const VideoPlayer::EventCallback& event_cb,
-    std::unique_ptr<FrameRenderer> renderer,
+    std::unique_ptr<FrameRendererDummy> renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const VideoDecoderClientConfig& config)
     : event_cb_(event_cb),
@@ -80,7 +80,7 @@ VideoDecoderClient::~VideoDecoderClient() {
 // static
 std::unique_ptr<VideoDecoderClient> VideoDecoderClient::Create(
     const VideoPlayer::EventCallback& event_cb,
-    std::unique_ptr<FrameRenderer> frame_renderer,
+    std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const VideoDecoderClientConfig& config) {
   auto decoder_client = base::WrapUnique(
@@ -137,7 +137,7 @@ void VideoDecoderClient::WaitForRenderer() {
   frame_renderer_->WaitUntilRenderingDone();
 }
 
-FrameRenderer* VideoDecoderClient::GetFrameRenderer() const {
+FrameRendererDummy* VideoDecoderClient::GetFrameRenderer() const {
   return frame_renderer_.get();
 }
 

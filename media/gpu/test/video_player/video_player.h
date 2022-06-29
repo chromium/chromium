@@ -18,12 +18,11 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "media/gpu/test/video_player/frame_renderer.h"
 
 namespace media {
 namespace test {
 
-class FrameRenderer;
+class FrameRendererDummy;
 class Video;
 class VideoDecoderClient;
 struct VideoDecoderClientConfig;
@@ -67,7 +66,7 @@ class VideoPlayer {
   // guarantee they outlive the video player.
   static std::unique_ptr<VideoPlayer> Create(
       const VideoDecoderClientConfig& config,
-      std::unique_ptr<FrameRenderer> frame_renderer,
+      std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors = {});
 
   // Wait until all frame processors have finished processing. Returns whether
@@ -101,7 +100,7 @@ class VideoPlayer {
   // Get the current state of the video player.
   VideoPlayerState GetState() const;
   // Get the frame renderer associated with the video player.
-  FrameRenderer* GetFrameRenderer() const;
+  FrameRendererDummy* GetFrameRenderer() const;
 
   // Wait for an event to occur the specified number of times. All events that
   // occurred since last calling this function will be taken into account. All
@@ -129,7 +128,7 @@ class VideoPlayer {
 
   bool CreateDecoderClient(
       const VideoDecoderClientConfig& config,
-      std::unique_ptr<FrameRenderer> frame_renderer,
+      std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
   void Destroy();
 

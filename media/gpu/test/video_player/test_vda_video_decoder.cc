@@ -21,7 +21,7 @@
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"
-#include "media/gpu/test/video_player/frame_renderer.h"
+#include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -42,7 +42,7 @@ TestVDAVideoDecoder::TestVDAVideoDecoder(
     bool use_vd_vda,
     OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
     const gfx::ColorSpace& target_color_space,
-    FrameRenderer* const frame_renderer,
+    FrameRendererDummy* const frame_renderer,
     bool linear_output)
     : use_vd_vda_(use_vd_vda),
       on_provide_picture_buffers_cb_(std::move(on_provide_picture_buffers_cb)),
@@ -91,18 +91,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Create decoder factory.
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> decoder_factory;
-  bool hasGLContext = frame_renderer_->GetGLContext() != nullptr;
   GpuVideoDecodeGLClient gl_client;
-  if (hasGLContext) {
-    gl_client.get_context = base::BindRepeating(
-        &FrameRenderer::GetGLContext, base::Unretained(frame_renderer_));
-    gl_client.make_context_current = base::BindRepeating(
-        &FrameRenderer::AcquireGLContext, base::Unretained(frame_renderer_));
-    gl_client.bind_image = base::BindRepeating(
-        [](uint32_t, uint32_t, const scoped_refptr<gl::GLImage>&, bool) {
-          return true;
-        });
-  }
   decoder_factory = GpuVideoDecodeAcceleratorFactory::Create(gl_client);
 
   if (!decoder_factory) {

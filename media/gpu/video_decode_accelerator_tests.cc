@@ -117,7 +117,7 @@ class VideoDecoderTest : public ::testing::Test {
   std::unique_ptr<VideoPlayer> CreateVideoPlayer(
       const Video* video,
       VideoDecoderClientConfig config = VideoDecoderClientConfig(),
-      std::unique_ptr<FrameRenderer> frame_renderer =
+      std::unique_ptr<FrameRendererDummy> frame_renderer =
           FrameRendererDummy::Create()) {
     LOG_ASSERT(video);
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors;

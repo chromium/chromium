@@ -14,20 +14,24 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "media/gpu/test/video_player/frame_renderer.h"
+#include "media/base/video_types.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
+
+class VideoFrame;
+
 namespace test {
 
 // The dummy frame renderer can be used when we're not interested in rendering
 // the decoded frames to screen or file. The renderer can either consume frames
 // immediately, or introduce a delay to simulate actual rendering.
-class FrameRendererDummy : public FrameRenderer {
+class FrameRendererDummy {
  public:
   FrameRendererDummy(const FrameRendererDummy&) = delete;
   FrameRendererDummy& operator=(const FrameRendererDummy&) = delete;
 
-  ~FrameRendererDummy() override;
+  ~FrameRendererDummy();
 
   // Create an instance of the dummy frame renderer. |frame_duration| specifies
   // how long we will simulate displaying each frame, typically the inverse of
@@ -38,15 +42,23 @@ class FrameRendererDummy : public FrameRenderer {
       base::TimeDelta frame_duration = base::TimeDelta(),
       base::TimeDelta vsync_interval_duration = base::TimeDelta());
 
-  // FrameRenderer implementation
-  bool AcquireGLContext() override;
-  gl::GLContext* GetGLContext() override;
-  void RenderFrame(scoped_refptr<VideoFrame> video_frame) override;
-  void WaitUntilRenderingDone() override;
+  // Render the specified video frame. Once rendering is done the reference to
+  // the |video_frame| should be dropped so the video frame can be reused. If
+  // the specified frame is an EOS frame, the frame renderer will assume the
+  // next frame received is unrelated to the previous one, and any internal
+  // state can be reset. This is e.g. important when calculating the frame
+  // drop rate.
+  void RenderFrame(scoped_refptr<VideoFrame> video_frame);
+  // Wait until all currently queued frames are rendered. This function might
+  // take some time to complete, depending on the number of frames queued.
+  void WaitUntilRenderingDone();
+  // Create a texture-backed video frame with specified |pixel_format|, |size|
+  // and |texture_target|. The texture's id will be put in |texture_id|.
+  // TODO(dstaessens@) Remove when allocate mode is removed.
   scoped_refptr<VideoFrame> CreateVideoFrame(VideoPixelFormat pixel_format,
                                              const gfx::Size& size,
                                              uint32_t texture_target,
-                                             uint32_t* texture_id) override;
+                                             uint32_t* texture_id);
 
   // Get the number of frames dropped due to the decoder running behind.
   uint64_t FramesDropped() const;
