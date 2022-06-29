@@ -91,10 +91,7 @@ void InternalsUIHandler::StartSubscription() {
     return;
 
   registered_with_log_router_ = true;
-
-  const auto& past_logs = log_router->RegisterReceiver(this);
-  for (const auto& entry : past_logs)
-    LogEntry(entry);
+  log_router->RegisterReceiver(this);
 }
 
 void InternalsUIHandler::EndSubscription() {

@@ -34,7 +34,7 @@ LogBufferSubmitter::~LogBufferSubmitter() {
   base::Value message = buffer_.RetrieveResult();
   if (!destination_ || message.is_none())
     return;
-  destination_->ProcessLog(std::move(message));
+  destination_->ProcessLog(message);
 }
 
 }  // namespace autofill

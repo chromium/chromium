@@ -12,7 +12,7 @@ void StubLogManager::SetSuspended(bool suspended) {}
 
 void StubLogManager::LogTextMessage(const std::string& text) const {}
 
-void StubLogManager::LogEntry(base::Value&& entry) const {}
+void StubLogManager::LogEntry(const base::Value& entry) const {}
 
 bool StubLogManager::IsLoggingActive() const {
   return false;

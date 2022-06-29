@@ -322,8 +322,7 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
   autofill::LogRouter* log_router =
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile());
-  EXPECT_EQ(std::vector<base::Value>(),
-            log_router->RegisterReceiver(&log_receiver));
+  log_router->RegisterReceiver(&log_receiver);
   EXPECT_TRUE(WasLoggingActivationMessageSent(&logging_active));
   EXPECT_TRUE(logging_active);
 
@@ -635,8 +634,7 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile());
   DummyLogReceiver log_receiver;
-  EXPECT_EQ(std::vector<base::Value>(),
-            log_router->RegisterReceiver(&log_receiver));
+  log_router->RegisterReceiver(&log_receiver);
 
   // But then navigate to a WebUI, there the logging should not be active.
   NavigateAndCommit(GURL("chrome://password-manager-internals/"));

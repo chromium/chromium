@@ -30,7 +30,7 @@ TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {
 
   MockLogReceiver receiver;
   LogRouter router;
-  std::ignore = router.RegisterReceiver(&receiver);
+  router.RegisterReceiver(&receiver);
   std::unique_ptr<LogManager> log_manager =
       LogManager::Create(&router, base::NullCallback());
 
@@ -43,7 +43,7 @@ TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {
 TEST(LogBufferSubmitter, NoEmptySubmission) {
   MockLogReceiver receiver;
   LogRouter router;
-  std::ignore = router.RegisterReceiver(&receiver);
+  router.RegisterReceiver(&receiver);
   std::unique_ptr<LogManager> log_manager =
       LogManager::Create(&router, base::NullCallback());
 
@@ -60,7 +60,7 @@ TEST(LogBufferSubmitter, CorrectActivation) {
 
   LogRouter router;
   MockLogReceiver receiver;
-  std::ignore = router.RegisterReceiver(&receiver);
+  router.RegisterReceiver(&receiver);
   std::unique_ptr<LogManager> log_manager_2 =
       LogManager::Create(&router, base::NullCallback());
   EXPECT_TRUE(log_manager_2->Log().buffer().active());
