@@ -465,13 +465,13 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
 
   // Extract mentions for selection expansion.
   if (!field_trial_->IsDecodeMentionsDisabled()) {
-    base::Value* mentions_list =
+    const base::Value* mentions_list =
         dict->FindListKey(kContextualSearchMentionsKey);
     // Note that because we've deserialized the json and it's not used later, we
     // can just take the list without worrying about putting it back.
-    if (mentions_list && mentions_list->GetListDeprecated().size() >= 2)
-      ExtractMentionsStartEnd(std::move(*mentions_list).TakeListDeprecated(),
-                              mention_start, mention_end);
+    if (mentions_list && mentions_list->GetList().size() >= 2)
+      ExtractMentionsStartEnd(mentions_list->GetList(), mention_start,
+                              mention_end);
   }
 
   // If either the selected text or the resolved term is not the search term,
@@ -550,13 +550,13 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
 // Extract the Start/End of the mentions in the surrounding text
 // for selection-expansion.
 void ContextualSearchDelegate::ExtractMentionsStartEnd(
-    const std::vector<base::Value>& mentions_list,
-    int* startResult,
-    int* endResult) {
+    const base::Value::List& mentions_list,
+    int* start_result,
+    int* end_result) {
   if (mentions_list.size() >= 1 && mentions_list[0].is_int())
-    *startResult = std::max(0, mentions_list[0].GetInt());
+    *start_result = std::max(0, mentions_list[0].GetInt());
   if (mentions_list.size() >= 2 && mentions_list[1].is_int())
-    *endResult = std::max(0, mentions_list[1].GetInt());
+    *end_result = std::max(0, mentions_list[1].GetInt());
 }
 
 std::u16string ContextualSearchDelegate::SampleSurroundingText(

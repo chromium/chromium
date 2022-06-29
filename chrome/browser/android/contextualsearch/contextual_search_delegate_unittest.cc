@@ -506,13 +506,12 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionInvalid) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
-  base::Value mentions_list(base::Value::Type::LIST);
+  base::Value::List mentions_list;
   mentions_list.Append(1);
   mentions_list.Append(2);
   int start = 0;
   int end = 0;
-  delegate_->ExtractMentionsStartEnd(
-      std::move(mentions_list).TakeListDeprecated(), &start, &end);
+  delegate_->ExtractMentionsStartEnd(mentions_list, &start, &end);
   EXPECT_EQ(1, start);
   EXPECT_EQ(2, end);
 }

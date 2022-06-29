@@ -155,11 +155,11 @@ class ContextualSearchDelegate
       std::string* related_searches_json);
 
   // Extracts the start and end location from a mentions list, and sets the
-  // integers referenced by |startResult| and |endResult|.
+  // integers referenced by |start_result| and |end_result|.
   // |mentions_list| must be a list.
-  void ExtractMentionsStartEnd(const std::vector<base::Value>& mentions_list,
-                               int* startResult,
-                               int* endResult);
+  void ExtractMentionsStartEnd(const base::Value::List& mentions_list,
+                               int* start_result,
+                               int* end_result);
 
   // Generates a subset of the given surrounding_text string, for usage from
   // Java.
