@@ -437,15 +437,17 @@ message SystemProfileProto {
 
     // Type of TPM on the device. This field is only filled in on ChromeOS
     // devices (both CrOS and LaCrOS platforms). This includes Chromebooks with
-    // TPM1.2 or GSC (cr50 and ti50), and also includes flex devices (ChromeOS
-    // installed on devices with other OS), which has TPM type "runtime
-    // selection".
+    // TPM1.2 or GSC (cr50 and ti50), flex devices (ChromeOS installed on
+    // devices with other OS) which has TPM type "runtime selection", and lastly
+    // generic TPM2 devices that use TPM2 chips that aren't manufactured by
+    // Google.
     enum TpmType {
       TPM_TYPE_UNKNOWN = 0;
       TPM_TYPE_1 = 1;
       TPM_TYPE_CR50 = 2;
       TPM_TYPE_TI50 = 3;
       TPM_TYPE_RUNTIME_SELECTION = 4;
+      TPM_TYPE_GENERIC_2 = 5;
     }
     optional TpmType tpm_type = 23;
 
@@ -598,9 +600,10 @@ message SystemProfileProto {
     // This field was added for M-35.
     optional int64 uptime_sec = 23;
 
-    // Page loads along with renderer launches, crashes, hangs and failed
-    // launches, since page load count roughly corresponds to usage.
+    // Logged on Android only as of late Q2 2022. Used by only Android WebView.
+    // Other platforms should use Stability.Counts2.
     optional int32 page_load_count = 2;
+
     optional int32 renderer_crash_count = 3;
     // Logged on Android only as of Q2 2022. Used by only Android WebView. Other
     // platforms should use Stability.Counts2.
@@ -609,10 +612,6 @@ message SystemProfileProto {
     // Number of renderer launches, crashes and failed launches that were for
     // extensions. These are not counted in the renderer counts above.
     optional int32 extension_renderer_crash_count = 5;
-
-    // Number of gpu crashes that generate a crash dump. Currently only used by
-    // Android Chrome starting with M71.
-    optional int32 gpu_crash_count = 31;
 
     // Number of times the browser has crashed while logged in as the "other
     // user" (guest) account.

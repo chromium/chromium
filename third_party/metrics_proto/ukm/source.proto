@@ -22,6 +22,7 @@ enum SourceType {
   WORKER_ID = 7;
   NO_URL_ID = 8;
   REDIRECT_ID = 9;
+  WEB_IDENTITY_ID = 10;
 }
 
 // Android Activity Type defined by
