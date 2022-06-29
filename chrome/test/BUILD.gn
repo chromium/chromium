@@ -3056,12 +3056,12 @@ if (!is_android) {
 
       if (is_chromeos) {
         sources += [
+          "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
         ]
 
         deps += [
-          "../browser/chromeos/extensions/login_screen:browser_tests",
           "//chromeos/constants",
           "//chromeos/dbus/constants",
         ]
@@ -3085,7 +3085,11 @@ if (!is_android) {
           "../browser/chromeos/extensions/input_method_apitest_chromeos.cc",
           "../browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler_browsertest.cc",
           "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
+          "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
+          "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_apitest.cc",
+          "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_apitest.cc",
+          "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
           "../browser/chromeos/extensions/speech/speech_recognition_private_apitest.cc",
           "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.cc",
           "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.h",
@@ -4074,7 +4078,6 @@ if (!is_android) {
         "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:key_permissions_proto",
         "//chrome/browser/chromeos:test_support",
-        "//chrome/browser/chromeos/extensions/login_screen",
         "//chrome/browser/image_decoder",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/metrics/structured",
@@ -7824,11 +7827,12 @@ test("unit_tests") {
     }
 
     if (is_chromeos) {
-      sources += [ "//chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc" ]
-      deps += [
-        "//chrome/browser/chromeos/extensions/login_screen:unit_tests",
-        "//chromeos/dbus/missive:missive",
+      sources += [
+        "../browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
+        "../browser/chromeos/extensions/login_screen/login_state/login_state_api_unittest.cc",
+        "//chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
       ]
+      deps += [ "//chromeos/dbus/missive:missive" ]
     }
 
     if (is_chromeos_ash) {
@@ -7839,6 +7843,9 @@ test("unit_tests") {
         "../browser/ash/login/easy_unlock/smartlock_feature_usage_metrics_unittest.cc",
         "../browser/ash/login/easy_unlock/smartlock_state_handler_unittest.cc",
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
+        "../browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
+        "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
+        "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
 
         # TODO(b/207754758): Move the following two files into the appropriate target
         "../browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",

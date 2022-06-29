@@ -5290,6 +5290,10 @@ static_library("browser") {
       "chromeos/extensions/file_system_provider/provider_function.h",
       "chromeos/extensions/info_private_api.cc",
       "chromeos/extensions/info_private_api.h",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.cc",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.h",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.cc",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h",
       "chromeos/extensions/public_session_permission_helper.cc",
       "chromeos/extensions/public_session_permission_helper.h",
       "chromeos/extensions/wallpaper_api.cc",
@@ -5572,10 +5576,29 @@ static_library("browser") {
       "chromeos/arc/start_smart_selection_action_menu.h",
       "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
       "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h",
+      "chromeos/extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.cc",
+      "chromeos/extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.h",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager.cc",
+      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h",
+      "chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.cc",
+      "chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h",
       "chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.cc",
       "chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h",
+      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.cc",
+      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h",
+      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.cc",
+      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h",
+      "chromeos/extensions/login_screen/login/login_api.cc",
+      "chromeos/extensions/login_screen/login/login_api.h",
       "chromeos/extensions/login_screen/login/login_api_prefs.cc",
       "chromeos/extensions/login_screen/login/login_api_prefs.h",
+      "chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.cc",
+      "chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.h",
+      "chromeos/extensions/login_screen/login_state/login_state_api.cc",
+      "chromeos/extensions/login_screen/login_state/login_state_api.h",
+      "chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
+      "chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
       "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
       "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
       "chromeos/tablet_mode/tablet_mode_page_behavior.cc",
@@ -5618,7 +5641,6 @@ static_library("browser") {
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
-      "//chrome/browser/chromeos/extensions/login_screen",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
@@ -5648,7 +5670,6 @@ static_library("browser") {
     ]
 
     allow_circular_includes_from += [
-      "//chrome/browser/chromeos/extensions/login_screen",
       "//chrome/browser/policy:onc",
 
       # TODO(b/215757706): Find a way to avoid the circular include.
