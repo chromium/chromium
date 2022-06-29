@@ -151,8 +151,10 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F(
-    'ChromeVoxPanelNodeMenuBackgroundTest', 'EmptyDocument', async function() {
+// TODO(anastasi): These tests were never run when initially written. Fix them
+// so they exercise the intended code.
+AX_TEST_F(
+    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_EmptyDocument', async function() {
       await this.runWithLoadedTree('');
       this.createAllNodeMenuBackgrounds();
 
@@ -163,7 +165,7 @@ TEST_F(
       this.assertMenusHaveNoNodesFoundExcept(null);
     });
 
-TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Headings', async function() {
+AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Headings', async function() {
   await this.runWithLoadedTree(this.headingsDoc);
   this.createAllNodeMenuBackgrounds();
 
@@ -182,7 +184,7 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Headings', async function() {
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.HEADING);
 });
 
-TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Landmarks', async function() {
+AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Landmarks', async function() {
   await this.runWithLoadedTree(this.landmarksDoc);
   this.createAllNodeMenuBackgrounds();
 
@@ -206,7 +208,7 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Landmarks', async function() {
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LANDMARK);
 });
 
-TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Links', async function() {
+AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Links', async function() {
   await this.runWithLoadedTree(this.linksDoc);
   this.createAllNodeMenuBackgrounds();
 
@@ -226,8 +228,8 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Links', async function() {
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LINK);
 });
 
-TEST_F(
-    'ChromeVoxPanelNodeMenuBackgroundTest', 'FormControls', async function() {
+AX_TEST_F(
+    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_FormControls', async function() {
       await this.runWithLoadedTree(this.formControlsDoc);
       this.createAllNodeMenuBackgrounds('panel_menu_form_controls');
 
@@ -252,7 +254,7 @@ TEST_F(
       this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.FORM_CONTROL);
     });
 
-TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Tables', async function() {
+AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Tables', async function() {
   await this.runWithLoadedTree(this.tablesDoc);
   this.createAllNodeMenuBackgrounds();
 
@@ -270,7 +272,7 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Tables', async function() {
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.TABLE);
 });
 
-TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'MixedData', async function() {
+AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_MixedData', async function() {
   await this.runWithLoadedTree(this.mixedDoc);
   this.createAllNodeMenuBackgrounds();
 
