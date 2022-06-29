@@ -117,7 +117,7 @@ using password_manager::metrics_util::LeakDialogType;
   if (ShouldCheckPasswords(self.credentialLeakType)) {
     self.dismissReason = LeakDialogDismissalReason::kClickedCheckPasswords;
     // Opening Password page will stop the presentation in the presenter.
-    // No need to send |stop|.
+    // No need to send `stop`.
     [self.presenter startPasswordCheck];
   } else {
     [self confirmationAlertDismissAction];

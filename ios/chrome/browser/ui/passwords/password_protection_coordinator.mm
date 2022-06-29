@@ -71,7 +71,7 @@
 
 - (void)confirmationAlertPrimaryAction {
   self.completion(safe_browsing::WarningAction::CHANGE_PASSWORD);
-  // Opening Password page will stop the presentation. No need to send |stop|.
+  // Opening Password page will stop the presentation. No need to send `stop`.
   [self startPasswordCheck];
 }
 
