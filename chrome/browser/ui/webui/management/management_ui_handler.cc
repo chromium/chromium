@@ -393,38 +393,38 @@ void ManagementUIHandler::InitializeInternal(content::WebUI* web_ui,
 }
 
 void ManagementUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getContextualManagedData",
       base::BindRepeating(&ManagementUIHandler::HandleGetContextualManagedData,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getExtensions",
       base::BindRepeating(&ManagementUIHandler::HandleGetExtensions,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getLocalTrustRootsInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetLocalTrustRootsInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getDeviceReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetDeviceReportingInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPluginVmDataCollectionStatus",
       base::BindRepeating(
           &ManagementUIHandler::HandleGetPluginVmDataCollectionStatus,
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getThreatProtectionInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetThreatProtectionInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getManagedWebsites",
       base::BindRepeating(&ManagementUIHandler::HandleGetManagedWebsites,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initBrowserReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleInitBrowserReportingInfo,
                           base::Unretained(this)));
@@ -990,7 +990,7 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void ManagementUIHandler::HandleGetExtensions(const base::ListValue* args) {
+void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
   AllowJavascript();
   // List of all enabled extensions
   const extensions::ExtensionSet& extensions =
@@ -1004,14 +1004,13 @@ void ManagementUIHandler::HandleGetExtensions(const base::ListValue* args) {
   base::UmaHistogramCounts1000(kPowerfulExtensionsCountHistogram,
                                powerful_extensions.GetListDeprecated().size());
 
-  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
-                            powerful_extensions);
+  ResolveJavascriptCallback(args[0] /* callback_id */, powerful_extensions);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
   base::Value trust_roots_configured(false);
   AllowJavascript();
 
@@ -1021,12 +1020,11 @@ void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
   if (policy_service && policy_service->has_policy_certificates())
     trust_roots_configured = base::Value(true);
 
-  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
-                            trust_roots_configured);
+  ResolveJavascriptCallback(args[0] /* callback_id */, trust_roots_configured);
 }
 
 void ManagementUIHandler::HandleGetDeviceReportingInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   base::Value::List report_sources;
   AllowJavascript();
 
@@ -1044,54 +1042,53 @@ void ManagementUIHandler::HandleGetDeviceReportingInfo(
   AddDeviceReportingInfo(&report_sources, collector, syslog_uploader,
                          Profile::FromWebUI(web_ui()));
 
-  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
+  ResolveJavascriptCallback(args[0] /* callback_id */,
                             base::Value(std::move(report_sources)));
 }
 
 void ManagementUIHandler::HandleGetPluginVmDataCollectionStatus(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
   base::Value plugin_vm_data_collection_enabled(
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           plugin_vm::prefs::kPluginVmDataCollectionAllowed));
   AllowJavascript();
-  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
+  ResolveJavascriptCallback(args[0] /* callback_id */,
                             plugin_vm_data_collection_enabled);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ManagementUIHandler::HandleGetContextualManagedData(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   auto result = GetContextualManagedData(Profile::FromWebUI(web_ui()));
-  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
-                            std::move(result));
+  ResolveJavascriptCallback(args[0] /* callback_id */, std::move(result));
 }
 
 void ManagementUIHandler::HandleGetThreatProtectionInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   ResolveJavascriptCallback(
-      args->GetListDeprecated()[0] /* callback_id */,
+      args[0] /* callback_id */,
       GetThreatProtectionInfo(Profile::FromWebUI(web_ui())));
 }
 
 void ManagementUIHandler::HandleGetManagedWebsites(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   ResolveJavascriptCallback(
-      args->GetListDeprecated()[0] /* callback_id */,
+      args[0] /* callback_id */,
       base::Value(GetManagedWebsitesInfo(Profile::FromWebUI(web_ui()))));
 }
 
 void ManagementUIHandler::HandleInitBrowserReportingInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   base::Value::List report_sources;
   AllowJavascript();
   AddReportingInfo(&report_sources);
-  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
+  ResolveJavascriptCallback(args[0] /* callback_id */,
                             base::Value(std::move(report_sources)));
 }
 
