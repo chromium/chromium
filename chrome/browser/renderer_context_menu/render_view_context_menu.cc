@@ -3593,7 +3593,7 @@ void RenderViewContextMenu::ExecRouteMedia() {
     return;
 
   dialog_controller->ShowMediaRouterDialog(
-      media_router::MediaRouterDialogOpenOrigin::CONTEXTUAL_MENU);
+      media_router::MediaRouterDialogActivationLocation::CONTEXTUAL_MENU);
 }
 
 void RenderViewContextMenu::ExecTranslate() {

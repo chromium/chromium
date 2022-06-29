@@ -19,11 +19,11 @@ using mojom::MediaRouteProviderId;
 namespace {
 
 DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
-    MediaRouterDialogOpenOrigin activation_location,
+    MediaRouterDialogActivationLocation activation_location,
     MediaCastMode cast_mode,
     bool is_icon_pinned) {
   switch (activation_location) {
-    case MediaRouterDialogOpenOrigin::TOOLBAR:
+    case MediaRouterDialogActivationLocation::TOOLBAR:
       if (is_icon_pinned) {
         switch (cast_mode) {
           case MediaCastMode::PRESENTATION:
@@ -49,7 +49,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
         }
       }
       break;
-    case MediaRouterDialogOpenOrigin::CONTEXTUAL_MENU:
+    case MediaRouterDialogActivationLocation::CONTEXTUAL_MENU:
       switch (cast_mode) {
         case MediaCastMode::PRESENTATION:
           return DialogActivationLocationAndCastMode::
@@ -61,7 +61,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
               kContextMenuAndDesktopMirror;
       }
       break;
-    case MediaRouterDialogOpenOrigin::PAGE:
+    case MediaRouterDialogActivationLocation::PAGE:
       switch (cast_mode) {
         case MediaCastMode::PRESENTATION:
           return DialogActivationLocationAndCastMode::kPageAndPresentation;
@@ -71,7 +71,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           return DialogActivationLocationAndCastMode::kPageAndDesktopMirror;
       }
       break;
-    case MediaRouterDialogOpenOrigin::APP_MENU:
+    case MediaRouterDialogActivationLocation::APP_MENU:
       switch (cast_mode) {
         case MediaCastMode::PRESENTATION:
           return DialogActivationLocationAndCastMode::kAppMenuAndPresentation;
@@ -81,7 +81,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           return DialogActivationLocationAndCastMode::kAppMenuAndDesktopMirror;
       }
       break;
-    case MediaRouterDialogOpenOrigin::SHARING_HUB:
+    case MediaRouterDialogActivationLocation::SHARING_HUB:
       switch (cast_mode) {
         case MediaCastMode::PRESENTATION:
           return DialogActivationLocationAndCastMode::
@@ -95,9 +95,9 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
       break;
     // |OVERFLOW_MENU| refers to extension icons hidden in the app menu. That
     // mode is no longer available for the Cast toolbar icon.
-    case MediaRouterDialogOpenOrigin::OVERFLOW_MENU:
-    case MediaRouterDialogOpenOrigin::SYSTEM_TRAY:
-    case MediaRouterDialogOpenOrigin::TOTAL_COUNT:
+    case MediaRouterDialogActivationLocation::OVERFLOW_MENU:
+    case MediaRouterDialogActivationLocation::SYSTEM_TRAY:
+    case MediaRouterDialogActivationLocation::TOTAL_COUNT:
       break;
   }
   NOTREACHED();
@@ -108,7 +108,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
 
 CastDialogMetrics::CastDialogMetrics(
     const base::Time& initialization_time,
-    MediaRouterDialogOpenOrigin activation_location,
+    MediaRouterDialogActivationLocation activation_location,
     Profile* profile)
     : initialization_time_(initialization_time),
       activation_location_(activation_location),

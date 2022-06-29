@@ -206,7 +206,7 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
         return;
 
       dialog_controller->ShowMediaRouterDialog(
-          media_router::MediaRouterDialogOpenOrigin::SHARING_HUB);
+          media_router::MediaRouterDialogActivationLocation::SHARING_HUB);
     } else {
       chrome::ExecuteCommand(browser, command_id);
     }

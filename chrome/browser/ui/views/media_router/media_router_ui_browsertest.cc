@@ -158,12 +158,14 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   MediaRouterDialogController* dialog_controller = GetDialogController();
 
   EXPECT_FALSE(ToolbarIconExists());
-  dialog_controller->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
+  dialog_controller->ShowMediaRouterDialog(
+      MediaRouterDialogActivationLocation::PAGE);
   EXPECT_TRUE(ToolbarIconExists());
   dialog_controller->HideMediaRouterDialog();
   EXPECT_FALSE(ToolbarIconExists());
 
-  dialog_controller->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
+  dialog_controller->ShowMediaRouterDialog(
+      MediaRouterDialogActivationLocation::PAGE);
   EXPECT_TRUE(ToolbarIconExists());
 
   views::test::WidgetDestroyedWaiter waiter(
@@ -174,12 +176,14 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
   EXPECT_FALSE(ToolbarIconExists());
 
-  dialog_controller->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
+  dialog_controller->ShowMediaRouterDialog(
+      MediaRouterDialogActivationLocation::PAGE);
   SetAlwaysShowActionPref(true);
   // When the pref is set to true, hiding the dialog shouldn't hide the icon.
   dialog_controller->HideMediaRouterDialog();
   EXPECT_TRUE(ToolbarIconExists());
-  dialog_controller->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
+  dialog_controller->ShowMediaRouterDialog(
+      MediaRouterDialogActivationLocation::PAGE);
   // While the dialog is showing, setting the pref to false shouldn't hide the
   // icon.
   SetAlwaysShowActionPref(false);
@@ -190,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, PinAndUnpinToolbarIcon) {
   GetDialogController()->ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin::PAGE);
+      MediaRouterDialogActivationLocation::PAGE);
   EXPECT_TRUE(ToolbarIconExists());
   // Pin the icon via its context menu.
   ui::SimpleMenuModel* context_menu = GetIconContextMenu();

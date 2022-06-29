@@ -1409,7 +1409,7 @@ void RouteMediaInvokedFromAppMenu(Browser* browser) {
     return;
 
   dialog_controller->ShowMediaRouterDialog(
-      media_router::MediaRouterDialogOpenOrigin::APP_MENU);
+      media_router::MediaRouterDialogActivationLocation::APP_MENU);
 }
 
 void CutCopyPaste(Browser* browser, int command_id) {

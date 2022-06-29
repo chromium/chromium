@@ -58,7 +58,7 @@ void CastDialogView::ShowDialogWithToolbarAction(
     CastDialogController* controller,
     Browser* browser,
     const base::Time& start_time,
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* action_view = browser_view->toolbar()->cast_button();
   DCHECK(action_view);
@@ -71,7 +71,7 @@ void CastDialogView::ShowDialogCenteredForBrowserWindow(
     CastDialogController* controller,
     Browser* browser,
     const base::Time& start_time,
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   ShowDialog(BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
              views::BubbleBorder::TOP_CENTER, controller, browser->profile(),
              start_time, activation_location);
@@ -83,7 +83,7 @@ void CastDialogView::ShowDialogCentered(
     CastDialogController* controller,
     Profile* profile,
     const base::Time& start_time,
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   ShowDialog(/* anchor_view */ nullptr, views::BubbleBorder::TOP_CENTER,
              controller, profile, start_time, activation_location);
   instance_->SetAnchorRect(bounds);
@@ -202,7 +202,7 @@ void CastDialogView::ShowDialog(
     CastDialogController* controller,
     Profile* profile,
     const base::Time& start_time,
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   DCHECK(!start_time.is_null());
   // Hide the previous dialog instance if it exists, since there can only be one
   // instance at a time.
@@ -214,12 +214,13 @@ void CastDialogView::ShowDialog(
   widget->Show();
 }
 
-CastDialogView::CastDialogView(views::View* anchor_view,
-                               views::BubbleBorder::Arrow anchor_position,
-                               CastDialogController* controller,
-                               Profile* profile,
-                               const base::Time& start_time,
-                               MediaRouterDialogOpenOrigin activation_location)
+CastDialogView::CastDialogView(
+    views::View* anchor_view,
+    views::BubbleBorder::Arrow anchor_position,
+    CastDialogController* controller,
+    Profile* profile,
+    const base::Time& start_time,
+    MediaRouterDialogActivationLocation activation_location)
     : BubbleDialogDelegateView(anchor_view, anchor_position),
       controller_(controller),
       profile_(profile),

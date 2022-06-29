@@ -218,7 +218,7 @@ void CastToolbarButton::ButtonPressed() {
     dialog_controller->HideMediaRouterDialog();
   } else {
     dialog_controller->ShowMediaRouterDialog(
-        MediaRouterDialogOpenOrigin::TOOLBAR);
+        MediaRouterDialogActivationLocation::TOOLBAR);
   }
 }
 

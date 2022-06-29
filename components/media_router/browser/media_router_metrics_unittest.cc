@@ -111,22 +111,25 @@ void TestRouteResultCodeHistograms(
 
 }  // namespace
 
-TEST(MediaRouterMetricsTest, RecordMediaRouterDialogOrigin) {
+TEST(MediaRouterMetricsTest, RecordMediaRouterDialogActivationLocation) {
   base::HistogramTester tester;
-  const MediaRouterDialogOpenOrigin origin1 =
-      MediaRouterDialogOpenOrigin::TOOLBAR;
-  const MediaRouterDialogOpenOrigin origin2 =
-      MediaRouterDialogOpenOrigin::CONTEXTUAL_MENU;
+  const MediaRouterDialogActivationLocation activation_location1 =
+      MediaRouterDialogActivationLocation::TOOLBAR;
+  const MediaRouterDialogActivationLocation activation_location2 =
+      MediaRouterDialogActivationLocation::CONTEXTUAL_MENU;
 
   tester.ExpectTotalCount(MediaRouterMetrics::kHistogramIconClickLocation, 0);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(origin1);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(origin2);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(origin1);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location1);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location2);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location1);
   tester.ExpectTotalCount(MediaRouterMetrics::kHistogramIconClickLocation, 3);
   EXPECT_THAT(
       tester.GetAllSamples(MediaRouterMetrics::kHistogramIconClickLocation),
-      ElementsAre(Bucket(static_cast<int>(origin1), 2),
-                  Bucket(static_cast<int>(origin2), 1)));
+      ElementsAre(Bucket(static_cast<int>(activation_location1), 2),
+                  Bucket(static_cast<int>(activation_location2), 1)));
 }
 
 TEST(MediaRouterMetricsTest, RecordMediaRouterDialogPaint) {

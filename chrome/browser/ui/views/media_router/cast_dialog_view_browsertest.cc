@@ -87,7 +87,7 @@ class CastDialogViewBrowserTest : public DialogBrowserTest {
   void PreShow() override {
     media_router::CastDialogView::ShowDialogCenteredForBrowserWindow(
         controller_.get(), browser(), base::Time::Now(),
-        media_router::MediaRouterDialogOpenOrigin::TOOLBAR);
+        media_router::MediaRouterDialogActivationLocation::TOOLBAR);
   }
 
   void ShowUi(const std::string& name) override {

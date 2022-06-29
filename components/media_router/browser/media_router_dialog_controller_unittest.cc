@@ -38,7 +38,7 @@ class TestMediaRouterDialogController : public MediaRouterDialogController {
 
   bool IsShowingMediaRouterDialog() const override { return has_dialog_; }
   void CreateMediaRouterDialog(
-      MediaRouterDialogOpenOrigin activation_location) override {
+      MediaRouterDialogActivationLocation activation_location) override {
     has_dialog_ = true;
   }
   void CloseMediaRouterDialog() override { has_dialog_ = false; }
@@ -127,13 +127,13 @@ TEST_F(MediaRouterDialogControllerTest, CreateForWebContents) {
 TEST_F(MediaRouterDialogControllerTest, ShowAndHideDialog) {
   EXPECT_CALL(*web_contents_delegate_, ActivateContents(web_contents()));
   EXPECT_TRUE(dialog_controller_->ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin::TOOLBAR));
+      MediaRouterDialogActivationLocation::TOOLBAR));
   EXPECT_TRUE(dialog_controller_->IsShowingMediaRouterDialog());
 
   // If a dialog is already shown, ShowMediaRouterDialog() should return false.
   EXPECT_CALL(*web_contents_delegate_, ActivateContents(web_contents()));
   EXPECT_FALSE(dialog_controller_->ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin::TOOLBAR));
+      MediaRouterDialogActivationLocation::TOOLBAR));
 
   dialog_controller_->HideMediaRouterDialog();
   EXPECT_FALSE(dialog_controller_->IsShowingMediaRouterDialog());
@@ -142,7 +142,7 @@ TEST_F(MediaRouterDialogControllerTest, ShowAndHideDialog) {
   // again.
   EXPECT_CALL(*web_contents_delegate_, ActivateContents(web_contents()));
   EXPECT_TRUE(dialog_controller_->ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin::TOOLBAR));
+      MediaRouterDialogActivationLocation::TOOLBAR));
 }
 
 TEST_F(MediaRouterDialogControllerTest, ShowDialogForPresentation) {

@@ -77,7 +77,8 @@ void MediaRouterDialogControllerViewsTest::CreateDialogController() {
 void MediaRouterDialogControllerViewsTest::OpenMediaRouterDialog() {
   CreateDialogController();
   // Show the media router dialog for the initiator.
-  dialog_controller_->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
+  dialog_controller_->ShowMediaRouterDialog(
+      MediaRouterDialogActivationLocation::PAGE);
   ASSERT_TRUE(dialog_controller_->IsShowingMediaRouterDialog());
 }
 

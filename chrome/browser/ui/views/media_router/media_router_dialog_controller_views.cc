@@ -55,7 +55,7 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
 }
 
 void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   base::Time dialog_creation_time = base::Time::Now();
   if (GetActionController())
     GetActionController()->OnDialogShown();
@@ -92,7 +92,8 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
   if (dialog_creation_callback_)
     dialog_creation_callback_.Run();
 
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(activation_location);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location);
 }
 
 void MediaRouterDialogControllerViews::CloseMediaRouterDialog() {
