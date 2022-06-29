@@ -17,23 +17,6 @@
 
 namespace blink {
 
-void AddSinkToMediaStreamTrack(const WebMediaStreamTrack& track,
-                               WebMediaStreamSink* sink,
-                               const VideoCaptureDeliverFrameCB& callback,
-                               MediaStreamVideoSink::IsSecure is_secure,
-                               MediaStreamVideoSink::UsesAlpha uses_alpha) {
-  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
-  DCHECK(video_track);
-  video_track->AddSink(sink, callback, is_secure, uses_alpha);
-}
-
-void RemoveSinkFromMediaStreamTrack(const WebMediaStreamTrack& track,
-                                    WebMediaStreamSink* sink) {
-  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
-  if (video_track)
-    video_track->RemoveSink(sink);
-}
-
 WebMediaStreamTrack CreateWebMediaStreamVideoTrack(
     MediaStreamVideoSource* source,
     MediaStreamVideoSource::ConstraintsOnceCallback callback,

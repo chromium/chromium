@@ -4,10 +4,36 @@
 
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 
-#include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 
 namespace blink {
+
+namespace {
+
+// Calls to these methods must be done on the main render thread.
+// Note that |callback| for frame delivery happens on the IO thread.
+// Warning: Calling RemoveSinkFromMediaStreamTrack does not immediately stop
+// frame delivery through the |callback|, since frames are being delivered on
+// a different thread.
+// |is_sink_secure| indicates if |sink| meets output protection requirement.
+// Generally, this should be false unless you know what you are doing.
+void AddSinkToMediaStreamTrack(const WebMediaStreamTrack& track,
+                               WebMediaStreamSink* sink,
+                               const VideoCaptureDeliverFrameCB& callback,
+                               MediaStreamVideoSink::IsSecure is_secure,
+                               MediaStreamVideoSink::UsesAlpha uses_alpha) {
+  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
+  DCHECK(video_track);
+  video_track->AddSink(sink, callback, is_secure, uses_alpha);
+}
+
+void RemoveSinkFromMediaStreamTrack(const WebMediaStreamTrack& track,
+                                    WebMediaStreamSink* sink) {
+  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
+  if (video_track)
+    video_track->RemoveSink(sink);
+}
+}  // namespace
 
 MediaStreamVideoSink::MediaStreamVideoSink() : WebMediaStreamSink() {}
 
