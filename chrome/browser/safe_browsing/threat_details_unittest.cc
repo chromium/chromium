@@ -712,7 +712,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
       mojom::AttributeNameValue::New("src", kDOMChildURL));
   outer_child_iframe->attributes.push_back(
       mojom::AttributeNameValue::New("foo", "bar"));
-  outer_child_iframe->child_frame_routing_id = child_rfh->GetRoutingID();
+  outer_child_iframe->child_frame_token = child_rfh->GetFrameToken();
   outer_params.push_back(std::move(outer_child_iframe));
 
   mojom::ThreatDOMDetailsNodePtr outer_summary_node =
@@ -938,9 +938,9 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
       mojom::ThreatDOMDetailsNode::New();
   outer_summary_node->url = GURL(kDOMParentURL);
   outer_summary_node->children.push_back(GURL(kDataURL));
-  // Set |child_frame_routing_id| for this node to something non-sensical so
+  // Set |child_frame_token| for this node to something non-sensical so
   // that the child frame lookup fails.
-  outer_summary_node->child_frame_routing_id = -100;
+  outer_summary_node->child_frame_token = blink::RemoteFrameToken();
   outer_params.push_back(std::move(outer_summary_node));
 
   // Now define some more nodes for the body of the frame. The URL of this
@@ -1129,7 +1129,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags) {
       mojom::AttributeNameValue::New("src", kDOMChildURL));
   outer_child_iframe->attributes.push_back(
       mojom::AttributeNameValue::New("foo", "bar"));
-  outer_child_iframe->child_frame_routing_id = child_rfh->GetRoutingID();
+  outer_child_iframe->child_frame_token = child_rfh->GetFrameToken();
   outer_params.push_back(std::move(outer_child_iframe));
 
   mojom::ThreatDOMDetailsNodePtr outer_summary_node =
@@ -1333,9 +1333,9 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_EmptyReportNotSent) {
       mojom::ThreatDOMDetailsNode::New();
   outer_summary_node->url = GURL(kDOMParentURL);
   outer_summary_node->children.push_back(GURL(kDataURL));
-  // Set |child_frame_routing_id| for this node to something non-sensical so
+  // Set |child_frame_token| for this node to something non-sensical so
   // that the child frame lookup fails.
-  outer_summary_node->child_frame_routing_id = -100;
+  outer_summary_node->child_frame_token = blink::RemoteFrameToken();
   outer_params.push_back(std::move(outer_summary_node));
 
   // Now define some more nodes for the body of the frame. The URL of this

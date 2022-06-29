@@ -681,14 +681,14 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
   const int sender_frame_tree_node_id = sender_rfh->GetFrameTreeNodeId();
   KeyToFrameTreeIdMap child_frame_tree_map;
   for (const mojom::ThreatDOMDetailsNodePtr& node : params) {
-    if (node->child_frame_routing_id == 0)
+    if (!node->child_frame_token)
       continue;
 
     const std::string cur_element_key =
         GetElementKey(sender_frame_tree_node_id, node->node_id);
     int child_frame_tree_node_id =
-        content::RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
-            sender_process_id, node->child_frame_routing_id);
+        content::RenderFrameHost::GetFrameTreeNodeIdForFrameToken(
+            sender_process_id, node->child_frame_token.value());
     if (child_frame_tree_node_id !=
         content::RenderFrameHost::kNoFrameTreeNodeId) {
       child_frame_tree_map[cur_element_key] = child_frame_tree_node_id;

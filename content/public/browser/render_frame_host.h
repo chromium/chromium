@@ -152,6 +152,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // frame that is currently rendered in a different process than |process_id|.
   static int GetFrameTreeNodeIdForRoutingId(int process_id, int routing_id);
 
+  // Returns the FrameTreeNode ID corresponding to the specified |process_id|
+  // and |frame_token|. This routing ID pair may represent a placeholder for
+  // frame that is currently rendered in a different process than |process_id|.
+  static int GetFrameTreeNodeIdForFrameToken(
+      int process_id,
+      const ::blink::FrameToken& frame_token);
+
   // Returns the RenderFrameHost corresponding to the
   // |placeholder_frame_token| in the given |render_process_id|. The returned
   // RenderFrameHost will always be in a different process.  It may be null if

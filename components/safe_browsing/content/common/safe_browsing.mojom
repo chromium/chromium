@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
 
 // Provided by the browser and used by renderers to perform SafeBrowsing URL
@@ -85,9 +86,9 @@ struct ThreatDOMDetailsNode {
   // The node's attributes as a collection of name-value pairs.
   array<AttributeNameValue> attributes;
   // If this node represents a frame or iframe, then this field is set to the
-  // routing ID of the local or remote frame in this renderer process that is
+  // FrameToken of the local or remote frame in this renderer process that is
   // responsible for rendering the contents of this frame (to handle OOPIFs).
-  int32 child_frame_routing_id;
+  blink.mojom.FrameToken? child_frame_token;
   // This field holds inline JavaScript content and remotely hosted scripts.
   string inner_html;
 };

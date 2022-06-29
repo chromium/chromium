@@ -9917,6 +9917,16 @@ int RenderFrameHost::GetFrameTreeNodeIdForRoutingId(int process_id,
 }
 
 // static
+int RenderFrameHost::GetFrameTreeNodeIdForFrameToken(
+    int process_id,
+    const ::blink::FrameToken& frame_token) {
+  auto frame_or_proxy = LookupRenderFrameHostOrProxy(process_id, frame_token);
+  if (frame_or_proxy)
+    return frame_or_proxy.GetFrameTreeNode()->frame_tree_node_id();
+  return kNoFrameTreeNodeId;
+}
+
+// static
 RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
     int render_process_id,
     const blink::RemoteFrameToken& placeholder_frame_token) {

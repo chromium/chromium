@@ -12,6 +12,7 @@ mojom("interfaces") {
   public_deps = [
     "//components/safe_browsing/core/common:interfaces",
     "//services/network/public/mojom",
+    "//third_party/blink/public/mojom/tokens",
     "//url/mojom:url_mojom_gurl",
   ]
 
