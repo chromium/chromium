@@ -70,6 +70,13 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenExtensions, key::kExtensionInstallForcelist},
     {key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates,
      key::kPromptOnMultipleMatchingCertificates},
+
+    // key::kDeviceLoginScreenLocales maps to the ash::kDeviceLoginScreenLocales
+    // CrosSetting elsewhere. Also map it to the key::kForcedLanguages policy in
+    // the login/lock screen profile so web contents within those profiles
+    // generate a corresponding Accept-Languages header
+    // (https://crbug.com/1336382).
+    {key::kDeviceLoginScreenLocales, key::kForcedLanguages},
 };
 
 const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {

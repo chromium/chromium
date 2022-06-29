@@ -11,10 +11,11 @@
 
 namespace policy {
 
-// Policy provider for the login/lock screen app profile. Since these profiles
-// are not associated with any user, it does not receive regular user policy.
-// However, several device policies that control features on the login/lock
-// screen surface as user policies in the login and the lock screen app profile.
+// Policy provider for the signin, lock screen and lock screen apps
+// (`!ProfileHelper::IsRegularProfile`) profiles. Since these profiles are not
+// associated with any user, it does not receive regular user policy. However,
+// several device policies that control features on the login/lock screen
+// surface as user policies in the login and the lock screen app profile.
 class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
                                    public PolicyService::Observer {
  public:

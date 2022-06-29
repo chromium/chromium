@@ -12127,7 +12127,29 @@
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
   "DeviceLoginScreenLocales": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "description": "Test mapping to the signin profile",
+        "policies": {
+          "DeviceLoginScreenLocales": [
+            "en-US",
+            "fr-FR"
+          ]
+        },
+        "prefs": {
+          "intl.forced_languages": {
+            "value": [
+              "en-US",
+              "fr-FR"
+            ],
+            "location": "signin_profile"
+          }
+        }
+      }
+    ]
   },
   "DeviceLoginScreenInputMethods": {
     "reason_for_missing_test": "Maps into CrosSettings"
