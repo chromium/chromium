@@ -29,6 +29,10 @@ class KEYED_SERVICE_EXPORT KeyedServiceFactory
   KeyedServiceFactory(const KeyedServiceFactory&) = delete;
   KeyedServiceFactory& operator=(const KeyedServiceFactory&) = delete;
 
+  // Returns the number of KeyedServices that are currently active for a given
+  // context.
+  static int GetServicesCount(void* context);
+
  protected:
   KeyedServiceFactory(const char* name, DependencyManager* manager, Type type);
   ~KeyedServiceFactory() override;

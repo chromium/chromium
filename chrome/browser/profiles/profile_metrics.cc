@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/keyed_service/core/keyed_service_factory.h"
+#include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 #include "components/profile_metrics/counts.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -96,6 +98,11 @@ profile_metrics::ProfileColorsUniqueness GetProfileColorsUniqueness(
                    kUniqueExceptForRepeatedDefault
              : profile_metrics::ProfileColorsUniqueness::kUnique;
 #endif
+}
+
+int GetTotalKeyedServiceCount(Profile* profile) {
+  return KeyedServiceFactory::GetServicesCount(profile) +
+         RefcountedKeyedServiceFactory::GetServicesCount(profile);
 }
 
 }  // namespace
@@ -486,4 +493,13 @@ void ProfileMetrics::LogProfileLaunch(Profile* profile) {
 
 void ProfileMetrics::LogProfileUpdate(const base::FilePath& profile_path) {
   base::UmaHistogramEnumeration("Profile.Update", GetProfileType(profile_path));
+}
+
+void ProfileMetrics::LogSystemProfileKeyedServicesCount(Profile* profile) {
+  DCHECK(profile->IsSystemProfile());
+
+  std::string histogram_name = "Profile.KeyedService.Count.SystemProfile";
+  histogram_name += profile->IsOffTheRecord() ? "OTR" : "Original";
+  base::UmaHistogramCounts1000(histogram_name,
+                               GetTotalKeyedServiceCount(profile));
 }

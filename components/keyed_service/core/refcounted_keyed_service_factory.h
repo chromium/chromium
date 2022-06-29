@@ -30,6 +30,10 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   RefcountedKeyedServiceFactory& operator=(
       const RefcountedKeyedServiceFactory&) = delete;
 
+  // Returns the number of RefCountedKeyedServices that are currently active for
+  // a given context.
+  static int GetServicesCount(void* context);
+
  protected:
   RefcountedKeyedServiceFactory(const char* name,
                                 DependencyManager* manager,
