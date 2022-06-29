@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
@@ -750,6 +751,10 @@ void SystemTrayClientImpl::ShowCalendarEvent(
                           /*prefer_container=*/true),
       official_url, apps::mojom::LaunchSource::kFromShelf);
   opened_pwa = true;
+}
+
+version_info::Channel SystemTrayClientImpl::GetChannel() {
+  return chrome::GetChannel();
 }
 
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/strings/string_piece.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
+#include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -157,6 +158,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
                                  const base::Time& date,
                                  bool& opened_pwa,
                                  GURL& finalized_event_url) = 0;
+
+  // Retrieves the release track on which the device resides.
+  virtual version_info::Channel GetChannel() = 0;
 
  protected:
   SystemTrayClient() {}

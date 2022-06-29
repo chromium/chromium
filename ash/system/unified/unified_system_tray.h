@@ -31,6 +31,7 @@ namespace ash {
 
 class AshMessagePopupCollection;
 class CameraMicTrayItemView;
+class ChannelIndicatorView;
 class CurrentLocaleView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
@@ -226,6 +227,10 @@ class ASH_EXPORT UnifiedSystemTray
     return message_center_bubble_.get();
   }
 
+  ChannelIndicatorView* channel_indicator_view() {
+    return channel_indicator_view_;
+  }
+
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
 
@@ -288,6 +293,7 @@ class ASH_EXPORT UnifiedSystemTray
   TimeTrayItemView* const time_view_;
 
   NetworkTrayView* network_tray_view_ = nullptr;
+  ChannelIndicatorView* channel_indicator_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

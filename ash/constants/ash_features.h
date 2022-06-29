@@ -516,6 +516,8 @@ extern const base::Feature kReleaseNotesNotificationAllChannels;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kReleaseNotesSuggestionChip;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kReleaseTrackUi;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kReverseScrollGestures;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kScalableStatusArea;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -792,6 +794,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsQuickSettingsNetworkRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsRedirectToDefaultIdPEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReleaseTrackUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReverseScrollGesturesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsRgbKeyboardEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

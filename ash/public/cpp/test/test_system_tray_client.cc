@@ -120,4 +120,8 @@ void TestSystemTrayClient::ShowCalendarEvent(
     bool& opened_pwa,
     GURL& final_event_url) {}
 
+version_info::Channel TestSystemTrayClient::GetChannel() {
+  return channel_;
+}
+
 }  // namespace ash

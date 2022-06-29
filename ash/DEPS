@@ -24,6 +24,7 @@ include_rules = [
   "+components/ui_devtools",
   "+components/url_matcher",
   "+components/vector_icons",
+  "+components/version_info",
   "+components/viz/common",
   "+components/viz/host",
   "+components/wallpaper",

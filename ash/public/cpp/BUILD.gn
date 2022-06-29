@@ -415,6 +415,7 @@ component("cpp") {
     "//components/app_restore",
     "//components/session_manager:base",
     "//components/user_manager",
+    "//components/version_info:channel",
     "//ui/base/ime/ash:ime_types",
     "//ui/gfx",
   ]

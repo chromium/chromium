@@ -2096,6 +2096,16 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR" desc="The separator symbol between battery percentage string and battery remaining time string">
         ''' - '''
       </message>
+      <!-- Status tray channel indicator strings -->
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_BETA" desc="The string used to indicate that this device is on the beta release track">
+        Beta Channel
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_DEV" desc="The string used to indicate that this device is on the development release track">
+        Dev Channel
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_CANARY" desc="The string used to indicate that this device is on the canary release track">
+        Canary Channel
+      </message>
       <!-- Status Tray Network strings -->
       <message name="IDS_ASH_STATUS_TRAY_NETWORK" desc="The label used in the network dialog header. [CHAR_LIMIT=18]">
         Network
