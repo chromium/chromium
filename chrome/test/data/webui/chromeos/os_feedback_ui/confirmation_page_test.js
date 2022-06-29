@@ -153,6 +153,7 @@ export function confirmationPageTest() {
         'Send new report', getElementContent(page, '#buttonNewReport'));
     assertTrue(page.i18nExists('buttonNewReport'));
     assertEquals('Done', getElementContent(page, '#buttonDone'));
+    assertTrue(page.i18nExists('buttonDone'));
   }
 
   /**TODO(xiangdongkong): test user actions */

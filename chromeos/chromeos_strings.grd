@@ -3477,6 +3477,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_SEND_NEW_REPORT_BUTTON_LABEL" desc="label for the send new report button to send a new report.">
         Send new report
       </message>
+      <message name="IDS_FEEDBACK_TOOL_DONE_BUTTON_LABEL" desc="label for the done button to close the feedback app.">
+        Done
+      </message>
       <!-- End of Feedback Tool -->
     </messages>
   </release>
