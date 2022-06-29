@@ -24,14 +24,14 @@ UrgentPasswordExpiryNotificationHandler::
     ~UrgentPasswordExpiryNotificationHandler() = default;
 
 void UrgentPasswordExpiryNotificationHandler::HandleContinue(
-    const base::ListValue* params) {
+    const base::Value::List& params) {
   InSessionPasswordChangeManager::Get()->StartInSessionPasswordChange();
 }
 
 void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
-    const base::ListValue* params) {
-  const std::string callback_id = params->GetListDeprecated()[0].GetString();
-  const int ms_until_expiry = params->GetListDeprecated()[1].GetInt();
+    const base::Value::List& params) {
+  const std::string callback_id = params[0].GetString();
+  const int ms_until_expiry = params[1].GetInt();
 
   const std::u16string title = PasswordExpiryNotification::GetTitleText(
       base::Milliseconds(ms_until_expiry));
@@ -41,11 +41,11 @@ void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
 }
 
 void UrgentPasswordExpiryNotificationHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "continue", base::BindRepeating(
                       &UrgentPasswordExpiryNotificationHandler::HandleContinue,
                       weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getTitleText",
       base::BindRepeating(
           &UrgentPasswordExpiryNotificationHandler::HandleGetTitleText,

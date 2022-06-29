@@ -24,7 +24,7 @@ PasswordChangeHandler::PasswordChangeHandler(
     : password_change_url_(password_change_url) {}
 PasswordChangeHandler::~PasswordChangeHandler() = default;
 
-void PasswordChangeHandler::HandleInitialize(const base::ListValue* value) {
+void PasswordChangeHandler::HandleInitialize(const base::Value::List& value) {
   Profile* profile = Profile::FromWebUI(web_ui());
   CHECK(profile->GetPrefs()->GetBoolean(
       prefs::kSamlInSessionPasswordChangeEnabled));
@@ -44,9 +44,9 @@ void PasswordChangeHandler::HandleInitialize(const base::ListValue* value) {
 }
 
 void PasswordChangeHandler::HandleChangePassword(
-    const base::ListValue* params) {
-  const base::Value& old_passwords = params->GetListDeprecated()[0];
-  const base::Value& new_passwords = params->GetListDeprecated()[1];
+    const base::Value::List& params) {
+  const base::Value& old_passwords = params[0];
+  const base::Value& new_passwords = params[1];
   VLOG(4) << "Scraped " << old_passwords.GetListDeprecated().size()
           << " old passwords";
   VLOG(4) << "Scraped " << new_passwords.GetListDeprecated().size()
@@ -66,11 +66,11 @@ void PasswordChangeHandler::HandleChangePassword(
 }
 
 void PasswordChangeHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize",
       base::BindRepeating(&PasswordChangeHandler::HandleInitialize,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "changePassword",
       base::BindRepeating(&PasswordChangeHandler::HandleChangePassword,
                           weak_factory_.GetWeakPtr()));

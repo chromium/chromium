@@ -23,8 +23,8 @@ class PasswordChangeHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
-  void HandleInitialize(const base::ListValue*);
-  void HandleChangePassword(const base::ListValue* passwords);
+  void HandleInitialize(const base::Value::List&);
+  void HandleChangePassword(const base::Value::List& passwords);
 
  private:
   const std::string password_change_url_;
