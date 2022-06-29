@@ -196,12 +196,6 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
-  // TODO(crbug.com/969114): Not all shared image factory implementations
-  // support concurrent read/write usage.
-  if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
-    return false;
-  }
-
   if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
       gmb_type != gfx::SHARED_MEMORY_BUFFER) {
     return false;

@@ -392,22 +392,25 @@ bool SharedImageBackingOzone::BeginAccess(
     AccessStream access_stream,
     std::vector<gfx::GpuFenceHandle>* fences,
     bool& need_end_fence) {
-  if (is_write_in_progress_) {
-    DLOG(ERROR) << "Unable to begin read or write access because another write "
-                   "access is in progress";
-    return false;
-  }
+  // Track reads and writes if not being used for concurrent read/writes.
+  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (is_write_in_progress_) {
+      DLOG(ERROR) << "Unable to begin read or write access because another "
+                     "write access is in progress";
+      return false;
+    }
 
-  if (reads_in_progress_ && !readonly) {
-    DLOG(ERROR)
-        << "Unable to begin write access because a read access is in progress";
-    return false;
-  }
+    if (reads_in_progress_ && !readonly) {
+      DLOG(ERROR) << "Unable to begin write access because a read access is in "
+                     "progress ";
+      return false;
+    }
 
-  if (readonly) {
-    ++reads_in_progress_;
-  } else {
-    is_write_in_progress_ = true;
+    if (readonly) {
+      ++reads_in_progress_;
+    } else {
+      is_write_in_progress_ = true;
+    }
   }
 
   // We don't wait for read-after-read.
@@ -485,12 +488,15 @@ bool SharedImageBackingOzone::BeginAccess(
 void SharedImageBackingOzone::EndAccess(bool readonly,
                                         AccessStream access_stream,
                                         gfx::GpuFenceHandle fence) {
-  if (readonly) {
-    DCHECK_GT(reads_in_progress_, 0u);
-    --reads_in_progress_;
-  } else {
-    DCHECK(is_write_in_progress_);
-    is_write_in_progress_ = false;
+  // Track reads and writes if not being used for concurrent read/writes.
+  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (readonly) {
+      DCHECK_GT(reads_in_progress_, 0u);
+      --reads_in_progress_;
+    } else {
+      DCHECK(is_write_in_progress_);
+      is_write_in_progress_ = false;
+    }
   }
 
   if (readonly) {
