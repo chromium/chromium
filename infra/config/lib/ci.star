@@ -102,9 +102,6 @@ def ci_builder(
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.ci_test_results",
         ),
-        resultdb.export_text_artifacts(
-            bq_table = "chrome-luci-data.chromium.ci_text_artifacts",
-        ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",
             predicate = resultdb.test_result_predicate(

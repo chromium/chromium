@@ -147,9 +147,6 @@ def try_builder(
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.try_test_results",
         ),
-        resultdb.export_text_artifacts(
-            bq_table = "chrome-luci-data.chromium.try_text_artifacts",
-        ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_try_test_results",
             predicate = resultdb.test_result_predicate(

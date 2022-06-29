@@ -300,6 +300,17 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Linux Builder"],
+    # TODO(crbug.com/1249968): Roll this out more broadly.
+    resultdb_bigquery_exports = [
+        resultdb.export_text_artifacts(
+            bq_table = "chrome-luci-data.chromium.ci_text_artifacts",
+            predicate = resultdb.artifact_predicate(
+                # Only archive output snippets since some tests can generate
+                # very large supplementary files.
+                content_type_regexp = "snippet",
+            ),
+        ),
+    ],
 )
 
 ci.thin_tester(
