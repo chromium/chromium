@@ -116,8 +116,9 @@ def main():
       # GOMA does not work with non-standard output directories.
       'use_goma = false',
   ]
-  _copy_and_append_gn_args(options.gn_args_path, out_gn_args_path,
-                           extra_gn_args)
+  _copy_and_append_gn_args(
+      options.gn_args_path, out_gn_args_path,
+      extra_gn_args + ['incremental_javac_test_toggle_gn = false'])
 
   _run_gn([
       '--root-target=' + options.target_name, 'gen',
@@ -132,19 +133,19 @@ def main():
   ninja_args = [_NINJA_PATH, '-C', options.out_dir, gn_path]
   ninja_output = _run_command(ninja_args, env=ninja_env)
   if _USING_PARTIAL_JAVAC_MSG in ninja_output:
-    raise Exception("Incorrectly using partial javac for clean compile.")
+    raise Exception('Incorrectly using partial javac for clean compile.')
 
   _copy_and_append_gn_args(
       options.gn_args_path, out_gn_args_path,
       extra_gn_args + ['incremental_javac_test_toggle_gn = true'])
   ninja_output = _run_command(ninja_args, env=ninja_env)
   if _USING_PARTIAL_JAVAC_MSG not in ninja_output:
-    raise Exception("Not using partial javac for incremental compile.")
+    raise Exception('Not using partial javac for incremental compile.')
 
-  expected_output_path = "{}/lib.java/{}.jar".format(options.out_dir,
-                                                     gn_path.replace(':', '/'))
+  expected_output_path = '{}/obj/{}.javac.jar'.format(options.out_dir,
+                                                      gn_path.replace(':', '/'))
   if not os.path.exists(expected_output_path):
-    raise Exception("{} not created.".format(expected_output_path))
+    raise Exception('{} not created.'.format(expected_output_path))
 
   shutil.copyfile(expected_output_path, options.out_jar)
 
