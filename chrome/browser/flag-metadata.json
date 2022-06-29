@@ -2997,7 +2997,7 @@
   {
     "name": "enable-webassembly-lazy-compilation",
     "owners": [ "clemensb", "wasm-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 116
   },
   {
     "name": "enable-webassembly-tiering",
