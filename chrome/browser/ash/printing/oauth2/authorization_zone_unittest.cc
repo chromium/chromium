@@ -115,6 +115,51 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
   }
 
+  // Simulates Next Token Request described in rfc6749, section 6.
+  void ProcessNextTokenRequest(const std::string& current_refresh_token,
+                               const std::string& access_token,
+                               const std::string& new_refresh_token) {
+    base::flat_map<std::string, std::string> params;
+    EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
+    EXPECT_EQ(params["refresh_token"], current_refresh_token);
+    base::Value::Dict fields;
+    fields.Set("access_token", access_token);
+    fields.Set("token_type", "bearer");
+    if (!new_refresh_token.empty()) {
+      fields.Set("refresh_token", new_refresh_token);
+    }
+    server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
+  }
+
+  // Simulates Token Exchange Request described in rfc8693, section 2.
+  void ProcessTokenExchangeRequest(const chromeos::Uri& ipp_endpoint,
+                                   const std::string& access_token,
+                                   const std::string& endpoint_access_token) {
+    base::flat_map<std::string, std::string> params;
+    EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
+    EXPECT_EQ(params["resource"], ipp_endpoint.GetNormalized());
+    EXPECT_EQ(params["subject_token"], access_token);
+    base::Value::Dict fields;
+    fields.Set("access_token", endpoint_access_token);
+    fields.Set("issued_token_type",
+               "urn:ietf:params:oauth:token-type:access_token");
+    fields.Set("token_type", "bearer");
+    server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
+  }
+
+  // The same as ProcessTokenExchangeRequest(...) but with an error response.
+  void ProcessTokenExchangeRequestError(const chromeos::Uri& ipp_endpoint,
+                                        const std::string& access_token,
+                                        const std::string& error) {
+    base::flat_map<std::string, std::string> params;
+    EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
+    EXPECT_EQ(params["resource"], ipp_endpoint.GetNormalized());
+    EXPECT_EQ(params["subject_token"], access_token);
+    base::Value::Dict fields;
+    fields.Set("error", error);
+    server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
+  }
+
  protected:
   const std::string authorization_server_uri_ = "https://example.com/path";
   const std::string metadata_uri_ =
@@ -253,6 +298,82 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, FirstAccessTokenFail) {
   EXPECT_NE(cr.data.find("my unknown error"), std::string::npos);
 }
 
+TEST_F(PrintingOAuth2AuthorizationZoneTest, TokenRefresh) {
+  CallbackResult cr;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  auto resultant_url = SimulateAuthorization(cr.data, "auth_code_123", "");
+  authorization_zone_->FinishAuthorization(GURL(resultant_url), BindResult(cr));
+  ProcessFirstTokenRequest("auth_code_123", "access_TOKEN", "refresh_TOKEN");
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint, "", BindResult(cr));
+  ProcessTokenExchangeRequest(ipp_endpoint, "access_TOKEN",
+                              "endpoint_token_24$#D");
+  ASSERT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  authorization_zone_->MarkEndpointAccessTokenAsExpired(ipp_endpoint,
+                                                        "endpoint_token_24$#D");
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint, "", BindResult(cr));
+  ProcessTokenExchangeRequestError(ipp_endpoint, "access_TOKEN",
+                                   "invalid_grant");
+  ProcessNextTokenRequest("refresh_TOKEN", "access_token2_w5%",
+                          "refresh_token2_1dh");
+  ProcessTokenExchangeRequest(ipp_endpoint, "access_token2_w5%",
+                              "endpoint_token2_E46h");
+  EXPECT_EQ(cr.status, printing::oauth2::StatusCode::kOK);
+  EXPECT_EQ(cr.data, "endpoint_token2_E46h");
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelRequestsWithScopes) {
+  CallbackResult cr_ia1;
+  CallbackResult cr_ia2;
+  CallbackResult cr_ia3;
+  chromeos::Uri ipp_endpoint_1("ipp://my.printer:1234/path");
+  chromeos::Uri ipp_endpoint_2("ipp://my.other_printer:123/path");
+  CreateAuthorizationZone("clientID");
+  authorization_zone_->InitAuthorization("scope0", BindResult(cr_ia1));
+  authorization_zone_->InitAuthorization("scope1 scope2", BindResult(cr_ia2));
+  authorization_zone_->InitAuthorization("scope2", BindResult(cr_ia3));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr_ia1.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_ia2.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_ia3.status, printing::oauth2::StatusCode::kOK);
+  auto auth_url_1 = SimulateAuthorization(cr_ia1.data, "auth_code_1", "scope0");
+  auto auth_url_2 =
+      SimulateAuthorization(cr_ia2.data, "auth_code_2", "scope1 scope2");
+  auto auth_url_3 = SimulateAuthorization(cr_ia3.data, "auth_code_3", "scope2");
+  authorization_zone_->FinishAuthorization(GURL(auth_url_3),
+                                           BindResult(cr_ia3));
+  authorization_zone_->FinishAuthorization(GURL(auth_url_1),
+                                           BindResult(cr_ia1));
+  authorization_zone_->FinishAuthorization(GURL(auth_url_2),
+                                           BindResult(cr_ia2));
+  ProcessFirstTokenRequest("auth_code_3", "acc_token_3", "ref_token_3");
+  ProcessFirstTokenRequest("auth_code_1", "acc_token_1", "ref_token_1");
+  ProcessFirstTokenRequest("auth_code_2", "acc_token_2", "ref_token_2");
+  ASSERT_EQ(cr_ia1.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_ia2.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_ia3.status, printing::oauth2::StatusCode::kOK);
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint_1, "scope0",
+                                              BindResult(cr_ia1));
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint_2, "scope1",
+                                              BindResult(cr_ia2));
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint_1, "scope2 scope1",
+                                              BindResult(cr_ia3));
+  ProcessTokenExchangeRequest(ipp_endpoint_1, "acc_token_1", "end_token_1");
+  ProcessTokenExchangeRequest(ipp_endpoint_2, "acc_token_2", "end_token_2");
+  // The third GetEndpointAccessToken(...) call used the first token as the
+  // first one.
+  EXPECT_EQ(cr_ia1.status, printing::oauth2::StatusCode::kOK);
+  EXPECT_EQ(cr_ia2.status, printing::oauth2::StatusCode::kOK);
+  EXPECT_EQ(cr_ia3.status, printing::oauth2::StatusCode::kOK);
+  EXPECT_EQ(cr_ia1.data, "end_token_1");
+  EXPECT_EQ(cr_ia2.data, "end_token_2");
+  EXPECT_EQ(cr_ia3.data, "end_token_1");
+}
+
 TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelInitializations) {
   CreateAuthorizationZone("clientID");
   std::vector<CallbackResult> crs(kMaxNumberOfSessions + 1);
@@ -300,6 +421,45 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelAuthorizations) {
                              "ref_token_" + si);
     EXPECT_EQ(crs[i].status, printing::oauth2::StatusCode::kOK);
   }
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelFirstTokenRequests) {
+  CreateAuthorizationZone("clientID");
+  std::vector<CallbackResult> crs(kMaxNumberOfSessions + 1);
+
+  // Complete the first authorization and get an endpoint access token.
+  authorization_zone_->InitAuthorization("scope0", BindResult(crs[0]));
+  ProcessMetadataRequest();
+  ASSERT_EQ(crs[0].status, printing::oauth2::StatusCode::kOK);
+  auto auth_url_0 = SimulateAuthorization(crs[0].data, "auth_code_0", "scope0");
+  authorization_zone_->FinishAuthorization(GURL(auth_url_0),
+                                           BindResult(crs[0]));
+  ProcessFirstTokenRequest("auth_code_0", "acc_token_0", "ref_token_0");
+  ASSERT_EQ(crs[0].status, printing::oauth2::StatusCode::kOK);
+  authorization_zone_->GetEndpointAccessToken(chromeos::Uri("ipp://whatever:1"),
+                                              "scope0", BindResult(crs[0]));
+  ProcessTokenExchangeRequest(chromeos::Uri("ipp://whatever:1"), "acc_token_0",
+                              "xxx");
+  EXPECT_EQ(crs[0].status, printing::oauth2::StatusCode::kOK);
+
+  // Start kMaxNumberOfSessions other sessions (with different scope).
+  for (size_t i = 1; i < crs.size(); ++i) {
+    const std::string si = base::NumberToString(i);
+    authorization_zone_->InitAuthorization("", BindResult(crs[i]));
+    ASSERT_EQ(crs[i].status, printing::oauth2::StatusCode::kOK);
+    auto auth_url = SimulateAuthorization(crs[i].data, "auth_code_" + si, "");
+    authorization_zone_->FinishAuthorization(GURL(auth_url),
+                                             BindResult(crs[i]));
+    ProcessFirstTokenRequest("auth_code_" + si, "acc_token_" + si,
+                             "ref_token_" + si);
+    EXPECT_EQ(crs[i].status, printing::oauth2::StatusCode::kOK);
+  }
+
+  // The first session was closed because it was the oldest one and max allowed
+  // number of sessions was reached.
+  authorization_zone_->GetEndpointAccessToken(chromeos::Uri("ipp://whatever:2"),
+                                              "scope0", BindResult(crs[0]));
+  EXPECT_EQ(crs[0].status, printing::oauth2::StatusCode::kAuthorizationNeeded);
 }
 
 TEST_F(PrintingOAuth2AuthorizationZoneTest, PrefixInErrorMessage) {

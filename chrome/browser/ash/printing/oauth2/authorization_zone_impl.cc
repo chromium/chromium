@@ -21,6 +21,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_server_session.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
+#include "chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.h"
 #include "chromeos/printing/uri.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
@@ -174,6 +175,11 @@ void AuthorizationZoneImpl::InitAuthorization(const std::string& scope,
       // The server must be initialized (it is the very first call to
       // InitAuthorization()). AuthorizationProcedure() will be called inside
       // OnInitializeCallback().
+      // We can use base::Unretained() here because:
+      // * AuthorizationServerData (and HttpExchange) guarantees that no calls
+      //   will be returned after deletion of the object `server_data_`.
+      // * `this` owns `server_data_`; it is guaranteed that deletion of
+      //   `server_data_` is performed before deletion of `this`.
       server_data_.Initialize(
           base::BindOnce(&AuthorizationZoneImpl::OnInitializeCallback,
                          base::Unretained(this)));
@@ -266,8 +272,8 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   AuthorizationServerSession* session = sessions_.back().get();
   session->AddToWaitingList(base::BindOnce(&NoDataForOK, std::move(callback)));
   // We can use base::Unretained() here because:
-  // * Construction of AuthorizationServerSession (and HttpExchange) guarantees
-  //   that no calls will be returned after deletion of the object `session`.
+  // * AuthorizationServerSession (and HttpExchange) guarantees that no calls
+  //   will be returned after deletion of the object `session`.
   // * `this` owns `session`; it is guaranteed that deletion of `session` is
   //   performed before deletion of `this`.
   session->SendFirstTokenRequest(
@@ -280,21 +286,45 @@ void AuthorizationZoneImpl::GetEndpointAccessToken(
     const chromeos::Uri& ipp_endpoint,
     const std::string& scope,
     StatusCallback callback) {
-  AddContextToErrorMessage(callback);
-  // TODO(pawliczek)
-  // This method is supposed to return endpoint access token for given
-  // `ipp_endpoint`. If the given `ipp_endpoint` is not known yet, this method
-  // will request from the server a new endpoint access token for given
-  // `ipp_endpoint` and `scope`.
+  // Try to find the IPP Endpoint.
+  auto it = ipp_endpoints_.find(ipp_endpoint);
+
+  if (it == ipp_endpoints_.end()) {
+    // IPP Endpoint is not known. Create a new IppEndpointFetcher.
+    auto ptr = std::make_unique<IppEndpointTokenFetcher>(
+        url_loader_factory_, server_data_.TokenEndpointURI(), ipp_endpoint,
+        ParseScope(scope));
+    IppEndpointTokenFetcher* endpoint = ptr.get();
+    it = ipp_endpoints_.emplace(ipp_endpoint, std::move(ptr)).first;
+    endpoint->AddToWaitingList(std::move(callback));
+    AttemptTokenExchange(endpoint);
+    return;
+  }
+
+  IppEndpointTokenFetcher* endpoint = it->second.get();
+  if (endpoint->endpoint_access_token().empty()) {
+    // Endpoint Access Token is not ready yet.
+    endpoint->AddToWaitingList(std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(StatusCode::kOK, endpoint->endpoint_access_token());
 }
 
 void AuthorizationZoneImpl::MarkEndpointAccessTokenAsExpired(
     const chromeos::Uri& ipp_endpoint,
     const std::string& endpoint_access_token) {
-  // TODO(pawliczek)
-  // This method removes given `ipp_endpoint` from the list of known ipp
-  // endpoints. It happens only if its endpoint access token equals
-  // `endpoint_access_token`.
+  if (endpoint_access_token.empty()) {
+    return;
+  }
+  auto it = ipp_endpoints_.find(ipp_endpoint);
+  if (it == ipp_endpoints_.end()) {
+    return;
+  }
+  IppEndpointTokenFetcher* endpoint = it->second.get();
+  if (endpoint->endpoint_access_token() == endpoint_access_token) {
+    ipp_endpoints_.erase(it);
+  }
 }
 
 void AuthorizationZoneImpl::AuthorizationProcedure() {
@@ -307,11 +337,11 @@ void AuthorizationZoneImpl::AuthorizationProcedure() {
     }
     // Create new pending authorization and call the callback with an
     // authorization URL to open in the browser.
-    auto& pa = pending_authorizations_.emplace_back(
+    PendingAuthorization& pa = pending_authorizations_.emplace_back(
         std::move(wa.scopes), RandBase64String<kLengthOfState>(),
         RandBase64String<kLengthOfCodeVerifier>());
-    auto auth_url = GetAuthorizationURL(server_data_, pa.scopes, pa.state,
-                                        pa.code_verifier);
+    const std::string auth_url = GetAuthorizationURL(
+        server_data_, pa.scopes, pa.state, pa.code_verifier);
     std::move(wa.callback).Run(StatusCode::kOK, auth_url);
   }
   waiting_authorizations_.clear();
@@ -355,6 +385,141 @@ void AuthorizationZoneImpl::OnSendTokenRequestCallback(
   for (auto& callback : callbacks) {
     std::move(callback).Run(status, data2);
   }
+}
+
+void AuthorizationZoneImpl::OnTokenExchangeRequestCallback(
+    const chromeos::Uri& ipp_endpoint,
+    StatusCode status,
+    const std::string& data) {
+  if (status == StatusCode::kInvalidAccessToken) {
+    // The access token used by IppEndpointFetcher is invalid. Find the session
+    // the token came from and ask it to refresh the token.
+    for (std::unique_ptr<AuthorizationServerSession>& session : sessions_) {
+      if (session->access_token() == data) {  // data == invalid access token
+        // We can use base::Unretained() here because:
+        // * AuthorizationServerSession (and HttpExchange) guarantees that no
+        //   calls will be returned after deletion of the object `session`.
+        // * `this` owns `session`; it is guaranteed that deletion of `session`
+        //   is performed before deletion of `this`.
+        session->SendNextTokenRequest(base::BindOnce(
+            &AuthorizationZoneImpl::OnSendTokenRequestCallback,
+            base::Unretained(this), base::Unretained(session.get())));
+      }
+    }
+
+    // Find the corresponding IppEndpointTokenFetcher object.
+    auto it_endpoint = ipp_endpoints_.find(ipp_endpoint);
+    DCHECK(it_endpoint != ipp_endpoints_.end());
+    IppEndpointTokenFetcher* endpoint = it_endpoint->second.get();
+
+    // Try to find a new session for IPP endpoint and perform Token Exchange
+    // again.
+    AttemptTokenExchange(endpoint);
+    return;
+  }
+  // For all other statuses just send back the result.
+  ResultForIppEndpoint(ipp_endpoint, status, data);
+}
+
+void AuthorizationZoneImpl::ResultForIppEndpoint(
+    const chromeos::Uri& ipp_endpoint,
+    StatusCode status,
+    const std::string& data) {
+  auto it = ipp_endpoints_.find(ipp_endpoint);
+  DCHECK(it != ipp_endpoints_.end());
+  // The list of callbacks to run.
+  std::vector<StatusCallback> callbacks = it->second->MoveWaitingList();
+  // We have to make a copy of `data` here because it may be an error message
+  // owned by the ipp_endpoint object deleted in the next if block.
+  const std::string data2 = data;
+  // Erase the IPP Endpoint in case of an error.
+  if (status != StatusCode::kOK) {
+    ipp_endpoints_.erase(it);
+  }
+  // Run the callbacks.
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(status, data2);
+  }
+}
+
+void AuthorizationZoneImpl::OnAccessTokenForEndpointCallback(
+    const chromeos::Uri& ipp_endpoint,
+    StatusCode status,
+    const std::string& data) {
+  auto it = ipp_endpoints_.find(ipp_endpoint);
+  DCHECK(it != ipp_endpoints_.end());
+  IppEndpointTokenFetcher* endpoint = it->second.get();
+
+  switch (status) {
+    case StatusCode::kOK:
+      // We got a new access token (in `data`). Now, we can get a new endpoint
+      // access token.
+      // We can use base::Unretained() here because:
+      // * IppEndpointTokenFetcher (and HttpExchange) guarantees that no
+      //   calls will be returned after deletion of the object `endpoint`.
+      // * `this` owns `endpoint`; it is guaranteed that deletion of `endpoint`
+      //   is performed before deletion of `this`.
+      endpoint->SendTokenExchangeRequest(
+          data,
+          base::BindOnce(&AuthorizationZoneImpl::OnTokenExchangeRequestCallback,
+                         base::Unretained(this), ipp_endpoint));
+      break;
+    case StatusCode::kInvalidAccessToken:
+    case StatusCode::kTooManySessions:
+      // The session timed out. Try to find other session to get an access
+      // token.
+      AttemptTokenExchange(endpoint);
+      break;
+    default:
+      // For all other statuses just send back the result.
+      ResultForIppEndpoint(ipp_endpoint, status, data);
+      break;
+  }
+}
+
+void AuthorizationZoneImpl::AttemptTokenExchange(
+    IppEndpointTokenFetcher* endpoint) {
+  AuthorizationServerSession* auth_session = nullptr;
+  // Try to match a session starting from the newest one.
+  for (auto its = sessions_.rbegin(); its != sessions_.rend(); ++its) {
+    if ((*its)->ContainsAll(endpoint->scope())) {
+      auth_session = its->get();
+      break;
+    }
+  }
+  if (!auth_session) {
+    // No matching sessions. Inform the callers that a new session must be
+    // created.
+    ResultForIppEndpoint(endpoint->ipp_endpoint_uri(),
+                         StatusCode::kAuthorizationNeeded, "");
+    return;
+  }
+
+  // We found a session to use. Get its access token.
+  const auto access_token = auth_session->access_token();
+  if (access_token.empty()) {
+    // Access token not ready. Add the IPP Endpoint to the waiting list.
+    // We can use base::Unretained() here because:
+    // * AuthorizationServerSession (and HttpExchange) guarantees that no
+    //   calls will be returned after deletion of the object `auth_session`.
+    // * `this` owns `auth_session`; it is guaranteed that deletion of
+    //   `auth_session` is performed before deletion of `this`.
+    auth_session->AddToWaitingList(
+        base::BindOnce(&AuthorizationZoneImpl::OnAccessTokenForEndpointCallback,
+                       base::Unretained(this), endpoint->ipp_endpoint_uri()));
+    return;
+  }
+
+  // Try to use the access token to get a new endpoint access token.
+  // We can use base::Unretained() here because:
+  // * IppEndpointTokenFetcher (and HttpExchange) guarantees that no
+  //   calls will be returned after deletion of the object `endpoint`.
+  // * `this` owns `endpoint`; it is guaranteed that deletion of `endpoint`
+  //   is performed before deletion of `this`.
+  endpoint->SendTokenExchangeRequest(
+      access_token,
+      base::BindOnce(&AuthorizationZoneImpl::OnTokenExchangeRequestCallback,
+                     base::Unretained(this), endpoint->ipp_endpoint_uri()));
 }
 
 bool AuthorizationZoneImpl::FindAndRemovePendingAuthorization(

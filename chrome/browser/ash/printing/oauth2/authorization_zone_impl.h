@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_PRINTING_OAUTH2_AUTHORIZATION_ZONE_IMPL_H_
 
 #include <list>
+#include <map>
 #include <memory>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_server_data.h"
-#include "chrome/browser/ash/printing/oauth2/authorization_server_session.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
@@ -25,6 +25,9 @@ class SharedURLLoaderFactory;
 namespace ash {
 namespace printing {
 namespace oauth2 {
+
+class AuthorizationServerSession;
+class IppEndpointTokenFetcher;
 
 // The class AuthorizationZoneImpl implements functionality described in
 // AuthorizationZone interface.
@@ -71,6 +74,27 @@ class AuthorizationZoneImpl : public AuthorizationZone {
   void OnSendTokenRequestCallback(AuthorizationServerSession* session,
                                   StatusCode status,
                                   const std::string& data);
+
+  // Callback for IppEndpointTokenFetcher::SendTokenExchangeRequest(...).
+  void OnTokenExchangeRequestCallback(const chromeos::Uri& ipp_endpoint,
+                                      StatusCode status,
+                                      const std::string& data);
+
+  // Executes all callbacks from the waitlist of `ipp_endpoint`. Also, removes
+  // `ipp_endpoint` when `status` != StatusCode::kOK.
+  void ResultForIppEndpoint(const chromeos::Uri& ipp_endpoint,
+                            StatusCode status,
+                            const std::string& data);
+
+  // This callback is added to the waitlist of AuthorizationSession when
+  // `ipp_endpoint` must wait for the access token from it.
+  void OnAccessTokenForEndpointCallback(const chromeos::Uri& ipp_endpoint,
+                                        StatusCode status,
+                                        const std::string& data);
+
+  // Tries to find OAuth session for given IPP Endpoint and send Token Exchange
+  // request to obtain an endpoint access token.
+  void AttemptTokenExchange(IppEndpointTokenFetcher* it_endpoint);
 
   // Finds an element in `pending_authorizations_` with given `state` and remove
   // it. Returns false if such element does not exists. Otherwise, returns true
@@ -123,6 +147,10 @@ class AuthorizationZoneImpl : public AuthorizationZone {
 
   // List of active OAuth2 sessions.
   std::list<std::unique_ptr<AuthorizationServerSession>> sessions_;
+
+  // List of IPP Endpoints for which an endpoint access token was requested.
+  std::map<chromeos::Uri, std::unique_ptr<IppEndpointTokenFetcher>>
+      ipp_endpoints_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
