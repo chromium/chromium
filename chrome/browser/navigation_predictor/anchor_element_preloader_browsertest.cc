@@ -31,7 +31,7 @@
 namespace {
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
-using Preloading_Attempt = ukm::builders::Preloading_Attempt;
+using ukm::builders::Preloading_Attempt;
 
 class AnchorElementPreloaderBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest,
