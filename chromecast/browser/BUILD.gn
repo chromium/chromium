@@ -10,6 +10,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
+assert(!is_fuchsia)
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
