@@ -1446,6 +1446,7 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/exported/',
+            'third_party/blink/renderer/core/frame/',
             'third_party/blink/renderer/core/input/',
         ],
         'allowed': [

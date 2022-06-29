@@ -3328,6 +3328,12 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
       gesture_event->data.scroll_begin.main_thread_hit_tested = true;
     }
 
+    // Notifies TestWebFrameWidget of the injected event. Does nothing outside
+    // of unit tests. This would happen in WidgetBase::QueueSyntheticEvent if
+    // scroll unification were not enabled.
+    WillQueueSyntheticEvent(
+        WebCoalescedInputEvent(*gesture_event, ui::LatencyInfo()));
+
     widget_base_->widget_input_handler_manager()
         ->DispatchScrollGestureToCompositor(std::move(gesture_event));
   } else {
