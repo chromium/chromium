@@ -12,9 +12,10 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/logging.h"
+#include "base/containers/contains.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
@@ -130,7 +131,7 @@ ResizingHostObserver::ResizingHostObserver(
 
 ResizingHostObserver::~ResizingHostObserver() {
   if (restore_)
-    RestoreScreenResolution();
+    RestoreAllScreenResolutions();
 }
 
 void ResizingHostObserver::RegisterForDisplayChanges(
@@ -141,18 +142,47 @@ void ResizingHostObserver::RegisterForDisplayChanges(
 
 void ResizingHostObserver::SetScreenResolution(
     const ScreenResolution& resolution,
-    absl::optional<webrtc::ScreenId> screen_id) {
+    absl::optional<webrtc::ScreenId> opt_screen_id) {
   // Get the current time. This function is called exactly once for each call
   // to SetScreenResolution to simplify the implementation of unit-tests.
   base::TimeTicks now = clock_->NowTicks();
 
+  webrtc::ScreenId screen_id;
+  if (opt_screen_id) {
+    screen_id = opt_screen_id.value();
+  } else {
+    // If SetScreenResolution() was called without any ID, the ID of the
+    // single monitor should be used. If there are no monitors yet, the request
+    // is remembered, to be applied when the display-info is updated.
+    if (current_monitor_ids_.empty()) {
+      pending_resolution_request_ = resolution;
+      return;
+    }
+    if (current_monitor_ids_.size() == 1) {
+      screen_id = *current_monitor_ids_.begin();
+    } else {
+      // Drop the request if there is more than 1 monitor.
+      HOST_LOG << "Ignoring ambiguous resize request.";
+      return;
+    }
+  }
+
+  // Drop any request for an invalid screen ID.
+  if (!base::Contains(current_monitor_ids_, screen_id)) {
+    HOST_LOG << "Ignoring resize request for invalid monitor ID " << screen_id
+             << ".";
+    return;
+  }
+
   if (resolution.IsEmpty()) {
-    RestoreScreenResolution();
+    RestoreScreenResolution(screen_id);
     return;
   }
 
   // Resizing the desktop too often is probably not a good idea, so apply a
   // simple rate-limiting scheme.
+  // TODO(crbug.com/1326339): Rate-limiting should only be applied to requests
+  // for the same monitor.
   base::TimeTicks next_allowed_resize =
       previous_resize_time_ + base::Milliseconds(kMinimumResizeIntervalMs);
 
@@ -160,22 +190,23 @@ void ResizingHostObserver::SetScreenResolution(
     deferred_resize_timer_.Start(
         FROM_HERE, next_allowed_resize - now,
         base::BindOnce(&ResizingHostObserver::SetScreenResolution,
-                       weak_factory_.GetWeakPtr(), resolution, screen_id));
+                       weak_factory_.GetWeakPtr(), resolution, opt_screen_id));
     return;
   }
 
   // If the implementation returns any resolutions, pick the best one according
   // to the algorithm described in CandidateResolution::IsBetterThan.
   std::list<ScreenResolution> resolutions =
-      desktop_resizer_->GetSupportedResolutions(resolution, absl::nullopt);
+      desktop_resizer_->GetSupportedResolutions(resolution, screen_id);
   if (resolutions.empty()) {
-    LOG(INFO) << "No valid resolutions found.";
+    HOST_LOG << "No valid resolutions found for monitor ID " << screen_id
+             << ".";
     return;
   } else {
-    LOG(INFO) << "Found host resolutions:";
+    HOST_LOG << "Found host resolutions for monitor ID " << screen_id << ":";
     for (const auto& host_resolution : resolutions) {
-      LOG(INFO) << "  " << host_resolution.dimensions().width() << "x"
-                << host_resolution.dimensions().height();
+      HOST_LOG << "  " << host_resolution.dimensions().width() << "x"
+               << host_resolution.dimensions().height();
     }
   }
   CandidateResolution best_candidate(resolutions.front(), resolution);
@@ -187,40 +218,77 @@ void ResizingHostObserver::SetScreenResolution(
     }
   }
   ScreenResolution current_resolution =
-      desktop_resizer_->GetCurrentResolution(absl::nullopt);
+      desktop_resizer_->GetCurrentResolution(screen_id);
 
   if (!best_candidate.resolution().Equals(current_resolution)) {
-    if (original_resolution_.IsEmpty())
-      original_resolution_ = current_resolution;
-    LOG(INFO) << "Resizing to "
-              << best_candidate.resolution().dimensions().width() << "x"
-              << best_candidate.resolution().dimensions().height();
-    desktop_resizer_->SetResolution(best_candidate.resolution(), absl::nullopt);
+    RecordOriginalResolution(current_resolution, screen_id);
+    HOST_LOG << "Resizing monitor ID " << screen_id << " to "
+             << best_candidate.resolution().dimensions().width() << "x"
+             << best_candidate.resolution().dimensions().height() << ".";
+    desktop_resizer_->SetResolution(best_candidate.resolution(), screen_id);
   } else {
-    LOG(INFO) << "Not resizing; desktop dimensions already "
-              << best_candidate.resolution().dimensions().width() << "x"
-              << best_candidate.resolution().dimensions().height();
+    HOST_LOG << "Not resizing monitor ID " << screen_id
+             << "; desktop dimensions already "
+             << best_candidate.resolution().dimensions().width() << "x"
+             << best_candidate.resolution().dimensions().height() << ".";
   }
 
   // Update the time of last resize to allow it to be rate-limited.
   previous_resize_time_ = now;
 }
 
+void ResizingHostObserver::SetDisplayInfoForTesting(
+    const DesktopDisplayInfo& display_info) {
+  OnDisplayInfoChanged(display_info);
+}
+
 void ResizingHostObserver::SetClockForTesting(const base::TickClock* clock) {
   clock_ = clock;
 }
 
-void ResizingHostObserver::RestoreScreenResolution() {
-  if (!original_resolution_.IsEmpty()) {
-    desktop_resizer_->RestoreResolution(original_resolution_, absl::nullopt);
-    original_resolution_ = ScreenResolution();
+void ResizingHostObserver::RestoreScreenResolution(webrtc::ScreenId screen_id) {
+  auto iter = original_resolutions_.find(screen_id);
+  if (iter != original_resolutions_.end()) {
+    auto [_, original_resolution] = *iter;
+    HOST_LOG << "Restoring monitor ID " << screen_id << " to "
+             << original_resolution.dimensions().width() << "x"
+             << original_resolution.dimensions().height() << ".";
+    desktop_resizer_->RestoreResolution(original_resolution, screen_id);
+    original_resolutions_.erase(iter);
+  } else {
+    HOST_LOG << "No original resolution found for monitor ID " << screen_id
+             << ".";
+  }
+}
+
+void ResizingHostObserver::RestoreAllScreenResolutions() {
+  while (!original_resolutions_.empty()) {
+    auto [screen_id, _] = *original_resolutions_.begin();
+    RestoreScreenResolution(screen_id);
+  }
+}
+
+void ResizingHostObserver::RecordOriginalResolution(
+    ScreenResolution resolution,
+    webrtc::ScreenId screen_id) {
+  if (!base::Contains(original_resolutions_, screen_id)) {
+    original_resolutions_[screen_id] = resolution;
   }
 }
 
 void ResizingHostObserver::OnDisplayInfoChanged(
     const DesktopDisplayInfo& display_info) {
-  // TODO(crbug.com/1326339): Implement this as part of the cross-platform
-  // resizing logic.
+  current_monitor_ids_.clear();
+  for (int i = 0; i < display_info.NumDisplays(); i++) {
+    current_monitor_ids_.insert(display_info.GetDisplayInfo(i)->id);
+  }
+
+  // If there was a pending resolution request for an unspecifed monitor, apply
+  // it now.
+  if (!pending_resolution_request_.IsEmpty()) {
+    SetScreenResolution(pending_resolution_request_, absl::nullopt);
+    pending_resolution_request_ = {};
+  }
 }
 
 }  // namespace remoting
