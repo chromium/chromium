@@ -36,7 +36,7 @@
       }
     ]
   },
-  "mac-finch-smoke-chrome": {
+  "mac-arm64-finch-smoke-chrome": {
     "isolated_scripts": [
       {
         "args": [

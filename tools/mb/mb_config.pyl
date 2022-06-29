@@ -795,8 +795,8 @@
       'linux-finch-smoke-chrome': 'official_goma',
       'linux-password-manager-captured-sites-rel': 'release_bot',
       'lorenz-graph-dbg': 'android_debug_static_external_bot',
+      'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
       'mac-autofill-captured-sites-rel': 'release_bot',
-      'mac-finch-smoke-chrome': 'official_goma_mac',
       'win-autofill-captured-sites-rel': 'release_bot',
       'win-celab-rel': 'official_celab_release_bot',
       'win-finch-smoke-chrome': 'official_goma',
@@ -876,10 +876,10 @@
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
       'linux-finch-smoke-chrome': 'official_goma',
+      'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
-      'mac-finch-smoke-chrome': 'official_goma_mac',
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
@@ -3103,6 +3103,10 @@
 
     'official_goma_mac': [
       'official', 'goma', 'no_widevine_cdm_host_verification',
+    ],
+
+    'official_goma_mac_arm': [
+      'official', 'goma', 'no_widevine_cdm_host_verification', 'arm64',
     ],
 
     'official_goma_mac_arm_perf': [

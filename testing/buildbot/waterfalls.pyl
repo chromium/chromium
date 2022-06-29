@@ -6429,7 +6429,7 @@
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
       },
-      'mac-finch-smoke-chrome': {
+      'mac-arm64-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
           'mac_11_or_12_arm64',

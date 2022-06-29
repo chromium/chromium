@@ -322,6 +322,15 @@
       "use_goma": true
     }
   },
+  "mac-arm64-finch-smoke-chrome": {
+    "gn_args": {
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "mac-chrome": {
     "gn_args": {
       "ignore_missing_widevine_signing_cert": true,
@@ -339,14 +348,6 @@
     }
   },
   "mac-chrome-stable": {
-    "gn_args": {
-      "ignore_missing_widevine_signing_cert": true,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_goma": true
-    }
-  },
-  "mac-finch-smoke-chrome": {
     "gn_args": {
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
