@@ -121,6 +121,7 @@ TEST_F(ARQuickLookCoordinatorTest, ValidUSDZFile) {
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
 
   [tab_helper()->delegate() presentUSDZFileWithURL:fileURL
+                                      canonicalURL:nil
                                           webState:web_state()
                                allowContentScaling:YES];
 
@@ -139,6 +140,7 @@ TEST_F(ARQuickLookCoordinatorTest, ValidUSDZFile) {
 // Tests attempting to present an invalid USDZ file.
 TEST_F(ARQuickLookCoordinatorTest, InvalidUSDZFile) {
   [tab_helper()->delegate() presentUSDZFileWithURL:nil
+                                      canonicalURL:nil
                                           webState:web_state()
                                allowContentScaling:YES];
 
@@ -160,6 +162,7 @@ TEST_F(ARQuickLookCoordinatorTest, MultipleValidUSDZFiles) {
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
   [tab_helper()->delegate() presentUSDZFileWithURL:fileURL
+                                      canonicalURL:nil
                                           webState:web_state()
                                allowContentScaling:YES];
 
@@ -179,6 +182,7 @@ TEST_F(ARQuickLookCoordinatorTest, MultipleValidUSDZFiles) {
       base_view_controller_.presentedViewController;
 
   [tab_helper()->delegate() presentUSDZFileWithURL:fileURL
+                                      canonicalURL:nil
                                           webState:web_state()
                                allowContentScaling:YES];
 
@@ -211,6 +215,7 @@ TEST_F(ARQuickLookCoordinatorTest, AnotherViewControllerIsPresented) {
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
   [tab_helper()->delegate() presentUSDZFileWithURL:fileURL
+                                      canonicalURL:nil
                                           webState:web_state()
                                allowContentScaling:YES];
 

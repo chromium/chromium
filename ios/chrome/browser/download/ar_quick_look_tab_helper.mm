@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/download/download_directory_util.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
+#import "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 
@@ -35,10 +36,15 @@ namespace {
 // When an AR Quick Look URL contains this fragment, scaling the displayed
 // image (e.g., by pinch-zooming) is disallowed. See
 // https://developer.apple.com/videos/play/wwdc2019/612/
-const char kContentScalingSearchKey[] = "allowsContentScaling";
+const char kContentScalingKey[] = "allowsContentScaling";
+
+// When an AR Quick Look URL contains this fragment, this URL will be used
+// when users invoke the share sheet. See
+// https://developer.apple.com/videos/play/wwdc2019/612/
+const char kCanonicalWebPageURLKey[] = "canonicalWebPageURL";
 
 // Returns a suffix for Download.IOSDownloadARModelState histogram for the
-// |download_task|.
+// `download_task`.
 std::string GetMimeTypeSuffix(web::DownloadTask* download_task) {
   DCHECK(IsUsdzFileFormat(download_task->GetOriginalMimeType(),
                           download_task->GenerateFileName()));
@@ -58,7 +64,7 @@ bool IsDownloadCompleteOrFailed(web::DownloadTask* download_task) {
 }
 
 // Returns an enum for Download.IOSDownloadARModelState histogram for the
-// terminated |download_task|.
+// terminated `download_task`.
 IOSDownloadARModelState GetHistogramEnum(web::DownloadTask* download_task) {
   DCHECK(download_task);
   if (download_task->GetState() == web::DownloadTask::State::kNotStarted) {
@@ -82,12 +88,23 @@ IOSDownloadARModelState GetHistogramEnum(web::DownloadTask* download_task) {
   return IOSDownloadARModelState::kSuccessful;
 }
 
-// Logs Download.IOSDownloadARModelState* histogram for the |download_task|.
+// Logs Download.IOSDownloadARModelState* histogram for the `download_task`.
 void LogHistogram(web::DownloadTask* download_task) {
   DCHECK(download_task);
   base::UmaHistogramEnumeration(
       kIOSDownloadARModelStateHistogram + GetMimeTypeSuffix(download_task),
       GetHistogramEnum(download_task));
+}
+
+// Converts the ref of `url` into a query to allow parsing it using
+// net::GetValueForKeyInQuery (as net does not provide utilities to
+// parse ref).
+GURL ConvertRefToQueryInUrl(const GURL& url) {
+  GURL::Replacements replacement;
+  replacement.SetQueryStr(url.ref_piece());
+  replacement.ClearRef();
+
+  return url.ReplaceComponents(replacement);
 }
 
 }  // namespace
@@ -123,7 +140,7 @@ void ARQuickLookTabHelper::Download(
     return;
   }
 
-  // Take ownership of |download_task| and start the download.
+  // Take ownership of `download_task` and start the download.
   download_task_ = std::move(download_task);
   LogHistogram(download_task_.get());
   download_task_->AddObserver(this);
@@ -148,25 +165,30 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     return;
   }
 
-  NSURL* fileURL = [NSURL
+  NSURL* file_url = [NSURL
       fileURLWithPath:base::SysUTF8ToNSString(
                           download_task_->GetResponsePath().AsUTF8Unsafe())];
 
-  // Sets fragment component as |search_url|'s query so QueryIterator can check
-  // if content scaling is not allowed (allowsContentScaling = 0)
-  GURL::Replacements replacement;
-  GURL search_url = download_task_->GetOriginalUrl();
-  replacement.SetQueryStr(search_url.ref_piece());
-  search_url = search_url.ReplaceComponents(replacement);
+  std::string key_value;
+  const GURL url = ConvertRefToQueryInUrl(download_task_->GetOriginalUrl());
 
   bool allow_content_scaling = true;
-  std::string key_value;
-  net::GetValueForKeyInQuery(search_url, kContentScalingSearchKey, &key_value);
-  if (key_value == "0") {
-    allow_content_scaling = false;
+  if (net::GetValueForKeyInQuery(url, kContentScalingKey, &key_value)) {
+    // Scaling is disabled if the value is set to 0.
+    allow_content_scaling = (key_value != "0");
   }
 
-  [delegate_ presentUSDZFileWithURL:fileURL
+  NSURL* canonical_url = nil;
+  if (net::GetValueForKeyInQuery(url, kCanonicalWebPageURLKey, &key_value)) {
+    // Ignore extracted value if not a valid URL.
+    const GURL extracted_url(key_value);
+    if (extracted_url.is_valid()) {
+      canonical_url = net::NSURLWithGURL(extracted_url);
+    }
+  }
+
+  [delegate_ presentUSDZFileWithURL:file_url
+                       canonicalURL:canonical_url
                            webState:web_state_
                 allowContentScaling:allow_content_scaling];
 }

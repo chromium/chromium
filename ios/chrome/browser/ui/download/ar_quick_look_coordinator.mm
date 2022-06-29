@@ -56,6 +56,7 @@ PresentQLPreviewController GetHistogramEnum(
 
 - (instancetype)initWithWebState:(web::WebState*)webState
                        sourceURL:(NSURL*)sourceURL
+                    canonicalURL:(NSURL*)canonicalURL
                     allowScaling:(BOOL)allowScaling
                     dismissBlock:(ProceduralBlock)dismissBlock
     NS_DESIGNATED_INITIALIZER;
@@ -69,12 +70,14 @@ PresentQLPreviewController GetHistogramEnum(
 @implementation ARQuickLookPreviewControllerDelegate {
   base::WeakPtr<web::WebState> _weakWebState;
   NSURL* _sourceURL;
+  NSURL* _canonicalURL;
   BOOL _allowScaling;
   ProceduralBlock _dismissBlock;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
                        sourceURL:(NSURL*)sourceURL
+                    canonicalURL:(NSURL*)canonicalURL
                     allowScaling:(BOOL)allowScaling
                     dismissBlock:(ProceduralBlock)dismissBlock {
   if ((self = [super init])) {
@@ -82,6 +85,7 @@ PresentQLPreviewController GetHistogramEnum(
     DCHECK(sourceURL);
     _weakWebState = webState->GetWeakPtr();
     _sourceURL = sourceURL;
+    _canonicalURL = canonicalURL;
     _allowScaling = allowScaling;
     _dismissBlock = dismissBlock;
   }
@@ -106,6 +110,7 @@ PresentQLPreviewController GetHistogramEnum(
   ARQuickLookPreviewItem* item =
       [[ARQuickLookPreviewItem alloc] initWithFileAtURL:_sourceURL];
   item.allowsContentScaling = _allowScaling;
+  item.canonicalWebPageURL = _canonicalURL;
   return item;
 }
 
@@ -174,6 +179,7 @@ PresentQLPreviewController GetHistogramEnum(
 #pragma mark - ARQuickLookTabHelperDelegate
 
 - (void)presentUSDZFileWithURL:(NSURL*)fileURL
+                  canonicalURL:(NSURL*)canonicalURL
                       webState:(web::WebState*)webState
            allowContentScaling:(BOOL)allowContentScaling {
   base::UmaHistogramEnumeration(
@@ -189,6 +195,7 @@ PresentQLPreviewController GetHistogramEnum(
   _delegate = [[ARQuickLookPreviewControllerDelegate alloc]
       initWithWebState:webState
              sourceURL:fileURL
+          canonicalURL:canonicalURL
           allowScaling:allowContentScaling
           dismissBlock:^{
             [weakSelf previewDismissed];
