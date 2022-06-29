@@ -350,11 +350,15 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Unwanted) {
+// Tests below are disabled due to failures on Android.
+// See crbug.com/1340200.
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       DISABLED_ShowsInterstitial_Unwanted) {
   NavigateWithThreatType(safe_browsing::SB_THREAT_TYPE_URL_UNWANTED, true);
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Billing) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       DISABLED_ShowsInterstitial_Billing) {
   NavigateWithThreatType(safe_browsing::SB_THREAT_TYPE_BILLING, true);
 }
 
