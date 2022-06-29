@@ -14,6 +14,7 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
@@ -26,12 +27,16 @@ namespace logging {
 namespace {
 
 #if defined(DCHECK_IS_CONFIGURABLE)
-void DCheckDumpOnceWithoutCrashing() {
+void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
   // Best-effort gate to prevent multiple DCHECKs from being dumped. This will
   // race if multiple threads DCHECK at the same time, but we'll eventually stop
   // reporting and at most report once per thread.
   static std::atomic<bool> has_dumped = false;
   if (!has_dumped.load(std::memory_order_relaxed)) {
+    // Copy the LogMessage string to stack memory to make sure it can be
+    // recovered in crash dumps.
+    DEBUG_ALIAS_FOR_CSTR(log_message_str, log_message->str().c_str(), 1024);
+
     // Note that dumping may fail if the crash handler hasn't been set yet. In
     // that case we want to try again on the next failing DCHECK.
     if (base::debug::DumpWithoutCrashingUnthrottled())
@@ -44,7 +49,7 @@ class DCheckLogMessage : public LogMessage {
   using LogMessage::LogMessage;
   ~DCheckLogMessage() override {
     if (severity() != logging::LOGGING_FATAL)
-      DCheckDumpOnceWithoutCrashing();
+      DCheckDumpOnceWithoutCrashing(this);
   }
 };
 
@@ -54,7 +59,7 @@ class DCheckWin32ErrorLogMessage : public Win32ErrorLogMessage {
   using Win32ErrorLogMessage::Win32ErrorLogMessage;
   ~DCheckWin32ErrorLogMessage() override {
     if (severity() != logging::LOGGING_FATAL)
-      DCheckDumpOnceWithoutCrashing();
+      DCheckDumpOnceWithoutCrashing(this);
   }
 };
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -63,7 +68,7 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
   using ErrnoLogMessage::ErrnoLogMessage;
   ~DCheckErrnoLogMessage() override {
     if (severity() != logging::LOGGING_FATAL)
-      DCheckDumpOnceWithoutCrashing();
+      DCheckDumpOnceWithoutCrashing(this);
   }
 };
 #endif  // BUILDFLAG(IS_WIN)
