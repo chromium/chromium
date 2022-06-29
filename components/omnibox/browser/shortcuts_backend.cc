@@ -91,9 +91,31 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   // 'docs.google.com/d/3SyB0Y83dG_WuxX'.
   const auto description_words =
       String16VectorFromString16(GetDescription(match), nullptr);
+
+  // Trim the `text` to:
+  // 1) Avoid expanding, e.g., the `text` 'Cha Aznav ' to 'Cha Aznav ur'.
+  // 2) Avoid truncating the shortcut e.g., 'Cha Aznavour' to 'Cha ' for the
+  //    `text` 'C' when `AddOrUpdateShortcut()` appends 3 chars to `text`.
+  // 3) Allow expanding, e.g., the `text` 'Cha ' to 'Charles'.
+  // 4) Even when not expanding, autocompleting trailing whitespace looks weird.
+  const auto trimmed_text = std::u16string(
+      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING));
+
+  // Find the last word in `text` to expand.
+  WordStarts text_word_starts;
+  const auto text_words =
+      String16VectorFromString16(trimmed_text, &text_word_starts);
+  // Even though `text` won't be empty, it may contain no words if it consists
+  // of only symbols and whitespace. Additionally, even if it does contain
+  // words, if it ends with symbols, the last word shouldn't be expanded to
+  // avoid expanding, e.g., the text 'Cha*' to 'Cha*rles'.
+  if (text_words.empty() ||
+      text_word_starts.back() + text_words.back().length() !=
+          trimmed_text.length()) {
+    return trimmed_text;
+  }
   // Lower case `text` for case-insensitive matching with `description_words`.
-  const auto text_last_word =
-      base::i18n::ToLower(String16VectorFromString16(text, nullptr).back());
+  const auto text_last_word = base::i18n::ToLower(text_words.back());
 
   // Prioritize the 1st match that's at least 3 chars long. If none are found,
   // fallback to the 1st match of any length. Don't simply find the 1st match of
@@ -116,16 +138,10 @@ std::u16string ExpandToFullWord(const std::u16string& text,
     best_word = description_words[i];
   }
 
-  // Trim the `text` to 1) avoid expanding, e.g., the `text` 'Cha Aznav ' to
-  // 'Cha Aznav ur'; and 2) avoid truncating the shortcut e.g., 'Cha Aznavour'
-  // to 'Cha ' for the `text` 'C' when `AddOrUpdateShortcut()` appends 3 chars
-  // to `text`.
-  const auto trimmed_text =
-      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING);
   // Add on the missing letters of `text_last_word`, rather than replace it with
   // `best_word` to preserve capitalization.
   return best_word.empty()
-             ? std::u16string(trimmed_text)
+             ? trimmed_text
              : base::StrCat(
                    {trimmed_text, best_word.substr(text_last_word.length())});
 }
@@ -191,13 +207,6 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   match.Validate();
 #endif  // DCHECK_IS_ON()
 
-  // `text` may be empty for pedal and zero suggest navigations. It's unlikely
-  // users will have a predictable empty-input navigation, so early exit.
-  // Besides, `ShortcutsProvider::Start()` also early exits on empty inputs, so
-  // there's no reason to add empty-text shortcuts if they won't be used.
-  if (text.empty())
-    return;
-
   // Trim `text` since `ExpandToFullWord()` trims the shortcut text; otherwise,
   // inputs with trailing whitespace wouldn't match a shortcut even if the user
   // previously used the input with a trailing whitespace.
@@ -205,6 +214,15 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
       OmniboxFieldTrial::IsShortcutExpandingEnabled()
           ? base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING)
           : text;
+
+  // `text` may be empty for pedal and zero suggest navigations. `text_trimmed`
+  // can additionally be empty for whitespace-only inputs. It's unlikely users
+  // will have a predictable navigation with such inputs, so early exit.
+  // Besides, `ShortcutsProvider::Start()` also early exits on empty inputs, so
+  // there's no reason to add empty-text shortcuts if they won't be used.
+  if (text_trimmed.empty())
+    return;
+
   const std::u16string text_trimmed_lowercase(
       base::i18n::ToLower(text_trimmed));
   const base::Time now(base::Time::Now());
