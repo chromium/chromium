@@ -13,8 +13,20 @@
 
 namespace extensions {
 
-// This is an event router that will observe listeners to |NetworksChanged| and
-// |NetworkListChanged| events.
+namespace {
+
+constexpr const char* kEventNames[] = {
+    api::networking_private::OnNetworksChanged::kEventName,
+    api::networking_private::OnNetworkListChanged::kEventName,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    api::networking_private::OnDeviceStateListChanged::kEventName,
+    api::networking_private::OnPortalDetectionCompleted::kEventName,
+    api::networking_private::OnCertificateListsChanged::kEventName,
+#endif
+};
+
+}  // namespace
+
 class NetworkingPrivateEventRouterImpl
     : public NetworkingPrivateEventRouter,
       public NetworkingPrivateDelegateObserver {
@@ -69,10 +81,11 @@ NetworkingPrivateEventRouterImpl::NetworkingPrivateEventRouterImpl(
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (!event_router)
     return;
-  event_router->RegisterObserver(
-      this, api::networking_private::OnNetworksChanged::kEventName);
-  event_router->RegisterObserver(
-      this, api::networking_private::OnNetworkListChanged::kEventName);
+
+  for (const char* name : kEventNames) {
+    event_router->RegisterObserver(this, name);
+  }
+
   StartOrStopListeningForNetworkChanges();
 }
 
@@ -115,11 +128,14 @@ void NetworkingPrivateEventRouterImpl::StartOrStopListeningForNetworkChanges() {
   if (!event_router)
     return;
 
-  bool should_listen =
-      event_router->HasEventListener(
-          api::networking_private::OnNetworksChanged::kEventName) ||
-      event_router->HasEventListener(
-          api::networking_private::OnNetworkListChanged::kEventName);
+  bool should_listen = false;
+
+  for (const char* name : kEventNames) {
+    if (event_router->HasEventListener(name)) {
+      should_listen = true;
+      break;
+    }
+  }
 
   if (should_listen && !listening_) {
     NetworkingPrivateDelegate* delegate =
