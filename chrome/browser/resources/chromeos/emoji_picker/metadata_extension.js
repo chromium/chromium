@@ -2,7 +2,71 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+/**
+ * TODO(b/233271528): Remove metadata_extension module.
+ * This module includes tab details which is better to be extracted dynamically
+ * from the emoji group data directly.
+ */
+
+
+import {SubcategoryData} from './types.js';
+
 const RECENTLY_USED_NAME = 'Recently used';
+
+/**
+ * Creates a list of tabs with all required information for rendering given
+ * category orders and basic info of each tab. It also adds tabs for "Recently
+ * used" group as the first tab of each category.
+ *
+ * @param {!Array<string>} categories List of categories. The order in the
+ *    list determines the order of the tabs in the output.
+ * @param {!Object<string, Array<{name: !string, pagination: ?number,
+ *    icon: ?string}>>} categoryBaseEmojis A mapping from each category to
+ *    its list of basic tabs info.
+ * @returns {!Array<!SubcategoryData>} List of tabs.
+ */
+function _MakeGroupTabs(categories, categoryBaseEmojis) {
+  const groupTabs = [];
+  let groupId = 0;
+
+  // TODO(b/216190190): Change groupId to number type.
+  for (const category of categories) {
+    // Add recently used tab.
+    groupTabs.push(
+      {
+        name: RECENTLY_USED_NAME,
+        icon: 'emoji_picker:schedule',
+        category: category,
+        groupId: `${category}-history`,
+        active: false,
+        disabled: true,
+        pagination: 1,
+      }
+    );
+    let pagination = 1;
+    categoryBaseEmojis[category].forEach(
+      tab => {
+        // Update pagination if provided.
+        pagination = tab.pagination || pagination;
+        // Add new tab.
+        groupTabs.push(
+          {
+            name: tab.name,
+            icon: tab.icon,
+            category: category,
+            pagination: pagination,
+            groupId: groupId.toString(),
+            active: false,
+            disabled: false,
+          }
+        );
+        groupId ++;
+      }
+    );
+  }
+  return groupTabs;
+}
 
 export const CATEGORY_METADATA = [
   {
@@ -18,237 +82,80 @@ export const CATEGORY_METADATA = [
   },
 ];
 
-/**
- * The name attributes below are used to label the group buttons.
- * The ordering group names are used for the group headings in the emoji
- * picker.
-*/
-// TODO(b/216190190): Change groupId to number type.
-// TODO(b/233271528): Remove the list and load it from the input data.
-export const EMOJI_GROUP_TABS = [
-  {
-    name: RECENTLY_USED_NAME,
-    icon: 'emoji_picker:schedule',
-    category: 'emoji',
-    groupId: 'emoji-history',
-    active: false,
-    disabled: true,
-    pagination: 1
-  },
-  {
-    name: 'Smileys & Emotions',
-    icon: 'emoji_picker:insert_emoticon',
-    category: 'emoji',
-    groupId: '0',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'People',
-    icon: 'emoji_picker:emoji_people',
-    category: 'emoji',
-    groupId: '1',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Animals & Nature',
-    icon: 'emoji_picker:emoji_nature',
-    category: 'emoji',
-    groupId: '2',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Food & Drink',
-    icon: 'emoji_picker:emoji_food_beverage',
-    category: 'emoji',
-    groupId: '3',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Travel & Places',
-    icon: 'emoji_picker:emoji_transportation',
-    category: 'emoji',
-    groupId: '4',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Activities & Events',
-    icon: 'emoji_picker:emoji_events',
-    category: 'emoji',
-    groupId: '5',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Objects',
-    icon: 'emoji_picker:emoji_objects',
-    category: 'emoji',
-    groupId: '6',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Symbols',
-    icon: 'emoji_picker:emoji_symbols',
-    category: 'emoji',
-    groupId: '7',
-    active: false,
-    disabled: false
-  },
-  {
-    name: 'Flags',
-    icon: 'emoji_picker:flag',
-    category: 'emoji',
-    groupId: '8',
-    active: false,
-    disabled: false
-  },
-];
-
-// TODO(b/216190190): Change groupId to number type.
-// TODO(b/233271528): Remove the list and load it from the input data.
-export const EMOTICON_GROUP_TABS = [
-  {
-    name: RECENTLY_USED_NAME,
-    icon: 'emoji_picker:schedule',
-    category: 'emoticon',
-    groupId: 'emoticon-history',
-    active: false,
-    disabled: true,
-    pagination: 1
-  },
-  {
-    name: 'Classic',
-    category: 'emoticon',
-    groupId: '9',
-    active: false,
-    disabled: false,
-    pagination: 1
-  },
-  {
-    name: 'Smiling',
-    category: 'emoticon',
-    groupId: '10',
-    active: false,
-    disabled: false,
-    pagination: 1
-  },
-  {
-    name: 'Loving',
-    category: 'emoticon',
-    groupId: '11',
-    active: false,
-    disabled: false,
-    pagination: 1
-  },
-  {
-    name: 'Hugging',
-    category: 'emoticon',
-    groupId: '12',
-    active: false,
-    disabled: false,
-    pagination: 1
-  },
-  {
-    name: 'Flexing',
-    category: 'emoticon',
-    groupId: '13',
-    active: false,
-    disabled: false,
-    pagination: 1
-  },
-  {
-    name: 'Animals',
-    category: 'emoticon',
-    groupId: '14',
-    active: false,
-    disabled: false,
-    pagination: 2
-  },
-  {
-    name: 'Surprising',
-    category: 'emoticon',
-    groupId: '15',
-    active: false,
-    disabled: false,
-    pagination: 2
-  },
-  {
-    name: 'Dancing',
-    category: 'emoticon',
-    groupId: '16',
-    active: false,
-    disabled: false,
-    pagination: 2
-  },
-  {
-    name: 'Shrugging',
-    category: 'emoticon',
-    groupId: '17',
-    active: false,
-    disabled: false,
-    pagination: 2
-  },
-  {
-    name: 'Table Flipping',
-    category: 'emoticon',
-    groupId: '18',
-    active: false,
-    disabled: false,
-    pagination: 3
-  },
-  {
-    name: 'Disapproving',
-    category: 'emoticon',
-    groupId: '19',
-    active: false,
-    disabled: false,
-    pagination: 3
-  },
-  {
-    name: 'Crying',
-    category: 'emoticon',
-    groupId: '20',
-    active: false,
-    disabled: false,
-    pagination: 3
-  },
-  {
-    name: 'Worrying',
-    category: 'emoticon',
-    groupId: '21',
-    active: false,
-    disabled: false,
-    pagination: 4
-  },
-  {
-    name: 'Pointing',
-    category: 'emoticon',
-    groupId: '22',
-    active: false,
-    disabled: false,
-    pagination: 4
-  },
-  {
-    name: 'Sparkling',
-    category: 'emoticon',
-    groupId: '23',
-    active: false,
-    disabled: false,
-    pagination: 4
-  },
-];
-
-// TODO(b/233271528): The concat order must be based on CATEGORY_METADATA.
-export const V2_SUBCATEGORY_TABS =
-    EMOJI_GROUP_TABS.concat(EMOTICON_GROUP_TABS);
-
-// TODO(b/233271528): This should be calculated based on concat order.
-export const V2_TABS_CATEGORY_START_INDEX = {
-  'emoji': 0,
-  'emoticon': EMOJI_GROUP_TABS.length,
+const CATEGORY_TABS = {
+  'emoji': [
+    {
+      name: 'Smileys & Emotions',
+      icon: 'emoji_picker:insert_emoticon',
+      pagination: 1,
+    },
+    {
+      name: 'People',
+      icon: 'emoji_picker:emoji_people',
+    },
+    {
+      name: 'Animals & Nature',
+      icon: 'emoji_picker:emoji_nature',
+    },
+    {
+      name: 'Food & Drink',
+      icon: 'emoji_picker:emoji_food_beverage',
+    },
+    {
+      name: 'Travel & Places',
+      icon: 'emoji_picker:emoji_transportation',
+    },
+    {
+      name: 'Activities & Events',
+      icon: 'emoji_picker:emoji_events',
+    },
+    {
+      name: 'Objects',
+      icon: 'emoji_picker:emoji_objects',
+    },
+    {
+      name: 'Symbols',
+      icon: 'emoji_picker:emoji_symbols',
+    },
+    {
+      name: 'Flags',
+      icon: 'emoji_picker:flag',
+    },
+  ],
+  'emoticon': [
+    {name: 'Classic', pagination: 1,},
+    {name: 'Smiling',},
+    {name: 'Loving',},
+    {name: 'Hugging',},
+    {name: 'Flexing',},
+    {name: 'Animals', pagination: 2,},
+    {name: 'Surprising',},
+    {name: 'Dancing', },
+    {name: 'Shrugging',},
+    {name: 'Table Flipping', pagination: 3,},
+    {name: 'Disapproving',},
+    {name: 'Crying',},
+    {name: 'Worrying', pagination: 4,},
+    {name: 'Pointing',},
+    {name: 'Sparkling',},
+  ],
 };
+
+// TODO(b/233271528): Remove the list and load it from the input data.
+/**
+ * The list of tabs based on the order of category buttons and basic tab info
+ * of each category.
+ */
+export const V2_SUBCATEGORY_TABS = _MakeGroupTabs(
+  CATEGORY_METADATA.map(item => item.name),
+  CATEGORY_TABS,
+);
+
+// A mapping from each category to the index of their first tab.
+export const V2_TABS_CATEGORY_START_INDEX = Object.fromEntries(
+  new Map(V2_SUBCATEGORY_TABS.map(
+    (item, index) => [item.category, index]).reverse()
+  ).entries()
+);
+
+export const EMOJI_GROUP_TABS = _MakeGroupTabs(['emoji'], CATEGORY_TABS);

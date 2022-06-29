@@ -196,6 +196,7 @@ js_library("emoji_picker") {
     ":emoji_picker_api_proxy",
     ":emoji_search",
     ":events",
+    ":metadata_extension",
     ":store",
     ":text_group_button",
     ":trie",
@@ -287,6 +288,10 @@ js_library("trie") {
 js_library("prefix_search") {
   sources = [ "./prefix_search.js" ]
   deps = [ ":trie" ]
+}
+
+js_library("metadata_extension") {
+  deps = [ ":types" ]
 }
 
 js_library("store") {
