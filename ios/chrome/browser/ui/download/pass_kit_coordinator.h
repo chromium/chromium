@@ -44,7 +44,7 @@ enum class PresentAddPassesDialogResult {
 // Coordinates presentation of "Add pkpass UI" and "failed to add pkpass UI".
 @interface PassKitCoordinator : ChromeCoordinator<PassKitTabHelperDelegate>
 
-// Must be set before calling |start| method. Set to null when stop method is
+// Must be set before calling `start` method. Set to null when stop method is
 // called or web state is destroyed.
 @property(nonatomic) web::WebState* webState;
 

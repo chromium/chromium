@@ -268,7 +268,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(^(OverlayResponse* response) {
-        // |response| is null if WebState was destroyed. Don't call completion
+        // `response` is null if WebState was destroyed. Don't call completion
         // handler if no buttons were tapped.
         if (response) {
           bool confirmed =
@@ -399,8 +399,8 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
 // Cancels the download task and stops the coordinator.
 - (void)cancelDownload {
-  // |stop| nulls-our _downloadTask and |Cancel| destroys the task. Call |stop|
-  // first to perform all coordinator cleanups, but copy |_downloadTask|
+  // `stop` nulls-our _downloadTask and `Cancel` destroys the task. Call `stop`
+  // first to perform all coordinator cleanups, but copy `_downloadTask`
   // pointer to destroy the task.
   web::DownloadTask* downloadTask = _downloadTask;
   [self stop];
