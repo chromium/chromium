@@ -65,10 +65,10 @@ namespace {
 
 constexpr int kPrintErrorMessageDelayMs = 3500;
 
-const char kFirstSpeechResult[] = "help";
-const char16_t kFirstSpeechResult16[] = u"help";
-const char kFinalSpeechResult[] = "hello world";
-const char16_t kFinalSpeechResult16[] = u"hello world";
+const char kFirstSpeechResult[] = "Help";
+const char16_t kFirstSpeechResult16[] = u"Help";
+const char kFinalSpeechResult[] = "Hello world";
+const char16_t kFinalSpeechResult16[] = u"Hello world";
 const char16_t kTrySaying[] = u"Try saying:";
 const char16_t kType[] = u"\"Type [word / phrase]\"";
 const char16_t kHelp[] = u"\"Help\"";
@@ -701,6 +701,18 @@ IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This", "This");
+  SendFinalResultAndWaitForTextAreaValue("Is", "This is");
+  SendFinalResultAndWaitForTextAreaValue("a test.", "This is a test.");
+  SendFinalResultAndWaitForTextAreaValue("you passed!",
+                                         "This is a test. You passed!");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationCommandsTest : public DictationTest {
  protected:
   DictationCommandsTest() {}
@@ -745,6 +757,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
     std::string type_command = "type ";
     if (i == 0) {
       expected_text += command;
+      expected_text[0] = base::ToUpperASCII(expected_text[0]);
     } else {
       expected_text += " ";
       expected_text += command;
@@ -758,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesNonCommands) {
   // The phrase should be entered without the word "type".
   SendFinalResultAndWaitForTextAreaValue("Type this is a test",
-                                         "this is a test");
+                                         "This is a test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteCharacter) {
@@ -777,20 +790,20 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByCharacter) {
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
   // White space is added to the text on the left of the text caret, but not
   // to the right of the text caret.
-  SendFinalResultAndWaitForTextAreaValue("inserted", "Lyr inserteda");
+  SendFinalResultAndWaitForTextAreaValue("inserted", "Lyr inserted a");
   SendFinalResultAndWaitForCaretBoundsChanged("move TO the next character ");
   SendFinalResultAndWaitForTextAreaValue("is a constellation",
-                                         "Lyr inserteda is a constellation");
+                                         "Lyr inserted a is a constellation");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NewLineAndMoveByLine) {
   SendFinalResultAndWaitForTextAreaValue("Line 1", "Line 1");
   SendFinalResultAndWaitForTextAreaValue("new line", "Line 1\n");
-  SendFinalResultAndWaitForTextAreaValue("Line 2", "Line 1\nLine 2");
+  SendFinalResultAndWaitForTextAreaValue("line 2", "Line 1\nline 2");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the previous line ");
-  SendFinalResultAndWaitForTextAreaValue("up", "Line 1 up\nLine 2");
+  SendFinalResultAndWaitForTextAreaValue("up", "Line 1 up\nline 2");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the next line");
-  SendFinalResultAndWaitForTextAreaValue("down", "Line 1 up\nLine 2 down");
+  SendFinalResultAndWaitForTextAreaValue("down", "Line 1 up\nline 2 down");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, UndoAndRedo) {

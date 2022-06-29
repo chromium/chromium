@@ -102,10 +102,10 @@ export class InputController {
 
     const editableNode = this.focusHandler_.getEditableNode();
     if (editableNode && editableNode.textSelStart === editableNode.textSelEnd) {
-      // Adjust the commit text to preserve spacing.
       const value = editableNode.value;
       const caretIndex = editableNode.textSelStart;
-      text = EditingUtil.adjustCommitText(value, caretIndex, text);
+      text = EditingUtil.smartCapitalization(value, caretIndex, text);
+      text = EditingUtil.smartSpacing(value, caretIndex, text);
     }
 
     chrome.input.ime.commitText({contextID: this.activeImeContextId_, text});

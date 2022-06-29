@@ -310,11 +310,11 @@ AX_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
   assertEquals(0, f());
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'AdjustCommitText', function() {
+AX_TEST_F('DictationEditingUtilTest', 'SmartSpacing', function() {
   let value;
   let caretIndex;
   let commitText;
-  const f = () => EditingUtil.adjustCommitText(value, caretIndex, commitText);
+  const f = () => EditingUtil.smartSpacing(value, caretIndex, commitText);
 
   // Add an extra space.
   value = 'This is a test.';
@@ -342,4 +342,75 @@ AX_TEST_F('DictationEditingUtilTest', 'AdjustCommitText', function() {
   caretIndex = value.length;
   commitText = '!';
   assertEquals('!', f());
+
+  // Test the behavior when inserting text in the middle of value.
+  // A space should be prepended to `commitText`;
+  // "This is a| test"
+  value = 'This is a test';
+  caretIndex = 9;
+  commitText = 'simple';
+  assertEquals(' simple', f());
+
+  // A space should be appended to `commitText`;
+  // "This is a |test"
+  value = 'This is a test';
+  caretIndex = 10;
+  commitText = 'simple';
+  assertEquals('simple ', f());
+
+  // "This is|. a test"
+  value = 'This is. a test';
+  caretIndex = 7;
+  commitText = 'simple';
+  assertEquals(' simple ', f());
+
+  // "hello|\nworld"; caret is right before the \n character.
+  value = 'hello\nworld';
+  caretIndex = 5;
+  commitText = 'there';
+  assertEquals(' there', f());
+
+  // "hello\n|world"; caret is right after the \n character.
+  value = 'hello\nworld';
+  caretIndex = 6;
+  commitText = 'there';
+  assertEquals('there ', f());
+});
+
+AX_TEST_F('DictationEditingUtilTest', 'SmartCapitalization', function() {
+  let value;
+  let caretIndex;
+  let commitText;
+  const f = () =>
+      EditingUtil.smartCapitalization(value, caretIndex, commitText);
+
+  value = 'Some text.';
+  caretIndex = value.length;
+  commitText = 'more text';
+  assertEquals('More text', f());
+
+  value = 'Some text';
+  caretIndex = value.length;
+  commitText = 'more text';
+  assertEquals('more text', f());
+
+  value = 'Some text   ';
+  caretIndex = value.length;
+  commitText = 'More text';
+  assertEquals('more text', f());
+
+  value = 'Some text.';
+  caretIndex = value.length;
+  commitText = 'More text';
+  assertEquals('More text', f());
+
+  value = 'Some text.\n';
+  caretIndex = value.length;
+  commitText = 'more text';
+  assertEquals('More text', f());
+
+  value = '';
+  caretIndex = 0;
+  commitText = 'more text';
+  assertEquals('More text', f());
 });
