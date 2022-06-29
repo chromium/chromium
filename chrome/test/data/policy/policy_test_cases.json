@@ -15482,6 +15482,84 @@
       }
     ]
   },
+  "OnFileTransferEnterpriseConnector": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnFileTransferEnterpriseConnector": [
+            {
+              "service_provider": "Google",
+              "enable": [
+                {
+                  "source_destination_list": [
+                    {
+                      "sources": [{
+                        "file_system_type": "*"
+                      }],
+                      "destinations": [{
+                        "file_system_type": "MyFiles"
+                      }]
+                    }
+                  ],
+                  "tags": ["malware"]
+                },
+                {
+                  "source_destination_list": [
+                    {
+                      "sources": [
+                        {
+                          "file_system_type": "MyFiles"
+                        },
+                        {
+                          "file_system_type": "SmbFs"
+                        }
+                      ],
+                      "destinations": [{
+                        "file_system_type": "*"
+                      }]
+                    }
+                  ],
+                  "tags": ["dlp"]
+                }
+               ],
+               "disable": [
+                {
+                  "source_destination_list": [
+                    {
+                      "sources": [{
+                        "file_system_type": "*"
+                      }],
+                      "destinations": [
+                        {
+                          "file_system_type": "ArcDocumentsProvider"
+                        },
+                        {
+                          "file_system_type": "SmbFs"
+                        },
+                        {
+                          "file_system_type": "MyFiles"
+                        }
+                      ]
+                    }
+                  ],
+                  "tags": ["dlp"]
+                }
+               ],
+              "block_until_verdict": 0,
+              "block_password_protected": true,
+              "block_large_files": false
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_file_transfer": {}
+        }
+      }
+    ]
+  },
   "OnSecurityEventEnterpriseConnector": {
     "os": [
       "win",

@@ -31758,6 +31758,7 @@ Called by update_document_policy_enum.py.-->
   <int value="988" label="UnthrottledNestedTimeoutEnabled"/>
   <int value="989" label="PolicyScopeDetection"/>
   <int value="990" label="EventPathEnabled"/>
+  <int value="991" label="OnFileTransferEnterpriseConnector"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
