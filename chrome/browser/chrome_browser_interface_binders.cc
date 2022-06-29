@@ -1187,11 +1187,6 @@ void PopulateChromeWebUIFrameBinders(
                                          FeedInternalsUI>(map);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_FEED_V2)
-  RegisterWebUIControllerInterfaceBinder<
-      feed::mojom::FeedSidePanelHandlerFactory, feed::FeedUI>(map);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   RegisterWebUIControllerInterfaceBinder<::mojom::ResetPasswordHandler,
                                          ResetPasswordUI>(map);
@@ -1253,6 +1248,11 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #if !BUILDFLAG(IS_ANDROID)
   registry.ForWebUI<image_editor::ImageEditorUntrustedUI>()
       .Add<image_editor::mojom::ImageEditorHandler>();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_FEED_V2)
+  registry.ForWebUI<feed::FeedUI>()
+      .Add<feed::mojom::FeedSidePanelHandlerFactory>();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
