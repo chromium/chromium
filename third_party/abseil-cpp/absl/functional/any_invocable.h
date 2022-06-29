@@ -26,6 +26,9 @@
 // NOTE: `absl::AnyInvocable` is similar to the C++23 `std::move_only_function`
 // abstraction, but has a slightly different API and is not designed to be a
 // drop-in replacement or C++11-compatible backfill of that type.
+//
+// Credits to Matt Calabrese (https://github.com/mattcalabrese) for the original
+// implementation.
 
 #ifndef ABSL_FUNCTIONAL_ANY_INVOCABLE_H_
 #define ABSL_FUNCTIONAL_ANY_INVOCABLE_H_
@@ -145,9 +148,6 @@ ABSL_NAMESPACE_BEGIN
 //     // rvalue-reference qualified.
 //     std::move(continuation)(result_of_foo);
 //   }
-//
-// Credits to Matt Calabrese (https://github.com/mattcalabrese) for the original
-// implementation.
 template <class Sig>
 class AnyInvocable : private internal_any_invocable::Impl<Sig> {
  private:

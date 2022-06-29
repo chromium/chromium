@@ -31,10 +31,10 @@ http_archive(
 # Note this must use a commit from the `abseil` branch of the RE2 project.
 # https://github.com/google/re2/tree/abseil
 http_archive(
-    name = "com_googlesource_code_re2",  # 2022-04-08
-    sha256 = "906d0df8ff48f8d3a00a808827f009a840190f404559f649cb8e4d7143255ef9",
-    strip_prefix = "re2-a276a8c738735a0fe45a6ee590fe2df69bcf4502",
-    urls = ["https://github.com/google/re2/archive/a276a8c738735a0fe45a6ee590fe2df69bcf4502.zip"],
+    name = "com_googlesource_code_re2",
+    sha256 = "0a890c2aa0bb05b2ce906a15efb520d0f5ad4c7d37b8db959c43772802991887",
+    strip_prefix = "re2-a427f10b9fb4622dd6d8643032600aa1b50fbd12",
+    urls = ["https://github.com/google/re2/archive/a427f10b9fb4622dd6d8643032600aa1b50fbd12.zip"],  # 2022-06-09
 )
 
 # Google benchmark.
@@ -55,7 +55,7 @@ http_archive(
 # Bazel platform rules.
 http_archive(
     name = "platforms",
-    sha256 = "b601beaf841244de5c5a50d2b2eddd34839788000fa1be4260ce6603ca0d8eb7",
-    strip_prefix = "platforms-98939346da932eef0b54cf808622f5bb0928f00b",
-    urls = ["https://github.com/bazelbuild/platforms/archive/98939346da932eef0b54cf808622f5bb0928f00b.zip"],
+    sha256 = "a879ea428c6d56ab0ec18224f976515948822451473a80d06c2e50af0bbe5121",
+    strip_prefix = "platforms-da5541f26b7de1dc8e04c075c99df5351742a4a2",
+    urls = ["https://github.com/bazelbuild/platforms/archive/da5541f26b7de1dc8e04c075c99df5351742a4a2.zip"],  # 2022-05-27
 )

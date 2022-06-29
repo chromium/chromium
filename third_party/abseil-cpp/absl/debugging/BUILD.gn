@@ -61,7 +61,10 @@ absl_source_set("symbolize") {
 absl_source_set("examine_stack") {
   sources = [ "internal/examine_stack.cc" ]
   public = [ "internal/examine_stack.h" ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/abseil-cpp/absl/log/internal:*",
+  ]
   deps = [
     ":stacktrace",
     ":symbolize",

@@ -1146,6 +1146,14 @@ bool Symbolizer::RegisterObjFile(const char *filename,
                      reinterpret_cast<uintptr_t>(old->end_addr), old->filename);
       }
       return true;
+    } else if (old->end_addr == start_addr &&
+               reinterpret_cast<uintptr_t>(old->start_addr) - old->offset ==
+                   reinterpret_cast<uintptr_t>(start_addr) - offset &&
+               strcmp(old->filename, filename) == 0) {
+      // Two contiguous map entries that span a contiguous region of the file,
+      // perhaps because some part of the file was mlock()ed. Combine them.
+      old->end_addr = end_addr;
+      return true;
     }
   }
   ObjFile *obj = impl->addr_map_.Add();

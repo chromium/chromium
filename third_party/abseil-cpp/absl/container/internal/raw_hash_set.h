@@ -172,22 +172,6 @@
 #ifndef ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
 #define ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
 
-#ifdef __SSE2__
-#include <emmintrin.h>
-#endif
-
-#ifdef __SSSE3__
-#include <tmmintrin.h>
-#endif
-
-#ifdef _MSC_VER
-#include <intrin.h>
-#endif
-
-#ifdef __ARM_NEON
-#include <arm_neon.h>
-#endif
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -214,6 +198,22 @@
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
 #include "absl/utility/utility.h"
+
+#ifdef ABSL_INTERNAL_HAVE_SSE2
+#include <emmintrin.h>
+#endif
+
+#ifdef ABSL_INTERNAL_HAVE_SSSE3
+#include <tmmintrin.h>
+#endif
+
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
+#ifdef ABSL_INTERNAL_HAVE_ARM_NEON
+#include <arm_neon.h>
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

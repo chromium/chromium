@@ -605,7 +605,11 @@ cc_test(
     srcs = ["internal/raw_hash_set_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkstatic = 1,
-    tags = NOTEST_TAGS_MOBILE + ["no_test_loonix"],
+    tags = NOTEST_TAGS_MOBILE + [
+        "no_test_loonix",
+        # TODO(b/237097643): investigate race and remove
+        "noarm_gemu",
+    ],
     deps = [
         ":container_memory",
         ":hash_function_defaults",
