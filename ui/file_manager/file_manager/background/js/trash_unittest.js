@@ -8,6 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashDirs} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 import {MockVolumeManager} from './mock_volume_manager.js';
@@ -17,19 +18,16 @@ import {Trash} from './trash.js';
 let volumeManager;
 
 /**
- * State for the feature flags for faking in loadTimeData.
- * @type {Object<string, boolean>}
+ * Boolean indicating whether Trash is enabled.
+ * @type {boolean}
  * */
-let flags = {};
+let trashEnabled = true;
 
 // Set up the test components.
 export function setUp() {
-  // Mock LoadTimeData strings.
-  flags = {
-    'FILES_TRASH_ENABLED': true,
-  };
-  loadTimeData.getBoolean = id => flags[id];
   loadTimeData.getString = id => id;
+
+  util.isTrashEnabled = () => trashEnabled;
 
   volumeManager = new MockVolumeManager();
 }
@@ -44,7 +42,7 @@ export function setUp() {
 function checkRemoveFileOrDirectory(
     filesTrashEnabled, rootType, path, deletePermanently,
     expectPermanentlyDelete) {
-  flags['FILES_TRASH_ENABLED'] = filesTrashEnabled;
+  trashEnabled = filesTrashEnabled;
   const volumeInfo =
       volumeManager.createVolumeInfo(rootType, 'volumeId', 'label');
   const f = MockFileEntry.create(volumeInfo.fileSystem, path);
