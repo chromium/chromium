@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,30 +38,10 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kHistogram,
   };
 
-  // Corresponds to the 'alternative aggregation mode' optional setting, but
-  // also includes the default option (if no alternative is set).
-  enum class AggregationMode {
-    // Uses a server-side Trusted Execution Environment (TEE) to process the
-    // encrypted payloads, see
-    // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATION_SERVICE_TEE.md.
-    kTeeBased,
-
-    // Implements a protocol similar to poplar VDAF in the PPM Framework, see
-    // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#choosing-among-aggregation-services.
-    kExperimentalPoplar,
-
-    kDefault = kTeeBased,
-  };
-
-  struct HistogramContribution {
-    absl::uint128 bucket;
-    int value;
-  };
-
   AggregationServicePayloadContents(
       Operation operation,
-      std::vector<HistogramContribution> contributions,
-      AggregationMode aggregation_mode);
+      std::vector<mojom::AggregatableReportHistogramContribution> contributions,
+      mojom::AggregationServiceMode aggregation_mode);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -72,8 +53,8 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   ~AggregationServicePayloadContents();
 
   Operation operation;
-  std::vector<HistogramContribution> contributions;
-  AggregationMode aggregation_mode;
+  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
+  mojom::AggregationServiceMode aggregation_mode;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -249,13 +230,13 @@ class CONTENT_EXPORT AggregatableReport {
   // `aggregation_mode`.
   static bool IsNumberOfProcessingUrlsValid(
       size_t number,
-      AggregationServicePayloadContents::AggregationMode aggregation_mode);
+      mojom::AggregationServiceMode aggregation_mode);
 
   // Returns whether `number` is a valid number of histogram contributions for
   // the `aggregation_mode`.
   static bool IsNumberOfHistogramContributionsValid(
       size_t number,
-      AggregationServicePayloadContents::AggregationMode aggregation_mode);
+      mojom::AggregationServiceMode aggregation_mode);
 
  private:
   // This vector should have an entry for each processing URL specified in

@@ -29,6 +29,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -204,12 +205,13 @@ testing::AssertionResult SharedInfoEqual(
 }
 
 AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
-                 {AggregationServicePayloadContents::HistogramContribution{
-                     .bucket = 123, .value = 456}},
+                 {mojom::AggregatableReportHistogramContribution(
+                     /*bucket=*/123,
+                     /*value=*/456)},
                  aggregation_mode),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
@@ -373,14 +375,12 @@ std::ostream& operator<<(
   }
 }
 
-std::ostream& operator<<(
-    std::ostream& out,
-    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
+std::ostream& operator<<(std::ostream& out,
+                         mojom::AggregationServiceMode aggregation_mode) {
   switch (aggregation_mode) {
-    case AggregationServicePayloadContents::AggregationMode::kTeeBased:
+    case mojom::AggregationServiceMode::kTeeBased:
       return out << "kTeeBased";
-    case AggregationServicePayloadContents::AggregationMode::
-        kExperimentalPoplar:
+    case mojom::AggregationServiceMode::kExperimentalPoplar:
       return out << "kExperimentalPoplar";
   }
 }

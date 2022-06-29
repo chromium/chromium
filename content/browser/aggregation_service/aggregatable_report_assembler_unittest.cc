@@ -22,6 +22,7 @@
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -114,7 +115,7 @@ TEST_F(AggregatableReportAssemblerTest, BothKeyFetchesFail_ErrorReturned) {
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+      mojom::AggregationServiceMode::kExperimentalPoplar);
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -140,7 +141,7 @@ TEST_F(AggregatableReportAssemblerTest, FirstKeyFetchFails_ErrorReturned) {
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+      mojom::AggregationServiceMode::kExperimentalPoplar);
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -167,7 +168,7 @@ TEST_F(AggregatableReportAssemblerTest, SecondKeyFetchFails_ErrorReturned) {
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+      mojom::AggregationServiceMode::kExperimentalPoplar);
   std::vector<GURL> processing_urls = request.processing_urls();
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -195,7 +196,7 @@ TEST_F(AggregatableReportAssemblerTest,
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+      mojom::AggregationServiceMode::kExperimentalPoplar);
 
   std::vector<GURL> processing_urls = request.processing_urls();
   std::vector<PublicKey> public_keys = {
@@ -237,7 +238,7 @@ TEST_F(AggregatableReportAssemblerTest,
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kTeeBased);
+      mojom::AggregationServiceMode::kTeeBased);
 
   PublicKey public_key = aggregation_service::GenerateKey("id123").public_key;
 
@@ -272,7 +273,7 @@ TEST_F(AggregatableReportAssemblerTest, OnlyKeyFetchFails_ErrorReturned) {
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kTeeBased);
+      mojom::AggregationServiceMode::kTeeBased);
 
   EXPECT_CALL(*fetcher(), GetPublicKey)
       .WillOnce(base::test::RunOnceCallback<1>(
@@ -295,7 +296,7 @@ TEST_F(AggregatableReportAssemblerTest,
   base::HistogramTester histograms;
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+      mojom::AggregationServiceMode::kExperimentalPoplar);
 
   std::vector<GURL> processing_urls = request.processing_urls();
   std::vector<PublicKey> public_keys = {

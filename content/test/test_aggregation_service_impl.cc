@@ -24,6 +24,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -41,14 +42,13 @@ AggregationServicePayloadContents::Operation ConvertToOperation(
   }
 }
 
-AggregationServicePayloadContents::AggregationMode ConvertToAggregationMode(
+mojom::AggregationServiceMode ConvertToAggregationMode(
     TestAggregationService::AggregationMode aggregation_mode) {
   switch (aggregation_mode) {
     case TestAggregationService::AggregationMode::kTeeBased:
-      return AggregationServicePayloadContents::AggregationMode::kTeeBased;
+      return mojom::AggregationServiceMode::kTeeBased;
     case TestAggregationService::AggregationMode::kExperimentalPoplar:
-      return AggregationServicePayloadContents::AggregationMode::
-          kExperimentalPoplar;
+      return mojom::AggregationServiceMode::kExperimentalPoplar;
   }
 }
 
@@ -124,8 +124,8 @@ void TestAggregationServiceImpl::AssembleReport(
     base::OnceCallback<void(base::Value::Dict)> callback) {
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation),
-      {AggregationServicePayloadContents::HistogramContribution{
-          .bucket = request.bucket, .value = request.value}},
+      {mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/request.bucket, /*value=*/request.value)},
       ConvertToAggregationMode(request.aggregation_mode));
 
   AggregatableReportSharedInfo shared_info(

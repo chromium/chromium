@@ -1418,6 +1418,8 @@ source_set("browser") {
     "private_aggregation/private_aggregation_budget_storage.h",
     "private_aggregation/private_aggregation_budgeter.cc",
     "private_aggregation/private_aggregation_budgeter.h",
+    "private_aggregation/private_aggregation_host.cc",
+    "private_aggregation/private_aggregation_host.h",
     "process_internals/process_internals_handler_impl.cc",
     "process_internals/process_internals_handler_impl.h",
     "process_internals/process_internals_ui.cc",

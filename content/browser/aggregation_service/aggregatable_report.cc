@@ -31,6 +31,7 @@
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,13 +54,12 @@ constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 
 std::vector<GURL> GetDefaultProcessingUrls(
-    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode) {
   switch (aggregation_mode) {
-    case AggregationServicePayloadContents::AggregationMode::kTeeBased:
+    case mojom::AggregationServiceMode::kTeeBased:
       return {
           GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get())};
-    case AggregationServicePayloadContents::AggregationMode::
-        kExperimentalPoplar:
+    case mojom::AggregationServiceMode::kExperimentalPoplar:
       // TODO(crbug.com/1295705): Update default processing urls.
       return {GURL("https://server1.example"), GURL("https://server2.example")};
   }
@@ -86,9 +86,8 @@ std::vector<DpfKey> GenerateDpfKeys(
     const AggregationServicePayloadContents& contents) {
   DCHECK_EQ(contents.operation,
             AggregationServicePayloadContents::Operation::kHistogram);
-  DCHECK_EQ(
-      contents.aggregation_mode,
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+  DCHECK_EQ(contents.aggregation_mode,
+            mojom::AggregationServiceMode::kExperimentalPoplar);
   DCHECK_EQ(contents.contributions.size(), 1u);
 
   // absl::StatusOr is not allowed in the codebase, but this minimal usage is
@@ -185,7 +184,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   value.emplace(kOperationKey, kHistogramValue);
 
   cbor::Value::ArrayValue data;
-  for (AggregationServicePayloadContents::HistogramContribution contribution :
+  for (const mojom::AggregatableReportHistogramContribution& contribution :
        payload_contents.contributions) {
     cbor::Value::MapValue data_map;
     data_map.emplace(
@@ -260,9 +259,8 @@ std::vector<uint8_t> EncryptWithHpke(
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
-    std::vector<AggregationServicePayloadContents::HistogramContribution>
-        contributions,
-    AggregationMode aggregation_mode)
+    std::vector<mojom::AggregatableReportHistogramContribution> contributions,
+    mojom::AggregationServiceMode aggregation_mode)
     : operation(operation),
       contributions(std::move(contributions)),
       aggregation_mode(aggregation_mode) {}
@@ -389,7 +387,7 @@ AggregatableReportRequest::CreateInternal(
 
   if (base::ranges::any_of(
           payload_contents.contributions,
-          [](const AggregationServicePayloadContents::HistogramContribution&
+          [](const mojom::AggregatableReportHistogramContribution&
                  contribution) { return contribution.value < 0; })) {
     return absl::nullopt;
   }
@@ -489,13 +487,12 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   std::vector<std::vector<uint8_t>> unencrypted_payloads;
 
   switch (report_request.payload_contents().aggregation_mode) {
-    case AggregationServicePayloadContents::AggregationMode::kTeeBased: {
+    case mojom::AggregationServiceMode::kTeeBased: {
       unencrypted_payloads = ConstructUnencryptedTeeBasedPayload(
           report_request.payload_contents());
       break;
     }
-    case AggregationServicePayloadContents::AggregationMode::
-        kExperimentalPoplar: {
+    case mojom::AggregationServiceMode::kExperimentalPoplar: {
       unencrypted_payloads = ConstructUnencryptedExperimentalPoplarPayloads(
           report_request.payload_contents());
       break;
@@ -571,12 +568,11 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
 // static
 bool AggregatableReport::IsNumberOfProcessingUrlsValid(
     size_t number,
-    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode) {
   switch (aggregation_mode) {
-    case AggregationServicePayloadContents::AggregationMode::kTeeBased:
+    case mojom::AggregationServiceMode::kTeeBased:
       return number == 1u;
-    case AggregationServicePayloadContents::AggregationMode::
-        kExperimentalPoplar:
+    case mojom::AggregationServiceMode::kExperimentalPoplar:
       return number == 2u;
   }
 }
@@ -584,13 +580,12 @@ bool AggregatableReport::IsNumberOfProcessingUrlsValid(
 // static
 bool AggregatableReport::IsNumberOfHistogramContributionsValid(
     size_t number,
-    AggregationServicePayloadContents::AggregationMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode) {
   // Note: APIs using the aggregation service may impose their own limits.
   switch (aggregation_mode) {
-    case AggregationServicePayloadContents::AggregationMode::kTeeBased:
+    case mojom::AggregationServiceMode::kTeeBased:
       return number >= 1u;
-    case AggregationServicePayloadContents::AggregationMode::
-        kExperimentalPoplar:
+    case mojom::AggregationServiceMode::kExperimentalPoplar:
       return number == 1u;
   }
 }

@@ -17,6 +17,7 @@
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -59,8 +60,8 @@ testing::AssertionResult SharedInfoEqual(
 
 // Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::AggregationMode aggregation_mode =
-        AggregationServicePayloadContents::AggregationMode::kDefault);
+    mojom::AggregationServiceMode aggregation_mode =
+        mojom::AggregationServiceMode::kDefault);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
@@ -110,9 +111,8 @@ class TestAggregationServiceStorageContext
 std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation);
-std::ostream& operator<<(
-    std::ostream& out,
-    AggregationServicePayloadContents::AggregationMode aggregation_mode);
+std::ostream& operator<<(std::ostream& out,
+                         mojom::AggregationServiceMode aggregation_mode);
 std::ostream& operator<<(std::ostream& out,
                          AggregatableReportSharedInfo::DebugMode debug_mode);
 

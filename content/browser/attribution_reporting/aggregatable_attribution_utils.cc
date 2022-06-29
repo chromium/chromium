@@ -24,6 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -136,14 +137,13 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
-  std::vector<AggregationServicePayloadContents::HistogramContribution>
-      contributions;
+  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
   base::ranges::transform(
       data->contributions, std::back_inserter(contributions),
       [](const auto& contribution) {
-        return AggregationServicePayloadContents::HistogramContribution{
-            .bucket = contribution.key(),
-            .value = static_cast<int>(contribution.value())};
+        return mojom::AggregatableReportHistogramContribution(
+            /*bucket=*/contribution.key(),
+            /*value=*/static_cast<int>(contribution.value()));
       });
 
   base::Value::Dict additional_fields;
@@ -158,8 +158,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
-          std::move(contributions),
-          AggregationServicePayloadContents::AggregationMode::kDefault),
+          std::move(contributions), mojom::AggregationServiceMode::kDefault),
       AggregatableReportSharedInfo(
           data->initial_report_time, report.external_report_id(),
           attribution_info.source.common_info().reporting_origin(), debug_mode,

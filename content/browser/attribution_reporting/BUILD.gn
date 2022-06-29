@@ -44,7 +44,12 @@ mojom("mojo_bindings") {
         "attribution_source_type.h",
       ]
       traits_sources = [ "attribution_internals_mojom_traits.cc" ]
-      traits_deps = [ ":attribution_reporting_proto" ]
+      traits_deps = [
+        ":attribution_reporting_proto",
+
+        # //content/common/aggregatable_report.mojom is transitively included.
+        "//content/common:mojo_bindings",
+      ]
     },
   ]
 }
