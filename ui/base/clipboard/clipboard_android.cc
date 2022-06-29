@@ -420,11 +420,6 @@ Clipboard* Clipboard::Create() {
   return new ClipboardAndroid;
 }
 
-// Static method for testing.
-void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
-  Clipboard::DestroyClipboardForCurrentThread();
-}
-
 // ClipboardAndroid implementation.
 
 void ClipboardAndroid::OnPrimaryClipChanged(

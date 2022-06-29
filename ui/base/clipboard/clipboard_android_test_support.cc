@@ -15,6 +15,10 @@
 
 namespace ui {
 
+void JNI_ClipboardAndroidTestSupport_Cleanup(JNIEnv* env) {
+  Clipboard::DestroyClipboardForCurrentThread();
+}
+
 jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_html_text) {
