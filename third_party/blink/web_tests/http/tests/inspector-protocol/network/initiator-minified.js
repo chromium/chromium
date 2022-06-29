@@ -12,6 +12,7 @@
   dp.Page.navigate({url: testRunner.url('resources/minified.html')});
 
   let requests = [];
+  dp.Network.onLoadingFailed(e => testRunnler.log(JSON.stringify(e)));
   await dp.Network.onceRequestWillBeSent(e => {
     requests.push(e.params);
     errorForLog = new Error(JSON.stringify(requests));
