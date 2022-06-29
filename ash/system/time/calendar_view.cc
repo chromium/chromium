@@ -475,6 +475,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 }
 
 CalendarView::~CalendarView() {
+  is_destroying_ = true;
   RestoreHeadersStatus();
   RestoreMonthStatus();
 
@@ -482,16 +483,8 @@ CalendarView::~CalendarView() {
   // dependency from `CalendarViewController`, since these views are destructed
   // after the controller.
   if (event_list_view_) {
-    // If the `event_list_view_` close animation is running, stop the animation
-    // and let the callback handle the removal.
-    ui::LayerAnimator* event_list_view_animator =
-        event_list_view_->layer()->GetAnimator();
-    if (event_list_view_animator->is_animating()) {
-      event_list_view_animator->StopAnimating();
-    } else {
-      RemoveChildViewT(event_list_view_);
-      event_list_view_ = nullptr;
-    }
+    RemoveChildViewT(event_list_view_);
+    event_list_view_ = nullptr;
   }
   content_view_->RemoveAllChildViews();
 }
@@ -1612,6 +1605,9 @@ void CalendarView::OnScrollMonthAnimationComplete(bool scroll_up) {
 }
 
 void CalendarView::OnOpenEventListAnimationComplete() {
+  if (is_destroying_)
+    return;
+
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   // Scrolls to the next month if the selected date is in the `next_month_`, so
@@ -1658,6 +1654,9 @@ void CalendarView::OnOpenEventListAnimationComplete() {
 }
 
 void CalendarView::OnCloseEventListAnimationComplete() {
+  if (is_destroying_)
+    return;
+
   // GetFocusManager() can be nullptr if `CalendarView` is destroyed when the
   // closing animation hasn't finished.
   auto* focused_view =
