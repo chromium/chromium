@@ -30,7 +30,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 @interface PopupMenuTableViewController ()
 // Whether the -viewDidAppear: callback has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
-// A cached copy of |self.view.bounds|, made during calls to
+// A cached copy of `self.view.bounds`, made during calls to
 // viewDidLayoutSubviews, and used to reduce the number of calls to
 // calculatePreferredContentSize. which can be an expensive operation.
 @property(nonatomic, assign) CGRect cachedBounds;
@@ -245,8 +245,8 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 
 #pragma mark - Private
 
-// Returns the index path identifying the the row at the position |point|.
-// |point| must be in the window coordinates. Returns nil if |point| is outside
+// Returns the index path identifying the the row at the position `point`.
+// `point` must be in the window coordinates. Returns nil if `point` is outside
 // the bounds of the table view.
 - (NSIndexPath*)indexPathForInnerRowAtPoint:(CGPoint)point {
   CGPoint pointInTableViewCoordinates = [self.tableView convertPoint:point
@@ -265,7 +265,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   return indexPath;
 }
 
-// Highlights the |item| and |repeat| the highlighting once.
+// Highlights the `item` and `repeat` the highlighting once.
 - (void)highlightItem:(TableViewItem<PopupMenuItem>*)item repeat:(BOOL)repeat {
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
   [self.tableView selectRowAtIndexPath:indexPath
@@ -279,7 +279,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
       });
 }
 
-// Removes the highlight from |item| and |repeat| the highlighting once.
+// Removes the highlight from `item` and `repeat` the highlighting once.
 - (void)unhighlightItem:(TableViewItem<PopupMenuItem>*)item
                  repeat:(BOOL)repeat {
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];

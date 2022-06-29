@@ -55,7 +55,7 @@
 #endif
 
 namespace {
-// Returns the corresponding command type for a Popup menu |type|.
+// Returns the corresponding command type for a Popup menu `type`.
 PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   if (type == PopupMenuTypeToolsMenu)
     return PopupMenuCommandTypeToolsMenu;
@@ -86,7 +86,7 @@ enum class IOSOverflowMenuActionType {
 @property(nonatomic, strong) PopupMenuMediator* mediator;
 // Mediator for the overflow menu
 @property(nonatomic, strong) OverflowMenuMediator* overflowMenuMediator;
-// Mediator to that alerts the main |mediator| when the web content area
+// Mediator to that alerts the main `mediator` when the web content area
 // is blocked by an overlay.
 @property(nonatomic, strong) BrowserContainerMediator* contentBlockerMediator;
 // ViewController for this mediator.
@@ -284,8 +284,8 @@ enum class IOSOverflowMenuActionType {
 
 #pragma mark - Private
 
-// Presents a popup menu of type |type| with an animation starting from
-// |guideName|.
+// Presents a popup menu of type `type` with an animation starting from
+// `guideName`.
 - (void)presentPopupOfType:(PopupMenuType)type
             fromNamedGuide:(GuideName*)guideName {
   if (self.presenter || self.overflowMenuMediator)

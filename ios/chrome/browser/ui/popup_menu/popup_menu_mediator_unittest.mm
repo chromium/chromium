@@ -216,7 +216,7 @@ class PopupMenuMediatorTest : public PlatformTest {
   }
 
   // Checks that the popup_menu_ is receiving a number of items corresponding to
-  // |number_items|.
+  // `number_items`.
   void CheckMediatorSetItems(NSArray<NSNumber*>* number_items) {
     mediator_.webStateList = browser_->GetWebStateList();
     SetUpActiveWebState();

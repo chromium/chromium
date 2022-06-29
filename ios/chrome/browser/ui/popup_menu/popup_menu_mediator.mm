@@ -422,7 +422,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   if (_webState) {
     _webState->AddObserver(_webStateObserver.get());
 
-    // Observer the language::IOSLanguageDetectionTabHelper for |_webState|.
+    // Observer the language::IOSLanguageDetectionTabHelper for `_webState`.
     _iOSLanguageDetectionTabHelperObserverBridge =
         std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
             language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
@@ -746,7 +746,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   [self.popupMenu itemsHaveChanged:self.specificItems];
 }
 
-// Updates the |bookmark| item to match the bookmarked status of the page.
+// Updates `self.bookmarkItem` to match the bookmarked status of the page.
 - (void)updateBookmarkItem {
   if (!self.bookmarkItem)
     return;
@@ -772,7 +772,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   [self.popupMenu itemsHaveChanged:@[ self.bookmarkItem ]];
 }
 
-// Updates the |reloadStopItem| item to match the current behavior.
+// Updates the `reloadStopItem` item to match the current behavior.
 - (void)updateReloadStopItem {
   if ([self isPageLoading] &&
       self.reloadStopItem.accessibilityIdentifier == kToolsMenuReload) {
@@ -1281,7 +1281,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 }
 
 // Returns YES if incognito NTP title and image should be used for back/forward
-// item associated with |URL|.
+// item associated with `URL`.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
   return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
          self.isIncognito &&

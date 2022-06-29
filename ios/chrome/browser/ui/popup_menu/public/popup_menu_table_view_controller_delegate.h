@@ -14,7 +14,7 @@
 // Delegate protocol for PopupMenuTableViewController.
 @protocol PopupMenuTableViewControllerDelegate
 
-// Informs the delegate that |item| was selected with |origin| as the point of
+// Informs the delegate that `item` was selected with `origin` as the point of
 // origin of the action.
 - (void)popupMenuTableViewController:(PopupMenuTableViewController*)sender
                        didSelectItem:(TableViewItem<PopupMenuItem>*)item

@@ -23,7 +23,7 @@
 // CommandHandler.
 @property(nonatomic, weak) id<PopupMenuViewControllerDelegate> delegate;
 
-// Adds |content| as a child ViewController and its view to the popup.
+// Adds `content` as a child ViewController and its view to the popup.
 - (void)addContent:(UIViewController*)content;
 
 @end

@@ -11,8 +11,8 @@
 @protocol PopupMenuViewControllerDelegate
 
 // Tells the delegate that user took an action that will result in the dismissal
-// of |viewController|. It is the delegate's responsibility to actually dismiss
-// |viewController|.
+// of `viewController`. It is the delegate's responsibility to actually dismiss
+// `viewController`.
 - (void)popupMenuViewControllerWillDismiss:
     (PopupMenuViewController*)viewController;
 

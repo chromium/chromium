@@ -25,7 +25,7 @@ class WebNavigationBrowserAgent;
 @interface PopupMenuActionHandler
     : NSObject <PopupMenuTableViewControllerDelegate>
 
-// The view controller that presents |popupMenu|.
+// The view controller that presents the popup menu.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // Command handler.
