@@ -5049,7 +5049,7 @@
             ]
         }
     ],
-    "IncognitoParamFilterExperimentv2": [
+    "IncognitoParamFilterExperimentv3": [
         {
             "platforms": [
                 "android",
@@ -5064,7 +5064,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "classifications": "H4sIAEkgDGIC/+NS4uJKz89Pz0nVS87PFWCS4uXizk0sKSlPLM5ILUqVYuZiLAQAaThOnyQAAAA=",
+                        "experiment_identifier": "foo",
                         "should_filter": "true"
                     },
                     "enable_features": [
