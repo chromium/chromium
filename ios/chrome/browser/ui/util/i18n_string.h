@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Wrapper for base::i18n::AdjustStringForLocaleDirection.
-// Given the string in |text|, this function returns a new string with
+// Given the string in `text`, this function returns a new string with
 // the appropriate Unicode formatting marks that mark the string direction
 // (either left-to-right or right-to-left).
 NSString* AdjustStringForLocaleDirection(NSString* text);

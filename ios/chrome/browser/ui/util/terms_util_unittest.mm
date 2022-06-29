@@ -88,7 +88,7 @@ TEST_F(FileLocationsTest, TestTermsOfServiceForSupportedLanguages) {
   // Languages supported by iOS is returned by -availableLocaleIdentifiers.
   // This unit test fails when a language available in iOS falls back to
   // English (en) even though the terms_*.html file is available (listed in
-  // |localizedTermsHtml|). Fix this by adding the missing terms_*.html
+  // `localizedTermsHtml`). Fix this by adding the missing terms_*.html
   // to ios/chrome/browser/ui/util/BUILD.gn
   NSMutableSet<NSString*>* incorrectFallback = [NSMutableSet set];
   for (NSString* locale in [NSLocale availableLocaleIdentifiers]) {

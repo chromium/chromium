@@ -26,7 +26,7 @@
 // The animators in this group.
 @property(nonatomic, readonly) NSArray<UIViewPropertyAnimator*>* animators;
 
-// Adds |animator|, checking that it matches duration and delay with the other
+// Adds `animator`, checking that it matches duration and delay with the other
 // animators in the group.
 - (void)addAnimator:(UIViewPropertyAnimator*)animator;
 

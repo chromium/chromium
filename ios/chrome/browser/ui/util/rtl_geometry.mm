@@ -177,7 +177,7 @@ LayoutOffset CGRectGetLeadingLayoutOffsetInBoundingRect(CGRect rect,
   LayoutOffset offset = 0;
   if (LayoutDirection() == base::i18n::LEFT_TO_RIGHT) {
     // Leading edges have low x-values for LTR, so subtract the bounding rect's
-    // from |rect|'s.
+    // from `rect`'s.
     offset = rectLeadingEdge - boundingRectLeadingEdge;
   } else {
     DCHECK_EQ(LayoutDirection(), base::i18n::RIGHT_TO_LEFT);
@@ -193,7 +193,7 @@ LayoutOffset CGRectGetTrailingLayoutOffsetInBoundingRect(CGRect rect,
   LayoutOffset offset = 0;
   if (LayoutDirection() == base::i18n::RIGHT_TO_LEFT) {
     // Trailing edges have low x-values for RTL, so subtract the bounding rect's
-    // from |rect|'s.
+    // from `rect`'s.
     offset = rectTrailingEdge - boundingRectTrailingEdge;
   } else {
     DCHECK_EQ(LayoutDirection(), base::i18n::LEFT_TO_RIGHT);
@@ -253,7 +253,7 @@ UIEdgeInsets UIEdgeInsetsMakeUsingDirection(
     using std::swap;
     swap(leading, trailing);
   }
-  // At this point, |leading| == left, |trailing| = right.
+  // At this point, `leading` == left, `trailing` = right.
   return UIEdgeInsetsMake(top, leading, bottom, trailing);
 }
 

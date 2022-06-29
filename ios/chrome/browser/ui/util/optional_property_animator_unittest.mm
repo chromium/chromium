@@ -19,7 +19,7 @@ const NSTimeInterval kDuration = 0.1;
 // Test fixture for OptionalPropertyAnimator.
 using OptionalPropertyAnimatorTest = PlatformTest;
 
-// Tests that the animator's |hasAnimations| property is NO before adding an
+// Tests that the animator's `hasAnimations` property is NO before adding an
 // animation.
 TEST_F(OptionalPropertyAnimatorTest, NoAnimations) {
   id<UITimingCurveProvider> curve = [[UICubicTimingParameters alloc]
@@ -31,7 +31,7 @@ TEST_F(OptionalPropertyAnimatorTest, NoAnimations) {
 }
 
 // Tests that animations added in initializers are correctly reflected in
-// |hasAnimations|
+// `hasAnimations`
 TEST_F(OptionalPropertyAnimatorTest, InitializersWithAnimations) {
   ProceduralBlock empty_animation = ^{
   };

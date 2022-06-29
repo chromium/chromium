@@ -18,7 +18,7 @@ CGFloat CurrentScreenWidth();
 // Returns the approximate corner radius of the current device.
 CGFloat DeviceCornerRadius();
 
-// Returns the closest pixel-aligned value less than |value|, taking the scale
+// Returns the closest pixel-aligned value less than `value`, taking the scale
 // factor into account. At a scale of 1, equivalent to floor().
 CGFloat AlignValueToPixel(CGFloat value);
 
@@ -34,14 +34,14 @@ CGRect AlignRectToPixel(CGRect rect);
 // origin, and ui::AlignSizeToUpperPixel() to the size.
 CGRect AlignRectOriginAndSizeToPixels(CGRect rect);
 
-// Returns a square CGRect centered at |x|, |y| with a width of |width|.
+// Returns a square CGRect centered at `x`, `y` with a width of `width`.
 // Both the position and the size of the CGRect will be aligned to points.
 CGRect CGRectMakeAlignedAndCenteredAt(CGFloat x, CGFloat y, CGFloat width);
 
-// Returns a rectangle of size |rectSize| centered inside |frameSize|.
+// Returns a rectangle of size `rectSize` centered inside `frameSize`.
 CGRect CGRectMakeCenteredRectInFrame(CGSize frameSize, CGSize rectSize);
 
-// Returns whether |a| and |b| are within CGFloat's epsilon value.
+// Returns whether `a` and `b` are within CGFloat's epsilon value.
 bool AreCGFloatsEqual(CGFloat a, CGFloat b);
 
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_UI_UTIL_H_

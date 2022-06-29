@@ -24,7 +24,7 @@ typedef struct {
 @protocol KeyboardObserverHelperConsumer <NSObject>
 
 // Indicates that the keyboard state changed, at least on one of the
-// |KeyboardState| aspects.
+// `KeyboardState` aspects.
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState;
 
 @end

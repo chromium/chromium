@@ -12,7 +12,7 @@
 #endif
 
 namespace {
-// Tests that |guide|'s layoutFrame is equal to |frame|.
+// Tests that `guide`'s layoutFrame is equal to `frame`.
 void VerifyLayoutFrame(UILayoutGuide* guide, CGRect frame) {
   [guide.owningView setNeedsLayout];
   [guide.owningView layoutIfNeeded];
@@ -110,7 +110,7 @@ TEST_F(NamedGuideTest, TestConstrainedFrame) {
   [view addLayoutGuide:guide];
   ASSERT_FALSE(guide.constrained);
 
-  // Test updating the guide's |constrainedFrame| to the lower left corner.
+  // Test updating the guide's `constrainedFrame` to the lower left corner.
   const CGRect kLowerLeftCorner = CGRectMake(0, 50, 50, 50);
   guide.constrainedFrame = kLowerLeftCorner;
   VerifyLayoutFrame(guide, kLowerLeftCorner);
@@ -127,7 +127,7 @@ TEST_F(NamedGuideTest, TestConstrainedFrame) {
   VerifyLayoutFrame(guide, kNewLowerLeftCorner);
 }
 
-// Tests that setting the |constrainedView| and |constrainedFrame| correctly
+// Tests that setting the `constrainedView` and `constrainedFrame` correctly
 // nullify other properties.
 TEST_F(NamedGuideTest, TestConstrainedViewFrameMutex) {
   GuideName* test_guide = @"NamedGuideTest";
@@ -141,14 +141,14 @@ TEST_F(NamedGuideTest, TestConstrainedViewFrameMutex) {
   [view addLayoutGuide:guide];
   guide.constrainedView = childView;
 
-  // Set the guide's |constrainedFrame| and verify that |constrainedView| is
+  // Set the guide's `constrainedFrame` and verify that `constrainedView` is
   // reset to nil.
   const CGRect kConstrainedFrame = CGRectMake(0, 0, 50, 50);
   guide.constrainedFrame = kConstrainedFrame;
   EXPECT_FALSE(guide.constrainedView);
   VerifyLayoutFrame(guide, kConstrainedFrame);
 
-  // Set the guide's |constrainedView| and verify that |constrainedFrame| is
+  // Set the guide's `constrainedView` and verify that `constrainedFrame` is
   // reset to CGRectNull.
   guide.constrainedView = childView;
   EXPECT_TRUE(CGRectIsNull(guide.constrainedFrame));

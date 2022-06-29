@@ -17,18 +17,18 @@ extern const CGFloat kLinkTapAreaMinimum;
 // Transparent button that is overlaid on link portions of text.
 @interface TransparentLinkButton : UIButton
 
-// TransparentLinkButtons must be created via |+buttonsForLinkFrames:URL:|.
+// TransparentLinkButtons must be created via |+buttonsForLinkFrames:URL:`.
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
-// Creates TransparentLinkButtons with |URL| for each NSValue-wrapped CGRect in
-// |linkFrames| and returns them in an NSArray.  The links returned by this
+// Creates TransparentLinkButtons with `URL` for each NSValue-wrapped CGRect in
+// `linkFrames` and returns them in an NSArray.  The links returned by this
 // function will be styled such that their touch-down styling will be shared.
-// Only the first button in the array will be accessible, and |label| will be
+// Only the first button in the array will be accessible, and `label` will be
 // set as its accessibility label. This is done to ensure that VoiceOver mode
 // does not have multiple accessibility elements with the same accessibility
-// label and the same action.  |lineHeight| is used to limit the overlap from
+// label and the same action.  `lineHeight` is used to limit the overlap from
 // increasing the TransparentLinkButtons to satisfy a11y guidelines for a
 // minimum touch area.
 + (NSArray*)buttonsForLinkFrames:(NSArray*)linkFrames
