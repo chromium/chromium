@@ -114,7 +114,7 @@ struct BeginNavigationParams {
   // initiator information in DevTools protocol format. See
   // https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Initiator
   // for details.
-  mojo_base.mojom.DeprecatedDictionaryValue? devtools_initiator;
+  mojo_base.mojom.DictionaryValue? devtools_initiator;
 
   // Specifies whether, and how, the navigation should execute a Trust Tokens
   // operation (https://github.com/wicg/trust-token-api) and attach headers

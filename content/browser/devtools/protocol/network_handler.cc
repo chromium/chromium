@@ -2085,7 +2085,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
   request->SetMixedContentType(Security::MixedContentTypeEnum::None);
 
   std::unique_ptr<Network::Initiator> initiator;
-  const absl::optional<base::Value>& initiator_optional =
+  const absl::optional<base::Value::Dict>& initiator_optional =
       nav_request.begin_params().devtools_initiator;
   if (initiator_optional.has_value())
     crdtp::ConvertProtocolValue(initiator_optional.value(), &initiator);

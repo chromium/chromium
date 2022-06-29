@@ -5782,10 +5782,12 @@ void RenderFrameImpl::BeginNavigationInternal(
       CloneBlobURLToken(info->blob_url_token));
 
   int load_flags = info->url_request.GetLoadFlagsForWebUrlRequest();
-  std::unique_ptr<base::DictionaryValue> initiator;
+  absl::optional<base::Value::Dict> initiator;
   if (!info->devtools_initiator_info.IsNull()) {
-    initiator = base::DictionaryValue::From(
-        base::JSONReader::ReadDeprecated(info->devtools_initiator_info.Utf8()));
+    absl::optional<base::Value> initiator_value =
+        base::JSONReader::Read(info->devtools_initiator_info.Utf8());
+    if (initiator_value && initiator_value->is_dict())
+      initiator = std::move(initiator_value->GetDict());
   }
 
   absl::optional<network::ResourceRequest::WebBundleTokenParams>
@@ -5807,8 +5809,7 @@ void RenderFrameImpl::BeginNavigationInternal(
           blink::GetMixedContentContextTypeForWebURLRequest(info->url_request),
           is_form_submission, was_initiated_by_link_click, searchable_form_url,
           searchable_form_encoding, client_side_redirect_url,
-          initiator ? absl::make_optional<base::Value>(std::move(*initiator))
-                    : absl::nullopt,
+          std::move(initiator),
           info->url_request.TrustTokenParams()
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,
