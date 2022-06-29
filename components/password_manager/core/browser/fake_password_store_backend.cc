@@ -199,7 +199,6 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     const PasswordFormDigest& form,
     bool include_psl) {
   // Updating all matched forms is the equivalent of FillMatchingLogins();
-  ++fill_matching_logins_calls_;
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {
     // The code below doesn't support PSL federated credential. It's doable but

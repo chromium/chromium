@@ -39,7 +39,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void Clear();
 
   const PasswordMap& stored_passwords() const { return stored_passwords_; }
-  int fill_matching_logins_calls() const { return fill_matching_logins_calls_; }
   IsAccountStore is_account_store() const { return is_account_store_; }
 
  private:
@@ -98,8 +97,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   const IsAccountStore is_account_store_{false};
   const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
-  // Number of calls of FillMatchingLogins() method.
-  int fill_matching_logins_calls_ = 0;
   PasswordMap stored_passwords_;
 };
 

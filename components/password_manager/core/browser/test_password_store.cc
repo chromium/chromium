@@ -33,11 +33,6 @@ bool TestPasswordStore::IsEmpty() const {
   return number_of_passwords == 0u;
 }
 
-int TestPasswordStore::fill_matching_logins_calls() const {
-  DCHECK(fake_backend()) << "Store has already been shut down!";
-  return fake_backend()->fill_matching_logins_calls();
-}
-
 const TestPasswordStore::PasswordMap& TestPasswordStore::stored_passwords()
     const {
   DCHECK(fake_backend()) << "Store has already been shut down!";

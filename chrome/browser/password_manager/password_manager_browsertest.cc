@@ -3750,11 +3750,20 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Visit Gaia reath page.
   const GURL url = https_test_server().GetURL("accounts.google.com",
                                               "/password/gaia_reath_form.html");
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = url.GetWithEmptyPath().spec();
+  signin_form.url = url.GetWithEmptyPath();
+  signin_form.username_value = u"user";
+  signin_form.password_value = u"password123";
+  password_store->AddLogin(signin_form);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Expects no requests to the password store. So no filling.
-  EXPECT_EQ(0, password_store->fill_matching_logins_calls());
+  // Check that no autofill happened.
+  content::SimulateMouseClick(WebContents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  CheckElementValue("identifier", "");
+  CheckElementValue("password", "");
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -3769,10 +3778,20 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   const GURL url = https_test_server().GetURL(
       "accounts.google.com", "/password/password_form.html?ssp=1");
 
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = url.GetWithEmptyPath().spec();
+  signin_form.url = url.GetWithEmptyPath();
+  signin_form.username_value = u"user";
+  signin_form.password_value = u"password123";
+  password_store->AddLogin(signin_form);
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Expects no requests to the password store. So no filling.
-  EXPECT_EQ(0, password_store->fill_matching_logins_calls());
+  // Check that no autofill happened.
+  content::SimulateMouseClick(WebContents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  CheckElementValue("username_field", "");
+  CheckElementValue("password_field", "");
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,

@@ -48,7 +48,6 @@ class TestPasswordStore : public PasswordStore {
   bool IsEmpty() const;
 
   // TODO(crbug.com/1294735): Clean up non-essential methods.
-  int fill_matching_logins_calls() const;
   const TestPasswordStore::PasswordMap& stored_passwords() const;
   ::password_manager::IsAccountStore IsAccountStore() const;
 
