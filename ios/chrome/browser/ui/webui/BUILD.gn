@@ -112,6 +112,7 @@ source_set("webui_internal") {
     ":webui",
     "//components/resources",
     "//components/signin/public/identity_manager",
+    "//components/sync/invalidations",
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",

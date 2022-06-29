@@ -17,7 +17,9 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/events/protocol_event.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "ios/components/webui/web_ui_provider.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -46,6 +48,14 @@ SyncInternalsMessageHandler::~SyncInternalsMessageHandler() {
   if (service && service->HasObserver(this)) {
     service->RemoveObserver(this);
     service->RemoveProtocolEventObserver(this);
+  }
+
+  if (is_registered_) {
+    syncer::SyncInvalidationsService* invalidations_service =
+        GetSyncInvalidationsService();
+    if (invalidations_service) {
+      invalidations_service->RemoveListener(this);
+    }
   }
 }
 
@@ -115,6 +125,11 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
   if (service && !is_registered_) {
     service->AddObserver(this);
     service->AddProtocolEventObserver(this);
+    syncer::SyncInvalidationsService* invalidations_service =
+        GetSyncInvalidationsService();
+    if (invalidations_service) {
+      invalidations_service->AddListener(this);
+    }
     is_registered_ = true;
   }
 
@@ -239,6 +254,27 @@ void SyncInternalsMessageHandler::OnProtocolEvent(
   DispatchEvent(syncer::sync_ui_util::kOnProtocolEvent, *value);
 }
 
+void SyncInternalsMessageHandler::OnInvalidationReceived(
+    const std::string& payload) {
+  sync_pb::SyncInvalidationsPayload payload_message;
+  if (!payload_message.ParseFromString(payload)) {
+    return;
+  }
+
+  base::ListValue data_types_list;
+  for (const auto& data_type_invalidation :
+       payload_message.data_type_invalidations()) {
+    const int field_number = data_type_invalidation.data_type_id();
+    syncer::ModelType type =
+        syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+    if (IsRealDataType(type)) {
+      data_types_list.Append(syncer::ModelTypeToDebugString(type));
+    }
+  }
+
+  DispatchEvent(syncer::sync_ui_util::kOnInvalidationReceived, data_types_list);
+}
+
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   // This class serves to display debug information to the user, so it's fine to
   // include sensitive data in ConstructAboutInformation().
@@ -281,6 +317,11 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
 // Gets the SyncService of the underlying original profile. May return null.
 syncer::SyncService* SyncInternalsMessageHandler::GetSyncService() {
   return web_ui::GetSyncServiceForWebUI(web_ui());
+}
+
+syncer::SyncInvalidationsService*
+SyncInternalsMessageHandler::GetSyncInvalidationsService() {
+  return web_ui::GetSyncInvalidationsServiceForWebUI(web_ui());
 }
 
 void SyncInternalsMessageHandler::DispatchEvent(

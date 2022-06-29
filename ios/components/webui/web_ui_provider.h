@@ -9,6 +9,7 @@
 
 namespace syncer {
 class SyncService;
+class SyncInvalidationsService;
 }  // namespace syncer
 
 namespace version_info {
@@ -25,6 +26,11 @@ namespace web_ui {
 
 // Gets the SyncService of the underlying original profile. May return null.
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui);
+
+// Gets the SyncInvalidationsService of the underlying original profile. May
+// return null.
+syncer::SyncInvalidationsService* GetSyncInvalidationsServiceForWebUI(
+    web::WebUIIOS* web_ui);
 
 // Returns the human-readable name of the app channel.
 std::string GetChannelString();

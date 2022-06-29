@@ -333,6 +333,7 @@ source_set("web_view_sources") {
     "//components/ssl_errors",
     "//components/strings:components_strings_grit",
     "//components/sync",
+    "//components/sync/invalidations",
     "//components/sync_device_info",
     "//components/translate/core/browser",
     "//components/translate/core/common",

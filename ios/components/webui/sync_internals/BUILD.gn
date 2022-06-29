@@ -16,6 +16,7 @@ source_set("sync_internals") {
     "//components/resources",
     "//components/sync",
     "//components/sync/driver/resources",
+    "//components/sync/invalidations",
     "//components/version_info:version_info",
     "//ios/components/webui:provider",
     "//ios/components/webui:url_constants",
