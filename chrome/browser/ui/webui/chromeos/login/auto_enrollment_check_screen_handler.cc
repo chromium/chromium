@@ -8,40 +8,19 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace ash {
-
-constexpr StaticOobeScreenId AutoEnrollmentCheckScreenView::kScreenId;
-
-}
-
 namespace chromeos {
 
 AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler()
     : BaseScreenHandler(kScreenId) {}
 
 void AutoEnrollmentCheckScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
 }
 
 void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("autoEnrollmentCheckScreenHeader",
-               IDS_AUTO_ENROLLMENT_CHECK_SCREEN_HEADER);
   builder->Add("autoEnrollmentCheckMessage",
                IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE);
 }
-
-void AutoEnrollmentCheckScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void AutoEnrollmentCheckScreenHandler::RegisterMessages() {}
 
 }  // namespace chromeos

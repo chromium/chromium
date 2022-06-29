@@ -31,14 +31,6 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
-  // WebUIMessageHandler:
-  void RegisterMessages() override;
-
- private:
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

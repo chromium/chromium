@@ -2058,9 +2058,6 @@
     Skip for now
   </message>
 
-  <message name="IDS_AUTO_ENROLLMENT_CHECK_SCREEN_HEADER" desc="Header of message only used for accessibility label in the current design,  notifying about pending auto-enrollment check completion.">
-    Determining device configuration.
-  </message>
   <message name="IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE" desc="Warning message shown on screen notifying about pending auto-enrollment check completion.">
     Determining device configuration...
   </message>

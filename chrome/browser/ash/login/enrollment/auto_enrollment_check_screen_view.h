@@ -14,9 +14,10 @@ namespace ash {
 class AutoEnrollmentCheckScreenView
     : public base::SupportsWeakPtr<AutoEnrollmentCheckScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"auto-enrollment-check"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "auto-enrollment-check", "AutoEnrollmentCheckScreen"};
 
-  virtual ~AutoEnrollmentCheckScreenView() {}
+  virtual ~AutoEnrollmentCheckScreenView() = default;
 
   virtual void Show() = 0;
 };
