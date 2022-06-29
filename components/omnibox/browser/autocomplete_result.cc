@@ -678,6 +678,9 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
       continue;
     }
 
+    // Capture the first eligible non-entity duplicate we find, but continue the
+    // search for a potential server-provided duplicate, which is considered to
+    // be an even better candidate for the reasons outlined below.
     if (non_entity_it == top_match->duplicate_matches.end()) {
       non_entity_it = it;
     }
