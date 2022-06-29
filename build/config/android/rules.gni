@@ -1039,9 +1039,9 @@ if (enable_java_templates) {
     }
 
     if (defined(invoker.alternative_android_sdk_dep)) {
-      _android_sdk_dep = invoker.alternative_android_sdk_dep
+      _deps += [ invoker.alternative_android_sdk_dep ]
     } else {
-      _android_sdk_dep = default_android_sdk_dep
+      _deps += [ "//third_party/android_sdk:android_sdk_java" ]
     }
 
     _resource_files = []
@@ -1080,7 +1080,7 @@ if (enable_java_templates) {
                              ])
 
       r_text = _r_text_out_path
-      possible_config_deps = _deps + [ _android_sdk_dep ]
+      possible_config_deps = _deps
 
       # Always merge manifests from resources.
       # * Might want to change this at some point for consistency and clarity,
@@ -1111,7 +1111,7 @@ if (enable_java_templates) {
       }
 
       # Depend on non-library deps and on __assetres subtargets of library deps.
-      deps = filter_exclude(_deps, _lib_deps) + [ _android_sdk_dep ]
+      deps = filter_exclude(_deps, _lib_deps)
       foreach(_lib_dep, _lib_deps) {
         # Expand //foo/java -> //foo/java:java
         _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
@@ -1245,34 +1245,17 @@ if (enable_java_templates) {
       supports_android = true
       possible_config_deps = _invoker_deps
     }
-
-    _assetres_deps = filter_include(_invoker_deps, java_resource_patterns)
-    _invoker_deps_minus_assetres = filter_exclude(_invoker_deps, _assetres_deps)
-    _lib_deps =
-        filter_include(_invoker_deps_minus_assetres, java_library_patterns)
-
-    _expanded_lib_deps = []
-    foreach(_lib_dep, _lib_deps) {
-      _expanded_lib_deps += [ get_label_info(_lib_dep, "label_no_toolchain") ]
-    }
     foreach(_group_name,
             [
-              "assetres",
               "header",
-              "host",
-              "validate",
+              "impl",
+              "assetres",
             ]) {
-      group("${target_name}__$_group_name") {
-        deps = []
-        foreach(_lib_dep, _expanded_lib_deps) {
-          deps += [ "${_lib_dep}__${_group_name}" ]
-        }
-        if (_group_name == "assetres") {
-          deps += _assetres_deps
-        }
+      java_lib_group("${target_name}__${_group_name}") {
+        deps = _invoker_deps
+        group_name = _group_name
       }
     }
-
     group(target_name) {
       forward_variables_from(invoker,
                              "*",
@@ -1388,7 +1371,7 @@ if (enable_java_templates) {
     if (defined(invoker.alternative_android_sdk_dep)) {
       _android_sdk_dep = invoker.alternative_android_sdk_dep
     } else {
-      _android_sdk_dep = default_android_sdk_dep
+      _android_sdk_dep = "//third_party/android_sdk:android_sdk_java"
     }
 
     # A package name or a manifest is required to have resources. This is
@@ -1525,12 +1508,8 @@ if (enable_java_templates) {
       deps = [
         ":$_apkbuilder_target_name",
         ":$_build_config_target_name",
-        ":${_java_binary_target_name}__host",
-        ":${_java_binary_target_name}__validate",
+        ":$_java_binary_target_name",
       ]
-
-      # Add non-libary deps, since the __host target does not depend on them.
-      deps += filter_exclude(_invoker_deps, java_library_patterns)
     }
   }
 
@@ -1782,7 +1761,7 @@ if (enable_java_templates) {
   #     output = "$root_build_dir/MyLibrary.jar"
   #   }
   template("dist_dex") {
-    _deps = [ default_android_sdk_dep ]
+    _deps = [ "//third_party/android_sdk:android_sdk_java" ]
     if (defined(invoker.deps)) {
       _deps += invoker.deps
     }
@@ -1803,6 +1782,8 @@ if (enable_java_templates) {
       build_config = _build_config
     }
 
+    _deps += [ ":$_build_config_target_name" ]
+
     dex(target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
@@ -1813,7 +1794,7 @@ if (enable_java_templates) {
                                    "proguard_enable_obfuscation",
                                    "min_sdk_version",
                                  ])
-      deps = [ ":$_build_config_target_name" ] + _deps
+      deps = _deps
       build_config = _build_config
       enable_multidex = false
       output = invoker.output
@@ -2645,7 +2626,7 @@ if (enable_java_templates) {
     if (defined(invoker.alternative_android_sdk_dep)) {
       _android_sdk_dep = invoker.alternative_android_sdk_dep
     } else {
-      _android_sdk_dep = default_android_sdk_dep
+      _android_sdk_dep = "//third_party/android_sdk:android_sdk_java"
     }
 
     if (defined(_shared_resources_allowlist_target)) {
@@ -3106,8 +3087,6 @@ if (enable_java_templates) {
         output = _dist_ijar_path
         data = [ _dist_ijar_path ]
         use_interface_jars = true
-
-        # This will use __header under-the-hood.
         deps = [ ":$_java_target_name" ]
       }
     }
@@ -3115,7 +3094,7 @@ if (enable_java_templates) {
     if (_uses_static_library_synchronized_proguard) {
       _final_dex_target_dep = "${invoker.static_library_provider}__dexsplitter"
     } else if ((_is_bundle_module && _proguard_enabled) || _omit_dex) {
-      # No library dep needed.
+      _final_deps += [ ":$_java_target_name" ]
     } else if (_incremental_apk) {
       if (defined(invoker.enable_proguard_checks)) {
         not_needed(invoker, [ "enable_proguard_checks" ])
@@ -3138,24 +3117,18 @@ if (enable_java_templates) {
           ":$_java_target_name",
         ]
         if (_proguard_enabled) {
-          # Generates proguard configs
-          deps += [ ":$_compile_resources_target" ]
+          deps += _invoker_deps + [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
           proguard_sourcefile_suffix = "$android_channel-$_version_code"
           has_apk_under_test = defined(invoker.apk_under_test)
+        } else if (_min_sdk_version >= default_min_sdk_version) {
+          # Enable dex merging only when min_sdk_version is >= what the library
+          # .dex files were created with.
+          input_dex_filearg =
+              "@FileArg(${_rebased_build_config}:final_dex:all_dex_files)"
         } else {
-          if (_min_sdk_version >= default_min_sdk_version) {
-            # Enable dex merging only when min_sdk_version is >= what the library
-            # .dex files were created with.
-            input_dex_filearg =
-                "@FileArg(${_rebased_build_config}:final_dex:all_dex_files)"
-
-            # Pure dex-merge.
-            enable_desugar = false
-          } else {
-            input_classes_filearg =
-                "@FileArg($_rebased_build_config:deps_info:device_classpath)"
-          }
+          input_classes_filearg =
+              "@FileArg($_rebased_build_config:deps_info:device_classpath)"
         }
 
         if (_is_static_library_provider) {
@@ -3177,14 +3150,11 @@ if (enable_java_templates) {
         # their respective dex steps. False positives that were suppressed at
         # per-target dex steps are emitted here since this may use jar files
         # rather than dex files.
-        if (!defined(enable_desugar)) {
-          ignore_desugar_missing_deps = true
-        }
+        ignore_desugar_missing_deps = true
 
         if (_enable_main_dex_list) {
-          # Generates main-dex config.
-          deps += [ ":$_compile_resources_target" ]
           extra_main_dex_proguard_config = _generated_proguard_main_dex_config
+          deps += [ ":$_compile_resources_target" ]
         }
       }
 
@@ -3321,11 +3291,11 @@ if (enable_java_templates) {
             name = "${invoker.name}.apk"
             build_config = _build_config
             res_size_info_path = _res_size_info_path
-            deps = [
-              ":$_build_config_target",
-              ":$_compile_resources_target",
-              ":$_java_target_name",
-            ]
+            deps = _invoker_deps + [
+                     ":$_build_config_target",
+                     ":$_compile_resources_target",
+                     ":$_java_target_name",
+                   ]
           }
           _final_deps += [ ":$_size_info_target" ]
         } else {
@@ -3573,8 +3543,6 @@ if (enable_java_templates) {
                                ])
         build_config = _build_config
         build_config_dep = ":$_build_config_target"
-
-        # This will use library subtargets under-the-hood
         deps = [ ":$_java_target_name" ]
         if (defined(invoker.lint_suppressions_dep)) {
           deps += [ invoker.lint_suppressions_dep ]
@@ -3610,7 +3578,8 @@ if (enable_java_templates) {
       }
 
       # Include unstripped native libraries so tests can symbolize stacks.
-      data_deps += _all_native_libs_deps + [ ":${_java_target_name}__validate" ]
+      data_deps += _all_native_libs_deps
+
       if (_enable_lint) {
         data_deps += [ ":${target_name}__lint" ]
       }
@@ -4994,9 +4963,9 @@ if (enable_java_templates) {
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     _build_config_target = "$_target_name$build_config_target_suffix"
     if (defined(invoker.proguard_android_sdk_dep)) {
-      _android_sdk_dep = invoker.proguard_android_sdk_dep
+      proguard_android_sdk_dep_ = invoker.proguard_android_sdk_dep
     } else {
-      _android_sdk_dep = default_android_sdk_dep
+      proguard_android_sdk_dep_ = "//third_party/android_sdk:android_sdk_java"
     }
 
     if (_proguard_enabled) {
@@ -5010,7 +4979,7 @@ if (enable_java_templates) {
 
     write_build_config(_build_config_target) {
       type = "android_app_bundle"
-      possible_config_deps = _module_targets + [ _android_sdk_dep ]
+      possible_config_deps = _module_targets + [ proguard_android_sdk_dep_ ]
       build_config = _build_config
       proguard_enabled = _proguard_enabled
       module_build_configs = _module_build_configs
