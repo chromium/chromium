@@ -619,7 +619,7 @@ group("unit_tests") {
   ]
 }
 
-source_set("browser_tests") {
+source_set("web_applications_browser_tests") {
   testonly = true
 
   sources = [
@@ -658,7 +658,6 @@ source_set("browser_tests") {
   deps = [
     ":web_applications",
     ":web_applications_test_support",
-    "adjustments:adjustments_browser_tests",
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service:test_support",
@@ -673,6 +672,15 @@ source_set("browser_tests") {
     "//components/webapps/services/web_app_origin_association/test:test_support",
     "//ui/events/devices:test_support",
     "//url",
+  ]
+}
+
+group("browser_tests") {
+  testonly = true
+
+  deps = [
+    ":web_applications_browser_tests",
+    "adjustments:adjustments_browser_tests",
   ]
 }
 
