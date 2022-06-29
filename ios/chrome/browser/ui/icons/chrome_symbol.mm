@@ -13,7 +13,7 @@
 
 namespace {
 
-// Returns the default configuration with the given |pointSize|.
+// Returns the default configuration with the given `pointSize`.
 UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
     NSInteger pointSize) {
   return [UIImageSymbolConfiguration
@@ -22,8 +22,8 @@ UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
                            scale:UIImageSymbolScaleMedium];
 }
 
-// Returns a symbol named |symbolName| configured with the given
-// |configuration|. |systemSymbol| is used to specify if it is a SFSymbol or a
+// Returns a symbol named `symbolName` configured with the given
+// `configuration`. `systemSymbol` is used to specify if it is a SFSymbol or a
 // custom symbol.
 
 UIImage* SymbolWithConfiguration(NSString* symbolName,

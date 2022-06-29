@@ -14,7 +14,7 @@ NSInteger kSettingsRootSymbolImagePointSize = 18;
 
 namespace {
 
-// The default configuration with the given |pointSize| for the Settings root
+// The default configuration with the given `pointSize` for the Settings root
 // screen.
 UIImageSymbolConfiguration* kDefaultSettingsRootSymbolConfiguration =
     [UIImageSymbolConfiguration

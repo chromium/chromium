@@ -10,11 +10,11 @@
 // The size of the symbol image displayed in the Settings root screen.
 extern NSInteger kSettingsRootSymbolImagePointSize;
 
-// Returns a SF symbol named |symbolName| configured for the Settings root
+// Returns a SF symbol named `symbolName` configured for the Settings root
 // screen.
 UIImage* DefaultSettingsRootSymbol(NSString* symbolName);
 
-// Returns a custom symbol named |symbolName| configured for the Settings root
+// Returns a custom symbol named `symbolName` configured for the Settings root
 // screen.
 UIImage* CustomSettingsRootSymbol(NSString* symbolName);
 
