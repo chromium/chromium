@@ -12,8 +12,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
-import android.os.Build;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -23,7 +21,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
@@ -56,9 +54,7 @@ public class AutofillAssistantPromptNavigationIntegrationTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 21)
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O_MR1,
-            supported_abis_includes = "x86", message = "Flaky, see https://crbug.com/1270760")
+    @DisabledTest(message = "https://crbug.com/1270760")
     public void
     reloadEndsPrompt() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
