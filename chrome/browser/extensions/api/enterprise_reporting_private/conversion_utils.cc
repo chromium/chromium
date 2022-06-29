@@ -15,28 +15,35 @@ namespace extensions {
 
 namespace {
 
-absl::optional<SignalCollectionError> TryParseError(
+absl::optional<ParsedSignalsError> TryParseError(
     const device_signals::SignalsAggregationResponse& response,
     const absl::optional<device_signals::BaseSignalResponse>& bundle) {
   absl::optional<std::string> error_string;
-  if (response.top_level_error.has_value()) {
-    return response.top_level_error.value();
+  if (response.top_level_error) {
+    return ParsedSignalsError{response.top_level_error.value(),
+                              /*is_top_level_error=*/true};
   }
 
-  if (!bundle.has_value()) {
-    return SignalCollectionError::kMissingBundle;
+  if (!bundle) {
+    return ParsedSignalsError{SignalCollectionError::kMissingBundle,
+                              /*is_top_level_error=*/false};
   }
 
-  return bundle->collection_error;
+  if (bundle->collection_error) {
+    return ParsedSignalsError{bundle->collection_error.value(),
+                              /*is_top_level_error=*/false};
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace
 
-absl::optional<SignalCollectionError> ConvertAvProductsResponse(
+absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
     const device_signals::SignalsAggregationResponse& response,
     std::vector<api::enterprise_reporting_private::AntiVirusSignal>* arg_list) {
   auto error = TryParseError(response, response.av_signal_response);
-  if (error.has_value()) {
+  if (error) {
     return error.value();
   }
 
@@ -74,11 +81,11 @@ absl::optional<SignalCollectionError> ConvertAvProductsResponse(
   return absl::nullopt;
 }
 
-absl::optional<SignalCollectionError> ConvertHotfixesResponse(
+absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
     const device_signals::SignalsAggregationResponse& response,
     std::vector<api::enterprise_reporting_private::HotfixSignal>* arg_list) {
   auto error = TryParseError(response, response.hotfix_signal_response);
-  if (error.has_value()) {
+  if (error) {
     return error.value();
   }
 

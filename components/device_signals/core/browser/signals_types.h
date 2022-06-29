@@ -19,16 +19,23 @@
 namespace device_signals {
 
 // Enum of names representing signals bundles that can be aggregated via the
-// SignalsAggregator. Do not change the ordering.
+// SignalsAggregator.
+// These values are persisted to logs and should not be renumbered. Please
+// update the DeviceSignalsSignalName enum in enums.xml when adding a new
+// value here.
 enum class SignalName {
   kAntiVirus,
   kHotfixes,
   kFileSystemInfo,
-  kMaxValue = kFileSystemInfo
+  kSystemSettings,
+  kMaxValue = kSystemSettings
 };
 
 // Superset of all signal collection errors that can occur, including top-level
-// as well as per-bundle errors. Do not change the ordering.
+// as well as per-bundle errors.
+// These values are persisted to logs and should not be renumbered. Please
+// update the DeviceSignalsSignalCollectionError enum in enums.xml when adding a
+// new value here.
 enum class SignalCollectionError {
   kConsentRequired,
   kUnaffiliatedUser,

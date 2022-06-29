@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/core/browser/mock_signals_collector.h"
@@ -87,6 +88,7 @@ class SignalsAggregatorImplTest : public testing::Test {
   testing::StrictMock<MockUserPermissionService> mock_permission_service_;
   UserContext user_context_{kGaiaId};
   std::unique_ptr<SignalsAggregatorImpl> aggregator_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that the aggregator will return an empty value when given an empty
@@ -101,13 +103,30 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_NoSignal) {
             SignalCollectionError::kUnsupported);
 }
 
+// Tests that the aggregator will return an empty value when given a request
+// with multiple signal names.
+TEST_F(SignalsAggregatorImplTest, GetSignals_MultipleSignals) {
+  auto request = CreateRequest();
+  request.signal_names.emplace(SignalName::kAntiVirus);
+  request.signal_names.emplace(SignalName::kHotfixes);
+
+  base::test::TestFuture<SignalsAggregationResponse> future;
+  aggregator_->GetSignals(request, future.GetCallback());
+
+  SignalsAggregationResponse response = future.Get();
+  ASSERT_TRUE(response.top_level_error.has_value());
+  EXPECT_EQ(response.top_level_error.value(),
+            SignalCollectionError::kUnsupported);
+}
+
 // Tests how the aggregator behaves when given a parameter with a single signal
 // which is supported by one of the collectors.
 TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Supported) {
   GrantUserPermission();
 
+  auto expected_signal_name = SignalName::kAntiVirus;
   auto request = CreateRequest();
-  request.signal_names.emplace(SignalName::kAntiVirus);
+  request.signal_names.emplace(expected_signal_name);
 
   EXPECT_CALL(*av_signal_collector_, GetSupportedSignalNames()).Times(1);
   EXPECT_CALL(*av_signal_collector_,
@@ -121,6 +140,11 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Supported) {
 
   SignalsAggregationResponse response = future.Get();
   EXPECT_FALSE(response.top_level_error.has_value());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request", expected_signal_name, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.UserPermission", UserPermission::kGranted, 1);
 }
 
 // Tests how the aggregator behaves when given a parameter with a single signal
@@ -128,8 +152,9 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Supported) {
 TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Unsupported) {
   GrantUserPermission();
 
+  auto expected_signal_name = SignalName::kFileSystemInfo;
   auto request = CreateRequest();
-  request.signal_names.emplace(SignalName::kFileSystemInfo);
+  request.signal_names.emplace(expected_signal_name);
 
   base::test::TestFuture<SignalsAggregationResponse> future;
   aggregator_->GetSignals(std::move(request), future.GetCallback());
@@ -138,6 +163,11 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Unsupported) {
   ASSERT_TRUE(response.top_level_error.has_value());
   EXPECT_EQ(response.top_level_error.value(),
             SignalCollectionError::kUnsupported);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request", expected_signal_name, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.UserPermission", UserPermission::kGranted, 1);
 }
 
 // Tests how the aggregator behaves when encountering user permission errors.
@@ -154,6 +184,7 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_InvalidUserPermissions) {
   permission_to_error_map[UserPermission::kMissingUser] =
       SignalCollectionError::kInvalidUser;
 
+  uint16_t item_index = 0;
   for (const auto& test_case : permission_to_error_map) {
     EXPECT_CALL(mock_permission_service_, CanCollectSignals(user_context_, _))
         .WillOnce(
@@ -163,14 +194,21 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_InvalidUserPermissions) {
             });
 
     // This value is not important for these test cases.
+    auto expected_signal_name = SignalName::kAntiVirus;
     auto request = CreateRequest();
-    request.signal_names.emplace(SignalName::kAntiVirus);
+    request.signal_names.emplace(expected_signal_name);
 
     base::test::TestFuture<SignalsAggregationResponse> future;
     aggregator_->GetSignals(std::move(request), future.GetCallback());
     SignalsAggregationResponse response = future.Get();
     ASSERT_TRUE(response.top_level_error.has_value());
     EXPECT_EQ(response.top_level_error.value(), test_case.second);
+
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Collection.Request", expected_signal_name,
+        ++item_index);
+    histogram_tester_.ExpectBucketCount(
+        "Enterprise.DeviceSignals.UserPermission", test_case.first, 1);
   }
 }
 

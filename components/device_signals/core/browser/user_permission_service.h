@@ -12,6 +12,10 @@ namespace device_signals {
 
 struct UserContext;
 
+// Contains possible outcomes of a signals collection permission check.
+// These values are persisted to logs and should not be renumbered. Please
+// update the DeviceSignalsUserPermission enum in enums.xml when adding a new
+// value here.
 enum class UserPermission {
   // Returned when the user is part of an organization that is not affiliated
   // with the organization currently managing the browser.
@@ -33,6 +37,8 @@ enum class UserPermission {
 
   // Returned when the user is granted permission to the device's signals.
   kGranted = 5,
+
+  kMaxValue = kGranted
 };
 
 // Service that can be used to conduct permission checks on given users. The

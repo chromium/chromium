@@ -50,6 +50,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
@@ -1340,6 +1341,7 @@ class UserContextGatedTest : public ExtensionApiUnittest {
 
   device_signals::MockSignalsAggregator* mock_aggregator_;
   base::test::ScopedFeatureList scoped_features_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests for API enterprise.reportingPrivate.getAvInfo
@@ -1352,6 +1354,10 @@ class EnterpriseReportingPrivateGetAvInfoTest : public UserContextGatedTest {
 
     function_ =
         base::MakeRefCounted<EnterpriseReportingPrivateGetAvInfoFunction>();
+  }
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kAntiVirus;
   }
 
   scoped_refptr<extensions::EnterpriseReportingPrivateGetAvInfoFunction>
@@ -1390,6 +1396,13 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   EXPECT_EQ(parsed_av_signal->state,
             enterprise_reporting_private::ANTI_VIRUS_PRODUCT_STATE_OFF);
   EXPECT_EQ(parsed_av_signal->product_id, fake_av_product.product_id);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Success.AntiVirus.Items",
+      /*number_of_items=*/1,
+      /*number_of_occurrences=*/1);
 }
 
 TEST_F(EnterpriseReportingPrivateGetAvInfoTest, TopLevelError) {
@@ -1405,6 +1418,13 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, TopLevelError) {
 
   EXPECT_EQ(error, function_->GetError());
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure.AntiVirus.TopLevelError",
+      /*error=*/expected_error,
+      /*number_of_occurrences=*/1);
 }
 
 TEST_F(EnterpriseReportingPrivateGetAvInfoTest, CollectionError) {
@@ -1423,6 +1443,14 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, CollectionError) {
 
   EXPECT_EQ(error, function_->GetError());
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure.AntiVirus."
+      "CollectionLevelError",
+      /*error=*/expected_error,
+      /*number_of_occurrences=*/1);
 }
 
 class EnterpriseReportingPrivateGetAvInfoDisabledTest
@@ -1457,6 +1485,10 @@ class EnterpriseReportingPrivateGetHotfixesTest : public UserContextGatedTest {
         base::MakeRefCounted<EnterpriseReportingPrivateGetHotfixesFunction>();
   }
 
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kHotfixes;
+  }
+
   scoped_refptr<extensions::EnterpriseReportingPrivateGetHotfixesFunction>
       function_;
 };
@@ -1486,6 +1518,13 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, Success) {
       enterprise_reporting_private::HotfixSignal::FromValue(hotfix_value);
   ASSERT_TRUE(parsed_hotfix);
   EXPECT_EQ(parsed_hotfix->hotfix_id, kFakeHotfixId);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Success.Hotfixes.Items",
+      /*number_of_items=*/1,
+      /*number_of_occurrences=*/1);
 }
 
 TEST_F(EnterpriseReportingPrivateGetHotfixesTest, TopLevelError) {
@@ -1501,6 +1540,13 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, TopLevelError) {
 
   EXPECT_EQ(error, function_->GetError());
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure.Hotfixes.TopLevelError",
+      /*error=*/expected_error,
+      /*number_of_occurrences=*/1);
 }
 
 TEST_F(EnterpriseReportingPrivateGetHotfixesTest, CollectionError) {
@@ -1519,6 +1565,14 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, CollectionError) {
 
   EXPECT_EQ(error, function_->GetError());
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure.Hotfixes."
+      "CollectionLevelError",
+      /*error=*/expected_error,
+      /*number_of_occurrences=*/1);
 }
 
 class EnterpriseReportingPrivateGetHotfixesInfoDisabledTest

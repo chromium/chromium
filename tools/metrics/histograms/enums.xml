@@ -24508,6 +24508,31 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="STORE_VALIDATION_ERROR"/>
 </enum>
 
+<enum name="DeviceSignalsSignalCollectionError">
+  <int value="0" label="Consent Required"/>
+  <int value="1" label="Unaffiliated User"/>
+  <int value="2" label="Unsupported"/>
+  <int value="3" label="Missing System Service"/>
+  <int value="4" label="Missing Bundle"/>
+  <int value="5" label="Invalid User"/>
+</enum>
+
+<enum name="DeviceSignalsSignalName">
+  <int value="0" label="Anti-Virus"/>
+  <int value="1" label="Hotfixes"/>
+  <int value="2" label="File System Info"/>
+  <int value="3" label="System Settings"/>
+</enum>
+
+<enum name="DeviceSignalsUserPermission">
+  <int value="0" label="Unaffiliated"/>
+  <int value="1" label="Missing Consent"/>
+  <int value="2" label="Consumer User"/>
+  <int value="3" label="Unknown User"/>
+  <int value="4" label="Missing User"/>
+  <int value="5" label="Granted"/>
+</enum>
+
 <enum name="DevicesPageEvents">
   <obsolete>
     Removed July 2019.

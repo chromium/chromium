@@ -284,6 +284,10 @@ class EnterpriseReportingPrivateGetAvInfoFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 
   void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kAntiVirus;
+  }
 };
 
 class EnterpriseReportingPrivateGetHotfixesFunction : public ExtensionFunction {
@@ -304,6 +308,10 @@ class EnterpriseReportingPrivateGetHotfixesFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 
   void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kHotfixes;
+  }
 };
 
 #endif  // BUILDFLAG(IS_WIN)

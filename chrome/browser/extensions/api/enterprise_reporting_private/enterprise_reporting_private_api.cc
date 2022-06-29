@@ -34,6 +34,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_context.h"
@@ -671,8 +672,7 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   StartSignalCollection(
-      CreateAggregationRequest(params->user_context.user_id,
-                               device_signals::SignalName::kAntiVirus),
+      CreateAggregationRequest(params->user_context.user_id, signal_name()),
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved,
@@ -684,13 +684,16 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
 void EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved(
     device_signals::SignalsAggregationResponse response) {
   std::vector<api::enterprise_reporting_private::AntiVirusSignal> arg_list;
-  auto error = ConvertAvProductsResponse(response, &arg_list);
+  auto parsed_error = ConvertAvProductsResponse(response, &arg_list);
 
-  if (error.has_value()) {
-    Respond(Error(device_signals::ErrorToString(error.value())));
+  if (parsed_error) {
+    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+                              parsed_error->is_top_level_error);
+    Respond(Error(device_signals::ErrorToString(parsed_error->error)));
     return;
   }
 
+  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
   Respond(ArgumentList(
       api::enterprise_reporting_private::GetAvInfo::Results::Create(arg_list)));
 }
@@ -716,8 +719,7 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   StartSignalCollection(
-      CreateAggregationRequest(params->user_context.user_id,
-                               device_signals::SignalName::kHotfixes),
+      CreateAggregationRequest(params->user_context.user_id, signal_name()),
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved,
@@ -729,13 +731,16 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
 void EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved(
     device_signals::SignalsAggregationResponse response) {
   std::vector<api::enterprise_reporting_private::HotfixSignal> arg_list;
-  auto error = ConvertHotfixesResponse(response, &arg_list);
+  auto parsed_error = ConvertHotfixesResponse(response, &arg_list);
 
-  if (error.has_value()) {
-    Respond(Error(device_signals::ErrorToString(error.value())));
+  if (parsed_error) {
+    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+                              parsed_error->is_top_level_error);
+    Respond(Error(device_signals::ErrorToString(parsed_error->error)));
     return;
   }
 
+  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
   Respond(ArgumentList(
       api::enterprise_reporting_private::GetHotfixes::Results::Create(
           arg_list)));

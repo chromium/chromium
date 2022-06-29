@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_collector.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_context.h"
@@ -64,14 +65,14 @@ SignalsAggregatorImpl::~SignalsAggregatorImpl() = default;
 
 void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
                                        GetSignalsCallback callback) {
-  if (request.signal_names.empty()) {
+  // Request for collection of multiple signals is not yet supported. Only the
+  // first signal will be returned.
+  if (request.signal_names.size() != 1) {
     RespondWithError(SignalCollectionError::kUnsupported, std::move(callback));
     return;
   }
 
-  // Request for collection of multiple signals is not yet supported. Only the
-  // first signal will be returned.
-  DCHECK(request.signal_names.size() == 1);
+  LogSignalCollectionRequested(*request.signal_names.begin());
 
   // Capture a reference to `user_context` before calling the function to
   // prevent a "use after move" warning on `request`, since we cannot guarantee
@@ -88,6 +89,7 @@ void SignalsAggregatorImpl::OnUserPermissionChecked(
     const SignalsAggregationRequest& request,
     GetSignalsCallback callback,
     const UserPermission user_permission) {
+  LogUserPermissionChecked(user_permission);
   if (user_permission != UserPermission::kGranted) {
     RespondWithError(PermissionToError(user_permission), std::move(callback));
     return;

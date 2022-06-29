@@ -641,6 +641,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.DeviceSignals.Collection.Failure.{Signal}.{ErrorType}Error"
+    enum="DeviceSignalsSignalCollectionError" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the actual error whenever a {Signal} signal collection request
+    failed with a {ErrorType} error.
+  </summary>
+  <token key="Signal">
+    <variant name="AntiVirus" summary="AntiVirus with a top-level error"/>
+    <variant name="FileSystemInfo" summary="file system information"/>
+    <variant name="Hotfixes" summary="Hotfixes"/>
+    <variant name="SystemSettings" summary="system settings"/>
+  </token>
+  <token key="ErrorType">
+    <variant name="CollectionLevel" summary="collection-level"/>
+    <variant name="TopLevel" summary="top-level"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.Collection.Success.{Signal}.Items"
+    units="items" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the number of items collected in a {Signal} signal collection
+    response. Recorded only when the collection request was successful and the
+    signal value represents a collection.
+  </summary>
+  <token key="Signal">
+    <variant name="AntiVirus" summary="AntiVirus"/>
+    <variant name="FileSystemInfo" summary="file system information"/>
+    <variant name="Hotfixes" summary="Hotfixes"/>
+    <variant name="SystemSettings" summary="system settings"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.Collection.{Variant}"
+    enum="DeviceSignalsSignalName" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded whenever a device signal collection request {Variant} for a
+    particular signal.
+  </summary>
+  <token key="Variant">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Request" summary="was received"/>
+    <variant name="Success" summary="was successful"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.UserPermission"
+    enum="DeviceSignalsUserPermission" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded whenever a permission evaluation has been assessed for a particular
+    user for whom device signals were requested.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
     enum="DTAttestationFunnelStep" expires_after="2022-08-01">
   <owner>hmare@google.com</owner>

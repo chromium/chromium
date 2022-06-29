@@ -21,17 +21,22 @@ enum class SignalCollectionError;
 
 namespace extensions {
 
+struct ParsedSignalsError {
+  device_signals::SignalCollectionError error;
+  bool is_top_level_error;
+};
+
 // Parses and converts the Antivirus signal values from `response` into
 // `arg_list`. If any error occurred during signal collection, it will be
 // returned and `arg_list` will remain unchanged.
-absl::optional<device_signals::SignalCollectionError> ConvertAvProductsResponse(
+absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
     const device_signals::SignalsAggregationResponse& response,
     std::vector<api::enterprise_reporting_private::AntiVirusSignal>* arg_list);
 
 // Parses and converts the Hotfix signal values from `response` into
 // `arg_list`. If any error occurred during signal collection,  it will be
 // returned and `arg_list` will remain unchanged.
-absl::optional<device_signals::SignalCollectionError> ConvertHotfixesResponse(
+absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
     const device_signals::SignalsAggregationResponse& response,
     std::vector<api::enterprise_reporting_private::HotfixSignal>* arg_list);
 
