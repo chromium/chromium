@@ -115,11 +115,9 @@ void HTMLScriptElement::ParseAttribute(
           *this);
     }
   } else if (params.name == html_names::kAttributionsrcAttr) {
-    const AtomicString& attribution_src_value =
-        FastGetAttribute(html_names::kAttributionsrcAttr);
-    if (!attribution_src_value.IsNull() && GetDocument().GetFrame()) {
+    if (!params.new_value.IsNull() && GetDocument().GetFrame()) {
       GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
-          GetDocument().CompleteURL(attribution_src_value), this);
+          GetDocument().CompleteURL(params.new_value), this);
     }
   } else {
     HTMLElement::ParseAttribute(params);

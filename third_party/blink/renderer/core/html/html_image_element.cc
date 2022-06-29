@@ -365,12 +365,10 @@ void HTMLImageElement::ParseAttribute(
           ImageLoader::kUpdateIgnorePreviousError, referrer_policy_);
     }
   } else if (name == html_names::kAttributionsrcAttr) {
-    const AtomicString& attribution_src_value =
-        FastGetAttribute(html_names::kAttributionsrcAttr);
     LocalDOMWindow* window = GetDocument().domWindow();
-    if (!attribution_src_value.IsEmpty() && window && window->GetFrame()) {
+    if (!params.new_value.IsEmpty() && window && window->GetFrame()) {
       window->GetFrame()->GetAttributionSrcLoader()->Register(
-          GetDocument().CompleteURL(attribution_src_value), this);
+          GetDocument().CompleteURL(params.new_value), this);
     }
   } else {
     HTMLElement::ParseAttribute(params);
