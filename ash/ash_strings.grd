@@ -2961,6 +2961,9 @@ Connect your device to power.
       <message name="IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME" desc="Couldn't sign in because password is invalid for the 2nd time">
         Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you sign out.
       </message>
+      <message name="IDS_ASH_LOGIN_FORGOT_PASSWORD" desc="Label of the button to recover your password">
+        Forgot password
+      </message>
       <message name="IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT" desc="A hint text for the login and lock screens that Caps Lock is on">
         Caps Lock is on.
       </message>

@@ -424,7 +424,9 @@ class ASH_EXPORT LockContentsView
   // Called when the public account is tapped.
   void OnPublicAccountTapped(bool is_primary);
 
+  // Called when the user presses buttons in the authentication error bubble.
   void LearnMoreButtonPressed();
+  void ForgotPasswordButtonPressed();
 
   // Helper method to allocate a LoginBigUserView instance.
   std::unique_ptr<LoginBigUserView> AllocateLoginBigUserView(

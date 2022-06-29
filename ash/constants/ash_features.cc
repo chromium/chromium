@@ -431,6 +431,8 @@ const base::Feature kCryptohomeRecoveryFlow{"CryptohomeRecoveryFlow",
 
 // Enables the UI for the cryptohome recovery feature:
 // - New UI for Gaia password changed screen.
+// - Adds a "forgot password" button to the error bubble that opens when the
+//   user fails to enter their correct password.
 const base::Feature kCryptohomeRecoveryFlowUI{
     "CryptohomeRecoveryFlowUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
