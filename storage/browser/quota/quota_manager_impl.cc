@@ -85,14 +85,6 @@ int64_t RandomizeByPercent(int64_t value, int percent) {
   double random_percent = (base::RandDouble() - 0.5) * percent * 2;
   return value * (1 + (random_percent / 100.0));
 }
-}  // namespace
-
-// Heuristics: assuming average cloud server allows a few Gigs storage
-// on the server side and the storage needs to be shared for user data
-// and by multiple apps.
-int64_t QuotaManagerImpl::kSyncableStorageDefaultHostQuota = 500 * kMBytes;
-
-namespace {
 
 bool IsSupportedType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kPersistent ||
@@ -151,6 +143,11 @@ void DidGetUsageAndQuotaStripOverride(
 }
 
 }  // namespace
+
+// Heuristics: assuming average cloud server allows a few Gigs storage
+// on the server side and the storage needs to be shared for user data
+// and by multiple apps.
+int64_t QuotaManagerImpl::kSyncableStorageDefaultHostQuota = 500 * kMBytes;
 
 constexpr int64_t QuotaManagerImpl::kGBytes;
 constexpr int64_t QuotaManagerImpl::kNoLimit;
@@ -2478,11 +2475,9 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
     UMA_HISTOGRAM_COUNTS_1000("Quota.AgeOfOriginInDays", age.InDays());
 
     int64_t kilobytes = std::max(it->second / int64_t{1024}, int64_t{1});
-    base::Histogram::FactoryGet(
-        "Quota.AgeOfDataInDays", 1, 1000, 50,
-        base::HistogramBase::kUmaTargetedHistogramFlag)->
-            AddCount(age.InDays(),
-                     base::saturated_cast<int>(kilobytes));
+    base::Histogram::FactoryGet("Quota.AgeOfDataInDays", 1, 1000, 50,
+                                base::HistogramBase::kUmaTargetedHistogramFlag)
+        ->AddCount(age.InDays(), base::saturated_cast<int>(kilobytes));
   }
 }
 
@@ -3073,7 +3068,8 @@ std::tuple<int64_t, int64_t> QuotaManagerImpl::CallGetVolumeInfo(
   UMA_HISTOGRAM_MBYTES("Quota.TotalDiskSpace", total);
   UMA_HISTOGRAM_MBYTES("Quota.AvailableDiskSpace", available);
   if (total > 0) {
-    UMA_HISTOGRAM_PERCENTAGE("Quota.PercentDiskAvailable",
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Quota.PercentDiskAvailable",
         std::min(100, static_cast<int>((available * 100) / total)));
   }
   return std::make_tuple(total, available);
