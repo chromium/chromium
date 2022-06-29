@@ -7131,3 +7131,8 @@ crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping-orig
 crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
 crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
 crbug.com/1340295 [ Mac10.15 ] transforms/transformed-caret.html [ Failure ]
+
+# Sheriff 2022-06-29
+crbug.com/1340421 [ Mac10.15 ] virtual/gpu-rasterization/images/color-profile-svg-foreign-object.html [ Skip ]
+crbug.com/1340421 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Skip ]
+crbug.com/1340421 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml [ Skip ]
