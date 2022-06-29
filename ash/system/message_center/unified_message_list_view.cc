@@ -696,8 +696,10 @@ UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
 void UnifiedMessageListView::ConvertNotificationViewToGroupedNotificationView(
     const std::string& ungrouped_notification_id,
     const std::string& new_grouped_notification_id) {
-  GetMessageViewForNotificationId(ungrouped_notification_id)
-      ->set_notification_id(new_grouped_notification_id);
+  auto* message_view =
+      GetMessageViewForNotificationId(ungrouped_notification_id);
+  if (message_view)
+    message_view->set_notification_id(new_grouped_notification_id);
 }
 
 void UnifiedMessageListView::ConvertGroupedNotificationViewToNotificationView(
