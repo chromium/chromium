@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/components/settings/timezone_settings.h"
+#include "ash/public/cpp/locale_update_controller.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -33,7 +34,8 @@ std::vector<std::u16string> kDefaultWeekTitle = {u"S", u"M", u"T", u"W",
 // don't have to be recreated each time when querying the time difference or
 // formatting a time. This improves performance since creating
 // `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects is expensive.
-class DateHelper : public system::TimezoneSettings::Observer {
+class DateHelper : public LocaleChangeObserver,
+                   public system::TimezoneSettings::Observer {
  public:
   // Returns the singleton instance.
   ASH_EXPORT static DateHelper* GetInstance();
@@ -142,6 +144,14 @@ class DateHelper : public system::TimezoneSettings::Observer {
 
   // system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;
+
+  // LocaleChangeObserver:
+  // Although the device will restart whenever there's locale change and this
+  // instance will be re-constructed, however this dose not cover all the cases.
+  // The locale between the login screen and the user's screen can be different.
+  // (For example: different languages are set in different accounts, and the
+  // login screen will use the owener's locale setting.)
+  void OnLocaleChanged() override;
 
   // Formatter for getting the day of month.
   icu::SimpleDateFormat day_of_month_formatter_;
