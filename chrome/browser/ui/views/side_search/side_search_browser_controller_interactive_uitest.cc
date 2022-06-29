@@ -435,8 +435,16 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
       SideSearchAvailabilityChangeType::kBecomeAvailable, 1);
 }
 
+// TODO(crbug.com/1340387): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SidePanelButtonShowsCorrectlyMultipleTabs \
+  DISABLED_SidePanelButtonShowsCorrectlyMultipleTabs
+#else
+#define MAYBE_SidePanelButtonShowsCorrectlyMultipleTabs \
+  SidePanelButtonShowsCorrectlyMultipleTabs
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
-                       SidePanelButtonShowsCorrectlyMultipleTabs) {
+                       MAYBE_SidePanelButtonShowsCorrectlyMultipleTabs) {
   // The side panel button should never be visible on non-matching pages.
   AppendTab(browser(), GetNonMatchingUrl());
   ActivateTabAt(browser(), 1);
