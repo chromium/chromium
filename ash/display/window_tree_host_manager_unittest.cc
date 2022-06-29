@@ -21,6 +21,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
@@ -28,7 +29,9 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -42,6 +45,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
@@ -730,6 +734,107 @@ TEST_F(WindowTreeHostManagerTest, FindNearestDisplay) {
             display::Screen::GetScreen()
                 ->GetDisplayNearestPoint(gfx::Point(300, 400))
                 .id());
+}
+
+TEST_F(WindowTreeHostManagerTest,
+       SettingAndUpdatingRoundedCornerPropertyOnDisplay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // Adding rounded corners on the primary display.
+  UpdateDisplay("300x200~15");
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+
+  // Adding a secondary display should not propagate the rounded corner
+  // property.
+  UpdateDisplay("300x200~15,300x200");
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+  aura::Window* secondary_root =
+      window_tree_host_manager->GetRootWindowForDisplayId(
+          secondary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            secondary_root->layer()->rounded_corner_radii());
+
+  // Removing the secondary display should not effect the rounded corner
+  // property.
+  UpdateDisplay("300x200~15");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  // Changing the the metrics should not effect rounded corner property.
+  UpdateDisplay("10+20-300x200/ol~15");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  // Updating rounded corners property on the display.
+  UpdateDisplay("300x200~15|15|12|12");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0, 15.0, 12.0, 12.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+}
+
+TEST_F(WindowTreeHostManagerTest,
+       SwappingPrimaryDisplayShouldNotSwapRoundedCornersOnDisplays) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // primary display has rounded corners.
+  UpdateDisplay("300x200~15,400x300");
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+  aura::Window* secondary_root =
+      window_tree_host_manager->GetRootWindowForDisplayId(
+          secondary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            secondary_root->layer()->rounded_corner_radii());
+
+  // Switch primary and secondary by display ID.
+  window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
+
+  // Getting the new primary and secondary root windows after the swap.
+  secondary_display = display_manager_test.GetSecondaryDisplay();
+
+  primary_root = Shell::GetPrimaryRootWindow();
+  secondary_root = window_tree_host_manager->GetRootWindowForDisplayId(
+      secondary_display.id());
+
+  // After swapping primary display, the root windows are swapped. Secondary
+  // root now belongs to the display with rounded corners.
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            secondary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(secondary_root->layer()->is_fast_rounded_corner(), true);
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            primary_root->layer()->rounded_corner_radii());
 }
 
 TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
