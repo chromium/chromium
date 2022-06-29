@@ -236,12 +236,12 @@ def _RunLint(create_cache,
       'com.android.tools.lint.Main',
       '--sdk-home',
       android_sdk_root,
+      '--jdk-home',
+      build_utils.JAVA_HOME,
       '--path-variables',
       f'SRC={pathvar_src}',
-      # Uncomment to easily remove fixed lint errors. This is not turned on by
-      # default due to: https://crbug.com/1256477#c5
-      #'--remove-fixed',
       '--quiet',  # Silences lint's "." progress updates.
+      '--stacktrace',  # Prints full stacktraces for internal lint errors.
       '--disable',
       ','.join(_DISABLED_ALWAYS),
   ]
@@ -327,10 +327,6 @@ def _RunLint(create_cache,
   _WriteXmlFile(project_file_root, project_xml_path)
   cmd += ['--project', project_xml_path]
 
-  logging.info('Preparing environment variables')
-  env = os.environ.copy()
-  # This is necessary so that lint errors print stack traces in stdout.
-  env['LINT_PRINT_STACKTRACE'] = 'true'
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
   stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
@@ -338,10 +334,10 @@ def _RunLint(create_cache,
   start = time.time()
   logging.debug('Lint command %s', ' '.join(cmd))
   failed = True
+
   try:
     failed = bool(
         build_utils.CheckOutput(cmd,
-                                env=env,
                                 print_stdout=True,
                                 stdout_filter=stdout_filter,
                                 stderr_filter=stderr_filter,
