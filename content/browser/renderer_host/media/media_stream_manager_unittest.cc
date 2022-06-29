@@ -494,6 +494,11 @@ TEST_F(MediaStreamManagerTest, MakeAndCancelMediaAccessRequest) {
   EXPECT_CALL(
       *media_observer_,
       OnMediaRequestStateChanged(
+          _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
+          MEDIA_REQUEST_STATE_CLOSING));
+  EXPECT_CALL(
+      *media_observer_,
+      OnMediaRequestStateChanged(
           _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
           MEDIA_REQUEST_STATE_CLOSING));
   media_stream_manager_->CancelRequest(label);
@@ -570,6 +575,11 @@ TEST_F(MediaStreamManagerTest, MakeAndCancelMultipleRequests) {
                   _, _, _, _,
                   blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB,
                   MEDIA_REQUEST_STATE_CLOSING));
+  EXPECT_CALL(
+      *media_observer_,
+      OnMediaRequestStateChanged(
+          _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
+          MEDIA_REQUEST_STATE_CLOSING));
   EXPECT_CALL(
       *media_observer_,
       OnMediaRequestStateChanged(

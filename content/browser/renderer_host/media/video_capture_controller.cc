@@ -78,9 +78,17 @@ void LogVideoFrameDrop(media::VideoCaptureFrameDropReason reason,
           "Media.VideoCapture.FrameDrop.DisplayCaptureCurrentTab", reason,
           kEnumCount);
       break;
-    default:
-      // Do nothing
-      return;
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Media.VideoCapture.FrameDrop.DisplayCaptureSet", reason, kEnumCount);
+      break;
+    case blink::mojom::MediaStreamType::NO_SERVICE:
+    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
+      break;
   }
 }
 
@@ -117,9 +125,18 @@ void LogMaxConsecutiveVideoFrameDropCountExceeded(
           "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureCurrentTab",
           reason, kEnumCount);
       break;
-    default:
-      // Do nothing
-      return;
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureSet", reason,
+          kEnumCount);
+      break;
+    case blink::mojom::MediaStreamType::NO_SERVICE:
+    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
+      break;
   }
 }
 

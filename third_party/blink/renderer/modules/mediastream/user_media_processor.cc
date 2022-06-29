@@ -177,6 +177,11 @@ void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     return;
+  } else if (user_media_request->MediaRequestType() ==
+             UserMediaRequest::MediaType::kDisplayMediaSet) {
+    track_controls->requested = false;
+    track_controls->stream_type = MediaStreamType::NO_SERVICE;
+    return;
   }
 
   DCHECK_EQ(UserMediaRequest::MediaType::kUserMedia,
@@ -213,6 +218,12 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
         user_media_request->should_prefer_current_tab()
             ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
             : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+    return;
+  } else if (user_media_request->MediaRequestType() ==
+             UserMediaRequest::MediaType::kDisplayMediaSet) {
+    DCHECK(!user_media_request->should_prefer_current_tab());
+    track_controls->requested = true;
+    track_controls->stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
     return;
   }
 
@@ -948,7 +959,8 @@ void UserMediaProcessor::SelectVideoContentSettings() {
   const MediaStreamType stream_type =
       current_request_info_->stream_controls()->video.stream_type;
   if (stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
-      stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+      stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB &&
+      stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
     current_request_info_->stream_controls()->video.device_id =
         settings.device_id();
   }

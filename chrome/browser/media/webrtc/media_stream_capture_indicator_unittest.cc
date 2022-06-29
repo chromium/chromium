@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/web_contents_tester.h"
@@ -46,9 +47,21 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
   }
 
   void SetOnIsCapturingWindowChangedExpectation(content::WebContents* contents,
+                                                size_t times) {
+    EXPECT_CALL(*this, OnIsCapturingWindowChanged(contents, testing::_))
+        .Times(times);
+  }
+
+  void SetOnIsCapturingWindowChangedExpectation(content::WebContents* contents,
                                                 bool is_capturing_window) {
     EXPECT_CALL(*this,
                 OnIsCapturingWindowChanged(contents, is_capturing_window));
+  }
+
+  void SetOnIsCapturingDisplayChangedExpectation(content::WebContents* contents,
+                                                 size_t times) {
+    EXPECT_CALL(*this, OnIsCapturingDisplayChanged(contents, testing::_))
+        .Times(times);
   }
 
   void SetOnIsCapturingDisplayChangedExpectation(content::WebContents* contents,
@@ -74,6 +87,9 @@ using MockObserver = testing::StrictMock<LenientMockObserver>;
 typedef void (MockObserver::*MockObserverSetExpectationsMethod)(
     content::WebContents* web_contents,
     bool value);
+typedef void (MockObserver::*MockObserverStreamTypeSetExpectationsMethod)(
+    content::WebContents* web_contents,
+    size_t value);
 typedef bool (MediaStreamCaptureIndicator::*AccessorMethod)(
     content::WebContents* web_contents) const;
 
@@ -191,6 +207,40 @@ blink::mojom::StreamDevices CreateFakeDevice(
   return fake_devices;
 }
 
+struct StreamTypeTestParam {
+  StreamTypeTestParam(
+      blink::mojom::MediaStreamType video_stream_type,
+      content::DesktopMediaID::Type media_type,
+      MockObserverStreamTypeSetExpectationsMethod observer_method)
+      : video_stream_type(video_stream_type),
+        media_type(media_type),
+        observer_method(observer_method) {}
+
+  blink::mojom::MediaStreamType video_stream_type;
+  content::DesktopMediaID::Type media_type;
+  MockObserverStreamTypeSetExpectationsMethod observer_method;
+};
+
+StreamTypeTestParam kStreamTypeTestParams[] = {
+    {blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+     content::DesktopMediaID::Type::TYPE_SCREEN,
+     &MockObserver::SetOnIsCapturingDisplayChangedExpectation},
+    {blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
+     content::DesktopMediaID::Type::TYPE_SCREEN,
+     &MockObserver::SetOnIsCapturingDisplayChangedExpectation},
+    {blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+     content::DesktopMediaID::Type::TYPE_WINDOW,
+     &MockObserver::SetOnIsCapturingWindowChangedExpectation},
+    {blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
+     content::DesktopMediaID::Type::TYPE_WINDOW,
+     &MockObserver::SetOnIsCapturingWindowChangedExpectation},
+};
+
+class MediaStreamCaptureIndicatorStreamTypeTest
+    : public MediaStreamCaptureIndicatorTest,
+      public testing::WithParamInterface<
+          std::tuple<StreamTypeTestParam, bool>> {};
+
 }  // namespace
 
 TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
@@ -247,4 +297,42 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MediaStreamCaptureIndicatorObserverMethodTest,
     testing::Combine(testing::ValuesIn(kObserverMethodTestParams),
+                     testing::Bool()));
+
+TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
+       CheckIsDeviceCapturingDisplay) {
+  const blink::mojom::MediaStreamType& video_stream_type =
+      std::get<0>(GetParam()).video_stream_type;
+  const content::DesktopMediaID::Type& media_type =
+      std::get<0>(GetParam()).media_type;
+
+  content::WebContents* source = web_contents();
+  blink::mojom::StreamDevices devices;
+  std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
+      content::MediaStreamRequest(
+          /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
+          /*security_origin=*/GURL(),
+          /*user_gesture=*/false,
+          blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
+          /*requested_audio_device_id=*/"",
+          /*requested_video_device_id=*/"fake_device",
+          blink::mojom::MediaStreamType::NO_SERVICE, video_stream_type,
+          /*disable_local_echo=*/false,
+          /*request_pan_tilt_zoom_permission=*/false),
+      source, content::DesktopMediaID(media_type, /*id=*/0),
+      /*capture_audio=*/false, /*disable_local_echo=*/false,
+      /*display_notification=*/false, /*application_title=*/u"", devices);
+  ASSERT_EQ(devices.video_device->type, video_stream_type);
+
+  (observer()->*(std::get<0>(GetParam()).observer_method))(source, 2);
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaStreamCaptureIndicatorStreamTypeTest,
+    testing::Combine(testing::ValuesIn(kStreamTypeTestParams),
                      testing::Bool()));

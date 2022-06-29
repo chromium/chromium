@@ -23,7 +23,9 @@ void GetScreenCapturePermissionAndroid(
          request.video_type ==
              blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
          request.video_type ==
-             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
+             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
+         request.video_type ==
+             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
 
   // TODO(https://crbug.com/1157166): Implement a capture prompt.
   blink::mojom::MediaStreamRequestResult result =

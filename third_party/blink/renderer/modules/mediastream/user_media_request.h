@@ -70,7 +70,7 @@ class MODULES_EXPORT UserMediaRequest final
     kDeviceInUse
   };
 
-  enum class MediaType { kUserMedia, kDisplayMedia };
+  enum class MediaType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
 
   class Callbacks : public GarbageCollected<Callbacks> {
    public:

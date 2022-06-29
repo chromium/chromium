@@ -40,6 +40,9 @@ void UpdateAPICount(UserMediaRequest::MediaType media_type) {
     case UserMediaRequest::MediaType::kDisplayMedia:
       api_name = RTCAPIName::kGetDisplayMedia;
       break;
+    case UserMediaRequest::MediaType::kDisplayMediaSet:
+      api_name = RTCAPIName::kGetDisplayMediaSet;
+      break;
   }
   UpdateWebRTCMethodCount(api_name);
 }

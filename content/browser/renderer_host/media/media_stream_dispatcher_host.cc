@@ -167,6 +167,7 @@ bool AllowedStreamTypeCombination(
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
       return false;
   }

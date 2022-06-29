@@ -266,6 +266,8 @@ const char* StreamTypeToString(blink::mojom::MediaStreamType type) {
       return "DISPLAY_VIDEO_CAPTURE";
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
       return "DISPLAY_VIDEO_CAPTURE_THIS_TAB";
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      return "DISPLAY_VIDEO_CAPTURE_SET";
     case blink::mojom::MediaStreamType::NO_SERVICE:
       return "NO_SERVICE";
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
@@ -550,6 +552,7 @@ void RecordMediaStreamRequestResult2(blink::mojom::MediaStreamType video_type,
           "Media.MediaStreamManager.DesktopVideoDeviceUpdate", result2);
       return;
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
       base::UmaHistogramEnumeration(
           "Media.MediaStreamManager.DisplayVideoDeviceUpdate", result2);
       return;
@@ -1895,7 +1898,8 @@ void MediaStreamManager::PostRequestToUI(
     MediaStreamDevices devices;
     if (request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
         request->video_type() ==
-            MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+            MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
+        request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
       devices = DisplayMediaDevicesFromFakeDeviceConfig(
           request->video_type(),
           request->audio_type() == MediaStreamType::DISPLAY_AUDIO_CAPTURE,
@@ -1952,7 +1956,9 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
 
   const bool is_display_capture =
       request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
-      request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+      request->video_type() ==
+          MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
+      request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   if (is_display_capture && !SetUpDisplayCaptureRequest(request)) {
     FinalizeRequestFailed(label, request,
                           MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE);
@@ -1999,7 +2005,8 @@ bool MediaStreamManager::SetUpDisplayCaptureRequest(DeviceRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
          request->video_type() ==
-             MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
+             MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
+         request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
 
   // getDisplayMedia function does not permit the use of constraints for
   // selection of a source, see
@@ -2463,6 +2470,7 @@ void MediaStreamManager::FinalizeRequestFailed(
           *request->stream_devices_set.stream_devices[0];
       if (devices.video_device.has_value()) {
         const blink::MediaStreamDevice& device = devices.video_device.value();
+        DCHECK_NE(device.type, MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
         // TODO(crbug.com/1334332): Also consider
         // DISPLAY_VIDEO_CAPTURE_THIS_TAB.
         if (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||

@@ -1552,6 +1552,7 @@ WebMediaPlayerMS::GetMediaStreamType() {
     case mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
     case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
     case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
       return media::mojom::MediaStreamType::kLocalDisplayCapture;
     case mojom::blink::MediaStreamType::NUM_MEDIA_TYPES:
       NOTREACHED();
