@@ -7122,8 +7122,6 @@ static_library("browser") {
         "offline_pages/android/auto_fetch_page_load_watcher.h",
         "offline_pages/android/background_scheduler_bridge.cc",
         "offline_pages/android/background_scheduler_bridge.h",
-        "offline_pages/android/cct_origin_observer.cc",
-        "offline_pages/android/cct_origin_observer.h",
         "offline_pages/android/downloads/offline_page_download_bridge.cc",
         "offline_pages/android/downloads/offline_page_download_bridge.h",
         "offline_pages/android/downloads/offline_page_infobar_delegate.cc",

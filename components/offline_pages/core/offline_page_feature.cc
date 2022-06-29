@@ -29,9 +29,6 @@ const base::Feature kOfflinePagesLivePageSharingFeature{
 const base::Feature kPrefetchingOfflinePagesFeature{
     "OfflinePagesPrefetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kOfflinePagesCTV2Feature{"OfflinePagesCTV2",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kOfflinePagesDescriptiveFailStatusFeature{
     "OfflinePagesDescriptiveFailStatus", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -64,10 +61,6 @@ bool IsPrefetchingOfflinePagesEnabled() {
 bool ShouldUseTestingSnapshotDelay() {
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   return cl->HasSwitch(kOfflinePagesUseTestingSnapshotDelay);
-}
-
-bool IsOfflinePagesCTV2Enabled() {
-  return base::FeatureList::IsEnabled(kOfflinePagesCTV2Feature);
 }
 
 bool IsOfflinePagesDescriptiveFailStatusEnabled() {

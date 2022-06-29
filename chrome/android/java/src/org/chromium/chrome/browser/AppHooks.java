@@ -223,15 +223,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * @return A list of allowlisted apps that are allowed to receive notification when the
-     * set of offlined pages downloaded on their behalf has changed. Apps are listed by their
-     * package name.
-     */
-    public List<String> getOfflinePagesCctAllowlist() {
-        return Collections.emptyList();
-    }
-
-    /**
      * @return A list of allowlisted app package names whose completed notifications
      * we should suppress.
      */

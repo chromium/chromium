@@ -813,7 +813,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/offlinepages/BackgroundScheduler.java",
   "java/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerBridge.java",
   "java/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerProcessor.java",
-  "java/src/org/chromium/chrome/browser/offlinepages/CctOfflinePageModelObserver.java",
   "java/src/org/chromium/chrome/browser/offlinepages/ClientId.java",
   "java/src/org/chromium/chrome/browser/offlinepages/DeletedPageInfo.java",
   "java/src/org/chromium/chrome/browser/offlinepages/GetPagesByNamespaceForLivePageSharingCallback.java",

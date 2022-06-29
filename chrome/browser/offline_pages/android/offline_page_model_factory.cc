@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/offline_pages/android/cct_origin_observer.h"
 #include "chrome/browser/offline_pages/android/offline_page_archive_publisher_impl.h"
 #include "chrome/browser/offline_pages/download_archive_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,8 +83,6 @@ std::unique_ptr<KeyedService> OfflinePageModelFactory::BuildServiceInstanceFor(
       std::make_unique<OfflinePageModelTaskified>(
           std::move(metadata_store), std::move(archive_manager),
           std::move(publisher), background_task_runner);
-
-  CctOriginObserver::AttachToOfflinePageModel(model.get());
 
   return model;
 }
