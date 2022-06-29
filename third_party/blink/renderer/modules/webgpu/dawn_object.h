@@ -131,6 +131,8 @@ class DawnObject : public DawnObjectImpl {
   }
 
   ~DawnObject() override {
+    DCHECK(handle_);
+
     // Note: The device is released last because all child objects must be
     // destroyed first.
     (GetProcs().*WGPUReleaseFn<Handle>::fn)(handle_);

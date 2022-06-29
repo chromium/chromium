@@ -408,7 +408,10 @@ GPUExternalTexture* GPUExternalTexture::CreateExpired(
   // Bypass importing video frame into Dawn.
   GPUExternalTexture* external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
-          device, nullptr /*external_texture*/, nullptr /*mailbox_texture*/,
+          device,
+          device->GetProcs().deviceCreateErrorExternalTexture(
+              device->GetHandle()),
+          nullptr /*mailbox_texture*/,
           absl::nullopt /*media_video_frame_unique_id*/);
   external_texture->Destroy();
   return external_texture;
