@@ -6887,10 +6887,6 @@ crbug.com/1290670 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-mandatory-g
 crbug.com/1313894 [ Mac10.14 ] rootscroller/root-scroller-paint-order.html [ Failure Pass ]
 crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/3666176
-crbug.com/1329040 http/tests/devtools/sources/snippet-overrides.js [ Pass Timeout ]
-crbug.com/1329040 http/tests/devtools/sources/debugger/network-uisourcecode-provider.js [ Failure Pass ]
-
 # Sheriff 2022-04-07
 crbug.com/1314314 virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Skip ]
 crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Skip ]
