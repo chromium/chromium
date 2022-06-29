@@ -275,7 +275,7 @@ public class BookmarkUtils {
         }
 
         bookmarkId = bookmarkModel.addBookmark(
-                null, parent, bookmarkModel.getChildCount(parent), title, url);
+                webContents, parent, bookmarkModel.getChildCount(parent), title, url);
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
             Log.e(TAG,

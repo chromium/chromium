@@ -943,9 +943,9 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
   if (web_contents && base::FeatureList::IsEnabled(commerce::kShoppingList)) {
     shopping_list::ShoppingDataProvider* data_provider =
         shopping_list::ShoppingDataProvider::FromWebContents(web_contents);
-    if (data_provider) {
-      std::unique_ptr<PowerBookmarkMeta> meta =
-          data_provider->GetCurrentMetadata();
+    std::unique_ptr<PowerBookmarkMeta> meta =
+        data_provider ? data_provider->GetCurrentMetadata() : nullptr;
+    if (meta) {
       power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, new_node,
                                                 std::move(meta));
     }
