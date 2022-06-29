@@ -81,8 +81,9 @@ MediaRouterContextualMenu::CreateMenuModel() {
       browser_->profile()->GetPrefs()->GetBoolean(
           prefs::kUserFeedbackAllowed)) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model->AddItemWithStringId(IDC_MEDIA_ROUTER_REPORT_ISSUE,
-                                    IDS_MEDIA_ROUTER_REPORT_ISSUE);
+    menu_model->AddItemWithStringId(
+        IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE,
+        IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE);
   }
 #endif
 
@@ -145,7 +146,7 @@ void MediaRouterContextualMenu::ExecuteCommand(int command_id,
       ShowSingletonTab(browser_, GURL(kCastLearnMorePageUrl));
       break;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case IDC_MEDIA_ROUTER_REPORT_ISSUE:
+    case IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE:
       ReportIssue();
       break;
 #endif
