@@ -15,9 +15,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/files/file.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -93,11 +95,15 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
+#include "ui/base/ui_base_paths.h"
 #include "url/origin.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
+#include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #endif
 
@@ -510,6 +516,19 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AuthenticatorTestBase() override = default;
 
+  static void SetUpTestSuite() {
+#if BUILDFLAG(IS_MAC)
+    // Load fido_strings, which can be required for exercising the Touch ID
+    // authenticator.
+    base::FilePath path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &path));
+    base::FilePath fido_test_strings =
+        path.Append(FILE_PATH_LITERAL("fido_test_strings.pak"));
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        fido_test_strings, ui::kScaleFactorNone);
+#endif
+  }
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -547,7 +566,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 #endif
   }
 
-  void ResetVirtualDevice() {
+  virtual void ResetVirtualDevice() {
     auto virtual_device_factory =
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
     virtual_device_factory_ = virtual_device_factory.get();
@@ -8150,16 +8169,28 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 #if BUILDFLAG(IS_MAC)
 class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
  protected:
+  using Credential = device::fido::mac::Credential;
+  using CredentialMetadata = device::fido::mac::CredentialMetadata;
+
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
-    test_client_.GetTestWebAuthenticationDelegate()
-        ->touch_id_authenticator_config = config_;
+    test_client_.web_authentication_delegate.touch_id_authenticator_config =
+        config_;
+    test_client_.web_authentication_delegate.supports_resident_keys = true;
     old_client_ = SetBrowserClientForTesting(&test_client_);
   }
 
   void TearDown() override {
     SetBrowserClientForTesting(old_client_);
     AuthenticatorImplTest::TearDown();
+  }
+
+  void ResetVirtualDevice() override {}
+
+  std::vector<std::pair<Credential, CredentialMetadata>> GetCredentials(
+      const std::string& rp_id) {
+    return device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
+        config_, rp_id);
   }
 
   TestAuthenticatorContentBrowserClient test_client_;
@@ -8185,6 +8216,97 @@ TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
     EXPECT_EQ(touch_id_available, cb.value());
   }
 }
+
+TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  auto credentials = GetCredentials(kTestRelyingPartyId);
+  EXPECT_EQ(credentials.size(), 1u);
+  const CredentialMetadata& metadata = credentials.at(0).second;
+  EXPECT_FALSE(metadata.is_resident);
+  auto expected_user = GetTestPublicKeyCredentialUserEntity();
+  expected_user.icon_url =
+      absl::nullopt;  // Authenticator doesn't store icon URL.
+  EXPECT_EQ(metadata.ToPublicKeyCredentialUserEntity(), expected_user);
+}
+
+TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Resident) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  options->authenticator_selection->resident_key =
+      device::ResidentKeyRequirement::kRequired;
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  auto credentials = GetCredentials(kTestRelyingPartyId);
+  EXPECT_EQ(credentials.size(), 1u);
+  const CredentialMetadata& metadata = credentials.at(0).second;
+  EXPECT_TRUE(metadata.is_resident);
+}
+
+TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Eviction) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+
+  // Non-resident credentials with the same user ID will overwrite each other.
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
+  const std::vector<uint8_t> credential_id =
+      GetCredentials(kTestRelyingPartyId).at(0).first.credential_id;
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
+  EXPECT_NE(GetCredentials(kTestRelyingPartyId).at(0).first.credential_id,
+            credential_id);
+
+  // A resident credential will overwrite the non-resident one.
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  options->authenticator_selection->resident_key =
+      device::ResidentKeyRequirement::kRequired;
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential(options->Clone()).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
+
+  // Another resident credential for the same user will evict the previous one.
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential(options->Clone()).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
+
+  // But a resident credential for a different user shouldn't.
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  options->user.id = std::vector<uint8_t>({99});
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 2u);
+
+  // Neither should a credential for a different RP.
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  options->relying_party.id = "a.google.com";
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 2u);
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // AuthenticatorCableV2Test tests features of the caBLEv2 transport and

@@ -37,13 +37,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
 
   ~ScopedTouchIdTestEnvironment();
 
-  // ForgeNextTouchIdContext sets up the FakeTouchIdContext returned by the
-  // next call to TouchIdContext::Create. The fake will invoke the callback
-  // passed to TouchIdContext::PromptTouchId with the given result.
-  //
-  // It is a fatal error to call TouchIdContext::Create without invoking this
-  // method first while the test environment is in scope.
-  void ForgeNextTouchIdContext(bool simulate_prompt_success);
+  // Injects a fake to be returned by the
+  // next call to `TouchIdContext::Create()`, which will automatically resolve
+  // calls to `PromptTouchId()` successfully.
+  void SimulateTouchIdPromptSuccess();
+
+  // Like `SimulateTouchIdPromptSuccess()`, but `PromptTouchId()` resolves with
+  // a failure.
+  void SimulateTouchIdPromptFailure();
 
   // Sets the value returned by TouchIdContext::TouchIdAvailable. The default on
   // instantiation of the test environment is true.

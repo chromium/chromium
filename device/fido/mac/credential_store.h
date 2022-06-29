@@ -108,9 +108,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
       const std::string& rp_id,
       const Credential& credential) const;
 
-  // DeleteCredentialsForUserId deletes all (discoverable or non-discoverable)
-  // credentials for the given RP and user ID. Returns true if deleting
-  // succeeded or no matching credential exists, and false otherwise.
+  // DeleteCredentialsForUserId deletes all credentials for the given RP and
+  // user ID. Returns true if deleting succeeded or no matching credential
+  // exists, and false if an error occurred.
   bool DeleteCredentialsForUserId(const std::string& rp_id,
                                   base::span<const uint8_t> user_id) const;
 
@@ -129,10 +129,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   size_t CountCredentialsSync(base::Time created_not_before,
                               base::Time created_not_after);
 
+  // Returns all credentials for the given `rp_id` (resident and non-resident).
+  static std::vector<std::pair<Credential, CredentialMetadata>>
+  FindCredentialsForTesting(AuthenticatorConfig config, std::string rp_id);
+
  private:
   absl::optional<std::list<Credential>> FindCredentialsImpl(
       const std::string& rp_id,
+      absl::optional<base::span<const uint8_t>> user_id,
       const std::set<std::vector<uint8_t>>& credential_ids) const;
+
+  bool DeleteCredentialById(base::span<const uint8_t> credential_id) const;
 
   AuthenticatorConfig config_;
   LAContext* authentication_context_ = nullptr;

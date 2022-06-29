@@ -150,7 +150,29 @@ OSStatus FakeKeychain::ItemCopyMatching(CFDictionaryRef query,
 }
 
 OSStatus FakeKeychain::ItemDelete(CFDictionaryRef query) {
-  // TODO(martinkr): Implement.
+  // Validate certain fields that we always expect to be set.
+  DCHECK_EQ(base::mac::GetValueFromDictionary<CFStringRef>(query, kSecClass),
+            kSecClassKey);
+  DCHECK(CFEqual(base::mac::GetValueFromDictionary<CFStringRef>(
+                     query, kSecAttrAccessGroup),
+                 keychain_access_group_));
+  // Only supporting deletion via `kSecAttrApplicationLabel` (credential ID) for
+  // now (see `TouchIdCredentialStore::DeleteCredentialById()`).
+  CFDataRef query_credential_id = base::mac::GetValueFromDictionary<CFDataRef>(
+      query, kSecAttrApplicationLabel);
+  DCHECK(query_credential_id);
+  for (auto it = items_.begin(); it != items_.end(); ++it) {
+    const base::ScopedCFTypeRef<CFDictionaryRef>& item = *it;
+    CFDataRef item_credential_id = base::mac::GetValueFromDictionary<CFDataRef>(
+        item, kSecAttrApplicationLabel);
+    DCHECK(item_credential_id);
+    if (CFEqual(query_credential_id, item_credential_id)) {
+      items_.erase(it);  // N.B. `it` becomes invalid
+      return errSecSuccess;
+    }
+  }
+  // We only delete known items by credential ID currently, so not finding one
+  // would be odd.
   NOTREACHED();
   return errSecItemNotFound;
 }

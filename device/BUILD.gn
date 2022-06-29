@@ -189,6 +189,10 @@ test("device_unittests") {
     ]
 
     deps += [ "//device/fido:mocks" ]
+
+    if (is_mac) {
+      data_deps += [ "fido/strings:fido_test_strings" ]
+    }
   }
 
   if (is_mac) {

@@ -22,30 +22,9 @@ namespace mac {
 
 // MakeCredentialOperation implements the authenticatorMakeCredential operation.
 // The operation can be invoked via its |Run| method, which must only be called
-// once.
-//
-// It prompts the user for consent via Touch ID and then generates a key pair
-// in the secure enclave. A reference to the private key is stored as a
-// keychain item in the macOS keychain for later lookup. The actual private key
-// cannot be extracted from the secure enclave. Each keychain item stores the
-// following metadata:
-//
-//  - The item's application label (kSecAttrApplicationLabel), which must be
-//  unique, contains the credential identifier, which is computed as the CBOR
-//  encoding of (rp_id, user_id).
-//
-//  - The application tag (kSecAttrApplicationTag) holds an identifier for the
-//  associated Chrome user profile, in order to separate credentials from
-//  different profiles.
-//
-//  - The label (kSecAttrLabel) stores the RP ID, to allow iteration over all
-//  keys by a given RP.
-//
-//  Keychain items are stored with the access group (kSecAttrAccessGroup) set
-//  to a value that identifies them as Chrome WebAuthn credentials
-//  (keychain_access_group_), so that they are logically
-//  separate from any other data that Chrome may store in the keychain in
-//  the future.
+// once. It prompts the user for consent via Touch ID and then generates a key
+// pair in the Secure Enclave, with a reference plus metadata persisted in the
+// macOS Keychain.
 class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
  public:
   using Callback = base::OnceCallback<void(

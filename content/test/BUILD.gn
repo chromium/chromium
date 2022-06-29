@@ -2753,6 +2753,10 @@ test("content_unittests") {
     "//third_party/mesa_headers",
   ]
 
+  if (is_mac) {
+    data_deps += [ "//device/fido/strings:fido_test_strings" ]
+  }
+
   if (is_posix) {
     sources += [ "../browser/posix_file_descriptor_info_impl_unittest.cc" ]
     deps += [ "//services/tracing:test_utils" ]

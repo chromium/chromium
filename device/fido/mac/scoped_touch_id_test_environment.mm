@@ -38,6 +38,8 @@ ScopedTouchIdTestEnvironment::ScopedTouchIdTestEnvironment(
 }
 
 ScopedTouchIdTestEnvironment::~ScopedTouchIdTestEnvironment() {
+  DCHECK(!next_touch_id_context_) << "unclaimed SimulatePromptSuccess() call";
+
   DCHECK(touch_id_context_create_ptr_);
   TouchIdContext::g_create_ = touch_id_context_create_ptr_;
 
@@ -67,17 +69,23 @@ bool ScopedTouchIdTestEnvironment::TouchIdAvailable(
   return touch_id_available_;
 }
 
-void ScopedTouchIdTestEnvironment::ForgeNextTouchIdContext(
-    bool simulate_prompt_success) {
+void ScopedTouchIdTestEnvironment::SimulateTouchIdPromptSuccess() {
   CHECK(!next_touch_id_context_);
-  next_touch_id_context_ = base::WrapUnique(new FakeTouchIdContext);
-  next_touch_id_context_->set_callback_result(simulate_prompt_success);
+  next_touch_id_context_.reset(new FakeTouchIdContext);
+  next_touch_id_context_->set_callback_result(true);
+}
+
+void ScopedTouchIdTestEnvironment::SimulateTouchIdPromptFailure() {
+  CHECK(!next_touch_id_context_);
+  next_touch_id_context_.reset(new FakeTouchIdContext);
+  next_touch_id_context_->set_callback_result(false);
 }
 
 std::unique_ptr<TouchIdContext>
 ScopedTouchIdTestEnvironment::CreateTouchIdContext() {
-  CHECK(next_touch_id_context_) << "Call ForgeNextTouchIdContext() for every "
-                                   "context created in the test environment.";
+  CHECK(next_touch_id_context_)
+      << "Call SimulateTouchIdPromptSuccess/Failure() for every "
+         "context created in the test environment.";
   return std::move(next_touch_id_context_);
 }
 

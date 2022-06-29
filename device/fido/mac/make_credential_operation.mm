@@ -45,12 +45,12 @@ MakeCredentialOperation::~MakeCredentialOperation() = default;
 void MakeCredentialOperation::Run() {
   // Verify pubKeyCredParams contains ES-256, which is the only algorithm we
   // support.
-  auto is_es256 =
+  const auto is_es256 =
       [](const PublicKeyCredentialParams::CredentialInfo& cred_info) {
         return cred_info.algorithm ==
                static_cast<int>(CoseAlgorithmIdentifier::kEs256);
       };
-  const auto& key_params =
+  const std::vector<PublicKeyCredentialParams::CredentialInfo>& key_params =
       request_.public_key_credential_params.public_key_credential_params();
   if (!std::any_of(key_params.begin(), key_params.end(), is_es256)) {
     DVLOG(1) << "No supported algorithm found.";
@@ -98,11 +98,9 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   }
 
   // Delete the key pair for this RP + user handle if one already exists.
-  //
-  // TODO(crbug/1025065): Decide whether we should evict non-resident
-  // credentials at all.
   if (!credential_store_->DeleteCredentialsForUserId(request_.rp.id,
                                                      request_.user.id)) {
+    FIDO_LOG(ERROR) << "DeleteCredentialsForUserId() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                              absl::nullopt);
     return;
