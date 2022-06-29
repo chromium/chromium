@@ -855,6 +855,12 @@ class MediaStreamManager::DeviceRequest {
     }
   }
 
+  // This function checks if the request is for the getDisplayMediaSet API.
+  bool IsGetDisplayMediaSet() const {
+    return controls.video.stream_type ==
+           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
+  }
+
   // The render process id that requested this stream to be generated and that
   // will receive a handle to the MediaStream. This may be different from
   // MediaStreamRequest::render_process_id which in the tab capture case
@@ -2294,11 +2300,22 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
   // user denies mic/camera.
   SubscribeToPermissionController(label, request);
 
+  blink::mojom::StreamDevicesSetPtr stream_devices_set =
+      request->stream_devices_set.Clone();
+
+  if (request->IsGetDisplayMediaSet()) {
+    PanTiltZoomPermissionChecked(
+        label, MediaStreamDevice(),
+        base::BindOnce(std::move(request->generate_stream_cb),
+                       MediaStreamRequestResult::OK, label,
+                       std::move(stream_devices_set)),
+        /*pan_tilt_zoom_allowed=*/false);
+    return;
+  }
+
   // TODO(crbug.com/1300883): Generalize to multiple streams.
   DCHECK_EQ(1u, request->stream_devices_set.stream_devices.size());
 
-  blink::mojom::StreamDevicesSetPtr stream_devices_set =
-      request->stream_devices_set.Clone();
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop and so outlives the IO thread.
   // TODO(crbug.com/1314741): Avoid using PTZ permission checks for non-gUM
@@ -2391,6 +2408,9 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
       RequestTypeToString(request->request_type()), pan_tilt_zoom_allowed));
 
   std::move(callback).Run(pan_tilt_zoom_allowed);
+
+  if (request->IsGetDisplayMediaSet())
+    return;
 
 #if !BUILDFLAG(IS_ANDROID)
   // 1. Only the first call to SetCapturedDisplaySurfaceFocus() has an
