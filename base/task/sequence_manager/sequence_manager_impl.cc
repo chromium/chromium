@@ -282,7 +282,7 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
       non_waking_wake_up_queue(
           std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {
   if (settings.randomised_sampling_enabled) {
-    random_generator = base::InsecureRandomGenerator();
+    metrics_subsampler = base::MetricsSubSampler();
   }
 }
 
@@ -1147,9 +1147,9 @@ bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
   DCHECK(ThreadTicks::IsSupported() ||
          !metric_recording_settings_.records_cpu_time_for_some_tasks());
   return metric_recording_settings_.records_cpu_time_for_some_tasks() &&
-         main_thread_only().random_generator->RandDouble() <
+         main_thread_only().metrics_subsampler->ShouldSample(
              metric_recording_settings_
-                 .task_sampling_rate_for_recording_cpu_time;
+                 .task_sampling_rate_for_recording_cpu_time);
 }
 
 const SequenceManager::MetricRecordingSettings&

@@ -174,8 +174,7 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
 
   // WARNING: All code below must be compatible with down-sampling.
   constexpr double kSamplingProbabily = .01;
-  bool should_sample = random_generator_.RandDouble() < kSamplingProbabily;
-  if (!should_sample)
+  if (!metrics_subsampler_.ShouldSample(kSamplingProbabily))
     return;
 
   base::TimeDelta duration = task_timing.wall_duration();

@@ -46,7 +46,7 @@ class PLATFORM_EXPORT UkmTaskSampler {
   double thread_time_sampling_rate_;
   double ukm_task_sampling_rate_;
 
-  base::InsecureRandomGenerator random_generator_;
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace scheduler

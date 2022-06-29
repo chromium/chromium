@@ -120,4 +120,9 @@ double InsecureRandomGenerator::RandDouble() {
   return (x >> 11) * 0x1.0p-53;
 }
 
+MetricsSubSampler::MetricsSubSampler() = default;
+bool MetricsSubSampler::ShouldSample(double probability) {
+  return generator_.RandDouble() < probability;
+}
+
 }  // namespace base

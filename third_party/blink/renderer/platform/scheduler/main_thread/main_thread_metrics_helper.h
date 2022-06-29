@@ -110,7 +110,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   scheduling_metrics::TotalDurationMetricReporter total_task_time_reporter_;
 
   MainThreadTaskLoadState main_thread_task_load_state_;
-  base::InsecureRandomGenerator random_generator_;
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace scheduler
