@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -165,6 +166,8 @@ public class HistoryClustersCoordinatorTest {
     private GURL mGurl1;
     @Mock
     private GURL mGurl2;
+    @Mock
+    private HistoryClustersMetricsLogger mMetricsLogger;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -177,6 +180,7 @@ public class HistoryClustersCoordinatorTest {
     private TestHistoryClustersDelegate mHistoryClustersDelegate =
             new TestHistoryClustersDelegate();
     private List<ClusterVisit> mVisitsForRemoval = new ArrayList<>();
+    private SelectionDelegate<ClusterVisit> mSelectionDelegate = new SelectionDelegate<>();
 
     @Before
     public void setUp() {
@@ -194,8 +198,9 @@ public class HistoryClustersCoordinatorTest {
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
                     mActivity = activity;
-                    mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                            mProfile, activity, mTemplateUrlService, mHistoryClustersDelegate);
+                    mHistoryClustersCoordinator =
+                            new HistoryClustersCoordinator(mProfile, activity, mTemplateUrlService,
+                                    mHistoryClustersDelegate, mMetricsLogger, mSelectionDelegate);
                 });
     }
 
@@ -270,11 +275,14 @@ public class HistoryClustersCoordinatorTest {
                                                  .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
-        mHistoryClustersCoordinator.getSelectionDelegateForTesting().setSelectedItems(
-                new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
+        mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
         mHistoryClustersCoordinator.onMenuItemClick(
                 toolbar.getMenu().findItem(R.id.selection_mode_open_in_new_tab));
 
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.CLICKED, mVisit1);
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.CLICKED, mVisit2);
         assertTrue(mOpenUrlIntent.hasExtra(NEW_TAB_EXTRA));
         assertTrue(mOpenUrlIntent.hasExtra(INCOGNITO_EXTRA));
         assertTrue(mOpenUrlIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
@@ -288,11 +296,14 @@ public class HistoryClustersCoordinatorTest {
                                                  .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
-        mHistoryClustersCoordinator.getSelectionDelegateForTesting().setSelectedItems(
-                new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
+        mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
         mHistoryClustersCoordinator.onMenuItemClick(
                 toolbar.getMenu().findItem(R.id.selection_mode_open_in_incognito));
 
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.CLICKED, mVisit1);
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.CLICKED, mVisit2);
         assertTrue(mOpenUrlIntent.hasExtra(NEW_TAB_EXTRA));
         assertTrue(mOpenUrlIntent.hasExtra(INCOGNITO_EXTRA));
         assertTrue(mOpenUrlIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
@@ -326,8 +337,7 @@ public class HistoryClustersCoordinatorTest {
                                                  .findViewById(R.id.selectable_list)
                                                  .findViewById(R.id.action_bar);
 
-        mHistoryClustersCoordinator.getSelectionDelegateForTesting().setSelectedItems(
-                new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
+        mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
         mHistoryClustersCoordinator.onMenuItemClick(
                 toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id));
 

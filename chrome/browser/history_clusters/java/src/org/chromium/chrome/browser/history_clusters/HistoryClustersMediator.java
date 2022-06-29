@@ -78,6 +78,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private ListItem mPrivacyDisclaimerItem;
     private ListItem mClearBrowsingDataItem;
     private QueryState mQueryState = QueryState.forQueryless();
+    private final HistoryClustersMetricsLogger mMetricsLogger;
 
     /**
      * Create a new HistoryClustersMediator.
@@ -94,12 +95,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      * @param templateUrlService Service that allows us to generate a URL for a given search query.
      * @param selectionDelegate Delegate that gives us information about the currently selected
      *         items in the list we're displaying.
+     * @param metricsLogger Object that records metrics about user interactions.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             HistoryClustersDelegate historyClustersDelegate, Clock clock,
-            TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate) {
+            TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate,
+            HistoryClustersMetricsLogger metricsLogger) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -112,6 +115,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mClock = clock;
         mTemplateUrlService = templateUrlService;
         mSelectionDelegate = selectionDelegate;
+        mMetricsLogger = metricsLogger;
 
         PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         mToggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
@@ -169,6 +173,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     @VisibleForTesting
     void startQuery(String query) {
+        if (mQueryState.isSearching()) {
+            mMetricsLogger.incrementQueryCount();
+        }
+
         mPromise = mHistoryClustersBridge.queryClusters(query);
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
     }
@@ -203,11 +211,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mContext.startActivity(historyActivityIntent);
     }
 
-    void onRelatedSearchesChipClicked(String searchQuery) {
+    void onRelatedSearchesChipClicked(String searchQuery, int index) {
         if (!mTemplateUrlService.isLoaded()) {
             return;
         }
 
+        mMetricsLogger.recordRelatedSearchesClick(index);
         navigateToUrl(
                 new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)), false, false);
     }
@@ -235,7 +244,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     void deleteVisits(List<ClusterVisit> visits) {
         for (int i = 0; i < visits.size(); i++) {
-            mDelegate.markVisitForRemoval(visits.get(i));
+            ClusterVisit visit = visits.get(i);
+            mDelegate.markVisitForRemoval(visit);
+            mMetricsLogger.recordVisitAction(
+                    HistoryClustersMetricsLogger.VisitAction.DELETED, visit);
         }
         mDelegate.removeMarkedItems();
 
@@ -306,7 +318,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                 .with(HistoryClustersItemProperties.RELATED_SEARCHES,
                                         relatedSearches)
                                 .with(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
-                                        this::onRelatedSearchesChipClicked)
+                                        (query)
+                                                -> onRelatedSearchesChipClicked(
+                                                        query, relatedSearches.indexOf(query)))
                                 .build();
                 ListItem relatedSearchesItem =
                         new ListItem(ItemType.RELATED_SEARCHES, relatedSearchesModel);
@@ -356,10 +370,13 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
     }
 
-    private void onClusterVisitClicked(SelectableItemView view, ClusterVisit clusterVisit) {
+    @VisibleForTesting
+    void onClusterVisitClicked(SelectableItemView view, ClusterVisit clusterVisit) {
         if (mSelectionDelegate.isSelectionEnabled()) {
             view.onLongClick(view);
         } else {
+            mMetricsLogger.recordVisitAction(
+                    HistoryClustersMetricsLogger.VisitAction.CLICKED, clusterVisit);
             navigateToUrl(clusterVisit.getNormalizedUrl(), false, false);
         }
     }

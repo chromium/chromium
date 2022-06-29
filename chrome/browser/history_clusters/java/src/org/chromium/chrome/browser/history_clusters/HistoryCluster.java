@@ -32,6 +32,10 @@ class HistoryCluster {
         mMatchPositions = matchPositions;
         mTimestamp = timestamp;
         mRelatedSearches = relatedSearches;
+
+        for (int i = 0; i < mVisits.size(); i++) {
+            mVisits.get(i).setIndexInParent(i);
+        }
     }
 
     public List<ClusterVisit> getVisits() {

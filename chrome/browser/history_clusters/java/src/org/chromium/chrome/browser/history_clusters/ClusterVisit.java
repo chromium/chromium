@@ -43,6 +43,7 @@ public class ClusterVisit {
     private final GURL mRawUrl;
     private final long mTimestamp;
     private final List<DuplicateVisit> mDuplicateVisits;
+    private int mIndexInParent;
 
     /**
      * Create a new ClusterVisit.
@@ -102,5 +103,13 @@ public class ClusterVisit {
 
     public List<DuplicateVisit> getDuplicateVisits() {
         return mDuplicateVisits;
+    }
+
+    public void setIndexInParent(int index) {
+        mIndexInParent = index;
+    }
+
+    public int getIndexInParent() {
+        return mIndexInParent;
     }
 }

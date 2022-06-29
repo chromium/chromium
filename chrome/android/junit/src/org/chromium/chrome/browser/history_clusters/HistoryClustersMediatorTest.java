@@ -61,6 +61,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +72,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class})
+@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class, ShadowGURL.class})
 public class HistoryClustersMediatorTest {
     private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
 
@@ -105,6 +107,8 @@ public class HistoryClustersMediatorTest {
     private LinearLayoutManager mLayoutManager;
     @Mock
     private TabCreator mTabCreator;
+    @Mock
+    private HistoryClustersMetricsLogger mMetricsLogger;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
@@ -207,7 +211,7 @@ public class HistoryClustersMediatorTest {
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
-                mSelectionDelegate);
+                mSelectionDelegate, mMetricsLogger);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1", "url1.com/", new ArrayList<>(),
                 new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "url2.com/", new ArrayList<>(),
@@ -259,6 +263,7 @@ public class HistoryClustersMediatorTest {
         assertEquals(shadowOf(clusterModel.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE))
                              .getCreatedFromResId(),
                 R.drawable.ic_expand_more_black_24dp);
+        verify(mMetricsLogger).incrementQueryCount();
 
         ListItem visitItem = mModelList.get(1);
         assertEquals(visitItem.type, ItemType.VISIT);
@@ -391,6 +396,28 @@ public class HistoryClustersMediatorTest {
     }
 
     @Test
+    public void testItemClicked() {
+        mIsSeparateActivity = true;
+        mMediator.onClusterVisitClicked(null, mVisit1);
+
+        verify(mContext).startActivity(mIntent);
+        assertEquals(mIntent.getDataString(), mVisit1.getNormalizedUrl().getSpec());
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.CLICKED, mVisit1);
+    }
+
+    @Test
+    public void testRelatedSearchesClick() {
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(JUnitTestGURLs.GOOGLE_URL_DOGS)
+                .when(mTemplateUrlService)
+                .getUrlForSearchQuery("dogs");
+        mMediator.onRelatedSearchesChipClicked("dogs", 2);
+        verify(mMetricsLogger).recordRelatedSearchesClick(2);
+        verify(mTab).loadUrl(argThat(hasSameUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)));
+    }
+
+    @Test
     public void testToggleClusterVisibility() {
         PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         PropertyModel visitModel1 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
@@ -498,6 +525,12 @@ public class HistoryClustersMediatorTest {
 
         mMediator.deleteVisits(Arrays.asList(mVisit1, mVisit2, mVisit3));
         assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit2, mVisit3));
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit1);
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit2);
+        verify(mMetricsLogger)
+                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit3);
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {
