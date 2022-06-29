@@ -106,21 +106,13 @@ class OmniboxResultSelectionIndicator : public views::View {
     SkPath path = GetPath();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(color_);
+    flags.setColor(
+        GetColorProvider()->GetColor(kColorOmniboxResultsFocusIndicator));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(path, flags);
   }
 
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    color_ = views::GetCascadingAccentColor(result_view_);
-  }
-
  private:
-  SkColor color_;
-
   // Pointer to the parent view.
   const raw_ptr<OmniboxResultView> result_view_;
 
@@ -203,13 +195,14 @@ OmniboxResultView::OmniboxResultView(
   views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
   remove_suggestion_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
-  views::FocusRing::Install(remove_suggestion_button_);
-  views::FocusRing::Get(remove_suggestion_button_)
-      ->SetHasFocusPredicate([&](View* view) {
+  auto* const focus_ring = views::FocusRing::Get(remove_suggestion_button_);
+  focus_ring->SetHasFocusPredicate(
+      [&](View* view) {
         return view->GetVisible() && GetMatchSelected() &&
                (popup_contents_view_->GetSelection().state ==
                 OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
       });
+  focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
       popup_contents_view_, model_, model_index));
@@ -370,6 +363,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
     }
   }
   ApplyThemeAndRefreshIcons();
+  button_row_->SelectionStateChanged();
 }
 
 bool OmniboxResultView::GetMatchSelected() const {

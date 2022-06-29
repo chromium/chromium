@@ -64,7 +64,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxBubbleOutlineExperimentalKeywordMode] = {
       kColorOmniboxKeywordSelected};
 
-  // Results background and button colors.
+  // Results background, button, and focus colors.
   mixer[kColorOmniboxResultsBackground] =
       ui::GetColorWithMaxContrast(kColorOmniboxText);
   mixer[kColorOmniboxResultsBackgroundHovered] = ui::BlendTowardMaxContrast(
@@ -78,6 +78,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast(kColorOmniboxResultsBackgroundHovered);
   mixer[kColorOmniboxResultsButtonInkDropSelected] =
       ui::GetColorWithMaxContrast(kColorOmniboxResultsBackgroundSelected);
+  mixer[kColorOmniboxResultsFocusIndicator] = ui::PickGoogleColor(
+      ui::kColorFocusableBorderFocused, kColorOmniboxResultsBackgroundSelected,
+      color_utils::kMinimumVisibleContrastRatio);
 
   // Results icon colors.
   {

@@ -39,6 +39,9 @@ class OmniboxSuggestionButtonRowView : public views::View {
   // Updates the suggestion row buttons based on the model.
   void UpdateFromModel();
 
+  // Called when the selected item (row or button) in the popup has changed.
+  void SelectionStateChanged();
+
   views::Button* GetActiveButton() const;
 
  private:
@@ -60,6 +63,10 @@ class OmniboxSuggestionButtonRowView : public views::View {
   //  other actions ('journeys' currently).
   raw_ptr<OmniboxSuggestionRowButton> pedal_button_ = nullptr;
   raw_ptr<OmniboxSuggestionRowButton> tab_switch_button_ = nullptr;
+
+  // Which button, if any, was active as of the last call to
+  // SelectionStateChanged().
+  raw_ptr<views::Button> previous_active_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_

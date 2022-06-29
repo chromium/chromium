@@ -292,6 +292,12 @@ void FocusRing::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddState(ax::mojom::State::kIgnored);
 }
 
+void FocusRing::OnThemeChanged() {
+  View::OnThemeChanged();
+  if (invalid_ || color_id_.has_value())
+    SchedulePaint();
+}
+
 void FocusRing::OnViewFocused(View* view) {
   RefreshLayer();
 }

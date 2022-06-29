@@ -61,8 +61,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    views::InkDrop::Get(this)->SetHighlightOpacity(kOmniboxOpacityHovered);
-    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+    auto* const ink_drop = views::InkDrop::Get(this);
+    ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);
+    ink_drop->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
           return host->GetColorProvider()->GetColor(
               (host->theme_state_ == OmniboxPartState::SELECTED)
@@ -71,13 +72,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         },
         this));
     SetAnimationDuration(base::TimeDelta());
-    views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
-        base::TimeDelta());
+    ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
-    views::FocusRing::Get(this)->SetHasFocusPredicate([=](View* view) {
+    auto* const focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
              popup_contents_view_->GetSelection() == selection_;
     });
+    focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
   }
 
   OmniboxSuggestionRowButton(const OmniboxSuggestionRowButton&) = delete;
@@ -87,7 +89,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   ~OmniboxSuggestionRowButton() override = default;
 
   void SetThemeState(OmniboxPartState theme_state) {
-    views::FocusRing::Get(this)->SchedulePaint();
     if (theme_state_ == theme_state)
       return;
     theme_state_ = theme_state;
@@ -110,6 +111,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                               icon_color));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
+    views::FocusRing::Get(this)->SchedulePaint();
   }
 
   void UpdateBackgroundColor() override {
@@ -234,6 +236,17 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
                                pedal_button_->GetVisible() ||
                                tab_switch_button_->GetVisible();
   SetVisible(is_any_button_visible);
+}
+
+void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
+  auto* const active_button = GetActiveButton();
+  if (active_button == previous_active_button_)
+    return;
+  if (previous_active_button_)
+    views::FocusRing::Get(previous_active_button_)->SchedulePaint();
+  if (active_button)
+    views::FocusRing::Get(active_button)->SchedulePaint();
+  previous_active_button_ = active_button;
 }
 
 void OmniboxSuggestionButtonRowView::SetThemeState(

@@ -179,9 +179,6 @@ OmniboxPopupContentsView::OmniboxPopupContentsView(
             &OmniboxPopupContentsView::OnSuggestionGroupVisibilityUpdate,
             base::Unretained(this)));
   }
-
-  views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
-                                        kColorOmniboxResultsBackground);
 }
 
 OmniboxPopupContentsView::~OmniboxPopupContentsView() {
