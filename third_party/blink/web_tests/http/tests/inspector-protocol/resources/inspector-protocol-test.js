@@ -391,9 +391,7 @@ TestRunner.Session = class {
     }
     var response = await this.protocol.Runtime.evaluate({expression: code, returnByValue: true, awaitPromise, userGesture});
     if (response.error) {
-      const errorMessage = response.error.constructor === Object
-          ? response.error.message
-          : response.error;
+      const errorMessage = JSON.stringify(response.error);
       const maybeAsync = awaitPromise ? 'async ' : '';
       this._testRunner.log(`Error while evaluating ${maybeAsync}'${code}': ${errorMessage}`);
       this._testRunner.completeTest();
