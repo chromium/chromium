@@ -52,7 +52,7 @@ class TestBridge : public TranslateMessage::Bridge {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               CreateTranslateMessage,
               (JNIEnv*, content::WebContents*, TranslateMessage*, jint),
               (override));
@@ -170,7 +170,8 @@ class TranslateMessageTest : public ::testing::Test {
       const std::string& source_language_code,
       const std::string& target_language_code) {
     EXPECT_CALL(*bridge_, CreateTranslateMessage(
-                              env, _, _, kDefaultDismissalDurationSeconds));
+                              env, _, _, kDefaultDismissalDurationSeconds))
+        .WillOnce(Return(true));
 
     EXPECT_CALL(
         *bridge_,
@@ -247,6 +248,33 @@ class TranslateMessageTest : public ::testing::Test {
                     /*title=*/Truly(IsJavaStringNonNull),
                     /*description=*/Truly(IsJavaStringNonNull),
                     /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+  }
+
+  void TranslateThenRevertThenDismiss(JNIEnv* env,
+                                      const std::string& source_language_code,
+                                      const std::string& target_language_code) {
+    CreateAndShowBeforeTranslationMessage(env, source_language_code,
+                                          target_language_code);
+
+    ExpectTranslationInProgress(env, source_language_code,
+                                target_language_code);
+    translate_message_->HandlePrimaryAction(env);
+    ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
+
+    FinishTranslation(env, source_language_code, target_language_code);
+
+    ExpectTranslationReverts(env, source_language_code, target_language_code);
+    translate_message_->HandlePrimaryAction(env);
+    ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
+
+    // Simulate a dismissal triggered from the Java side.
+    EXPECT_CALL(*bridge_, ClearNativePointer(env));
+    translate_message_->HandleDismiss(
+        env, static_cast<jint>(messages::DismissReason::TIMER));
+
+    // The on-dismiss callback should have been called.
+    EXPECT_FALSE(translate_message_);
+    EXPECT_TRUE(was_on_dismiss_callback_called_);
   }
 
   void ExpectConstructMenuItemArray(
@@ -347,27 +375,7 @@ class TranslateMessageTest : public ::testing::Test {
 
 TEST_F(TranslateMessageTest, TranslateAndRevert) {
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  CreateAndShowBeforeTranslationMessage(env, "fr", "en");
-
-  ExpectTranslationInProgress(env, "fr", "en");
-  translate_message_->HandlePrimaryAction(env);
-  ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
-
-  FinishTranslation(env, "fr", "en");
-
-  ExpectTranslationReverts(env, "fr", "en");
-  translate_message_->HandlePrimaryAction(env);
-  ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
-
-  // Simulate a dismissal triggered from the Java side.
-  EXPECT_CALL(*bridge_, ClearNativePointer(env));
-  translate_message_->HandleDismiss(
-      env, static_cast<jint>(messages::DismissReason::TIMER));
-
-  // The on-dismiss callback should have been called.
-  EXPECT_FALSE(translate_message_);
-  EXPECT_TRUE(was_on_dismiss_callback_called_);
+  TranslateThenRevertThenDismiss(env, "fr", "en");
 }
 
 TEST_F(TranslateMessageTest, ShowErrorBeforeTranslation) {
@@ -379,7 +387,8 @@ TEST_F(TranslateMessageTest, ShowErrorBeforeTranslation) {
   ASSERT_TRUE(Mock::VerifyAndClear(client_.get()));
 
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
-                            env, _, _, kDefaultDismissalDurationSeconds));
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
   EXPECT_CALL(*bridge_, ShowTranslateError(env, _));
   EXPECT_CALL(*bridge_,
               ShowMessage(env,
@@ -400,7 +409,8 @@ TEST_F(TranslateMessageTest, ShowErrorAfterTranslation) {
   ASSERT_TRUE(Mock::VerifyAndClear(client_.get()));
 
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
-                            env, _, _, kDefaultDismissalDurationSeconds));
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
   EXPECT_CALL(*bridge_, ShowTranslateError(env, _));
   EXPECT_CALL(*bridge_,
               ShowMessage(env,
@@ -933,6 +943,44 @@ TEST_F(TranslateMessageTest, OverflowMenuUnknownSourceLanguage) {
 
   translate_message_->BuildOverflowMenu(env);
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
+}
+
+TEST_F(TranslateMessageTest, CreateTranslateMessageFails) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(false));
+
+  // ShowMessage should not be called after CreateTranslateMessage fails.
+  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _)).Times(0);
+
+  translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE, "fr",
+                                        "en");
+
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
+}
+
+TEST_F(TranslateMessageTest, CreateTranslateMessageFailsThenSucceeds) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // The first call to CreateTranslateMessage will fail.
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(false));
+
+  // ShowMessage should not be called after CreateTranslateMessage fails.
+  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _)).Times(0);
+
+  translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE, "fr",
+                                        "en");
+
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(bridge_.get()));
+
+  // The second call to CreateTranslateMessage will succeed, and test that the
+  // whole process of translating, reverting, and dismissing works properly
+  // afterwards.
+  TranslateThenRevertThenDismiss(env, "fr", "en");
 }
 
 }  // namespace
