@@ -3606,6 +3606,7 @@ enum WebFeature {
   kTabSharingBarSwitchToCapturee = 4285,
   kAutomaticLazyAds = 4286,
   kAutomaticLazyEmbeds = 4287,
+  kTouchActionChangedAtPointerDown = 4288,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

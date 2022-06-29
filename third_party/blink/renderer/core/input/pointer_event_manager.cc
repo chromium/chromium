@@ -668,14 +668,39 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
         mojom::blink::UserActivationNotificationType::kInteraction);
   }
 
-  if (RuntimeEnabledFeatures::TouchActionEffectiveAtPointerDownEnabled() &&
-      event.GetType() == WebInputEvent::Type::kPointerDown) {
-    touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
-        event, pointer_event_target);
+  Node* pointerdown_node = nullptr;
+  if (event.GetType() == WebInputEvent::Type::kPointerDown) {
+    pointerdown_node =
+        touch_event_manager_->GetTouchPointerNode(event, pointer_event_target);
+  }
+
+  TouchAction touch_action = TouchAction::kAuto;
+
+  if (pointerdown_node) {
+    touch_action = touch_action_util::EffectiveTouchActionAtPointerDown(
+        event, pointerdown_node);
+    if (RuntimeEnabledFeatures::TouchActionEffectiveAtPointerDownEnabled()) {
+      touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
+          event, pointerdown_node, touch_action);
+    }
   }
 
   WebInputEventResult result = DispatchTouchPointerEvent(
       event, coalesced_events, predicted_events, pointer_event_target);
+
+  if (pointerdown_node) {
+    TouchAction new_touch_action =
+        touch_action_util::EffectiveTouchActionAtPointerDown(event,
+                                                             pointerdown_node);
+    if (!RuntimeEnabledFeatures::TouchActionEffectiveAtPointerDownEnabled()) {
+      touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
+          event, pointerdown_node, new_touch_action);
+    }
+    if (new_touch_action != touch_action) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kTouchActionChangedAtPointerDown);
+    }
+  }
 
   touch_event_manager_->HandleTouchPoint(event, coalesced_events,
                                          pointer_event_target);

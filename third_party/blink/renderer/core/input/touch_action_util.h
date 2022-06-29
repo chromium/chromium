@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_TOUCH_ACTION_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_TOUCH_ACTION_UTIL_H_
 
+#include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 
@@ -14,6 +15,10 @@ class Node;
 
 namespace touch_action_util {
 CORE_EXPORT TouchAction ComputeEffectiveTouchAction(const Node&);
+
+TouchAction EffectiveTouchActionAtPointerDown(const WebPointerEvent& event,
+                                              const Node* pointerdown_node);
+
 }  // namespace touch_action_util
 
 }  // namespace blink

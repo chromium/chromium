@@ -40525,6 +40525,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4285" label="TabSharingBarSwitchToCapturee"/>
   <int value="4286" label="AutomaticLazyAds"/>
   <int value="4287" label="AutomaticLazyEmbeds"/>
+  <int value="4288" label="TouchActionChangedAtPointerDown"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
