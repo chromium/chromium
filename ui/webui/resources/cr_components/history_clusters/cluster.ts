@@ -37,6 +37,7 @@ const HistoryClusterElementBase = I18nMixin(PolymerElement);
 interface HistoryClusterElement {
   $: {
     label: HTMLElement,
+    container: HTMLElement,
   };
 }
 
