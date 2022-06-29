@@ -72106,6 +72106,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="21" label="MERCHANT_TRUST_SIGNALS_V2"/>
   <int value="22" label="PAGE_ENTITIES"/>
   <int value="23" label="HISTORY_CLUSTERS"/>
+  <int value="24" label="THANK_CREATOR_ELIGIBLE"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">

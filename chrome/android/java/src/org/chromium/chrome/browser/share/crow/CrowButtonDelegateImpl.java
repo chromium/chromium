@@ -13,13 +13,17 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /** Implementation of Crow share chip-related actions. */
@@ -32,16 +36,50 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     private static final String DOMAIN_LIST_URL_PARAM = "DomainList";
     private static final String DOMAIN_ID_NONE = "0";
     private static final String DEFAULT_BUTTON_TEXT = "Thank\u00A0creator";
+    private static final String USE_PAGE_OPTIMIZATIONS_STUDY_PARAM = "UsePageOptimizations";
 
     private static final String TAG = "CrowButton";
 
     /** Constructs a new {@link CrowButtonDelegateImpl}. */
     public CrowButtonDelegateImpl() {}
 
+    // Lazy initialization of OptimizationGuideBridgeFactory
+    private static class OptimizationGuideBridgeFactoryHolder {
+        private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
+        static {
+            sOptimizationGuideBridgeFactory = new OptimizationGuideBridgeFactory(
+                    Arrays.asList(HintsProto.OptimizationType.THANK_CREATOR_ELIGIBLE));
+        }
+    }
+
     @Override
-    public boolean isEnabledForSite(GURL url) {
+    public void isEnabledForSite(GURL url, Callback<Boolean> callback) {
         // TODO(skare): Make this an AMP-aware comparison if needed.
-        return isCrowEnabled() && !getPublicationId(url).equals(DOMAIN_ID_NONE);
+        if (!isCrowEnabled()) {
+            callback.onResult(false);
+            return;
+        }
+        // Check our (current) exact list first.
+        // Fall back to page optimizations if the study param is enabled.
+        if (!getPublicationId(url).equals(DOMAIN_ID_NONE)) {
+            callback.onResult(true);
+            return;
+        }
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.SHARE_CROW_BUTTON, USE_PAGE_OPTIMIZATIONS_STUDY_PARAM,
+                    false)) {
+            callback.onResult(false);
+            return;
+        }
+        checkPageOptimizations(url, callback);
+    }
+
+    private static void checkPageOptimizations(GURL url, Callback<Boolean> callback) {
+        OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
+                .canApplyOptimization(url, HintsProto.OptimizationType.THANK_CREATOR_ELIGIBLE,
+                        (decision, metadata) -> {
+                            callback.onResult(decision == OptimizationGuideDecision.TRUE);
+                        });
     }
 
     @Override

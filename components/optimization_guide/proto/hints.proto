@@ -162,6 +162,8 @@ enum OptimizationType {
   // This optimization provides information for whether a page should be
   // included in a history cluster.
   HISTORY_CLUSTERS = 23;
+  // Determines if a page is eligible for 'Thank creator' functionality.
+  THANK_CREATOR_ELIGIBLE = 24;
 }
 
 // Presents semantics for how page load URLs should be matched.

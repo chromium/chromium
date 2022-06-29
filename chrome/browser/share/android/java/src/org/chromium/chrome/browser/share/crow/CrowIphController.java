@@ -73,10 +73,12 @@ public class CrowIphController {
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (tab.isShowingErrorPage() || !mCrowButtonDelegate.isEnabledForSite(url)) {
+                if (tab.isShowingErrorPage()) {
                     return;
                 }
-                maybeShowCrowIph(url);
+                mCrowButtonDelegate.isEnabledForSite(url, (enabled) -> {
+                    if (enabled) maybeShowCrowIph(url);
+                });
             }
         });
     }

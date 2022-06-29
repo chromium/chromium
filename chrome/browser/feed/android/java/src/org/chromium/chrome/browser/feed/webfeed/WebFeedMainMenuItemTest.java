@@ -240,12 +240,19 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSingleRow() {
-        doReturn(false).when(mCrowButtonDelegate).isEnabledForSite(any(GURL.class));
         initializeWebFeedMainMenuItem();
         respondWithFeedMetadata(
                 createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
 
         // Chip group with Follow chip should have same parent as the icon view.
+        doAnswer(invocation -> {
+            Callback callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mCrowButtonDelegate)
+                .isEnabledForSite(any(GURL.class), any(Callback.class));
+
         ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
         View iconView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals(iconView.getParent(), chipsGroup.getParent());
@@ -254,7 +261,14 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSecondRow() {
-        doReturn(true).when(mCrowButtonDelegate).isEnabledForSite(any(GURL.class));
+        doAnswer(invocation -> {
+            Callback callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mCrowButtonDelegate)
+                .isEnabledForSite(any(GURL.class), any(Callback.class));
+
         initializeWebFeedMainMenuItem();
         respondWithFeedMetadata(
                 createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));

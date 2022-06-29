@@ -19,8 +19,9 @@ public interface CrowButtonDelegate {
      * @return Whether to show the chip for |url|.
      *
      * @param url URL for current tab where the app menu was launched.
+     * @param callback Callback informing whether the feature is enabled for 'url.'
      */
-    boolean isEnabledForSite(GURL url);
+    void isEnabledForSite(GURL url, Callback<Boolean> callback);
 
     /**
      * Launches a custom tab to a server-provided interaction flow.

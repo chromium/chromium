@@ -170,12 +170,15 @@ public class WebFeedMainMenuItem extends FrameLayout {
     }
 
     private void initializeCrowButton(WebFeedMetadata webFeedMetadata) {
-        boolean isFollowing = webFeedMetadata != null
-                && webFeedMetadata.subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED;
-        if (mCrowButtonDelegate.isEnabledForSite(mUrl)) {
-            moveChipsToDedicatedRow();
-            showCrowButton(isFollowing);
-        }
+        mCrowButtonDelegate.isEnabledForSite(mUrl, (enabled) -> {
+            if (enabled) {
+                boolean isFollowing = webFeedMetadata != null
+                        && webFeedMetadata.subscriptionStatus
+                                == WebFeedSubscriptionStatus.SUBSCRIBED;
+                moveChipsToDedicatedRow();
+                showCrowButton(isFollowing);
+            }
+        });
     }
 
     private void showUnsubscribedChipView() {
