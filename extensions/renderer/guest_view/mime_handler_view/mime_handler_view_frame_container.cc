@@ -62,24 +62,23 @@ bool MimeHandlerViewFrameContainer::AreFramesAlive() {
   return true;
 }
 
-void MimeHandlerViewFrameContainer::SetRoutingIds(int32_t content_frame_id,
-                                                  int32_t guest_frame_id) {
-  DCHECK_EQ(content_frame_id_, MSG_ROUTING_NONE);
+void MimeHandlerViewFrameContainer::SetFrameTokens(
+    const blink::FrameToken& content_frame_token,
+    const blink::FrameToken& guest_frame_token) {
+  DCHECK(!frame_tokens_set_);
   DCHECK(!post_message_support()->is_active());
-  content_frame_id_ = content_frame_id;
-  guest_frame_id_ = guest_frame_id;
+  frame_tokens_set_ = true;
+  content_frame_token_ = content_frame_token;
+  guest_frame_token_ = guest_frame_token;
   post_message_support()->SetActive();
 }
 
 bool MimeHandlerViewFrameContainer::AreFramesValid() {
   if (!AreFramesAlive())
     return false;
-  if (content_frame_id_ ==
-      content::RenderFrame::GetRoutingIdForWebFrame(GetContentFrame())) {
-    if (guest_frame_id_ == content::RenderFrame::GetRoutingIdForWebFrame(
-                               GetContentFrame()->FirstChild())) {
-      return true;
-    }
+  if (content_frame_token_ == GetContentFrame()->GetFrameToken() &&
+      guest_frame_token_ == GetContentFrame()->FirstChild()->GetFrameToken()) {
+    return true;
   }
   container_manager_->RemoveFrameContainer(this, false /* retain_manager */);
   return false;

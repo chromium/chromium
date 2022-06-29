@@ -229,19 +229,17 @@ void MimeHandlerViewContainerManager::DidLoad(int32_t element_instance_id,
 
     frame_container->set_element_instance_id(element_instance_id);
     auto* content_frame = frame_container->GetContentFrame();
-    int32_t content_frame_routing_id =
-        content::RenderFrame::GetRoutingIdForWebFrame(content_frame);
-    int32_t guest_frame_routing_id =
-        content::RenderFrame::GetRoutingIdForWebFrame(
-            content_frame->FirstChild());
-    // TODO(ekaramad); The routing IDs heere might have changed since the plugin
+    blink::FrameToken content_frame_token = content_frame->GetFrameToken();
+    blink::FrameToken guest_frame_token;
+    if (content_frame->FirstChild())
+      guest_frame_token = content_frame->FirstChild()->GetFrameToken();
+    // TODO(ekaramad); The FrameTokens here might have changed since the plugin
     // has been navigated to load MimeHandlerView. We should double check these
     // with the browser first (https://crbug.com/957373).
-    // This will end up activating the post_message_support(). The routing IDs
+    // This will end up activating the post_message_support(). The FrameTokens
     // are double checked in every upcoming call to GetTargetFrame() to ensure
     // postMessages are sent to the intended WebFrame only.
-    frame_container->SetRoutingIds(content_frame_routing_id,
-                                   guest_frame_routing_id);
+    frame_container->SetFrameTokens(content_frame_token, guest_frame_token);
 
     return;
   }
