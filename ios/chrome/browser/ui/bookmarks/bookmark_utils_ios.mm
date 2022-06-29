@@ -454,9 +454,7 @@ bool IsObstructed(const BookmarkNode* node, const NodeSet& obstructions);
 
 namespace {
 // Comparator used to sort bookmarks. No folders are allowed.
-class FolderNodeComparator : public std::binary_function<const BookmarkNode*,
-                                                         const BookmarkNode*,
-                                                         bool> {
+class FolderNodeComparator {
  public:
   explicit FolderNodeComparator(icu::Collator* collator)
       : collator_(collator) {}
