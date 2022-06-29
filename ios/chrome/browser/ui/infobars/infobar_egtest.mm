@@ -26,15 +26,15 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-// Verifies that a single TestInfoBar with |message| is either present or absent
+// Verifies that a single TestInfoBar with `message` is either present or absent
 // on the current tab.
 void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   NSString* condition_name =
       visible ? @"Waiting for infobar to show" : @"Waiting for infobar to hide";
   id<GREYMatcher> expected_visibility = visible ? grey_notNil() : grey_nil();
 
-  // After |kInfobarBannerDefaultPresentationDurationInSeconds| seconds the
-  // banner should disappear. Includes |kWaitForUIElementTimeout| for EG
+  // After `kInfobarBannerDefaultPresentationDurationInSeconds` seconds the
+  // banner should disappear. Includes `kWaitForUIElementTimeout` for EG
   // synchronization.
   NSTimeInterval delay = kInfobarBannerDefaultPresentationDurationInSeconds +
                          base::test::ios::kWaitForUIElementTimeout;

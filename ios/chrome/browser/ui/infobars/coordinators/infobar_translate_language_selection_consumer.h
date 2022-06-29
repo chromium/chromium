@@ -11,7 +11,7 @@
 
 @protocol InfobarTranslateLanguageSelectionConsumer
 
-// Tells the consumer about the language |items| to be displayed.
+// Tells the consumer about the language `items` to be displayed.
 - (void)setTranslateLanguageItems:(NSArray<TableViewTextItem*>*)items;
 
 @end

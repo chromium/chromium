@@ -21,7 +21,7 @@ void UpdateBannerAccessibilityForPresentation(
   banner_view.superview.accessibilityViewIsModal = NO;
 
   // Make sure the banner is an accessibility element of
-  // |presenting_view_controller|.
+  // `presenting_view_controller`.
   presenting_view_controller.accessibilityElements =
       @[ banner_view, presenting_view_controller.view ];
 

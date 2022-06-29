@@ -368,7 +368,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private Methods
 
-// Updates |self.saveCardButtonItem| enabled state taking into account the
+// Updates `self.saveCardButtonItem` enabled state taking into account the
 // current editable items.
 - (void)updateSaveCardButtonState {
   BOOL newButtonState = [self isCurrentInputValid];
@@ -483,7 +483,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return YES;
 }
 
-// YES if |cardholderName| is valid.
+// YES if `cardholderName` is valid.
 - (BOOL)isCardholderNameValid:(NSString*)cardholderName {
   // Check that the name is not empty or only whitespace.
   NSCharacterSet* set = [NSCharacterSet whitespaceCharacterSet];
@@ -493,7 +493,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return YES;
 }
 
-// YES if |expirationMonth| is valid for |expirationYear|.
+// YES if `expirationMonth` is valid for `expirationYear`.
 - (BOOL)isExpirationMonthValid:(NSString*)expirationMonth
                        forYear:(NSString*)expirationYear {
   NSNumber* expirationMonthNumber = [self numberFromString:expirationMonth];
@@ -512,7 +512,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return YES;
 }
 
-// YES if |expirationYear| is valid for the current date.
+// YES if `expirationYear` is valid for the current date.
 - (BOOL)isExpirationYearValid:(NSString*)expirationYear {
   NSNumber* expirationYearNumber = [self numberFromString:expirationYear];
   if (!expirationYearNumber)
@@ -537,7 +537,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [[self numberFromString:yearString] intValue];
 }
 
-// Converts |string| into an NSNumber. returns nil if |string| is invalid.
+// Converts `string` into an NSNumber. returns nil if `string` is invalid.
 - (NSNumber*)numberFromString:(NSString*)string {
   NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
   numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;

@@ -14,13 +14,13 @@ class GURL;
 // Delegate to handle Save Card Infobar Modal actions.
 @protocol InfobarSaveCardModalDelegate <InfobarModalDelegate>
 
-// Saves the current card with using |cardholderName| as cardholder name,
-// |month| as expiration month and |year| as expiration year.
+// Saves the current card with using `cardholderName` as cardholder name,
+// `month` as expiration month and `year` as expiration year.
 - (void)saveCardWithCardholderName:(NSString*)cardholderName
                    expirationMonth:(NSString*)month
                     expirationYear:(NSString*)year;
 
-// Opens |linkURL| in a new tab and dismisses the Modal.
+// Opens `linkURL` in a new tab and dismisses the Modal.
 - (void)dismissModalAndOpenURL:(const GURL&)linkURL;
 
 @end

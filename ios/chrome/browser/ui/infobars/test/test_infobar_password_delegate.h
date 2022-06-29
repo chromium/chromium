@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 
-// An infobar that displays |infobar_message| and one button.
+// An infobar that displays `infobar_message` and one button.
 class TestInfobarPasswordDelegate
     : public IOSChromeSavePasswordInfoBarDelegate {
  public:

@@ -9,12 +9,12 @@
 @protocol InfobarTranslateLanguageSelectionDelegate
 
 // Indicates the user chose to change the source  language to one named
-// |language| at |languageIndex|.
+// `language` at `languageIndex`.
 - (void)didSelectSourceLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName;
 
 // Indicates the user chose to change the source language to one named
-// |language| at |languageIndex|.
+// `language` at `languageIndex`.
 - (void)didSelectTargetLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName;
 

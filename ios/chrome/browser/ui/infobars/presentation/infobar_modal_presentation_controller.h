@@ -12,7 +12,7 @@
 // PresentationController for the ModalInfobar.
 @interface InfobarModalPresentationController : UIPresentationController
 
-// Designated initializer. |modalPositioner| is used to position the
+// Designated initializer. `modalPositioner` is used to position the
 // ModalInfobar, it can't be nil.
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController

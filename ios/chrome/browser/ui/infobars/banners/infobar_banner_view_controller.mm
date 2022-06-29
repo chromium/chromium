@@ -82,11 +82,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 @property(nonatomic, assign) BOOL shouldDismissAfterTouchesEnded;
 // UIButton which opens the modal.
 @property(nonatomic, strong) UIButton* openModalButton;
-// UIButton with title |self.buttonText|, which triggers the Infobar action.
+// UIButton with title `self.buttonText`, which triggers the Infobar action.
 @property(nonatomic, strong) UIButton* infobarButton;
-// UILabel displaying |self.titleText|.
+// UILabel displaying `self.titleText`.
 @property(nonatomic, strong) UILabel* titleLabel;
-// UILabel displaying |self.subTitleText|.
+// UILabel displaying `self.subTitleText`.
 @property(nonatomic, strong) UILabel* subTitleLabel;
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
@@ -206,7 +206,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   } else {
     self.subTitleLabel.numberOfLines = 0;
   }
-  // If |self.subTitleText| hasn't been set or is empty, hide the label to keep
+  // If `self.subTitleText` hasn't been set or is empty, hide the label to keep
   // the title label centered in the Y axis.
   self.subTitleLabel.hidden = !self.subtitleText.length;
 
@@ -456,7 +456,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
               kSelectBannerAnimationDurationInSeconds
                                         completion:nil];
     // If dragged up by more than kChangeInPositionForDismissal at the time
-    // the gesture ended, OR |self.shouldDismissAfterTouchesEnded| is YES.
+    // the gesture ended, OR `self.shouldDismissAfterTouchesEnded` is YES.
     // Dismiss the banner.
     BOOL dragUpExceededThreshold = (self.view.center.y - self.originalCenter.y -
                                         kChangeInPositionForDismissal <

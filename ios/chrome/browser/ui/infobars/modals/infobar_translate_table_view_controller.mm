@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) id<InfobarTranslateModalDelegate>
     infobarModalDelegate;
 
-// Prefs updated by |modalConsumer|.
+// Prefs updated by `modalConsumer`.
 // The source language from which to translate.
 @property(nonatomic, copy) NSString* sourceLanguage;
 // The target language to which to translate.
