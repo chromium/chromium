@@ -404,6 +404,8 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   base::UmaHistogramEnumeration(
       "PasswordManager.PasswordStore.OnLoginsRetained", logins_changed_trigger);
   if (!changes.has_value()) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+        "passwords", "LoginsRetrievedForOnLoginsRetained", this);
     // If the changes aren't provided, the store propagates the latest logins.
     backend_->GetAllLoginsAsync(base::BindOnce(
         &PasswordStore::NotifyLoginsRetainedOnMainSequence, this));
@@ -447,6 +449,11 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   for (auto& observer : observers_) {
     observer.OnLoginsRetained(this, retained_logins);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
+                                  "LoginsRetrievedForOnLoginsRetained", this);
+#endif
 }
 
 void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {

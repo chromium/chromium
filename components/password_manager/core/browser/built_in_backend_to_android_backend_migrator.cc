@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -153,6 +154,8 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
 
   metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
       IsMigrationNeeded(prefs_) ? "InitialMigration" : "RollingMigration");
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords",
+                                    "UnifiedPasswordManagerMigration", this);
 
   // Migrate local-only data, the synced passwords should otherwise be
   // identical. Update calls don't fail because they would add a password in
@@ -478,6 +481,8 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
   metrics_reporter_.reset();
   prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
   non_syncable_data_migration_in_progress_ = false;
+  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
+                                  "UnifiedPasswordManagerMigration", this);
 }
 
 bool BuiltInBackendToAndroidBackendMigrator::ShouldMigrateNonSyncableData() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_impl.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +46,7 @@ PasswordManagerSettingsServiceFactory::
 
 KeyedService* PasswordManagerSettingsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  TRACE_EVENT0("passwords", "PasswordManagerSettingsServiceCreation");
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_ANDROID)
   if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
