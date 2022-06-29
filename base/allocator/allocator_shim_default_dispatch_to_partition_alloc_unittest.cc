@@ -175,14 +175,14 @@ TEST(PartitionAllocAsMalloc, Realloc) {
 // crbug.com/1141752
 TEST(PartitionAllocAsMalloc, Alignment) {
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(PartitionAllocMalloc::Allocator()) %
-                    alignof(ThreadSafePartitionRoot));
+                    alignof(partition_alloc::ThreadSafePartitionRoot));
   // This works fine even if nullptr is returned.
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
                     PartitionAllocMalloc::OriginalAllocator()) %
-                    alignof(ThreadSafePartitionRoot));
+                    alignof(partition_alloc::ThreadSafePartitionRoot));
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
                     PartitionAllocMalloc::AlignedAllocator()) %
-                    alignof(ThreadSafePartitionRoot));
+                    alignof(partition_alloc::ThreadSafePartitionRoot));
 }
 
 // crbug.com/1297945

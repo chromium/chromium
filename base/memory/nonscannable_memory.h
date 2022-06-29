@@ -44,7 +44,7 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
 
   // Returns PartitionRoot corresponding to the allocator, or nullptr if the
   // allocator is not enabled.
-  ThreadSafePartitionRoot* root() {
+  partition_alloc::ThreadSafePartitionRoot* root() {
     if (!allocator_.get())
       return nullptr;
     return allocator_->root();

@@ -26,11 +26,13 @@ void BackupRefPtrImpl<AllowDangling>::AcquireInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif
-  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
+  uintptr_t slot_start =
+      partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
   if constexpr (AllowDangling)
-    PartitionRefCountPointer(slot_start)->AcquireFromUnprotectedPtr();
+    partition_alloc::internal::PartitionRefCountPointer(slot_start)
+        ->AcquireFromUnprotectedPtr();
   else
-    PartitionRefCountPointer(slot_start)->Acquire();
+    partition_alloc::internal::PartitionRefCountPointer(slot_start)->Acquire();
 }
 
 template <bool AllowDangling>
@@ -38,13 +40,16 @@ void BackupRefPtrImpl<AllowDangling>::ReleaseInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif
-  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
+  uintptr_t slot_start =
+      partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
   if constexpr (AllowDangling) {
-    if (PartitionRefCountPointer(slot_start)->ReleaseFromUnprotectedPtr())
-      PartitionAllocFreeForRefCounting(slot_start);
+    if (partition_alloc::internal::PartitionRefCountPointer(slot_start)
+            ->ReleaseFromUnprotectedPtr())
+      partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
   } else {
-    if (PartitionRefCountPointer(slot_start)->Release())
-      PartitionAllocFreeForRefCounting(slot_start);
+    if (partition_alloc::internal::PartitionRefCountPointer(slot_start)
+            ->Release())
+      partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
   }
 }
 
@@ -53,22 +58,26 @@ bool BackupRefPtrImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif
-  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
-  return PartitionRefCountPointer(slot_start)->IsAlive();
+  uintptr_t slot_start =
+      partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
+  return partition_alloc::internal::PartitionRefCountPointer(slot_start)
+      ->IsAlive();
 }
 
 template <bool AllowDangling>
 bool BackupRefPtrImpl<AllowDangling>::IsValidSignedDelta(
     uintptr_t address,
     ptrdiff_t delta_in_bytes) {
-  return PartitionAllocIsValidPtrDelta(address, delta_in_bytes);
+  return partition_alloc::internal::PartitionAllocIsValidPtrDelta(
+      address, delta_in_bytes);
 }
 
 template <bool AllowDangling>
 bool BackupRefPtrImpl<AllowDangling>::IsValidUnsignedDelta(
     uintptr_t address,
     size_t delta_in_bytes) {
-  return PartitionAllocIsValidPtrDelta(address, delta_in_bytes);
+  return partition_alloc::internal::PartitionAllocIsValidPtrDelta(
+      address, delta_in_bytes);
 }
 
 // Explicitly instantiates the two BackupRefPtr variants in the .cc. This

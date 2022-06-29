@@ -2054,30 +2054,12 @@ using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
 static_assert(offsetof(ThreadSafePartitionRoot, lock_) ==
                   internal::kPartitionCachelineSize,
               "Padding is incorrect");
-}  // namespace partition_alloc
-
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionOptions;
-using ::partition_alloc::PurgeFlags;
-using ::partition_alloc::ThreadSafePartitionRoot;
-
-namespace internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::ScopedSyscallTimer;
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-using ::partition_alloc::internal::PartitionAllocFreeForRefCounting;
+// Usage in `raw_ptr.cc` is notable enough to merit a non-internal alias.
 using ::partition_alloc::internal::PartitionAllocGetSlotStartInBRPPool;
-using ::partition_alloc::internal::PartitionAllocIsValidPtrDelta;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ROOT_H_

@@ -494,7 +494,8 @@ bool GetPartitionAllocSuperPagesInUse(
   uint32_t superpages_remaining =
       max_superpages >= 0 ? max_superpages : UINT32_MAX;
 
-  auto& pool_manager = base::internal::AddressPoolManager::GetInstance();
+  auto& pool_manager =
+      partition_alloc::internal::AddressPoolManager::GetInstance();
 
   for (partition_alloc::internal::pool_handle ph :
        {partition_alloc::internal::PartitionAddressSpace::GetRegularPool(),

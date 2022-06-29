@@ -48,21 +48,22 @@ void* NonScannableAllocatorImpl<Quarantinable>::Alloc(size_t size) {
 
 template <bool Quarantinable>
 void NonScannableAllocatorImpl<Quarantinable>::Free(void* ptr) {
-  ThreadSafePartitionRoot::FreeNoHooks(ptr);
+  partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(ptr);
 }
 
 template <bool Quarantinable>
 void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
   allocator_.reset(MakePCScanMetadata<partition_alloc::PartitionAllocator>());
   allocator_->init({
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      Quarantinable ? PartitionOptions::Quarantine::kAllowed
-                    : PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+      Quarantinable
+          ? partition_alloc::PartitionOptions::Quarantine::kAllowed
+          : partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+      partition_alloc::PartitionOptions::Cookie::kAllowed,
+      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
+      partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
   });
   if (Quarantinable)
     PCScan::RegisterNonScannableRoot(allocator_->root());

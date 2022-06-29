@@ -394,19 +394,4 @@ constexpr size_t kPartitionRefCountSizeAdjustment = kInSlotRefCountBufferSize;
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-using ::partition_alloc::internal::kPartitionPastAllocationAdjustment;
-using ::partition_alloc::internal::PartitionRefCount;
-using ::partition_alloc::internal::PartitionRefCountPointer;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-using ::partition_alloc::internal::kInSlotRefCountBufferSize;
-using ::partition_alloc::internal::kPartitionRefCountOffsetAdjustment;
-using ::partition_alloc::internal::kPartitionRefCountSizeAdjustment;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_REF_COUNT_H_

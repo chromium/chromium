@@ -146,27 +146,27 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
 class MainPartitionConstructor {
  public:
   static partition_alloc::ThreadSafePartitionRoot* New(void* buffer) {
-    constexpr base::PartitionOptions::ThreadCache thread_cache =
+    constexpr partition_alloc::PartitionOptions::ThreadCache thread_cache =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // Additional partitions may be created in ConfigurePartitions(). Since
         // only one partition can have thread cache enabled, postpone the
         // decision to turn the thread cache on until after that call.
         // TODO(bartekn): Enable it here by default, once the "split-only" mode
         // is no longer needed.
-        base::PartitionOptions::ThreadCache::kDisabled;
+        partition_alloc::PartitionOptions::ThreadCache::kDisabled;
 #else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // Other tests, such as the ThreadCache tests create a thread cache,
         // and only one is supported at a time.
-        base::PartitionOptions::ThreadCache::kDisabled;
+        partition_alloc::PartitionOptions::ThreadCache::kDisabled;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     auto* new_root = new (buffer) partition_alloc::ThreadSafePartitionRoot({
-        base::PartitionOptions::AlignedAlloc::kAllowed,
+        partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
         thread_cache,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookie::kAllowed,
-        base::PartitionOptions::BackupRefPtr::kDisabled,
-        base::PartitionOptions::BackupRefPtrZapping::kDisabled,
-        base::PartitionOptions::UseConfigurablePool::kNo,
+        partition_alloc::PartitionOptions::Quarantine::kAllowed,
+        partition_alloc::PartitionOptions::Cookie::kAllowed,
+        partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+        partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
+        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
     });
 
     return new_root;
@@ -514,17 +514,19 @@ void PartitionBatchFree(const AllocatorDispatch*,
 }
 
 // static
-ThreadSafePartitionRoot* PartitionAllocMalloc::Allocator() {
+partition_alloc::ThreadSafePartitionRoot* PartitionAllocMalloc::Allocator() {
   return ::Allocator();
 }
 
 // static
-ThreadSafePartitionRoot* PartitionAllocMalloc::OriginalAllocator() {
+partition_alloc::ThreadSafePartitionRoot*
+PartitionAllocMalloc::OriginalAllocator() {
   return ::OriginalAllocator();
 }
 
 // static
-ThreadSafePartitionRoot* PartitionAllocMalloc::AlignedAllocator() {
+partition_alloc::ThreadSafePartitionRoot*
+PartitionAllocMalloc::AlignedAllocator() {
   return ::AlignedAllocator();
 }
 
@@ -598,20 +600,22 @@ void ConfigurePartitions(
     PA_DCHECK(!current_root->flags.with_thread_cache);
     return;
   }
-  auto* new_root =
-      new (g_allocator_buffer_for_new_main_partition) ThreadSafePartitionRoot({
+  auto* new_root = new (g_allocator_buffer_for_new_main_partition)
+      partition_alloc::ThreadSafePartitionRoot({
           !use_dedicated_aligned_partition
-              ? base::PartitionOptions::AlignedAlloc::kAllowed
-              : base::PartitionOptions::AlignedAlloc::kDisallowed,
-          base::PartitionOptions::ThreadCache::kDisabled,
-          base::PartitionOptions::Quarantine::kAllowed,
-          base::PartitionOptions::Cookie::kAllowed,
-          enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
-                     : base::PartitionOptions::BackupRefPtr::kDisabled,
+              ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
+              : partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+          partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+          partition_alloc::PartitionOptions::Quarantine::kAllowed,
+          partition_alloc::PartitionOptions::Cookie::kAllowed,
+          enable_brp
+              ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
+              : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           enable_brp_zapping
-              ? base::PartitionOptions::BackupRefPtrZapping::kEnabled
-              : base::PartitionOptions::BackupRefPtrZapping::kDisabled,
-          base::PartitionOptions::UseConfigurablePool::kNo,
+              ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
+              : partition_alloc::PartitionOptions::BackupRefPtrZapping::
+                    kDisabled,
+          partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
       });
 
   partition_alloc::ThreadSafePartitionRoot* new_aligned_root;
@@ -619,14 +623,14 @@ void ConfigurePartitions(
     // TODO(bartekn): Use the original root instead of creating a new one. It'd
     // result in one less partition, but come at a cost of commingling types.
     new_aligned_root = new (g_allocator_buffer_for_aligned_alloc_partition)
-        ThreadSafePartitionRoot({
-            base::PartitionOptions::AlignedAlloc::kAllowed,
-            base::PartitionOptions::ThreadCache::kDisabled,
-            base::PartitionOptions::Quarantine::kAllowed,
-            base::PartitionOptions::Cookie::kAllowed,
-            base::PartitionOptions::BackupRefPtr::kDisabled,
-            base::PartitionOptions::BackupRefPtrZapping::kDisabled,
-            base::PartitionOptions::UseConfigurablePool::kNo,
+        partition_alloc::ThreadSafePartitionRoot({
+            partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+            partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+            partition_alloc::PartitionOptions::Quarantine::kAllowed,
+            partition_alloc::PartitionOptions::Cookie::kAllowed,
+            partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+            partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
+            partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
         });
   } else {
     // The new main root can also support AlignedAlloc.
@@ -648,8 +652,9 @@ void ConfigurePartitions(
   PA_CHECK(current_aligned_root == g_original_root);
 
   // Purge memory, now that the traffic to the original partition is cut off.
-  current_root->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
-                            PurgeFlags::kDiscardUnusedSystemPages);
+  current_root->PurgeMemory(
+      partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
+      partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
 
   if (!use_alternate_bucket_distribution) {
     g_root.Get()->SwitchToDenserBucketDistribution();

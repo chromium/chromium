@@ -94,13 +94,13 @@ bool Partitions::InitializeOnce() {
 #else
       false;
 #endif
-  const base::PartitionOptions::BackupRefPtr brp_setting =
-      enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
-                 : base::PartitionOptions::BackupRefPtr::kDisabled;
-  const base::PartitionOptions::BackupRefPtrZapping brp_zapping_setting =
+  const auto brp_setting =
+      enable_brp ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
+                 : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled;
+  const auto brp_zapping_setting =
       enable_brp && brp_mode == base::features::BackupRefPtrMode::kEnabled
-          ? base::PartitionOptions::BackupRefPtrZapping::kEnabled
-          : base::PartitionOptions::BackupRefPtrZapping::kDisabled;
+          ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
+          : partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled;
   scan_is_enabled_ =
       !enable_brp &&
 #if defined(PA_ALLOW_PCSCAN)
@@ -121,22 +121,22 @@ bool Partitions::InitializeOnce() {
   // In addition, enable the FastMalloc partition if
   // --enable-features=PartitionAllocPCScanBlinkPartitions is specified.
   if (scan_is_enabled_ || !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)) {
-    constexpr base::PartitionOptions::ThreadCache thread_cache =
+    constexpr partition_alloc::PartitionOptions::ThreadCache thread_cache =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        base::PartitionOptions::ThreadCache::kDisabled;
+        partition_alloc::PartitionOptions::ThreadCache::kDisabled;
 #else
-        base::PartitionOptions::ThreadCache::kEnabled;
+        partition_alloc::PartitionOptions::ThreadCache::kEnabled;
 #endif
     static base::NoDestructor<partition_alloc::PartitionAllocator>
         fast_malloc_allocator{};
     fast_malloc_allocator->init({
-        base::PartitionOptions::AlignedAlloc::kDisallowed,
+        partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
         thread_cache,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookie::kAllowed,
+        partition_alloc::PartitionOptions::Quarantine::kAllowed,
+        partition_alloc::PartitionOptions::Cookie::kAllowed,
         brp_setting,
         brp_zapping_setting,
-        base::PartitionOptions::UseConfigurablePool::kNo,
+        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
     });
     fast_malloc_root_ = fast_malloc_allocator->root();
   }
@@ -146,13 +146,13 @@ bool Partitions::InitializeOnce() {
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       buffer_allocator{};
   buffer_allocator->init({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kAllowed,
-      base::PartitionOptions::Cookie::kAllowed,
+      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+      partition_alloc::PartitionOptions::Quarantine::kAllowed,
+      partition_alloc::PartitionOptions::Cookie::kAllowed,
       brp_setting,
       brp_zapping_setting,
-      base::PartitionOptions::UseConfigurablePool::kNo,
+      partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
   });
   buffer_root_ = buffer_allocator->root();
 
@@ -192,19 +192,19 @@ void Partitions::InitializeArrayBufferPartition() {
   // BackupRefPtr disallowed because it will prevent allocations from being 16B
   // aligned as required by ArrayBufferContents.
   array_buffer_allocator->init({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kAllowed,
-      base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::BackupRefPtr::kDisabled,
-      base::PartitionOptions::BackupRefPtrZapping::kDisabled,
+      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+      partition_alloc::PartitionOptions::Quarantine::kAllowed,
+      partition_alloc::PartitionOptions::Cookie::kAllowed,
+      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
       // When the V8 virtual memory cage is enabled, the ArrayBuffer partition
       // must be placed inside of it. For that, PA's ConfigurablePool is
       // created inside the V8 Cage during initialization. As such, here all we
       // need to do is indicate that we'd like to use that Pool if it has been
       // created by now (if it hasn't been created, the cage isn't enabled, and
       // so we'll use the default Pool).
-      base::PartitionOptions::UseConfigurablePool::kIfAvailable,
+      partition_alloc::PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
 
   array_buffer_root_ = array_buffer_allocator->root();

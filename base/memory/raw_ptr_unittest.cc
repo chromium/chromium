@@ -1075,14 +1075,14 @@ void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
 
-static constexpr PartitionOptions kOpts = {
-    PartitionOptions::AlignedAlloc::kDisallowed,
-    PartitionOptions::ThreadCache::kDisabled,
-    PartitionOptions::Quarantine::kDisallowed,
-    PartitionOptions::Cookie::kAllowed,
-    PartitionOptions::BackupRefPtr::kEnabled,
-    PartitionOptions::BackupRefPtrZapping::kEnabled,
-    PartitionOptions::UseConfigurablePool::kNo,
+static constexpr partition_alloc::PartitionOptions kOpts = {
+    partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+    partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+    partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+    partition_alloc::PartitionOptions::Cookie::kAllowed,
+    partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+    partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
+    partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
 };
 
 TEST(BackupRefPtrImpl, Basic) {

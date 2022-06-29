@@ -185,13 +185,4 @@ PA_ALWAYS_INLINE pool_handle GetConfigurablePool() {
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-using ::partition_alloc::internal::AddressPoolManager;
-using ::partition_alloc::internal::GetBRPPool;
-using ::partition_alloc::internal::GetConfigurablePool;
-using ::partition_alloc::internal::GetRegularPool;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_H_

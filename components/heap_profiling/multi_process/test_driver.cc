@@ -344,13 +344,13 @@ TestDriver::TestDriver()
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
   partition_alloc::PartitionAllocGlobalInit(HandleOOM);
   partition_allocator_.init({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::BackupRefPtr::kDisabled,
-      base::PartitionOptions::BackupRefPtrZapping::kDisabled,
-      base::PartitionOptions::UseConfigurablePool::kNo,
+      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+      partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+      partition_alloc::PartitionOptions::Cookie::kAllowed,
+      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
+      partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
   });
 }
 TestDriver::~TestDriver() {
