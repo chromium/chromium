@@ -121,7 +121,9 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
 
   static constexpr zcr_extended_text_input_v1_listener
       extended_text_input_listener = {
-          &OnSetPreeditRegion,  // extended_text_input_set_preedit_region,
+          &OnSetPreeditRegion,       // extended_text_input_set_preedit_region,
+          &OnClearGrammarFragments,  // extended_text_input_clear_grammar_fragments,
+          &OnAddGrammarFragment,  // extended_text_input_add_grammar_fragment,
       };
 
   auto* text_input =
@@ -206,6 +208,16 @@ void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
   if (!should_do_learning)
     content_hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_SENSITIVE_DATA;
   zwp_text_input_v1_set_content_type(obj_.get(), content_hint, content_purpose);
+}
+
+void ZWPTextInputWrapperV1::SetGrammarFragmentAtCursor(
+    const ui::GrammarFragment& fragment) {
+  if (wl::get_version_of_object(extended_obj_.get()) >=
+      ZCR_EXTENDED_TEXT_INPUT_V1_SET_GRAMMAR_FRAGMENT_AT_CURSOR_SINCE_VERSION) {
+    zcr_extended_text_input_v1_set_grammar_fragment_at_cursor(
+        extended_obj_.get(), fragment.range.start(), fragment.range.end(),
+        fragment.suggestion.c_str());
+  }
 }
 
 void ZWPTextInputWrapperV1::ResetInputEventState() {
@@ -346,6 +358,28 @@ void ZWPTextInputWrapperV1::OnSetPreeditRegion(
   auto spans = std::move(self->spans_);
   self->ResetInputEventState();
   self->client_->OnSetPreeditRegion(index, length, spans);
+}
+
+// static
+void ZWPTextInputWrapperV1::OnClearGrammarFragments(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t start,
+    uint32_t end) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnClearGrammarFragments(gfx::Range(start, end));
+}
+
+// static
+void ZWPTextInputWrapperV1::OnAddGrammarFragment(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t start,
+    uint32_t end,
+    const char* suggestion) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnAddGrammarFragment(
+      ui::GrammarFragment(gfx::Range(start, end), suggestion));
 }
 
 }  // namespace ui

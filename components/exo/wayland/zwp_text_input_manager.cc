@@ -194,6 +194,39 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
+  void ClearGrammarFragments(base::StringPiece16 surrounding_text,
+                             const gfx::Range& range) override {
+    if (!extended_text_input_)
+      return;
+
+    if (wl_resource_get_version(extended_text_input_) >=
+        ZCR_EXTENDED_TEXT_INPUT_V1_CLEAR_GRAMMAR_FRAGMENTS_SINCE_VERSION) {
+      std::vector<size_t> offsets = {range.start(), range.end()};
+      base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+      zcr_extended_text_input_v1_send_clear_grammar_fragments(
+          extended_text_input_, static_cast<uint32_t>(offsets[0]),
+          static_cast<uint32_t>(offsets[1]));
+      wl_client_flush(client());
+    }
+  }
+
+  void AddGrammarFragment(base::StringPiece16 surrounding_text,
+                          const ui::GrammarFragment& fragment) override {
+    if (!extended_text_input_)
+      return;
+
+    if (wl_resource_get_version(extended_text_input_) >=
+        ZCR_EXTENDED_TEXT_INPUT_V1_ADD_GRAMMAR_FRAGMENT_SINCE_VERSION) {
+      std::vector<size_t> offsets = {fragment.range.start(),
+                                     fragment.range.end()};
+      base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+      zcr_extended_text_input_v1_send_add_grammar_fragment(
+          extended_text_input_, static_cast<uint32_t>(offsets[0]),
+          static_cast<uint32_t>(offsets[1]), fragment.suggestion.c_str());
+      wl_client_flush(client());
+    }
+  }
+
   void SendPreeditStyle(base::StringPiece16 text,
                         const std::vector<ui::ImeTextSpan>& spans) {
     if (spans.empty())
@@ -512,10 +545,31 @@ void extended_text_input_set_input_type(wl_client* client,
   text_input->SetTypeModeFlags(ui_type, ui_mode, ui_flags, should_do_learning);
 }
 
+void extended_text_input_set_grammar_fragment_at_cursor(
+    wl_client* client,
+    wl_resource* resource,
+    uint32_t start,
+    uint32_t end,
+    const char* suggestion) {
+  auto* delegate =
+      GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
+  if (!delegate)
+    return;
+
+  auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
+  if (start == end) {
+    text_input->SetGrammarFragmentAtCursor(absl::nullopt);
+  } else {
+    text_input->SetGrammarFragmentAtCursor(
+        ui::GrammarFragment(gfx::Range(start, end), suggestion));
+  }
+}
+
 constexpr struct zcr_extended_text_input_v1_interface
     extended_text_input_implementation = {
         extended_text_input_destroy,
         extended_text_input_set_input_type,
+        extended_text_input_set_grammar_fragment_at_cursor,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

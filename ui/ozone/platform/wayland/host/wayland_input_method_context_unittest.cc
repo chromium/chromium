@@ -62,6 +62,12 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   void OnPreeditChanged(const ui::CompositionText& composition_text) override {
     was_on_preedit_changed_called_ = true;
   }
+  void OnClearGrammarFragments(const gfx::Range& range) override {
+    was_on_clear_grammar_fragments_called_ = true;
+  }
+  void OnAddGrammarFragment(const ui::GrammarFragment& fragment) override {
+    was_on_add_grammar_fragment_called_ = true;
+  }
   void OnPreeditEnd() override {}
   void OnPreeditStart() override {}
   void OnDeleteSurroundingText(size_t before, size_t after) override {
@@ -83,6 +89,14 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return was_on_set_preedit_region_called_;
   }
 
+  bool was_on_clear_grammar_fragments_called() const {
+    return was_on_clear_grammar_fragments_called_;
+  }
+
+  bool was_on_add_grammar_fragment_called() const {
+    return was_on_add_grammar_fragment_called_;
+  }
+
   const absl::optional<std::pair<size_t, size_t>>&
   last_on_delete_surrounding_text_args() const {
     return last_on_delete_surrounding_text_args_;
@@ -92,6 +106,8 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   bool was_on_commit_called_ = false;
   bool was_on_preedit_changed_called_ = false;
   bool was_on_set_preedit_region_called_ = false;
+  bool was_on_clear_grammar_fragments_called_ = false;
+  bool was_on_add_grammar_fragment_called_ = false;
   absl::optional<std::pair<size_t, size_t>>
       last_on_delete_surrounding_text_args_;
 };
@@ -515,6 +531,21 @@ TEST_P(WaylandInputMethodContextTest,
   Sync();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_set_preedit_region_called());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnClearGrammarFragments) {
+  input_method_context_->OnClearGrammarFragments(gfx::Range(1, 5));
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_clear_grammar_fragments_called());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
+  input_method_context_->OnAddGrammarFragment(
+      ui::GrammarFragment(gfx::Range(1, 5), "test"));
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_add_grammar_fragment_called());
 }
 
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_offset_string_conversions.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -92,6 +93,19 @@ void TextInput::SetSurroundingText(const std::u16string& text,
   surrounding_text_ = text;
   cursor_pos_ = cursor_pos;
 
+  // Convert utf8 grammar fragment to utf16.
+  if (grammar_fragment_at_cursor_utf8_) {
+    std::string utf8_text = base::UTF16ToUTF8(text);
+    ui::GrammarFragment fragment = *grammar_fragment_at_cursor_utf8_;
+    std::vector<size_t> offsets = {fragment.range.start(),
+                                   fragment.range.end()};
+    base::UTF8ToUTF16AndAdjustOffsets(utf8_text, &offsets);
+    grammar_fragment_at_cursor_utf16_ = ui::GrammarFragment(
+        gfx::Range(offsets[0], offsets[1]), fragment.suggestion);
+  } else {
+    grammar_fragment_at_cursor_utf16_ = absl::nullopt;
+  }
+
   // TODO(b/206068262): Consider introducing an API to notify surrounding text
   // update explicitly.
   if (input_method_)
@@ -120,6 +134,12 @@ void TextInput::SetCaretBounds(const gfx::Rect& bounds) {
   if (!input_method_)
     return;
   input_method_->OnCaretBoundsChanged(this);
+}
+
+void TextInput::SetGrammarFragmentAtCursor(
+    const absl::optional<ui::GrammarFragment>& fragment) {
+  grammar_fragment_at_cursor_utf16_ = absl::nullopt;
+  grammar_fragment_at_cursor_utf8_ = fragment;
 }
 
 void TextInput::SetCompositionText(const ui::CompositionText& composition) {
@@ -362,22 +382,25 @@ bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
 
 absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
     const {
-  // TODO(https://crbug.com/1201454): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return absl::nullopt;
+  return grammar_fragment_at_cursor_utf16_;
 }
 
 bool TextInput::ClearGrammarFragments(const gfx::Range& range) {
-  // TODO(https://crbug.com/1201454): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  if (surrounding_text_.size() < range.GetMax())
+    return false;
+
+  delegate_->ClearGrammarFragments(surrounding_text_, range);
+  return true;
 }
 
 bool TextInput::AddGrammarFragments(
     const std::vector<ui::GrammarFragment>& fragments) {
-  // TODO(https://crbug.com/1201454): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  for (auto& fragment : fragments) {
+    if (surrounding_text_.size() < fragment.range.GetMax())
+      continue;
+    delegate_->AddGrammarFragment(surrounding_text_, fragment);
+  }
+  return true;
 }
 
 void GetActiveTextInputControlLayoutBounds(

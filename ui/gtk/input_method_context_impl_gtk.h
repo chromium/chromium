@@ -45,6 +45,8 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                       ui::TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning) override;
+  void SetGrammarFragmentAtCursor(
+      const ui::GrammarFragment& fragment) override {}
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:

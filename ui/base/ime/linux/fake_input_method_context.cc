@@ -38,6 +38,9 @@ void FakeInputMethodContext::SetContentType(TextInputType type,
                                             uint32_t flags,
                                             bool should_do_learning) {}
 
+void FakeInputMethodContext::SetGrammarFragmentAtCursor(
+    const ui::GrammarFragment& fragment) {}
+
 VirtualKeyboardController*
 FakeInputMethodContext::GetVirtualKeyboardController() {
   return nullptr;

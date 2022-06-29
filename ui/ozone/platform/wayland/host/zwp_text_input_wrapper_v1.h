@@ -51,6 +51,7 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
                       TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning) override;
+  void SetGrammarFragmentAtCursor(const ui::GrammarFragment& fragment) override;
 
  private:
   void ResetInputEventState();
@@ -113,6 +114,19 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
       struct zcr_extended_text_input_v1* extended_text_input,
       int32_t index,
       uint32_t length);
+
+  static void OnClearGrammarFragments(
+      void* data,
+      struct zcr_extended_text_input_v1* extended_text_input,
+      uint32_t start,
+      uint32_t end);
+
+  static void OnAddGrammarFragment(
+      void* data,
+      struct zcr_extended_text_input_v1* extended_text_input,
+      uint32_t start,
+      uint32_t end,
+      const char* suggestion);
 
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v1> obj_;

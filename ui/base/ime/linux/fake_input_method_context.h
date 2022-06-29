@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
                       TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning) override;
+  void SetGrammarFragmentAtCursor(const ui::GrammarFragment& fragment) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 };
 

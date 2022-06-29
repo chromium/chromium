@@ -170,6 +170,9 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     should_do_learning_ = should_do_learning;
   }
 
+  void SetGrammarFragmentAtCursor(
+      const ui::GrammarFragment& fragment) override {}
+
  private:
   raw_ptr<LinuxInputMethodContextDelegate> delegate_;
   VirtualKeyboardControllerStub virtual_keyboard_controller_;

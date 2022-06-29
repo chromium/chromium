@@ -67,6 +67,14 @@ class MockTextInputDelegate : public TextInput::Delegate {
                const gfx::Range&,
                const std::vector<ui::ImeTextSpan>& ui_ime_text_spans),
               ());
+  MOCK_METHOD(void,
+              ClearGrammarFragments,
+              (base::StringPiece16, const gfx::Range&),
+              ());
+  MOCK_METHOD(void,
+              AddGrammarFragment,
+              (base::StringPiece16, const ui::GrammarFragment&),
+              ());
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -543,6 +551,46 @@ TEST_F(TextInputTest, CorrectTextReturnedAfterSetCompositionTextCalled) {
   EXPECT_TRUE(
       text_input()->GetTextFromRange(composing_text_range, &composing_text));
   EXPECT_EQ(composing_text, u" and composition");
+}
+
+TEST_F(TextInputTest, SetsAndGetsGrammarFragmentAtCursor) {
+  ui::GrammarFragment sample_fragment(gfx::Range(1, 5), "sample-suggestion");
+
+  text_input()->SetGrammarFragmentAtCursor(absl::nullopt);
+  EXPECT_EQ(text_input()->GetGrammarFragmentAtCursor(), absl::nullopt);
+
+  text_input()->SetGrammarFragmentAtCursor(sample_fragment);
+  text_input()->SetSurroundingText(u"Sample surrouding text.",
+                                   gfx::Range(2, 2));
+  EXPECT_EQ(text_input()->GetGrammarFragmentAtCursor(), sample_fragment);
+}
+
+TEST_F(TextInputTest, ClearGrammarFragments) {
+  std::u16string surrounding_text = u"Sample surrouding text.";
+  text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2));
+  gfx::Range range(3, 8);
+  EXPECT_CALL(*delegate(), ClearGrammarFragments(
+                               base::StringPiece16(surrounding_text), range))
+      .Times(1);
+  text_input()->ClearGrammarFragments(range);
+}
+
+TEST_F(TextInputTest, AddGrammarFragments) {
+  std::u16string surrounding_text = u"Sample surrouding text.";
+  text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2));
+  std::vector<ui::GrammarFragment> fragments = {
+      ui::GrammarFragment(gfx::Range(0, 5), "one"),
+      ui::GrammarFragment(gfx::Range(10, 16), "two"),
+  };
+  EXPECT_CALL(
+      *delegate(),
+      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[0]))
+      .Times(1);
+  EXPECT_CALL(
+      *delegate(),
+      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[1]))
+      .Times(1);
+  text_input()->AddGrammarFragments(fragments);
 }
 
 }  // anonymous namespace

@@ -333,6 +333,13 @@ void WaylandInputMethodContext::SetContentType(TextInputType type,
   text_input_->SetContentType(type, mode, flags, should_do_learning);
 }
 
+void WaylandInputMethodContext::SetGrammarFragmentAtCursor(
+    const GrammarFragment& fragment) {
+  if (!text_input_)
+    return;
+  text_input_->SetGrammarFragmentAtCursor(fragment);
+}
+
 VirtualKeyboardController*
 WaylandInputMethodContext::GetVirtualKeyboardController() {
   if (!text_input_)
@@ -560,6 +567,24 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
 
   ime_delegate_->OnSetPreeditRegion(gfx::Range(offsets[0], offsets[1]),
                                     ime_text_spans);
+}
+
+void WaylandInputMethodContext::OnClearGrammarFragments(
+    const gfx::Range& range) {
+  std::vector<size_t> offsets = {range.start(), range.end()};
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  ime_delegate_->OnClearGrammarFragments(gfx::Range(
+      static_cast<uint32_t>(offsets[0]), static_cast<uint32_t>(offsets[1])));
+}
+
+void WaylandInputMethodContext::OnAddGrammarFragment(
+    const GrammarFragment& fragment) {
+  std::vector<size_t> offsets = {fragment.range.start(), fragment.range.end()};
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  ime_delegate_->OnAddGrammarFragment(
+      {GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
+                                  static_cast<uint32_t>(offsets[1])),
+                       fragment.suggestion)});
 }
 
 void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
