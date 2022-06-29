@@ -68,7 +68,7 @@
       'mac-official': 'official_optimize_goma',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
-      'win-official': 'official_optimize_goma',
+      'win-official': 'official_optimize_minimal_symbols_goma',
       'win32-archive-dbg': 'debug_bot_x86_reclient',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression_reclient',
       'win32-official': 'x86_official_optimize_goma',
@@ -3187,6 +3187,10 @@
 
     'official_optimize_goma_trybot': [
       'official_optimize_goma_trybot',
+    ],
+
+    'official_optimize_minimal_symbols_goma': [
+      'official_optimize_goma', 'minimal_symbols',
     ],
 
     'official_optimize_reclient': [
