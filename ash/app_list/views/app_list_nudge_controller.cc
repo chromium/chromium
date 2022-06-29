@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -273,10 +274,13 @@ void AppListNudgeController::UpdateCurrentNudgeStateInPrefs(
       base::TimeDelta shown_duration =
           base::Time::Now() - current_nudge_show_timestamp_;
 
-      // If the time delta of showing the nudge is long enough, caches that the
-      // nudge is considered as shown.
-      if (shown_duration >= base::Seconds(1))
+      // Caches that the nudge is considered as shown if:
+      // 1. the time threshold is skipped; or
+      // 2. the time delta of showing the nudge is long enough.
+      if (ash::switches::IsSkipRecorderNudgeShowThresholdDurationEnabled() ||
+          shown_duration >= base::Seconds(1)) {
         is_nudge_considered_as_shown_ = true;
+      }
 
       // Update the number of times that the reorder nudge was
       // shown to users if the visibility updates.

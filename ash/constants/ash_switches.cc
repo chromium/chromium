@@ -803,6 +803,11 @@ const char kShowTaps[] = "show-taps";
 const char kSkipForceOnlineSignInForTesting[] =
     "skip-force-online-signin-for-testing";
 
+// Used to skip the threshold duration that the reorder nudge has to show before
+// the nudge is considered as shown.
+const char kSkipReorderNudgeShowThresholdDurationForTest[] =
+    "skip-reorder-nudge-show-threshold-duration";
+
 // If set, the device will be forced to stay in clamshell UI mode but screen
 // auto rotation will be supported. E.g, chromebase device Dooly.
 const char kSupportsClamshellAutoRotation[] =
@@ -1001,6 +1006,11 @@ bool ShouldClearFastInkBuffer() {
 
 bool HasHps() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHasHps);
+}
+
+bool IsSkipRecorderNudgeShowThresholdDurationEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSkipReorderNudgeShowThresholdDurationForTest);
 }
 
 }  // namespace switches
