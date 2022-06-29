@@ -217,18 +217,8 @@ class MarketingOptIn extends MarketingScreenElementBase {
    * @private
    */
   getIcon_() {
-    if (this.isDarkModeActive_ && this.isCloudGamingDevice_) {
-      return 'oobe-32:game-controller-dark';
-    }
-    if (!this.isDarkModeActive_ && this.isCloudGamingDevice_) {
-      return 'oobe-32:game-controller-light';
-    }
-    if (!this.isDarkModeActive_ && !this.isCloudGamingDevice_) {
-      return 'oobe-32:checkmark-light';
-    }
-    if (this.isDarkModeActive_ && !this.isCloudGamingDevice_) {
-      return 'oobe-32:checkmark-dark';
-    }
+    return this.isCloudGamingDevice_ ? 'oobe-32:game-controller' :
+                                       'oobe-32:checkmark';
   }
 
   /**
