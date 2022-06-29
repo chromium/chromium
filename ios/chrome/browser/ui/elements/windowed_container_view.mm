@@ -23,9 +23,9 @@
 
   [super addSubview:view];
 
-  // Don't let the hidden |view| take the first responder.  Without the call to
+  // Don't let the hidden `view` take the first responder.  Without the call to
   // -resignFirstResponder below, the keyboard would still appear for the hidden
-  // |view|'s focused element.
+  // `view`'s focused element.
   [GetFirstResponderSubview(view) resignFirstResponder];
 }
 

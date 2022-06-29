@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // View controller that displays a UIActivityIndicatorView and informative
-// |messageText| over a translucent background.
+// `messageText` over a translucent background.
 @interface ChromeActivityOverlayViewController : UIViewController
 
 // Text that will be shown above the UIActivityIndicatorView.

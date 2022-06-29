@@ -16,11 +16,11 @@ typedef NS_ENUM(NSInteger, InstructionViewStyle) {
 // View containing an instruction list with their step number.
 @interface InstructionView : UIView
 
-// Creates the numbered instructions view list with |instructionList| which
+// Creates the numbered instructions view list with `instructionList` which
 // contains instructions strings. Strings can have bold part in it.
-// |instructionList| must have at least one step.
-// |style| should be one of InstructionViewStyle.
-// |icons| optional, should be supplied if an icon should be used instead of
+// `instructionList` must have at least one step.
+// `style` should be one of InstructionViewStyle.
+// `icons` optional, should be supplied if an icon should be used instead of
 // step number. If provided, the number of icons should be the same as the
 // number of steps in instructionList.
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
