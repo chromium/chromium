@@ -42,6 +42,7 @@ class ClipboardInstance;
 class CompatibilityModeInstance;
 class CrashCollectorHost;
 class CrashCollectorInstance;
+class DarkThemeInstance;
 class DigitalGoodsInstance;
 class DiskQuotaHost;
 class DiskQuotaInstance;
@@ -207,6 +208,9 @@ class ArcBridgeService {
   crash_collector() {
     return &crash_collector_;
   }
+  ConnectionHolder<mojom::DarkThemeInstance>* dark_theme() {
+    return &dark_theme_;
+  }
   ConnectionHolder<mojom::DigitalGoodsInstance>* digital_goods() {
     return &digital_goods_;
   }
@@ -367,6 +371,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::CompatibilityModeInstance> compatibility_mode_;
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>
       crash_collector_;
+  ConnectionHolder<mojom::DarkThemeInstance> dark_theme_;
   ConnectionHolder<mojom::DigitalGoodsInstance> digital_goods_;
   ConnectionHolder<mojom::DiskQuotaInstance, mojom::DiskQuotaHost> disk_quota_;
   ConnectionHolder<mojom::EnterpriseReportingInstance,

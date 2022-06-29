@@ -122,6 +122,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Clipboard);
     MAKE_INSTANCE_READY(CompatibilityMode);
     MAKE_INSTANCE_READY(CrashCollector);
+    MAKE_INSTANCE_READY(DarkTheme);
     MAKE_INSTANCE_READY(DigitalGoods);
     MAKE_INSTANCE_READY(DiskQuota);
     MAKE_INSTANCE_READY(EnterpriseReporting);
