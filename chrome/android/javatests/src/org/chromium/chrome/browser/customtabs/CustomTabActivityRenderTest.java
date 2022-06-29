@@ -190,7 +190,7 @@ public class CustomTabActivityRenderTest {
     public void custom_color_red() throws IOException {
         Context context = InstrumentationRegistry.getContext();
         mIntent = CustomTabsTestUtils.createCustomTabIntent(
-                context, mUrl, builder -> { builder.setToolbarColor(Color.RED); });
+                context, mUrl, true, builder -> { builder.setToolbarColor(Color.RED); });
 
         startActivityAndRenderToolbar("cct_red" + mRunWithHttps);
     }
@@ -201,7 +201,7 @@ public class CustomTabActivityRenderTest {
     public void custom_color_black() throws IOException {
         Context context = InstrumentationRegistry.getContext();
         mIntent = CustomTabsTestUtils.createCustomTabIntent(
-                context, mUrl, builder -> { builder.setToolbarColor(Color.BLACK); });
+                context, mUrl, true, builder -> { builder.setToolbarColor(Color.BLACK); });
 
         startActivityAndRenderToolbar("cct_black" + mRunWithHttps);
     }

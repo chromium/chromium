@@ -304,6 +304,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="CustomTabs.RetainableSessions.TimeBetweenLaunch{IdentifierType}"
+    units="seconds" expires_after="2022-11-03">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    When a CCT session is launched, if it is launch with the same Uri and same
+    taskId, record the duration between previous CCT closure and current CCT
+    launch. Recorded on CCT launch.
+
+    A CCT can be defined as retainable if: 1) it is launching with the same Uri
+    as the most recently closed CCT; 2) it is launched from the same embedded
+    app as the most recently closed CCT; 3) the most recently closed CCT had
+    user interactions. See &quot;CustomTabs.HadInteractionOnClose&quot; for
+    information on interactions.
+
+    The histogram suffix identifies whether the CCT is created with the same
+    intent Uri data and for the same embedded app, launching CCT with the same
+    taskId and package name. The package name identifier to use will depend on
+    whether the client app is using CustomTabService. If app is using the CCT
+    service, the package name will be read from CCT service; otherwise the
+    package name is read from the referrer of CCT activity.
+
+    This histogram is recorded for {IdentifierType}
+  </summary>
+  <token key="IdentifierType">
+    <variant name=".Different"
+        summary="App is not launched from the same embedded app as package
+                 name / referrer is different."/>
+    <variant name=".Mixed"
+        summary="Apps not consistently using CCT services. Referrer and
+                 package are used together."/>
+    <variant name=".PackageName"
+        summary="Apps using CCT services. Package name is used as identifier."/>
+    <variant name=".Referrer"
+        summary="Apps not connecting with CCT services. Activity referrer is
+                 used as identifier."/>
+  </token>
+</histogram>
+
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
     expires_after="M109">
   <owner>sophey@chromium.org</owner>

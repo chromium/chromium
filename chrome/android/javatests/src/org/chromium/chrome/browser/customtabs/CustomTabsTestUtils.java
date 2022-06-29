@@ -105,14 +105,14 @@ public class CustomTabsTestUtils {
      */
     public static Intent createMinimalCustomTabIntent(
             Context context, String url) {
-        return createCustomTabIntent(context, url, builder -> {});
+        return createCustomTabIntent(context, url, /*launchAsNewTask=*/true, builder -> {});
     }
 
     /**
      * Creates an Intent that launches a CustomTabActivity, allows some customization.
      */
-    public static Intent createCustomTabIntent(
-            Context context, String url, Callback<CustomTabsIntent.Builder> customizer) {
+    public static Intent createCustomTabIntent(Context context, String url, boolean launchAsNewTask,
+            Callback<CustomTabsIntent.Builder> customizer) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(
                 CustomTabsSession.createMockSessionForTesting(
                         new ComponentName(context, ChromeLauncherActivity.class)));
@@ -121,7 +121,7 @@ public class CustomTabsTestUtils {
         Intent intent = customTabsIntent.intent;
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (launchAsNewTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
@@ -149,7 +149,7 @@ public class CustomTabsTestUtils {
      */
     public static Intent createMinimalCustomTabIntentWithTheme(
             Context context, String url, boolean inNightMode) {
-        return createCustomTabIntent(context, url, builder -> {
+        return createCustomTabIntent(context, url, /*launchAsNewTask=*/true, builder -> {
             builder.setColorScheme(inNightMode ? CustomTabsIntent.COLOR_SCHEME_DARK
                                                : CustomTabsIntent.COLOR_SCHEME_LIGHT);
         });

@@ -87,6 +87,15 @@ public class TabInteractionRecorder {
         RecordHistogram.recordBooleanHistogram("CustomTabs.HadInteractionOnClose", hadInteraction);
     }
 
+    /**
+     *  Remove all the shared preferences related to tab interactions.
+     */
+    public static void resetTabInteractionRecords() {
+        SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
+        pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
+        pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
+    }
+
     @NativeMethods
     interface Natives {
         TabInteractionRecorder getFromTab(Tab tab);
