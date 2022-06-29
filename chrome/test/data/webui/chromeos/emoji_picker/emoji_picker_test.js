@@ -57,7 +57,7 @@ suite('<emoji-picker>', () => {
 
   test('first non-chevron, tab should be active by default', async () => {
     const button = findInEmojiPicker(
-        'emoji-group-button[data-group="history"]', 'cr-icon-button');
+        'emoji-group-button[data-group="emoji-history"]', 'cr-icon-button');
     assertFalse(isGroupButtonActive(button));
   });
 
@@ -82,7 +82,7 @@ suite('<emoji-picker>', () => {
     // the first non-history group (0) may not trigger a scroll, so scroll to
     // group (1).
     const firstButton = findInEmojiPicker(
-        'emoji-group-button[data-group="history"]', 'cr-icon-button');
+        'emoji-group-button[data-group="emoji-history"]', 'cr-icon-button');
     const thirdButton = findInEmojiPicker(
         'emoji-group-button[data-group="1"]', 'cr-icon-button');
 
@@ -107,15 +107,14 @@ suite('<emoji-picker>', () => {
 
   test('recently used should be hidden when empty', () => {
     const recentlyUsed =
-        findInEmojiPicker('[data-group=history] > emoji-group');
+        findInEmojiPicker('[data-group="emoji-history"] > emoji-group');
     assert(!recentlyUsed);
   });
 
   test(
       'recently used should be populated after emoji is clicked normally',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
             () => findEmojiFirstButton(
@@ -124,8 +123,8 @@ suite('<emoji-picker>', () => {
 
         // wait until emoji exists in recently used section.
         const recentlyUsed = await waitForCondition(
-            () => findEmojiFirstButton(
-                '[data-group=history] > emoji-group'));
+          () => findEmojiFirstButton(
+            '[data-group="emoji-history"] > emoji-group'));
 
         // check text is correct.
         const recentText = recentlyUsed.innerText;
@@ -135,10 +134,7 @@ suite('<emoji-picker>', () => {
   test(
       'clicking an emoji with no text field should copy it to the clipboard',
       async () => {
-        // Note: this whole test has no text field, so we should always copy to
-        // the clipboard.
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
             () => findEmojiFirstButton(
@@ -148,7 +144,7 @@ suite('<emoji-picker>', () => {
         // wait until emoji exists in recently used section.
         const recentlyUsed = await waitForCondition(
             () => findEmojiFirstButton(
-                '[data-group=history] > emoji-group'));
+              '[data-group="emoji-history"] > emoji-group'));
 
         // check text is correct.
         await (waitForCondition(async () => {
@@ -158,8 +154,7 @@ suite('<emoji-picker>', () => {
       });
 
   test('recently-used should have variants for variant emoji', async () => {
-    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-        new Promise((resolve) => resolve({incognito: false}));
+    emojiPicker.updateIncognitoState(false);
     // yield to allow emoji-group and emoji buttons to render.
     const emojiButton = (await waitForCondition(
                              () => findInEmojiPicker(
@@ -171,7 +166,7 @@ suite('<emoji-picker>', () => {
     const recentlyUsed =
         (await waitForCondition(
              () => findEmojiFirstButton(
-                 '[data-group=history] > emoji-group')));
+                 '[data-group="emoji-history"] > emoji-group')));
 
     // check variants class is applied
     assertTrue(recentlyUsed.classList.contains('has-variants'));
@@ -180,8 +175,7 @@ suite('<emoji-picker>', () => {
   test(
       'recently-used should have no variants for non-variant emoji',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = (await waitForCondition(
                                  () => findInEmojiPicker(
@@ -193,7 +187,7 @@ suite('<emoji-picker>', () => {
         const recentlyUsed =
             (await waitForCondition(
                  () => findEmojiFirstButton(
-                     '[data-group=history] > emoji-group')));
+                     '[data-group="emoji-history"] > emoji-group')));
 
         // check variants class is not applied
         assertFalse(recentlyUsed.classList.contains('has-variants'));
@@ -202,8 +196,7 @@ suite('<emoji-picker>', () => {
   test(
       'recently-used should be empty after emoji is clicked in incognito mode',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: true}));
+        // By default, it is assumed that the mode is incognito.
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
             () => findEmojiFirstButton('[data-group="0"] > emoji-group'));
@@ -213,14 +206,12 @@ suite('<emoji-picker>', () => {
         await timeout(1000);
 
         const recentlyUsed =
-            findInEmojiPicker('[data-group=history] > emoji-group');
+            findInEmojiPicker('[data-group="emoji-history"] > emoji-group');
         assert(!recentlyUsed);
       });
 
   test('recently used should be empty after clearing', async () => {
-    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-        // first - insert an emoji to populate recently used
-        new Promise((resolve) => resolve({incognito: false}));
+    emojiPicker.updateIncognitoState(false);
     // yield to allow emoji-group and emoji buttons to render.
     const emojiButton = (await waitForCondition(
                              () => findInEmojiPicker(
@@ -232,7 +223,7 @@ suite('<emoji-picker>', () => {
     const recentlyUsed =
         (await waitForCondition(
              () => findEmojiFirstButton(
-               '[data-group=history] > emoji-group')));
+                 '[data-group="emoji-history"] > emoji-group')));
 
     // click show clear button
     findInEmojiPicker('.group', '#show-clear').click();
@@ -243,7 +234,7 @@ suite('<emoji-picker>', () => {
 
     // Expect no more history.
     await waitForCondition(
-        () => findInEmojiPicker('[data-group=history] > emoji-group')
+        () => findInEmojiPicker('[data-group="emoji-history"] > emoji-group')
                   .style.display === 'none',
         'history failed to disappear');
   });

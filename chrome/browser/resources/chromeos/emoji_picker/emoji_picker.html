@@ -360,19 +360,25 @@
       history is the "recently used" group and is populated in code,
       whereas the other groups are created from the emoji metadata.
     -->
-    <div data-group="history">
-      <template is="dom-if" if="[[emojiHistory.emoji.length]]">
-        <emoji-group data="[[emojiHistory.emoji]]"
-          group="[[emojiHistory.group]]" preferred="{}" clearable
-          class="group history" category="emoji">
+
+    <div data-group="emoji-history">
+      <template is="dom-if"
+        if="[[isHistoryGroupVisible(
+          categoryHistoryVisibility.emoji,
+          categoriesHistory.emoji.data.history)]]">
+        <emoji-group
+          data="[[getHistoryEmojis(categoriesHistory.emoji.data.history)]]"
+          group="Recently used"
+          preferred="{}" clearable class="group history"
+          category="emoji">
         </emoji-group>
       </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
       <div data-group$="[[getDataGroupIndex('emoji', index)]]">
         <emoji-group data="[[item.emoji]]" group="[[item.group]]"
-          preferred="[[preferenceMapping]]" class="group"
-          category="emoji">
+          preferred="{{categoriesHistory.emoji.data.preference}}"
+          class="group" category="emoji">
         </emoji-group>
       </div>
     </template>
@@ -381,11 +387,14 @@
     <template is="dom-if" if="[[v2Enabled]]">
       <div data-group="emoticon-history">
         <template is="dom-if"
-          if="[[_isHistoryReadyToPresent(
-            emojiGroupsFullyLoaded,emoticonHistory.emoji.length)]]">
-            <emoji-group data="[[emoticonHistory.emoji]]"
-              group="[[emoticonHistory.group]]"
-              clearable class="group history"
+          if="[[isHistoryGroupVisible(
+            categoryHistoryVisibility.emoticon,
+            categoriesHistory.emoticon.data.history)]]">
+            <emoji-group
+              data="[[getHistoryEmojis(
+                categoriesHistory.emoticon.data.history)]]"
+              group="Recently used"
+              preferred="{}" clearable class="group history"
               category="emoticon">
             </emoji-group>
         </template>

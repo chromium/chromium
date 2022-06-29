@@ -35,12 +35,32 @@ export class RecentlyUsedStore {
     this.data = load(name);
   }
 
+  /**
+   * Saves preferences for a base emoji.
+   *
+   * @param {string} baseEmoji
+   * @param {string} variant
+   * @returns {boolean} True if any preferences are updated and false
+   *    otherwise.
+   */
   savePreferredVariant(baseEmoji, variant) {
     if (!baseEmoji) {
-      return;
+      return false;
     }
-    this.data.preference[baseEmoji] = variant;
+
+    // Base emoji must not be set as preference. So, store it only
+    // if variant and baseEmoji are different and remove it from preference
+    // otherwise.
+    if (baseEmoji !== variant && variant) {
+      this.data.preference[baseEmoji] = variant;
+    } else if (baseEmoji in this.data.preference) {
+      delete this.data.preference[baseEmoji];
+    } else {
+      return false;
+    }
+
     save(this.storeName, this.data);
+    return true;
   }
 
   getPreferenceMapping() {
