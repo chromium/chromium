@@ -6,6 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -484,6 +486,39 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
     EXPECT_EQ(restricted_url, restricted_frame->GetLastCommittedURL());
     EXPECT_EQ("<no div>", get_script_div_in_frame(restricted_frame));
   }
+}
+
+// Tests attaching and detaching a devtools window to the offscreen document.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
+                       AttachingDevToolsInspector) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
+  content::WebContents* contents = offscreen_document->host_contents();
+
+  DevToolsWindowTesting::OpenDevToolsWindowSync(contents, profile(),
+                                                /*is_docked=*/true);
+  DevToolsWindow* dev_tools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(contents);
+  ASSERT_TRUE(dev_tools_window);
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
+  EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
 }
 
 }  // namespace extensions

@@ -68,7 +68,8 @@ namespace developerPrivate {
     EXTENSION_GUEST,
     EXTENSION_POPUP,
     EXTENSION_SERVICE_WORKER_BACKGROUND,
-    TAB_CONTENTS
+    TAB_CONTENTS,
+    OFFSCREEN_DOCUMENT
   };
 
   enum ErrorType {

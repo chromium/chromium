@@ -4,6 +4,7 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -12,13 +13,20 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/offscreen_document_host.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 
@@ -272,6 +280,105 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Verify that dev tools opened.
   ASSERT_TRUE(service_worker_host);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
+}
+
+class DeveloperPrivateOffscreenDocumentApiTest
+    : public DeveloperPrivateApiTest {
+ public:
+  DeveloperPrivateOffscreenDocumentApiTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsOffscreenDocuments);
+  }
+  ~DeveloperPrivateOffscreenDocumentApiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that offscreen documents show up in the list of inspectable views and
+// can be inspected.
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateOffscreenDocumentApiTest,
+                       InspectOffscreenDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+
+  // Create an offscreen document and wait for it to load.
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document;
+  GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  {
+    ExtensionHostTestHelper offscreen_waiter(profile(), extension->id());
+    offscreen_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
+    offscreen_document = std::make_unique<OffscreenDocumentHost>(
+        *extension,
+        ProcessManager::Get(profile())
+            ->GetSiteInstanceForURL(offscreen_url)
+            .get(),
+        offscreen_url);
+    offscreen_document->CreateRendererSoon();
+    offscreen_waiter.WaitForHostCompletedFirstLoad();
+  }
+
+  // Get the list of inspectable views for the extension.
+  auto get_info_function =
+      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
+  std::unique_ptr<base::Value> result =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          get_info_function.get(),
+          content::JsReplace(R"([$1])", extension->id()), browser());
+  ASSERT_TRUE(result);
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      api::developer_private::ExtensionInfo::FromValue(*result);
+  ASSERT_TRUE(info);
+
+  // The only inspectable view should be the offscreen document. Validate the
+  // metadata.
+  ASSERT_EQ(1u, info->views.size());
+  const api::developer_private::ExtensionView& view = info->views[0];
+  EXPECT_EQ(api::developer_private::VIEW_TYPE_OFFSCREEN_DOCUMENT, view.type);
+  content::WebContents* offscreen_contents =
+      offscreen_document->host_contents();
+  EXPECT_EQ(offscreen_url.spec(), view.url);
+  EXPECT_EQ(offscreen_document->render_process_host()->GetID(),
+            view.render_process_id);
+  EXPECT_EQ(offscreen_contents->GetPrimaryMainFrame()->GetRoutingID(),
+            view.render_view_id);
+  EXPECT_FALSE(view.incognito);
+  EXPECT_FALSE(view.is_iframe);
+
+  // The document shouldn't currently be under inspection.
+  EXPECT_FALSE(
+      DevToolsWindow::GetInstanceForInspectedWebContents(offscreen_contents));
+
+  // Call the API function to inspect the offscreen document.
+  auto dev_tools_function =
+      base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+  extension_function_test_utils::RunFunction(
+      dev_tools_function.get(),
+      content::JsReplace(
+          R"([{"renderViewId": $1,
+               "renderProcessId": $2,
+               "extensionId": $3
+            }])",
+          view.render_view_id, view.render_process_id, extension->id()),
+      browser(), api_test_utils::NONE);
+
+  // Validate that the devtools window is now shown.
+  DevToolsWindow* dev_tools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(offscreen_contents);
+  ASSERT_TRUE(dev_tools_window);
+
+  // Tidy up.
+  DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 }
 
 }  // namespace extensions

@@ -66,6 +66,10 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
     case mojom::ViewType::kTabContents:
       developer_private_type = api::developer_private::VIEW_TYPE_TAB_CONTENTS;
       break;
+    case mojom::ViewType::kOffscreenDocument:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_OFFSCREEN_DOCUMENT;
+      break;
     default:
       developer_private_type = api::developer_private::VIEW_TYPE_NONE;
       NOTREACHED();
