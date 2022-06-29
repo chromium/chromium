@@ -105,7 +105,7 @@ class URLRequestQuicPerfTest : public ::testing::Test {
     memory_dump_manager_ =
         base::trace_event::MemoryDumpManager::CreateInstanceForTesting();
     base::trace_event::InitializeMemoryDumpManagerForInProcessTesting(
-        /*is_coordinator_process=*/false);
+        /*is_coordinator=*/false);
     memory_dump_manager_->set_dumper_registrations_ignored_for_testing(false);
     memory_dump_manager_->set_dumper_registrations_ignored_for_testing(true);
     StartTcpServer();

@@ -2552,7 +2552,7 @@ TEST_F(DiskCacheEntryTest, SparseClipEnd) {
 
   // Blockfile refuses to deal with sparse indices over 64GiB.
   SparseClipEnd(std::numeric_limits<int64_t>::max(),
-                /* expect_unsupported = */ true);
+                /*expected_unsupported=*/true);
 }
 
 TEST_F(DiskCacheEntryTest, SparseClipEnd2) {
@@ -2561,7 +2561,7 @@ TEST_F(DiskCacheEntryTest, SparseClipEnd2) {
   const int64_t kLimit = 64ll * 1024 * 1024 * 1024;
   // Separate test for blockfile for indices right at the edge of its address
   // space limit. kLimit must match kMaxEndOffset in sparse_control.cc
-  SparseClipEnd(kLimit, /* expect_unsupported = */ false);
+  SparseClipEnd(kLimit, /*expected_unsupported=*/false);
 
   // Test with things after kLimit, too, which isn't an issue for backends
   // supporting the entire 64-bit offset range.
@@ -2594,14 +2594,14 @@ TEST_F(DiskCacheEntryTest, MemoryOnlySparseClipEnd) {
   SetMemoryOnlyMode();
   InitCache();
   SparseClipEnd(std::numeric_limits<int64_t>::max(),
-                /* expect_unsupported = */ false);
+                /* expected_unsupported = */ false);
 }
 
 TEST_F(DiskCacheEntryTest, SimpleSparseClipEnd) {
   SetSimpleCacheMode();
   InitCache();
   SparseClipEnd(std::numeric_limits<int64_t>::max(),
-                /* expect_unsupported = */ false);
+                /* expected_unsupported = */ false);
 }
 
 // Tests that corrupt sparse children are removed automatically.

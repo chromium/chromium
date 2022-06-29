@@ -276,7 +276,7 @@ TEST_F(BufferedSpdyFramerTest, ReadPushPromiseHeaderBlock) {
 }
 
 TEST_F(BufferedSpdyFramerTest, GoAwayDebugData) {
-  spdy::SpdyGoAwayIR go_ir(/*last_accepted_stream_id=*/2,
+  spdy::SpdyGoAwayIR go_ir(/*last_good_stream_id=*/2,
                            spdy::ERROR_CODE_FRAME_SIZE_ERROR, "foo");
   NetLogWithSource net_log;
   BufferedSpdyFramer framer(kMaxHeaderListSizeForTest, net_log);

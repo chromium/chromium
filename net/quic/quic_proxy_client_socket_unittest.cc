@@ -354,7 +354,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     return client_maker_.MakeAckAndRstPacket(
         packet_number, !kIncludeVersion, client_data_stream_id1_, error_code,
         largest_received, smallest_received,
-        /*include_stop_sending=*/false);
+        /*include_stop_sending_if_v99=*/false);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstPacket(
