@@ -442,6 +442,17 @@ NET_EXPORT extern const base::Feature kCookieDomainRejectNonASCII;
 // Blocks the 'Set-Cookie' request header on outbound fetch requests.
 NET_EXPORT extern const base::Feature kBlockSetCookieHeader;
 
+NET_EXPORT extern const base::Feature kOptimizeNetworkBuffers;
+
+NET_EXPORT
+extern const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
