@@ -22,40 +22,43 @@ RequestQueue<T>::RequestQueue(
     const net::BackoffEntry::Policy* const backoff_policy,
     const base::RepeatingClosure& start_request_callback)
     : backoff_policy_(backoff_policy),
-      start_request_callback_(start_request_callback) {}
+      start_request_callback_(start_request_callback),
+      active_request_(absl::nullopt) {}
 
 template <typename T>
 RequestQueue<T>::~RequestQueue() = default;
 
 template <typename T>
 T* RequestQueue<T>::active_request() {
-  return active_request_.get();
+  return active_request_ ? active_request_->fetch.get() : nullptr;
 }
 
 template <typename T>
 int RequestQueue<T>::active_request_failure_count() {
-  return active_backoff_entry_->failure_count();
+  DCHECK(active_request_);
+  return active_request_->backoff_entry->failure_count();
 }
 
 template <typename T>
 std::unique_ptr<T> RequestQueue<T>::reset_active_request() {
-  active_backoff_entry_.reset();
-  return std::move(active_request_);
+  if (!active_request_)
+    return nullptr;
+  std::unique_ptr<T> fetch = std::move(active_request_->fetch);
+  active_request_.reset();
+  return fetch;
 }
 
 template <typename T>
 void RequestQueue<T>::ScheduleRequest(std::unique_ptr<T> request) {
-  PushImpl(std::move(request), std::unique_ptr<net::BackoffEntry>(
-                                   new net::BackoffEntry(backoff_policy_)));
+  PushImpl(Request(std::unique_ptr<net::BackoffEntry>(
+                       new net::BackoffEntry(backoff_policy_)),
+                   std::move(request)));
   StartNextRequest();
 }
 
 template <typename T>
-void RequestQueue<T>::PushImpl(
-    std::unique_ptr<T> request,
-    std::unique_ptr<net::BackoffEntry> backoff_entry) {
-  pending_requests_.push_back(
-      Request(backoff_entry.release(), request.release()));
+void RequestQueue<T>::PushImpl(Request request) {
+  pending_requests_.push_back(std::move(request));
   std::push_heap(
       pending_requests_.begin(), pending_requests_.end(), CompareRequests);
 }
@@ -107,8 +110,7 @@ void RequestQueue<T>::StartNextRequest() {
   std::pop_heap(
       pending_requests_.begin(), pending_requests_.end(), CompareRequests);
 
-  active_backoff_entry_ = std::move(pending_requests_.back().backoff_entry);
-  active_request_ = std::move(pending_requests_.back().request);
+  active_request_ = std::move(pending_requests_.back());
 
   pending_requests_.pop_back();
 
@@ -117,12 +119,15 @@ void RequestQueue<T>::StartNextRequest() {
 
 template <typename T>
 void RequestQueue<T>::RetryRequest(const base::TimeDelta& min_backoff_delay) {
-  active_backoff_entry_->InformOfRequest(false);
-  if (active_backoff_entry_->GetTimeUntilRelease() < min_backoff_delay) {
-    active_backoff_entry_->SetCustomReleaseTime(base::TimeTicks::Now() +
-                                                min_backoff_delay);
+  DCHECK(active_request_);
+  active_request_->backoff_entry->InformOfRequest(false);
+  if (active_request_->backoff_entry->GetTimeUntilRelease() <
+      min_backoff_delay) {
+    active_request_->backoff_entry->SetCustomReleaseTime(
+        base::TimeTicks::Now() + min_backoff_delay);
   }
-  PushImpl(std::move(active_request_), std::move(active_backoff_entry_));
+  PushImpl(std::move(*active_request_));
+  active_request_.reset();
 }
 
 template <typename T>
