@@ -57554,6 +57554,7 @@ from previous Chrome versions.
   <int value="-548082154" label="protect-sync-credential:disabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
+  <int value="-547179727" label="AutofillEnableFIDOProgressDialog:enabled"/>
   <int value="-546188357" label="InitialNavigationEntry:enabled"/>
   <int value="-545419529" label="LauncherAppSort:disabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
@@ -60767,6 +60768,7 @@ from previous Chrome versions.
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
   <int value="1572464760" label="pwa-update-dialog-for-name-and-icon:disabled"/>
   <int value="1573323485" label="ViewportHeightClientHintHeader:enabled"/>
+  <int value="1573754862" label="AutofillEnableFIDOProgressDialog:disabled"/>
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
   <int value="1577205328"

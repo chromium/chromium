@@ -8669,6 +8669,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillParseIbanFieldsDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillParseIbanFields)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-fido-progress-dialog",
+     flag_descriptions::kAutofillEnableFIDOProgressDialogName,
+     flag_descriptions::kAutofillEnableFIDOProgressDialogDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableFIDOProgressDialog)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

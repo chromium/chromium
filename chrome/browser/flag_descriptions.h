@@ -193,6 +193,9 @@ extern const char
 extern const char
     kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription[];
 
+extern const char kAutofillEnableFIDOProgressDialogName[];
+extern const char kAutofillEnableFIDOProgressDialogDescription[];
+
 extern const char kAutofillEnableManualFallbackForVirtualCardsName[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 

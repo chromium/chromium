@@ -338,6 +338,12 @@ const char
         "request. This is an optimization to improve the latency of the "
         "Virtual Card Enrollment flow.";
 
+const char kAutofillEnableFIDOProgressDialogName[] =
+    "Show FIDO progress dialog on Android";
+const char kAutofillEnableFIDOProgressDialogDescription[] =
+    "When enabled, a progress dialog is displayed while authenticating with "
+    "FIDO on Android.";
+
 const char kAutofillEnableManualFallbackForVirtualCardsName[] =
     "Show manual fallback for virtual cards";
 const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
