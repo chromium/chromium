@@ -72,7 +72,7 @@ TEST_F(ListModelTest, GenericModelBoxing) {
   ListModel<TestListItemSubclass*, ListItem*>* specificModel =
       [[ListModel alloc] init];
 
-  // |generalModel| is a superclass of |specificModel|. So specificModel can be
+  // `generalModel` is a superclass of `specificModel`. So specificModel can be
   // boxed into generalModel, but not the other way around.
   // specificModel = generalModel would not compile.
   [[maybe_unused]] ListModel<ListItem*, ListItem*>* generalModel =
