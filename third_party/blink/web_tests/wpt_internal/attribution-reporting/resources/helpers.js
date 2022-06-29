@@ -103,8 +103,16 @@ const registerAttributionSrc = async (t, {
       if (eligible === null) {
         img.attributionSrc = url;
       } else {
-        img.attributionSrc = '';
-        img.src = url;
+        await new Promise(resolve => {
+          img.onload = resolve;
+          // Since the resource being fetched isn't a valid image, onerror will
+          // be fired, but the browser will still process the
+          // attribution-related headers, so resolve the promise instead of
+          // rejecting.
+          img.onerror = resolve;
+          img.attributionSrc = '';
+          img.src = url;
+        });
       }
       return 'event';
     case 'script':
@@ -136,12 +144,16 @@ const registerAttributionSrc = async (t, {
       await fetch(url, {headers});
       return 'event';
     case 'xhr':
-      const req = new XMLHttpRequest();
-      req.open('GET', url);
-      if (eligible !== null) {
-        req.setRequestHeader(eligibleHeader, eligible);
-      }
-      req.send();
+      await new Promise((resolve, reject) => {
+        const req = new XMLHttpRequest();
+        req.open('GET', url);
+        if (eligible !== null) {
+          req.setRequestHeader(eligibleHeader, eligible);
+        }
+        req.onload = resolve;
+        req.onerror = () => reject(req.statusText);
+        req.send();
+      });
       return 'event';
     default:
       throw `unknown method "${method}"`;
