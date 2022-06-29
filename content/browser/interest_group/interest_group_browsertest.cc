@@ -3633,7 +3633,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   GURL test_url = https_server_->GetURL(
       "a.test",
       base::StringPrintf(
-          "/cross_site_iframe_factory.html?a(%s,%s)",
+          "/cross_site_iframe_factory.html?a.test(%s,%s)",
           base::EscapeUrlEncodedData(
               https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html")
                   .spec(),

@@ -4379,9 +4379,10 @@ bool HasDefaultSiteInstance(RenderFrameHost* rfh) {
 //     +-> C (different site from A that does not require isolation.)
 //         +-> A (same site as top-level which also does not require isolation.)
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "www.foo.com",
-      "/cross_site_iframe_factory.html?a(isolated.foo.com(c(www.foo.com)))"));
+  GURL main_url(
+      embedded_test_server()->GetURL("www.foo.com",
+                                     "/cross_site_iframe_factory.html?www.foo."
+                                     "com(isolated.foo.com(c(www.foo.com)))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHost* a = root->current_frame_host();
@@ -4584,7 +4585,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest, Test) {
 IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest,
                        SameOriginSubframesProcessSharing) {
   GURL main_url(embedded_test_server()->GetURL(
-      "isolated.foo.com", "/cross_site_iframe_factory.html?a(b(c),d(c))"));
+      "isolated.foo.com",
+      "/cross_site_iframe_factory.html?isolated.foo.com(b(c),d(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHost* a = root->current_frame_host();

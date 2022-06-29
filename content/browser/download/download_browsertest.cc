@@ -4734,8 +4734,8 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MiddleSliceDelayedError) {
 // initiates a download in an iframe and expects it to succeed.
 // See https://crbug.com/717971.
 IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadIgnoresXFO) {
-  GURL main_url(
-      embedded_test_server()->GetURL("/cross_site_iframe_factory.html?a(b)"));
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(b.test)"));
   GURL download_url(
       embedded_test_server()->GetURL("/download/download-with-xfo-deny.html"));
   WebContentsImpl* web_contents =

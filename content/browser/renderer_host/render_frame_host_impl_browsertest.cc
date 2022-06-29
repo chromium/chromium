@@ -6114,7 +6114,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetSiblings) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   // Use actual FrameTreeNode id values in URL.
   GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?1(2,3(5),4)"));
+      "1.com", "/cross_site_iframe_factory.html?1(2,3(5),4)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* ftn1 = web_contents()->GetPrimaryFrameTree().root();
