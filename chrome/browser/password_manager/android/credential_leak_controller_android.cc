@@ -19,6 +19,7 @@
 
 using password_manager::CreateDialogTraits;
 using password_manager::PasswordChangeSuccessTracker;
+using password_manager::PasswordCheckReferrerAndroid;
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LeakDialogMetricsRecorder;
 using password_manager::metrics_util::LeakDialogType;
@@ -94,7 +95,8 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
       PasswordCheckupLauncherHelper::LaunchLocalCheckup(
-          env, window_android_->GetJavaObject());
+          env, window_android_->GetJavaObject(),
+          PasswordCheckReferrerAndroid::kLeakDialog);
       break;
     case LeakDialogType::kChangeAutomatically:
       Java_PasswordChangeLauncher_start(

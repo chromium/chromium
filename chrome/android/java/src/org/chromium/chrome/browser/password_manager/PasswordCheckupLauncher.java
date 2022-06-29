@@ -29,8 +29,8 @@ public class PasswordCheckupLauncher {
     }
 
     @CalledByNative
-    // TODO(crbug.com/1311952): Merge with launchLocalCheckupFromPhishGuardWarningDialog.
-    private static void launchLocalCheckup(WindowAndroid windowAndroid) {
+    private static void launchLocalCheckup(
+            WindowAndroid windowAndroid, @PasswordCheckReferrer int passwordCheckReferrer) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
         if (PasswordManagerHelper.canUseUpmCheckup()) {
@@ -38,7 +38,7 @@ public class PasswordCheckupLauncher {
                     PasswordCheckupClientHelperFactory.getInstance().createHelper();
             if (checkupHelper != null) {
                 PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                        PasswordCheckReferrer.LEAK_DIALOG,
+                        passwordCheckReferrer,
                         PasswordCheckupClientHelperFactory.getInstance().createHelper(),
                         SyncService.get(), getModalDialogManagerSupplier(windowAndroid));
                 return;
@@ -46,28 +46,7 @@ public class PasswordCheckupLauncher {
         }
 
         PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
-                .showUi(windowAndroid.getContext().get(), PasswordCheckReferrer.LEAK_DIALOG);
-    }
-
-    @CalledByNative
-    // TODO(crbug.com/1311952): Merge with launchLocalCheckup.
-    private static void launchLocalCheckupFromPhishGuardWarningDialog(WindowAndroid windowAndroid) {
-        if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
-
-        if (PasswordManagerHelper.canUseUpmCheckup()) {
-            PasswordCheckupClientHelper checkupHelper =
-                    PasswordCheckupClientHelperFactory.getInstance().createHelper();
-            if (checkupHelper != null) {
-                PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                        PasswordCheckReferrer.PHISHED_WARNING_DIALOG,
-                        PasswordCheckupClientHelperFactory.getInstance().createHelper(),
-                        SyncService.get(), getModalDialogManagerSupplier(windowAndroid));
-                return;
-            }
-        }
-        PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
-                .showUi(windowAndroid.getContext().get(),
-                        PasswordCheckReferrer.PHISHED_WARNING_DIALOG);
+                .showUi(windowAndroid.getContext().get(), passwordCheckReferrer);
     }
 
     @CalledByNative

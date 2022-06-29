@@ -90,6 +90,7 @@ android_library("internal_java") {
     "//components/device_reauth:device_reauth_java_enums",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

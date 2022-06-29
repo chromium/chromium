@@ -18,17 +18,10 @@ void PasswordCheckupLauncherHelper::LaunchCheckupInAccountWithWindowAndroid(
 // static
 void PasswordCheckupLauncherHelper::LaunchLocalCheckup(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& windowAndroid) {
-  Java_PasswordCheckupLauncher_launchLocalCheckup(env, windowAndroid);
-}
-
-// static
-void PasswordCheckupLauncherHelper::
-    LaunchLocalCheckupFromPhishGuardWarningDialog(
-        JNIEnv* env,
-        const base::android::JavaRef<jobject>& windowAndroid) {
-  Java_PasswordCheckupLauncher_launchLocalCheckupFromPhishGuardWarningDialog(
-      env, windowAndroid);
+    const base::android::JavaRef<jobject>& windowAndroid,
+    password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer) {
+  Java_PasswordCheckupLauncher_launchLocalCheckup(
+      env, windowAndroid, static_cast<int>(passwordCheckReferrer));
 }
 
 // static

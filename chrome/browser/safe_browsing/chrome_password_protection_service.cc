@@ -103,6 +103,7 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
+#include "components/password_manager/core/browser/password_check_referrer_android.h"
 #include "ui/android/window_android.h"
 #else
 #include "chrome/browser/ui/browser_list.h"
@@ -1027,9 +1028,9 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
   } else {
 #if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
-    PasswordCheckupLauncherHelper::
-        LaunchLocalCheckupFromPhishGuardWarningDialog(
-            env, web_contents->GetTopLevelNativeWindow()->GetJavaObject());
+    PasswordCheckupLauncherHelper::LaunchLocalCheckup(
+        env, web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
+        password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog);
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Opens chrome://settings/passwords/check in a new tab.
