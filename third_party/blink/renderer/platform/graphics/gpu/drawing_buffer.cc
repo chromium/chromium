@@ -1917,9 +1917,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
   texture_id =
       gl_->CreateAndTexStorage2DSharedImageCHROMIUM(back_buffer_mailbox.name);
-  gl_->BindTexture(texture_target_, texture_id);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  gl_->BindTexture(texture_target_, texture_id);
 
   // Clear the alpha channel if RGB emulation is required.
   if (!want_alpha_channel_ && have_alpha_channel_) {
