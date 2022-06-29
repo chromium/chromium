@@ -2894,7 +2894,14 @@
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '--retry-limit=3',
+        ],
+        # Experiment with parallel tests on CI. This will eventually be moved to
+        # apply to both CI and CQ.
+        'precommit_args': [
           '--jobs=1',
+        ],
+        'non_precommit_args': [
+          '--jobs=4',
         ],
         'linux_args': [
           '--extra-browser-args=--enable-features=Vulkan',
@@ -2913,7 +2920,14 @@
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '--retry-limit=3',
+        ],
+        # Experiment with parallel tests on CI. This will eventually be moved to
+        # apply to both CI and CQ.
+        'precommit_args': [
           '--jobs=1',
+        ],
+        'non_precommit_args': [
+          '--jobs=4',
         ],
         'linux_args': [
           '--extra-browser-args=--enable-features=Vulkan',
@@ -2933,7 +2947,14 @@
           '--extra-browser-args=--force_high_performance_gpu',
           '--enable-dawn-backend-validation',
           '--retry-limit=3',
+        ],
+        # Experiment with parallel tests on CI. This will eventually be moved to
+        # apply to both CI and CQ.
+        'precommit_args': [
           '--jobs=1',
+        ],
+        'non_precommit_args': [
+          '--jobs=4',
         ],
         'linux_args': [
           '--extra-browser-args=--enable-features=Vulkan',

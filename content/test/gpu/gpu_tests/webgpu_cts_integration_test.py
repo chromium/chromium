@@ -186,6 +186,12 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     browser_args = [
         '--enable-unsafe-webgpu',
         '--disable-dawn-features=disallow_unsafe_apis',
+        # When running tests in parallel, windows can be treated as occluded if
+        # a newly opened window fully covers a previous one, which can cause
+        # issues in a few tests. This is practically only an issue on Windows
+        # since Linux/Mac stagger new windows, but pass in on all platforms
+        # since it could technically be hit on any platform.
+        '--disable-backgrounding-occluded-windows',
     ]
     if cls._enable_dawn_backend_validation:
       if sys.platform == 'win32':
@@ -346,6 +352,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetTestTimeout(self) -> int:
     timeout = self._test_timeout
+    # Parallel jobs can cause heavier tests to flakily time out, so increase the
+    # timeout based on the number of parallel jobs. 2x the timeout with 4 jobs
+    # seemed to work well, so target that.
+    timeout *= 1 + (self.child.jobs - 1) / 3.0
 
     if self._IsSlowTest():
       timeout *= SLOW_MULTIPLIER
@@ -354,7 +364,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if self._enable_dawn_backend_validation:
       timeout *= BACKEND_VALIDATION_MULTIPLIER
 
-    return timeout
+    return int(timeout)
 
   @classmethod
   def GetPlatformTags(cls, browser: ct.Browser) -> typing.List[str]:
