@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/browserservices/intents/BrowserServicesIntentDataProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/ColorProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/CustomButtonParams.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/MergedWebappInfo.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkExtras.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkShareTarget.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappConstants.java",
@@ -35,6 +36,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/intents/MergedWebappInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappIntentUtilsTest.java",
