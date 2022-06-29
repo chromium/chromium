@@ -1450,6 +1450,7 @@ source_set("perf_tests") {
   testonly = true
   sources = [
     "css/style_perftest.cc",
+    "html/html_perftest.cc",
     "layout/svg/svg_hit_test_perftest.cc",
     "layout/visual_rect_mapping_perftest.cc",
   ]
