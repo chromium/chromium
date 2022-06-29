@@ -52,7 +52,6 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 
 @dynamic view;
 @synthesize buttonFactory = _buttonFactory;
-@synthesize dispatcher = _dispatcher;
 @synthesize longPressDelegate = _longPressDelegate;
 @synthesize loading = _loading;
 @synthesize isNTP = _isNTP;
@@ -350,7 +349,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   for (ToolbarButton* button in self.view.allButtons) {
     if (button != self.view.toolsMenuButton &&
         button != self.view.openNewTabButton) {
-      [button addTarget:self.dispatcher
+      [button addTarget:self.omniboxCommandsHandler
                     action:@selector(cancelOmniboxEdit)
           forControlEvents:UIControlEventTouchUpInside];
     }
@@ -399,19 +398,17 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 // Handles the gseture recognizer on the views.
 - (void)handleGestureRecognizer:(UILongPressGestureRecognizer*)gesture {
   if (gesture.state == UIGestureRecognizerStateBegan) {
-    // TODO(crbug.com/1323764): All of these calls on |self.dispatcher| need to
-    // go to a dedicated PopupMenyCommands handler.
     if (gesture.view == self.view.backButton) {
-      [self.dispatcher showNavigationHistoryBackPopupMenu];
+      [self.popupMenuCommandsHandler showNavigationHistoryBackPopupMenu];
     } else if (gesture.view == self.view.forwardButton) {
-      [self.dispatcher showNavigationHistoryForwardPopupMenu];
+      [self.popupMenuCommandsHandler showNavigationHistoryForwardPopupMenu];
     } else if (gesture.view == self.view.openNewTabButton) {
-      [self.dispatcher showNewTabButtonPopup];
+      [self.popupMenuCommandsHandler showNewTabButtonPopup];
     } else if (gesture.view == self.view.tabGridButton) {
-      [self.dispatcher showTabGridButtonPopup];
+      [self.popupMenuCommandsHandler showTabGridButtonPopup];
     } else if (gesture.view == self.view.toolsMenuButton) {
       base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
-      [self.dispatcher showToolsMenuPopup];
+      [self.popupMenuCommandsHandler showToolsMenuPopup];
     }
     TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
   } else if (gesture.state == UIGestureRecognizerStateEnded) {

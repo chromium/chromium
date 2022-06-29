@@ -35,6 +35,7 @@ class Browser;
 @class DownloadManagerCoordinator;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
+@protocol PopupMenuCommands;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 @protocol PopupMenuUIUpdating;
 class PrerenderService;
@@ -65,6 +66,7 @@ typedef struct {
   BookmarkInteractionController* bookmarkInteractionController;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
+  id<PopupMenuCommands> popupMenuCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

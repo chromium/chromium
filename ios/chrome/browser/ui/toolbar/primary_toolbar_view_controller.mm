@@ -139,9 +139,9 @@
   // When the locationBarContainer is hidden, show the |fakeOmniboxTarget|.
   if (progress == 0 && !self.view.fakeOmniboxTarget) {
     [self.view addFakeOmniboxTarget];
-    UITapGestureRecognizer* tapRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self.dispatcher
-                                                action:@selector(focusOmnibox)];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self.omniboxCommandsHandler
+                action:@selector(focusOmnibox)];
     [self.view.fakeOmniboxTarget addGestureRecognizer:tapRecognizer];
   } else if (progress > 0 && self.view.fakeOmniboxTarget) {
     [self.view removeFakeOmniboxTarget];

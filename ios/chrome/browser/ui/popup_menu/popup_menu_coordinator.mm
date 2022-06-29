@@ -353,6 +353,8 @@ enum class IOSOverflowMenuActionType {
             self.browser->GetCommandDispatcher());
         self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
             self.browser->GetCommandDispatcher(), PageInfoCommands);
+        self.overflowMenuMediator.popupMenuCommandsHandler = HandlerForProtocol(
+            self.browser->GetCommandDispatcher(), PopupMenuCommands);
         self.overflowMenuMediator.webStateList =
             self.browser->GetWebStateList();
         self.overflowMenuMediator.navigationAgent =
@@ -477,6 +479,8 @@ enum class IOSOverflowMenuActionType {
       self.browser->GetCommandDispatcher());
   self.actionHandler.pageInfoCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageInfoCommands);
+  self.actionHandler.popupMenuCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   self.actionHandler.delegate = self.mediator;

@@ -16,6 +16,7 @@
 @protocol LoadQueryCommands;
 @protocol PageInfoCommands;
 @protocol PopupMenuActionHandlerDelegate;
+@protocol PopupMenuCommands;
 @protocol QRScannerCommands;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
@@ -31,9 +32,6 @@ class WebNavigationBrowserAgent;
 @property(nonatomic, weak) id<PopupMenuActionHandlerDelegate> delegate;
 
 // Dispatcher.
-// TODO(crbug.com/1323764): This uses PopupMenuCommands via inclusion in
-// BrowserCommands, and should instead use a dedicated handler.
-
 @property(nonatomic, weak) id<ApplicationCommands,
                               BrowserCommands,
                               BrowserCoordinatorCommands,
@@ -43,6 +41,7 @@ class WebNavigationBrowserAgent;
     dispatcher;
 
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 

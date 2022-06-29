@@ -426,6 +426,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for omnibox commands
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
+// Command handler for popup menu commands
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -526,6 +529,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     self.textZoomHandler = dependencies.textZoomHandler;
     self.helpHandler = dependencies.helpHandler;
+    self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
 
     // TODO(crbug.com/1329090): Have BrowserCoordinator set up dispatch to the
     // BVC for these commands.
@@ -554,11 +558,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
-// TODO(crbug.com/1323764): This uses PopupMenuCommands via inclusion in
-// BrowserCommands. This is also not a public property. Instead of using
-// `self.dispatcher` internally, this should use the currect pattern for handler
-// injection into a view controller with a dedicated id<PopupMenuCommands>
-// public property set externally.
 // TODO(crbug.com/1323778): This uses SnackbarCommands via inclusion in
 // BrowserCommands. Instead a a dedicated id<SnackbarCommands> property should
 // be injected.
@@ -976,9 +975,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.textZoomHandler closeTextZoom];
   }
 
-  // TODO(crbug.com/1323764): This will need to be called on the
-  // PopupMenuCommands handler.
-  [self.dispatcher dismissPopupMenuAnimated:NO];
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
 
   if (self.presentedViewController) {
     // Dismisses any other modal controllers that may be present, e.g. Recent
@@ -2260,9 +2257,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (_isShutdown)
     return;
 
-  // TODO(crbug.com/1323764): This will need to be called on the
-  // PopupMenuCommands handler.
-  [self.dispatcher dismissPopupMenuAnimated:NO];
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
   [self.helpHandler hideAllHelpBubbles];
 }
 

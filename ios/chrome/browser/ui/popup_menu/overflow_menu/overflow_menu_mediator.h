@@ -24,6 +24,7 @@ class Tracker;
 class BrowserPolicyConnectorIOS;
 class OverlayPresenter;
 @protocol PageInfoCommands;
+@protocol PopupMenuCommands;
 class PrefService;
 @protocol FindInPageCommands;
 @protocol TextZoomCommands;
@@ -44,8 +45,6 @@ class WebStateList;
 @property(nonatomic, assign) WebStateList* webStateList;
 
 // Dispatcher.
-// TODO(crbug.com/1323764): This uses PopupMenuCommands via inclusion in
-// BrowserCommands, and should instead use a dedicated handler.
 @property(nonatomic, weak) id<ApplicationCommands,
                               BrowserCommands,
                               BrowserCoordinatorCommands,
@@ -53,6 +52,7 @@ class WebStateList;
                               TextZoomCommands>
     dispatcher;
 
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 
 // Navigation agent for reloading pages.

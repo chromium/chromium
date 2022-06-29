@@ -338,6 +338,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   BookmarkInteractionController* _bookmarkInteractionController;
   id<TextZoomCommands> _textZoomHandler;
   id<HelpCommands> _helpHandler;
+  id<PopupMenuCommands> _popupMenuCommandsHandler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -600,6 +601,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
   _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
+  // TODO(crbug.com/1340231) Replace static_cast with HandlerForProtocol
+  // after PopupMenuCoordinator is moved out of BVC.
+  _popupMenuCommandsHandler = static_cast<id<PopupMenuCommands>>(_dispatcher);
 
   _viewControllerDependencies.prerenderService = _prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
@@ -619,6 +623,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       _bookmarkInteractionController;
   _viewControllerDependencies.textZoomHandler = _textZoomHandler;
   _viewControllerDependencies.helpHandler = _helpHandler;
+  _viewControllerDependencies.popupMenuCommandsHandler =
+      _popupMenuCommandsHandler;
 }
 
 - (void)updateViewControllerDependencies {

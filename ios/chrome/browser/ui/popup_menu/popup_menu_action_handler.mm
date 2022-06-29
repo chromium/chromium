@@ -106,9 +106,7 @@ using base::UserMetricsAction;
                                        sender:UserFeedbackSender::ToolsMenu];
       // Dismisses the popup menu without animation to allow the snapshot to be
       // taken without the menu presented.
-      // TODO(crbug.com/1323764): This will need to be called on the
-      // PopupMenuCommands handler.
-      [self.dispatcher dismissPopupMenuAnimated:NO];
+      [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
       break;
     case PopupMenuActionHelp:
       RecordAction(UserMetricsAction("MobileMenuHelp"));
@@ -244,9 +242,7 @@ using base::UserMetricsAction;
   }
 
   // Close the tools menu.
-  // TODO(crbug.com/1323764): This will need to be called on the
-  // PopupMenuCommands handler.
-  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 
 @end

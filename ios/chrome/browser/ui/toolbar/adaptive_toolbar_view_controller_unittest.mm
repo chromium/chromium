@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
@@ -54,7 +55,8 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
     return;
   }
 
-  id dispatcher = OCMProtocolMock(@protocol(PopupMenuCommands));
+  id omniboxCommandsHandler = OCMProtocolMock(@protocol(OmniboxCommands));
+  id popupMenuCommandsHandler = OCMProtocolMock(@protocol(PopupMenuCommands));
   id longPressDelegate = OCMProtocolMock(@protocol(PopupMenuLongPressDelegate));
   ToolbarButtonFactory* factory =
       [[ToolbarButtonFactory alloc] initWithStyle:NORMAL];
@@ -63,7 +65,8 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
       [[PrimaryToolbarViewController alloc] init];
   toolbar.buttonFactory = factory;
   toolbar.longPressDelegate = longPressDelegate;
-  toolbar.dispatcher = dispatcher;
+  toolbar.omniboxCommandsHandler = omniboxCommandsHandler;
+  toolbar.popupMenuCommandsHandler = popupMenuCommandsHandler;
 
   UIView* buttonView = GetTabGridToolbarButton(toolbar.view);
 
@@ -82,8 +85,9 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   [gestureRecognizer touchesBegan:[NSSet setWithObject:touch] withEvent:event];
   [gestureRecognizer touchesMoved:[NSSet setWithObject:touch] withEvent:event];
 
-  // Check that the dispatcher is called when the force touch is detected.
-  OCMExpect([dispatcher showTabGridButtonPopup]);
+  // Check that the popupMenuCommandsHandler is called when the force touch is
+  // detected.
+  OCMExpect([popupMenuCommandsHandler showTabGridButtonPopup]);
 
   currentForce = 0.9;
 
@@ -94,7 +98,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
 
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
-  EXPECT_OCMOCK_VERIFY(dispatcher);
+  EXPECT_OCMOCK_VERIFY(popupMenuCommandsHandler);
 
   // Check that the longPressDelegate is notified when the gesture recognizer
   // changes, even with lower force.
