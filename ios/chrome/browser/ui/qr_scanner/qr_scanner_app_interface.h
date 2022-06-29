@@ -24,7 +24,7 @@
 #pragma mark Swizzling
 
 // Returns the block to use for swizzling the QRScannerViewController property
-// cameraController: to return |cameraControllerMock| instead of a new instance
+// cameraController: to return `cameraControllerMock` instead of a new instance
 // of CameraController.
 // This block is only used for swizzling, which is why its type is opaque. It
 // should not be called directly.
@@ -32,7 +32,7 @@
 
 #pragma mark Search engine override
 
-// Overrides the default search engine with the |templateURL|.
+// Overrides the default search engine with the `templateURL`.
 + (void)overrideSearchEngine:(NSString*)templateURL;
 
 // Restored the Google default search engine.
@@ -40,67 +40,67 @@
 
 #pragma mark Mocking and Expectations
 
-// Creates a new CameraController mock with |authorizationStatus| set.
+// Creates a new CameraController mock with `authorizationStatus` set.
 + (id)cameraControllerMockWithAuthorizationStatus:
     (AVAuthorizationStatus)authorizationStatus;
 
 // Adds functions which are expected to be called when the
-// QRScannerViewController is presented to |cameraControllerMock|.
+// QRScannerViewController is presented to `cameraControllerMock`.
 + (void)addCameraControllerInitializationExpectations:(id)cameraControllerMock;
 
 // Adds functions which are expected to be called when the
-// QRScannerViewController is dismissed to |cameraControllerMock|.
+// QRScannerViewController is dismissed to `cameraControllerMock`.
 + (void)addCameraControllerDismissalExpectations:(id)cameraControllerMock;
 
 // Adds functions which are expected to be called when the torch is switched on
-// to |cameraControllerMock|.
+// to `cameraControllerMock`.
 + (void)addCameraControllerTorchOnExpectations:(id)cameraControllerMock;
 
 // Adds functions which are expected to be called when the torch is switched off
-// to |cameraControllerMock|.
+// to `cameraControllerMock`.
 + (void)addCameraControllerTorchOffExpectations:(id)cameraControllerMock;
 
 #pragma mark CameraControllerDelegate calls
 
-// Calls |cameraStateChanged:| on the presented QRScannerViewController.
+// Calls `cameraStateChanged:` on the presented QRScannerViewController.
 + (void)callCameraStateChanged:(scanner::CameraState)state;
 
-// Calls |torchStateChanged:| on the presented QRScannerViewController.
+// Calls `torchStateChanged:` on the presented QRScannerViewController.
 + (void)callTorchStateChanged:(BOOL)torchIsOn;
 
-// Calls |torchAvailabilityChanged:| on the presented QRScannerViewController.
+// Calls `torchAvailabilityChanged:` on the presented QRScannerViewController.
 + (void)callTorchAvailabilityChanged:(BOOL)torchIsAvailable;
 
-// Calls |receiveQRScannerResult:| on the presented QRScannerViewController.
+// Calls `receiveQRScannerResult:` on the presented QRScannerViewController.
 + (void)callReceiveQRScannerResult:(NSString*)result;
 
 #pragma mark Modal helpers for dialogs
 
-// Checks that the modal presented by |viewController| is of class
-// |className|. Returns nil if the check passes and an NSError otherwise.
+// Checks that the modal presented by `viewController` is of class
+// `className`. Returns nil if the check passes and an NSError otherwise.
 + (NSError*)assertModalOfClass:(NSString*)className
                  isPresentedBy:(UIViewController*)viewController
     __attribute__((warn_unused_result));
 
-// Checks that the |viewController| is not presenting a modal, or that the modal
-// presented by |viewController| is not of class |className|.  Returns nil if
+// Checks that the `viewController` is not presenting a modal, or that the modal
+// presented by `viewController` is not of class `className`.  Returns nil if
 // the check passes and an NSError otherwise.
 + (NSError*)assertModalOfClass:(NSString*)className
               isNotPresentedBy:(UIViewController*)viewController
     __attribute__((warn_unused_result));
 
-// Returns a block that checks that the |viewController| is not presenting a
-// modal, or that the modal presented by |viewController| is not of class
-// |className|. This block can be waited on in the test process.
+// Returns a block that checks that the `viewController` is not presenting a
+// modal, or that the modal presented by `viewController` is not of class
+// `className`. This block can be waited on in the test process.
 + (BOOL (^)())blockForWaitingForModalOfClass:(NSString*)className
                         toDisappearFromAbove:(UIViewController*)viewController;
 
-// Returns the expected title for the dialog which is presented for |state|.
+// Returns the expected title for the dialog which is presented for `state`.
 + (NSString*)dialogTitleForState:(scanner::CameraState)state;
 
 #pragma mark VoiceOver overrides
 
-// Overrides the VoiceOver check for |qrScanner| to |isOn|. |qrScanner| should
+// Overrides the VoiceOver check for `qrScanner` to `isOn`. `qrScanner` should
 // be an instance of QRScannerViewController. Calls to this method should also
 // be paired, so the VoiceOver status is left in the same state as it started.
 + (void)overrideVoiceOverCheckForQRScannerViewController:

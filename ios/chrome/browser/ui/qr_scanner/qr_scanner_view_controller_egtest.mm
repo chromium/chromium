@@ -144,12 +144,12 @@ void ShowQRScanner() {
       performAction:grey_tap()];
 }
 
-// Taps the |button|.
+// Taps the `button`.
 void TapButton(id<GREYMatcher> button) {
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
 
-// Appends the given |editText| to the |text| already in the omnibox and presses
+// Appends the given `editText` to the `text` already in the omnibox and presses
 // the keyboard return key.
 void EditOmniboxTextAndTapKeyboardReturn(std::string text, NSString* editText) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(text)]
@@ -276,8 +276,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Checks that the close button, the camera preview, and the camera viewport
-// caption are visible. If |torch| is YES, checks that the torch off button is
-// visible, otherwise checks that the torch button is disabled. If |preview| is
+// caption are visible. If `torch` is YES, checks that the torch off button is
+// visible, otherwise checks that the torch button is disabled. If `preview` is
 // YES, checks that the preview is visible and of the same size as the QR
 // Scanner view, otherwise checks that the preview is in the view hierarchy but
 // is hidden.
@@ -326,7 +326,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
        toDisappearFromAbove:QRScannerAppInterface.currentBrowserViewController];
 }
 
-// Checks that the omnibox is visible and contains |text|.
+// Checks that the omnibox is visible and contains `text`.
 - (void)assertOmniboxIsVisibleWithText:(std::string)text {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(text)]
       assertWithMatcher:grey_notNil()];
@@ -335,7 +335,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #pragma mark helpers for dialogs
 
 // Checks that the QRScannerViewController is presenting a UIAlertController and
-// that the title of this alert corresponds to |state|.
+// that the title of this alert corresponds to `state`.
 - (void)assertQRScannerIsPresentingADialogForState:(CameraState)state {
   NSError* error = [QRScannerAppInterface
       assertModalOfClass:@"UIAlertController"
@@ -347,7 +347,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_notNil()];
 }
 
-// Checks that there is no visible alert with title corresponding to |state|.
+// Checks that there is no visible alert with title corresponding to `state`.
 - (void)assertQRScannerIsNotPresentingADialogForState:(CameraState)state {
   [[EarlGrey selectElementWithMatcher:grey_text([QRScannerAppInterface
                                           dialogTitleForState:state])]
@@ -358,7 +358,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #pragma mark Helpers for mocks
 
 // Swizzles the QRScannerViewController property cameraController: to return
-// |cameraControllerMock| instead of a new instance of CameraController.
+// `cameraControllerMock` instead of a new instance of CameraController.
 - (void)swizzleCameraController:(id)cameraControllerMock {
   id swizzleCameraControllerBlock = [QRScannerAppInterface
       cameraControllerSwizzleBlockWithMock:cameraControllerMock];
@@ -368,7 +368,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       swizzleCameraControllerBlock);
 }
 
-// Checks that the modal presented by |viewController| is of class |klass| and
+// Checks that the modal presented by `viewController` is of class `klass` and
 // waits for the modal's view to load.
 - (void)waitForModalOfClass:(NSString*)klassString
               toAppearAbove:(UIViewController*)viewController {
@@ -390,8 +390,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GREYAssertTrue(modalViewLoaded, errorString);
 }
 
-// Checks that the |viewController| is not presenting a modal, or that the modal
-// presented by |viewController| is not of class |klass|. If a modal was
+// Checks that the `viewController` is not presenting a modal, or that the modal
+// presented by `viewController` is not of class `klass`. If a modal was
 // previously presented, waits until it is dismissed.
 - (void)waitForModalOfClass:(NSString*)klassString
        toDisappearFromAbove:(UIViewController*)viewController {
@@ -709,8 +709,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // A helper function for testing that the view controller correctly passes the
 // received results to its delegate and that pages can be loaded. The result
-// received from the camera controller is in |result|, |response| is the
-// expected response on the loaded page, and |editString| is a nullable string
+// received from the camera controller is in `result`, `response` is the
+// expected response on the loaded page, and `editString` is a nullable string
 // which can be appended to the response in the omnibox before the page is
 // loaded.
 - (void)doTestReceivingResult:(std::string)result

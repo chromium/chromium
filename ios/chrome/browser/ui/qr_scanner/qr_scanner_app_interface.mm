@@ -183,7 +183,7 @@ using scanner::CameraState;
   return waitingBlock;
 }
 
-// Returns the expected title for the dialog which is presented for |state|.
+// Returns the expected title for the dialog which is presented for `state`.
 + (NSString*)dialogTitleForState:(CameraState)state {
   std::u16string appName = base::UTF8ToUTF16(version_info::GetProductName());
   switch (state) {

@@ -12,8 +12,8 @@
 
 // Called when the scanner detects a valid code. The camera controller stops
 // recording when a result is scanned. A valid code is any non-empty string. If
-// |load| is YES, the result should be loaded immediately without requiring
-// additional user input. The value of |load| will only be YES for barcodes
+// `load` is YES, the result should be loaded immediately without requiring
+// additional user input. The value of `load` will only be YES for barcodes
 // which can only encode digits.
 - (void)receiveQRScannerResult:(NSString*)result loadImmediately:(BOOL)load;
 
