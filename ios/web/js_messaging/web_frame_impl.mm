@@ -179,18 +179,22 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   // TODO(crbug.com/1339441): Remove custom iFrame messaging system.
   NOTREACHED();
 
-  base::Value message_payload(base::Value::Type::DICTIONARY);
-  message_payload.SetKey("messageId", base::Value(message_id));
-  message_payload.SetKey("replyWithResult", base::Value(reply_with_result));
+  base::Value::Dict message_payload;
+  message_payload.Set("messageId", base::Value(message_id));
+  message_payload.Set("replyWithResult", base::Value(reply_with_result));
   const std::string& encrypted_message_json =
-      EncryptPayload(std::move(message_payload), std::string());
+      EncryptPayload(base::Value(std::move(message_payload)), std::string());
 
-  base::Value function_payload(base::Value::Type::DICTIONARY);
-  function_payload.SetKey("functionName", base::Value(name));
-  base::ListValue parameters_value(parameters);
-  function_payload.SetKey("parameters", std::move(parameters_value));
-  const std::string& encrypted_function_json = EncryptPayload(
-      std::move(function_payload), base::NumberToString(message_id));
+  base::Value::Dict function_payload;
+  function_payload.Set("functionName", name);
+  base::Value::List parameters_value;
+  for (auto& parameter : parameters) {
+    parameters_value.Append(parameter.Clone());
+  }
+  function_payload.Set("parameters", std::move(parameters_value));
+  const std::string& encrypted_function_json =
+      EncryptPayload(base::Value(std::move(function_payload)),
+                     base::NumberToString(message_id));
 
   if (encrypted_message_json.empty() || encrypted_function_json.empty()) {
     // Sealing the payload failed.
