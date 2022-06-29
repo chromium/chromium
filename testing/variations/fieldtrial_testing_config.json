@@ -9536,7 +9536,7 @@
             ]
         }
     ],
-    "WebRTC-Audio-NetEqDelayManagerConfig": [
+    "WebRTC-Audio-NetEqDecisionLogicConfig": [
         {
             "platforms": [
                 "windows",
@@ -9551,7 +9551,7 @@
             ],
             "experiments": [
                 {
-                    "name": "quantile:0.95,forget_factor:0.983,resample_interval_ms:500"
+                    "name": "enable_stable_playout_delay:true,reinit_after_expands:1000"
                 }
             ]
         }
