@@ -118,8 +118,10 @@ void BrowserFrame::InitBrowserFrame() {
                                                &params.show_state);
 
       params.workspace = browser->initial_workspace();
-      params.visible_on_all_workspaces =
-          browser->initial_visible_on_all_workspaces_state();
+      if (native_browser_frame_->ShouldUseInitialVisibleOnAllWorkspaces()) {
+        params.visible_on_all_workspaces =
+            browser->initial_visible_on_all_workspaces_state();
+      }
       const base::CommandLine& parsed_command_line =
           *base::CommandLine::ForCurrentProcess();
 

@@ -438,6 +438,10 @@ bool BrowserFrameMac::ShouldRestorePreviousBrowserWidgetState() const {
   return true;
 }
 
+bool BrowserFrameMac::ShouldUseInitialVisibleOnAllWorkspaces() const {
+  return true;
+}
+
 void BrowserFrameMac::AnnounceTextInInProcessWindow(
     const std::u16string& text) {
   NSAccessibilityPriorityLevel priority = NSAccessibilityPriorityHigh;

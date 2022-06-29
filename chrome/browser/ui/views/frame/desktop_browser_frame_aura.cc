@@ -117,3 +117,7 @@ bool DesktopBrowserFrameAura::HandleKeyboardEvent(
 bool DesktopBrowserFrameAura::ShouldRestorePreviousBrowserWidgetState() const {
   return true;
 }
+
+bool DesktopBrowserFrameAura::ShouldUseInitialVisibleOnAllWorkspaces() const {
+  return true;
+}

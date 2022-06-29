@@ -58,6 +58,7 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
   bool ShouldRestorePreviousBrowserWidgetState() const override;
+  bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
 
  private:
   // The BrowserView is our ClientView. This is a pointer to it.
