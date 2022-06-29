@@ -14,13 +14,13 @@
 
 using TextBadgeViewTest = PlatformTest;
 
-// Test that the |text| property is set during initialization.
+// Test that the `text` property is set during initialization.
 TEST_F(TextBadgeViewTest, CreateBadge) {
   TextBadgeView* badge = [[TextBadgeView alloc] initWithText:@"text"];
   EXPECT_NSEQ(@"text", badge.text);
 }
 
-// Test setting the |text| property.
+// Test setting the `text` property.
 TEST_F(TextBadgeViewTest, SetText) {
   TextBadgeView* badge = [[TextBadgeView alloc] initWithText:@"text 1"];
   [badge setText:@"text 2"];

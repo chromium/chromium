@@ -30,7 +30,7 @@ enum class ReadingListSelectionState {
 // Whether the reading list is being edited.
 @property(nonatomic, assign, getter=isEditing) BOOL editing;
 
-// Whether the toolbar buttons have changed since the last |-buttonItems| call.
+// Whether the toolbar buttons have changed since the last `-buttonItems` call.
 @property(nonatomic, readonly) BOOL buttonItemsUpdated;
 
 // The handler for toolbar button actions.
@@ -38,7 +38,7 @@ enum class ReadingListSelectionState {
 
 // Returns an array of button items that should be displayed for the current
 // state.  The buttons are be set up to send ReadingListToolbarButtonCommands
-// to |self.commandHandler|.
+// to `self.commandHandler`.
 - (NSArray<UIBarButtonItem*>*)buttonItems;
 
 // Updates the title of the mark button based on the selection state. This

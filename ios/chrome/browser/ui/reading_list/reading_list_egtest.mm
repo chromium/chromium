@@ -93,7 +93,7 @@ NSString* const kCheckImagesJS =
     @"}"
     @"checkImages();";
 
-// Returns the string concatenated |n| times.
+// Returns the string concatenated `n` times.
 std::string operator*(const std::string& s, unsigned int n) {
   std::ostringstream out;
   for (unsigned int i = 0; i < n; i++)
@@ -108,7 +108,7 @@ void ScrollToTop() {
 }
 
 // Asserts that the "mark" toolbar button is visible and has the a11y label of
-// |a11y_label_id|.
+// `a11y_label_id`.
 void AssertToolbarMarkButtonText(int a11y_label_id) {
   [[EarlGrey
       selectElementWithMatcher:
@@ -119,7 +119,7 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Asserts the |button_id| toolbar button is not visible.
+// Asserts the `button_id` toolbar button is not visible.
 void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
@@ -129,7 +129,7 @@ void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Assert the |button_id| toolbar button is visible.
+// Assert the `button_id` toolbar button is visible.
 void AssertToolbarButtonVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
@@ -139,20 +139,20 @@ void AssertToolbarButtonVisibleWithID(NSString* button_id) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Taps the |button_id| toolbar button.
+// Taps the `button_id` toolbar button.
 void TapToolbarButtonWithID(NSString* button_id) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(button_id)]
       performAction:grey_tap()];
 }
 
-// Taps the context menu button with the a11y label of |a11y_label_id|.
+// Taps the context menu button with the a11y label of `a11y_label_id`.
 void TapContextMenuButtonWithA11yLabelID(int a11y_label_id) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    a11y_label_id)] performAction:grey_tap()];
 }
 
-// Performs |action| on the entry with the title |entryTitle|. The view can be
+// Performs `action` on the entry with the title `entryTitle`. The view can be
 // scrolled down to find the entry.
 void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
   ScrollToTop();
@@ -166,18 +166,18 @@ void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
       performAction:action];
 }
 
-// Taps the entry with the title |entryTitle|.
+// Taps the entry with the title `entryTitle`.
 void TapEntry(NSString* entryTitle) {
   PerformActionOnEntry(entryTitle, grey_tap());
 }
 
-// Long-presses the entry with the title |entryTitle|.
+// Long-presses the entry with the title `entryTitle`.
 void LongPressEntry(NSString* entryTitle) {
   PerformActionOnEntry(entryTitle,
                        grey_longPressWithDuration(kLongPressDuration));
 }
 
-// Asserts that the entry with the title |entryTitle| is visible.
+// Asserts that the entry with the title `entryTitle` is visible.
 void AssertEntryVisible(NSString* entryTitle) {
   ScrollToTop();
   [[[EarlGrey
@@ -205,7 +205,7 @@ void AssertAllEntriesVisible() {
                   @"The number of entries have changed");
 }
 
-// Asserts that the entry |title| is not visible.
+// Asserts that the entry `title` is not visible.
 void AssertEntryNotVisible(NSString* title) {
   [ChromeEarlGreyUI waitForAppToIdle];
   ScrollToTop();
@@ -223,7 +223,7 @@ void AssertEntryNotVisible(NSString* title) {
   GREYAssertNotNil(error, @"Entry is visible");
 }
 
-// Asserts |header| is visible.
+// Asserts `header` is visible.
 void AssertHeaderNotVisible(NSString* header) {
   [ChromeEarlGreyUI waitForAppToIdle];
   ScrollToTop();
@@ -366,9 +366,9 @@ void WaitForDistillation() {
              @"Item was not distilled.");
 }
 
-// Serves URLs. Response can be delayed by |delay| second or return an error if
-// |responds_with_content| is false.
-// If |distillable|, result is can be distilled for offline display.
+// Serves URLs. Response can be delayed by `delay` second or return an error if
+// `responds_with_content` is false.
+// If `distillable`, result is can be distilled for offline display.
 std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
     const bool& responds_with_content,
     const int& delay,
@@ -412,9 +412,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
 }
 
 // Serves image URLs.
-// If |serve_red_image| is false, 404 error is returned when red image is
+// If `serve_red_image` is false, 404 error is returned when red image is
 // requested.
-// |served_red_image| will be set to true whenever red image is requested.
+// `served_red_image` will be set to true whenever red image is requested.
 std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
     const bool& serve_red_image,
     bool& served_red_image,

@@ -26,13 +26,13 @@ class ReadingListModel;
                            (nonnull ReadingListListItemFactory*)itemFactory
     NS_DESIGNATED_INITIALIZER;
 
-// Returns the entry corresponding to the |item|. The item should be of type
+// Returns the entry corresponding to the `item`. The item should be of type
 // ReadingListCollectionViewItem. Returns nullptr if there is no corresponding
 // entry.
 - (nullable const ReadingListEntry*)entryFromItem:
     (nonnull id<ReadingListListItem>)item;
 
-// Marks the entry with |URL| as read.
+// Marks the entry with `URL` as read.
 - (void)markEntryRead:(const GURL&)URL;
 
 @end

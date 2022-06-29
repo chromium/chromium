@@ -17,7 +17,7 @@
 #endif
 
 namespace {
-// Returns the title to use for the "Mark" button for |state|.
+// Returns the title to use for the "Mark" button for `state`.
 NSString* GetMarkButtonTitleForSelectionState(ReadingListSelectionState state) {
   switch (state) {
     case ReadingListSelectionState::NONE:
@@ -37,14 +37,14 @@ NSString* GetMarkButtonTitleForSelectionState(ReadingListSelectionState state) {
   NSMutableArray<UIBarButtonItem*>* _buttonItems;
 }
 
-// The possible button items that may be returned by the |-buttonItems|.
+// The possible button items that may be returned by the `-buttonItems`.
 @property(nonatomic, strong, readonly) UIBarButtonItem* editButton;
 @property(nonatomic, strong, readonly) UIBarButtonItem* deleteButton;
 @property(nonatomic, strong, readonly) UIBarButtonItem* deleteAllReadButton;
 @property(nonatomic, strong, readonly) UIBarButtonItem* cancelButton;
 @property(nonatomic, strong, readonly) UIBarButtonItem* markButton;
 
-// Whether the corresponding button items should be returned in |-buttonItems|.
+// Whether the corresponding button items should be returned in `-buttonItems`.
 @property(nonatomic, readonly) BOOL shouldShowEditButton;
 @property(nonatomic, readonly) BOOL shouldShowDeleteButton;
 @property(nonatomic, readonly) BOOL shouldShowDeleteAllReadButton;
@@ -152,8 +152,8 @@ NSString* GetMarkButtonTitleForSelectionState(ReadingListSelectionState state) {
 
 - (BOOL)buttonItemsUpdated {
   // When the changes to the values of this class's public properties require
-  // an updated buttons array, |_buttonItems| will be reset to nil.  Subsequent
-  // calls to |-buttonItems| will regenerate the correct button item array.
+  // an updated buttons array, `_buttonItems` will be reset to nil.  Subsequent
+  // calls to `-buttonItems` will regenerate the correct button item array.
   return !_buttonItems;
 }
 
@@ -248,7 +248,7 @@ NSString* GetMarkButtonTitleForSelectionState(ReadingListSelectionState state) {
   }
 }
 
-// Inserts spacer button items between the items in |items|, right aligning the
+// Inserts spacer button items between the items in `items`, right aligning the
 // buttons if they appear alone.
 - (void)addSpacersToItems:(NSMutableArray<UIBarButtonItem*>*)items {
   NSMutableArray<UIBarButtonItem*>* spacers = [NSMutableArray array];

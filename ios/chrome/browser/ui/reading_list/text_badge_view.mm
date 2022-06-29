@@ -26,7 +26,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
 @property(nonatomic, strong) UILabel* label;
 // The margin between the sides of the label and the badge.
 @property(nonatomic, assign, readonly) CGFloat labelHorizontalMargin;
-// Indicate whether |label| has been added as a subview of the TextBadgeView.
+// Indicate whether `label` has been added as a subview of the TextBadgeView.
 @property(nonatomic, assign) BOOL didAddSubviews;
 @end
 
@@ -54,7 +54,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
 
 #pragma mark - UIView overrides
 
-// Override |willMoveToSuperview| to add view properties to the view hierarchy
+// Override `willMoveToSuperview` to add view properties to the view hierarchy
 // and set the badge's appearance.
 - (void)willMoveToSuperview:(UIView*)newSuperview {
   if (!self.didAddSubviews) {

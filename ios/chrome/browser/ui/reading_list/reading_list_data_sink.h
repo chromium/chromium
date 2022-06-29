@@ -23,11 +23,11 @@
 // Returns the unread items displayed.
 - (NSArray<id<ReadingListListItem>>*)unreadItems;
 
-// Notifies the DataSink that the |item| has changed and it should be reloaded
+// Notifies the DataSink that the `item` has changed and it should be reloaded
 // if it is still displayed.
 - (void)itemHasChangedAfterDelay:(id<ReadingListListItem>)item;
-// Notifies the DataSink that the |items| have changed and must be reloaded. The
-// |items| must be presented.
+// Notifies the DataSink that the `items` have changed and must be reloaded. The
+// `items` must be presented.
 - (void)itemsHaveChanged:(NSArray<id<ReadingListListItem>>*)items;
 
 @end
