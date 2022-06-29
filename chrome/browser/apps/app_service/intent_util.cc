@@ -944,6 +944,7 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   bool has_view_action = false;
+  bool is_file_filter = arc_intent_filter.mime_types().size() > 0;
 
   apps::ConditionValues action_condition_values;
   for (auto& arc_action : arc_intent_filter.actions()) {
@@ -963,15 +964,19 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
     intent_filter->conditions.push_back(std::move(action_condition));
   }
 
-  apps::ConditionValues scheme_condition_values;
-  for (auto& scheme : arc_intent_filter.schemes()) {
-    scheme_condition_values.push_back(std::make_unique<apps::ConditionValue>(
-        scheme, apps::PatternMatchType::kNone));
-  }
-  if (!scheme_condition_values.empty()) {
-    auto scheme_condition = std::make_unique<apps::Condition>(
-        apps::ConditionType::kScheme, std::move(scheme_condition_values));
-    intent_filter->conditions.push_back(std::move(scheme_condition));
+  // Some ARC file filters will have schemes, but we don't want them visible in
+  // App Service filters since they are irrelevant.
+  if (!is_file_filter) {
+    apps::ConditionValues scheme_condition_values;
+    for (auto& scheme : arc_intent_filter.schemes()) {
+      scheme_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+          scheme, apps::PatternMatchType::kNone));
+    }
+    if (!scheme_condition_values.empty()) {
+      auto scheme_condition = std::make_unique<apps::Condition>(
+          apps::ConditionType::kScheme, std::move(scheme_condition_values));
+      intent_filter->conditions.push_back(std::move(scheme_condition));
+    }
   }
 
   apps::ConditionValues host_condition_values;
@@ -1051,6 +1056,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
   auto intent_filter = apps::mojom::IntentFilter::New();
 
   bool has_view_action = false;
+  bool is_file_filter = arc_intent_filter.mime_types().size() > 0;
 
   std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
   for (auto& arc_action : arc_intent_filter.actions()) {
@@ -1070,15 +1076,19 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     intent_filter->conditions.push_back(std::move(action_condition));
   }
 
-  std::vector<apps::mojom::ConditionValuePtr> scheme_condition_values;
-  for (auto& scheme : arc_intent_filter.schemes()) {
-    scheme_condition_values.push_back(
-        MakeConditionValue(scheme, apps::mojom::PatternMatchType::kNone));
-  }
-  if (!scheme_condition_values.empty()) {
-    auto scheme_condition = MakeCondition(apps::mojom::ConditionType::kScheme,
-                                          std::move(scheme_condition_values));
-    intent_filter->conditions.push_back(std::move(scheme_condition));
+  // Some ARC file filters will have schemes, but we don't want them visible in
+  // App Service filters since they are irrelevant.
+  if (!is_file_filter) {
+    std::vector<apps::mojom::ConditionValuePtr> scheme_condition_values;
+    for (auto& scheme : arc_intent_filter.schemes()) {
+      scheme_condition_values.push_back(
+          MakeConditionValue(scheme, apps::mojom::PatternMatchType::kNone));
+    }
+    if (!scheme_condition_values.empty()) {
+      auto scheme_condition = MakeCondition(apps::mojom::ConditionType::kScheme,
+                                            std::move(scheme_condition_values));
+      intent_filter->conditions.push_back(std::move(scheme_condition));
+    }
   }
 
   std::vector<apps::mojom::ConditionValuePtr> host_condition_values;
