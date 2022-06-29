@@ -51,7 +51,7 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, InitialState) {
   EXPECT_EQ(session_->scope(),
             base::flat_set<std::string>({"ala", "ma", "kota"}));
   EXPECT_TRUE(session_->endpoint_access_token().empty());
-  EXPECT_TRUE(session_->MoveWaitingList().empty());
+  EXPECT_TRUE(session_->TakeWaitingList().empty());
 }
 
 TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, WaitingList) {
@@ -62,9 +62,9 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, WaitingList) {
   session_->AddToWaitingList(BindResult(cr1));
   session_->AddToWaitingList(BindResult(cr2));
   session_->AddToWaitingList(BindResult(cr3));
-  auto callbacks = session_->MoveWaitingList();
+  auto callbacks = session_->TakeWaitingList();
   ASSERT_EQ(callbacks.size(), 3);
-  EXPECT_TRUE(session_->MoveWaitingList().empty());
+  EXPECT_TRUE(session_->TakeWaitingList().empty());
   std::move(callbacks[0]).Run(StatusCode::kOK, "1");
   std::move(callbacks[1]).Run(StatusCode::kAccessDenied, "2");
   std::move(callbacks[2]).Run(StatusCode::kServerError, "3");

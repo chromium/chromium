@@ -428,7 +428,7 @@ void AuthorizationZoneImpl::ResultForIppEndpoint(
   auto it = ipp_endpoints_.find(ipp_endpoint);
   DCHECK(it != ipp_endpoints_.end());
   // The list of callbacks to run.
-  std::vector<StatusCallback> callbacks = it->second->MoveWaitingList();
+  std::vector<StatusCallback> callbacks = it->second->TakeWaitingList();
   // We have to make a copy of `data` here because it may be an error message
   // owned by the ipp_endpoint object deleted in the next if block.
   const std::string data2 = data;

@@ -54,11 +54,11 @@ class IppEndpointTokenFetcher {
   }
 
   // Adds `callback` to the end of the waiting list. These callbacks are not
-  // called internally. Instead, they can be retrieved with MoveWaitingList().
+  // called internally. Instead, they can be retrieved with TakeWaitingList().
   void AddToWaitingList(StatusCallback callback);
   // Returns the waiting list by moving it. After calling this method
   // the waiting list is empty.
-  std::vector<StatusCallback> MoveWaitingList();
+  std::vector<StatusCallback> TakeWaitingList();
 
   // Prepares and sends Token Exchange Request using `access_token`. Results are
   // returned by `callback`. If the request is successful, the callback returns
