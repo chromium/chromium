@@ -12,9 +12,12 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -68,6 +71,8 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
   class MockCouponService : public CouponService {
    public:
     MOCK_METHOD1(RecordCouponDisplayTimestamp,
@@ -117,6 +122,22 @@ class OfferNotificationBubbleControllerImplTest
     return autofill::AutofillOfferData::FreeListingCouponOffer(
         offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
         display_strings, promo_code);
+  }
+
+  AutofillOfferData CreateTestGPayPromoCodeOffer(
+      const std::vector<GURL>& merchant_origins,
+      const std::string& promo_code) {
+    int64_t offer_id = 2468;
+    base::Time expiry = base::Time::Now() + base::Days(2);
+    autofill::DisplayStrings display_strings;
+    display_strings.value_prop_text = "5% off on shoes. Up to $50.";
+    display_strings.see_details_text = "See details";
+    display_strings.usage_instructions_text =
+        "Click the promo code field at checkout to autofill it.";
+    GURL offer_details_url = GURL("https://pay.google.com");
+    return autofill::AutofillOfferData::GPayPromoCodeOffer(
+        offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+        promo_code);
   }
 
   TestOfferNotificationBubbleControllerImpl* controller() {
@@ -252,6 +273,44 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
   controller()->OnCouponInvalidated(offer);
   EXPECT_FALSE(controller()->GetOfferNotificationBubbleView());
+}
+
+// Tests that the offer notification bubble will be shown, and coupon service
+// will not be called for a GPay promo code offer.
+TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillFillMerchantPromoCodeFields);
+  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL5678");
+  ShowBubble(&offer);
+
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
+}
+
+// Tests that the offer notification bubble will be shown as a free-listing
+// coupon notification bubble when the feature is disabled.
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       GPayPromoCode_BubbleShownWithFLCTitle) {
+  feature_list_.InitAndDisableFeature(
+      autofill::features::kAutofillFillMerchantPromoCodeFields);
+
+  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL5678");
+  ShowBubble(&offer);
+
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+  EXPECT_EQ(
+      controller()->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE));
 }
 
 }  // namespace autofill
