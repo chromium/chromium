@@ -320,17 +320,26 @@ NSString* const kContextMenuEllipsis = @"…";
     }
   }
 
+  NSString* menuTitle;
+
   // Insert any provided menu items. Do after Link and/or Image to allow
   // inserting at beginning or adding to end.
-  ios::provider::AddContextMenuElements(
-      menuElements, self.browser->GetBrowserState(), webState, params,
-      self.baseViewController);
+  ElementsToAddToContextMenu* result =
+      ios::provider::GetContextMenuElementsToAdd(
+          self.browser->GetBrowserState(), webState, params,
+          self.baseViewController);
+
+  // Check if result and result.elements are not nil, in that case copy the
+  // title in menuTitle and add the elements of result.elements in menuElements.
+  if (result && result.elements) {
+    [menuElements addObjectsFromArray:result.elements];
+    menuTitle = result.title;
+  }
 
   if (menuElements.count == 0) {
     return nil;
   }
 
-  NSString* menuTitle = nil;
   if (isLink || isImage) {
     menuTitle = GetContextMenuTitle(params);
 
