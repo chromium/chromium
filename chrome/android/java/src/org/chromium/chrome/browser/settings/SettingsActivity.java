@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment;
 import org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
@@ -413,8 +413,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             }
             imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
         }
-        if (fragment instanceof PrivacySandboxSettingsFragment) {
-            ((PrivacySandboxSettingsFragment) fragment)
+        if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
+            ((PrivacySandboxSettingsBaseFragment) fragment)
                     .setCustomTabIntentHelper(
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
         }

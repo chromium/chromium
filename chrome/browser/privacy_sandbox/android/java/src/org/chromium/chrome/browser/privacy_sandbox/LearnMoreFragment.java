@@ -8,7 +8,10 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
+import android.view.Menu;
+import android.view.MenuInflater;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -23,6 +26,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
 public class LearnMoreFragment extends PreferenceFragmentCompat {
     private static final String TOPICS_DESCRIPTION_PREFERENCE = "topics_description";
     private static final String FLEDGE_DESCRIPTION_PREFERENCE = "fledge_description";
+
     /**
      * Initializes all the objects related to the preferences page.
      */
@@ -55,6 +59,9 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
                 formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_fledge_2),
                 "\n\n",
                 formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_fledge_3)));
+
+        // Enable the options menu to be able to clear it.
+        setHasOptionsMenu(true);
     }
 
     private SpannableString formatLearnMoreBullet(@StringRes int stringId) {
@@ -64,5 +71,11 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
                         "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
         spannableString.setSpan(new ChromeBulletSpan(getContext()), 0, spannableString.length(), 0);
         return spannableString;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
     }
 }

@@ -25,8 +25,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 /**
  * Settings fragment for privacy sandbox settings.
  */
-public class PrivacySandboxSettingsFragmentV3
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+public class PrivacySandboxSettingsFragmentV3 extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceChangeListener {
     public static final String PRIVACY_SANDBOX_URL = "https://www.privacysandbox.com";
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
@@ -55,6 +55,7 @@ public class PrivacySandboxSettingsFragmentV3
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3);
 
         // Add all preferences and set the title.

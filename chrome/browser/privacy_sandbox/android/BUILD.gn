@@ -24,6 +24,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNotice.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxHelpers.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsBaseFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentV3.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSnackbarController.java",

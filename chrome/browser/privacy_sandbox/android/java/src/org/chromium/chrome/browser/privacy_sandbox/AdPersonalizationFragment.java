@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,7 +28,7 @@ import java.util.List;
  * Settings fragment for privacy sandbox settings.
  */
 public class AdPersonalizationFragment
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
     private static final String AD_PERSONALIZATION_DESCRIPTION = "ad_personalization_description";
 
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
@@ -62,6 +61,7 @@ public class AdPersonalizationFragment
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_ad_personalization_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_preference);
 

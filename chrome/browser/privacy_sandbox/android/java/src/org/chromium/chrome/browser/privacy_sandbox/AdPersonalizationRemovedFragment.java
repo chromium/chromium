@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,7 +25,7 @@ import org.chromium.components.favicon.LargeIconBridge;
  * Settings fragment for privacy sandbox settings.
  */
 public class AdPersonalizationRemovedFragment
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
     private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
     private static final String FLEDGE_CATEGORY_PREFERENCE = "fledge_interests";
@@ -48,6 +47,7 @@ public class AdPersonalizationRemovedFragment
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_remove_interest_title);
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_removed_preference);
