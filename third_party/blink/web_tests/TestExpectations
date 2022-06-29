@@ -7121,31 +7121,6 @@ virtual/threaded/external/wpt/scroll-animations/scroll-timelines/set-current-tim
 
 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState.html [ Skip ]
 
-# Sheriff 2022-06-28
-crbug.com/1340295 [ Mac10.15 ] compositing/3d-corners.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/geometry/layer-due-to-layer-children.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/geometry/vertical-scroll-composited.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/lots-of-img-layers-with-opacity.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/lots-of-img-layers.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/overflow/mask-with-filter.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/overflow/rotate-clip.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/overflow/rotate-then-clip.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/perspective-interest-rect.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/reflections/nested-reflection-anchor-point.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] compositing/reflections/nested-reflection-animated.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] css3/blending/background-blend-mode-overlapping-accelerated-elements.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] fast/borders/border-radius-with-composited-child.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] fast/frames/frame-set-scaling-skew.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] media/video-zoom-controls.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] paint/invalidation/transform/caret-with-transformation.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] transforms/3d/general/perspective-units.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping-origins.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
-crbug.com/1340295 [ Mac10.15 ] transforms/transformed-caret.html [ Failure ]
-
 # Sheriff 2022-06-29
 crbug.com/1340421 [ Mac10.15 ] virtual/gpu-rasterization/images/color-profile-svg-foreign-object.html [ Skip ]
 crbug.com/1340421 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Skip ]
