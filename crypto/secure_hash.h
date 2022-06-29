@@ -20,6 +20,7 @@ class CRYPTO_EXPORT SecureHash {
  public:
   enum Algorithm {
     SHA256,
+    SHA512,
   };
 
   SecureHash(const SecureHash&) = delete;
