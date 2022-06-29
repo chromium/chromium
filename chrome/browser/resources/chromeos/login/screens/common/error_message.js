@@ -195,16 +195,16 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * @suppress {checkTypes} isOneOf_ allows arbitrary number of arguments.
    */
   getDialogTitle_() {
-    if (this.isOneOf_(this.errorState_, 'portal', 'offline')) {
-      return this.i18n('captivePortalTitle');
+    if (this.isOneOf_(this.uiState_, 'ui-state-rollback-error')) {
+      return this.i18n('rollbackErrorTitle');
     } else if (
         this.isOneOf_(this.uiState_, 'ui-state-local-state-error') ||
         this.isOneOf_(this.errorState_, 'proxy', 'auth-ext-timeout')) {
       return this.i18n('loginErrorTitle');
     } else if (this.isOneOf_(this.errorState_, 'kiosk-online')) {
       return this.i18n('kioskOnlineTitle');
-    } else if (this.isOneOf_(this.uiState_, 'ui-state-rollback-error')) {
-      return this.i18n('rollbackErrorTitle');
+    } else if (this.isOneOf_(this.errorState_, 'portal', 'offline')) {
+      return this.i18n('captivePortalTitle');
     } else {
       return '';
     }
