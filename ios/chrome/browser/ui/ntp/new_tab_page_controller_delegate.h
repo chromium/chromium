@@ -7,7 +7,7 @@
 
 // Delete for NTP and it's subclasses to communicate with the toolbar.
 @protocol NewTabPageControllerDelegate
-// Sets the toolbar location bar alpha and vertical offset based on |progress|.
+// Sets the toolbar location bar alpha and vertical offset based on `progress`.
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress;
 
 // The target for scribble events as forwarded by the NTP fakebox.

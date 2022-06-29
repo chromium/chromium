@@ -84,10 +84,10 @@ class NotificationPromoWhatsNewTest : public PlatformTest {
     promo_.Init();
   }
 
-  // Tests that |promo_text|, |promo_type|, |url|, |command_id|, and |icon|
-  // equal their respective values in |promo_|, and that |valid| matches the
-  // return value of |promo_|'s |CanShow()| method. |icon| is verified only if
-  // |valid| is true.
+  // Tests that `promo_text`, `promo_type`, `url`, `command_id`, and `icon`
+  // equal their respective values in `promo_`, and that `valid` matches the
+  // return value of `promo_`'s `CanShow()` method. `icon` is verified only if
+  // `valid` is true.
   void RunTests(const std::string& promo_text,
                 const std::string& promo_type,
                 const std::string& url,
@@ -102,7 +102,7 @@ class NotificationPromoWhatsNewTest : public PlatformTest {
       EXPECT_EQ(command, promo_.command());
 
     EXPECT_EQ(valid, promo_.CanShow());
-    // |icon_type()| is set only if the promo is valid.
+    // `icon_type()` is set only if the promo is valid.
     if (valid)
       EXPECT_EQ(icon_type, promo_.icon_type());
   }
@@ -261,7 +261,7 @@ TEST_F(NotificationPromoWhatsNewTest, NotificationPromoMetricTest) {
   promo_.HandleViewed();
   EXPECT_EQ(1, GetUserActionCount("WhatsNewPromoViewed_TestWhatsNewMetric"));
 
-  // Verify that the promo closed user action count is 0 before |HandleClosed()|
+  // Verify that the promo closed user action count is 0 before `HandleClosed()`
   // is called.
   EXPECT_EQ(0, GetUserActionCount("WhatsNewPromoClosed_TestWhatsNewMetric"));
   promo_.HandleClosed();

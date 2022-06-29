@@ -24,22 +24,22 @@
 
 namespace ntp_tile_saver {
 
-// Write the |most_visited_sites| to disk.
+// Write the `most_visited_sites` to disk.
 void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites);
 
-// Checks if every site in |tiles| has had its favicons fetched. If so, writes
-// the info to disk, saving the favicons to |favicons_directory|.
+// Checks if every site in `tiles` has had its favicons fetched. If so, writes
+// the info to disk, saving the favicons to `favicons_directory`.
 void WriteToDiskIfComplete(NSDictionary<NSURL*, NTPTile*>* tiles,
                            NSURL* favicons_directory);
 
 // Gets a name for the favicon file.
 NSString* GetFaviconFileName(const GURL& url);
 
-// If the sites currently saved include one with |tile|'s url, replace it by
-// |tile|.
+// If the sites currently saved include one with `tile`'s url, replace it by
+// `tile`.
 void WriteSingleUpdatedTileToDisk(NTPTile* tile);
 
-// Get the favicons using |favicon_provider| and writes them to disk.
+// Get the favicons using `favicon_provider` and writes them to disk.
 void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
                         FaviconAttributesProvider* favicon_provider,
                         NSURL* favicons_directory);
@@ -48,8 +48,8 @@ void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
 // widget.
 void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data);
 
-// Deletes icons contained in |favicons_directory| and corresponding to no URL
-// in |most_visited_data|.
+// Deletes icons contained in `favicons_directory` and corresponding to no URL
+// in `most_visited_data`.
 void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory);
 

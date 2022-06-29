@@ -916,7 +916,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
-// Records simple engagement for the current |selectedFeed|.
+// Records simple engagement for the current `selectedFeed`.
 - (void)recordEngagedSimple {
   // If neither feed has been engaged with, log "AllFeeds" simple engagement.
   if (!self.engagedSimpleReportedDiscover &&
@@ -966,9 +966,9 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
     self.engagedReportedFollowing = YES;
 
     // Log follow count when engaging with Following feed.
-    // TODO(crbug.com/1322640): |followDelegate| is nil when navigating to an
+    // TODO(crbug.com/1322640): `followDelegate` is nil when navigating to an
     // article, since NTPCoordinator is stopped first. When this is fixed, we
-    // should call |recordFollowCount| here.
+    // should call `recordFollowCount` here.
   }
 
   // TODO(crbug.com/1322640): Separate user action for Following feed
@@ -995,7 +995,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   self.scrolledReportedFollowing = NO;
 }
 
-// Records the |durationInSeconds| it took to Discover feed to perform any
+// Records the `durationInSeconds` it took to Discover feed to perform any
 // network operation.
 - (void)recordNetworkRequestDurationInSeconds:
     (NSTimeInterval)durationInSeconds {

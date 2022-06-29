@@ -158,7 +158,7 @@ namespace {
     ContentSuggestionsHeaderSynchronizer* headerSynchronizer;
 
 // The ViewController displayed by this Coordinator. This is the returned
-// ViewController and will contain the |containedViewController| (Which can
+// ViewController and will contain the `containedViewController` (Which can
 // change depending on Feed visibility).
 @property(nonatomic, strong) UIViewController* containerViewController;
 
@@ -452,7 +452,7 @@ namespace {
 
 #pragma mark - ChromeCoordinatorHelpers
 
-// Configures |self.ntpViewController| and sets it up as the main ViewController
+// Configures `self.ntpViewController` and sets it up as the main ViewController
 // managed by this Coordinator.
 - (void)configureNTPViewController {
   DCHECK(self.ntpViewController);
@@ -1106,7 +1106,7 @@ namespace {
          !IsFeedAblationEnabled();
 }
 
-// Returns |YES| if the feed is currently visible on the NTP.
+// Returns `YES` if the feed is currently visible on the NTP.
 - (BOOL)isFeedVisible {
   return [self shouldFeedBeVisible] && self.feedViewController;
 }

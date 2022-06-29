@@ -80,7 +80,7 @@ class Time;
 // Records different metrics for the NTP feeds.
 @interface FeedMetricsRecorder : NSObject
 
-// Record metrics for when the user has scrolled |scrollDistance| in the Feed.
+// Record metrics for when the user has scrolled `scrollDistance` in the Feed.
 - (void)recordFeedScrolled:(int)scrollDistance;
 
 // Record metrics for when the user changes the device orientation with the feed
@@ -165,13 +165,13 @@ class Time;
 // Records metrics for when a Snackbar has been shown.
 - (void)recordShowSnackbar;
 
-// Records an unknown |commandID| performed by the Feed.
+// Records an unknown `commandID` performed by the Feed.
 - (void)recordCommandID:(int)commandID;
 
-// Records that a card was shown at |index|.
+// Records that a card was shown at `index`.
 - (void)recordCardShownAtIndex:(int)index;
 
-// Records that a card was opened at |index|.
+// Records that a card was opened at `index`.
 - (void)recordCardTappedAtIndex:(int)index;
 
 // Records if a notice card was presented at the time the feed was initially
@@ -182,21 +182,21 @@ class Time;
 // loaded. e.g. Launch time, user refreshes, and account switches.
 - (void)recordActivityLoggingEnabled:(BOOL)loggingEnabled;
 
-// Records the |durationInSeconds| it took to Discover feed to Fetch articles.
-// |success| is YES if operation was successful.
+// Records the `durationInSeconds` it took to Discover feed to Fetch articles.
+// `success` is YES if operation was successful.
 - (void)recordFeedArticlesFetchDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success;
 
-// Records the |durationInSeconds| it took to Discover feed to Fetch more
-// articles (e.g. New "infinite feed" articles). |success| is YES if operation
+// Records the `durationInSeconds` it took to Discover feed to Fetch more
+// articles (e.g. New "infinite feed" articles). `success` is YES if operation
 // was successful.
 - (void)recordFeedMoreArticlesFetchDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                              success:(BOOL)success;
 
-// Records the |durationInSeconds| it took to Discover feed to upload actions.
-// |success| is YES if operation was successful.
+// Records the `durationInSeconds` it took to Discover feed to upload actions.
+// `success` is YES if operation was successful.
 - (void)recordFeedUploadActionsDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success;
@@ -215,16 +215,16 @@ class Time;
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
 
-// Records that a given |feedType| was selected.
+// Records that a given `feedType` was selected.
 - (void)recordFeedSelected:(FeedType)feedType;
 
-// Records the user's current follow count after a given event |logReason|.
+// Records the user's current follow count after a given event `logReason`.
 - (void)recordFollowCount:(NSUInteger)followCount
              forLogReason:(FollowCountLogReason)logReason;
 
-// Records the state of the Feed setting based on the |enterprisePolicy| being
-// enabled, |feedVisible|, the user being |signedIn|, user having |waaEnabled|
-// and |spywEnabled|, and the |lastRefreshTime| for the Feed.
+// Records the state of the Feed setting based on the `enterprisePolicy` being
+// enabled, `feedVisible`, the user being `signedIn`, user having `waaEnabled`
+// and `spywEnabled`, and the `lastRefreshTime` for the Feed.
 - (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
                                          feedVisible:(BOOL)feedVisible
                                             signedIn:(BOOL)signedIn
@@ -236,7 +236,7 @@ class Time;
 #pragma mark - Follow
 
 // Record metrics for when the user request to follow/unfollow a website,
-// according to |followRequestedType|. Ex. The user selects the 'Follow' item in
+// according to `followRequestedType`. Ex. The user selects the 'Follow' item in
 // the overflow menu.
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType;
 
@@ -247,12 +247,12 @@ class Time;
 - (void)recordUnfollowFromMenu;
 
 // Record metrics for when the follow confirmation snckbar is shown, according
-// to |followConfirmationType|.
+// to `followConfirmationType`.
 - (void)recordFollowConfirmationShownWithType:
     (FollowConfirmationType)followConfirmationType;
 
 // Record metrics for when the follow confirmation snckbar action is tapped,
-// according to |followSnackbarActionType|.Ex. the user tapped "GO TO FEED"
+// according to `followSnackbarActionType`.Ex. the user tapped "GO TO FEED"
 // button on the follow succeed snackbar.
 - (void)recordFollowSnackbarTappedWithAction:
     (FollowSnackbarActionType)followSnackbarActionType;

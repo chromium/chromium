@@ -14,7 +14,7 @@ class UrlLoadingBrowserAgent;
 
 @interface IncognitoViewController : UIViewController
 
-// Init with the given loader object. |loader| may be nil, but isn't
+// Init with the given loader object. `loader` may be nil, but isn't
 // retained so it must outlive this controller.
 - (instancetype)initWithUrlLoader:(UrlLoadingBrowserAgent*)URLLoader;
 

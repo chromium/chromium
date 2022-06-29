@@ -78,7 +78,7 @@ UIFont* BoldBodyFont() {
       preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
   UIFontDescriptor* styleDescriptor = [baseDescriptor
       fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-  // Use a |size| of 0.0 to use the default size for the descriptor.
+  // Use a `size` of 0.0 to use the default size for the descriptor.
   return [UIFont fontWithDescriptor:styleDescriptor size:0.0];
 }
 
@@ -137,10 +137,10 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   // Height constraint for adding margins for the bottom toolbar.
   NSLayoutConstraint* _bottomToolbarMarginHeight;
 
-  // Constraint ensuring that |containerView| is at least as high as the
+  // Constraint ensuring that `containerView` is at least as high as the
   // superview of the IncognitoNTPView, i.e. the Incognito panel.
   // This ensures that if the Incognito panel is higher than a compact
-  // |containerView|, the |containerView|'s |topGuide| and |bottomGuide| are
+  // `containerView`, the `containerView`'s `topGuide` and `bottomGuide` are
   // forced to expand, centering the views in between them.
   NSArray<NSLayoutConstraint*>* _superViewConstraints;
 
@@ -203,7 +203,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
     [self addTextSections];
 
-    // |topGuide| and |bottomGuide| exist to vertically position the stackview
+    // `topGuide` and `bottomGuide` exist to vertically position the stackview
     // inside the container scrollview.
     UILayoutGuide* topGuide = [[UILayoutGuide alloc] init];
     UILayoutGuide* bottomGuide = [[UILayoutGuide alloc] init];
@@ -340,7 +340,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 - (void)contentSizeCategoryDidChange {
   UIColor* bodyTextColor = BodyTextColor();
 
-  // Recompute the text for |_notSavedLabel| and |_visibleDataLabel|, as these
+  // Recompute the text for `_notSavedLabel` and `_visibleDataLabel`, as these
   // two include font information in their attributedText.
   _notSavedLabel.attributedText = FormatHTMLListForUILabel(
       l10n_util::GetNSString(IDS_NEW_TAB_OTR_NOT_SAVED));
@@ -377,7 +377,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
       GetUrlWithLang(GURL(kLearnMoreIncognitoUrl))));
 }
 
-// Adds views containing the text of the incognito page to |_stackView|.
+// Adds views containing the text of the incognito page to `_stackView`.
 - (void)addTextSections {
   UIColor* titleTextColor = [UIColor colorNamed:kTextPrimaryColor];
   UIColor* bodyTextColor = BodyTextColor();
@@ -449,8 +449,8 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   _visibleDataLabel.textColor = bodyTextColor;
   [_stackView addArrangedSubview:_visibleDataLabel];
 
-  // |_notSavedLabel| and |visibleDataLabel| should have the same width as
-  // |subtitleStackView|, even if they can be constrained narrower.
+  // `_notSavedLabel` and `visibleDataLabel` should have the same width as
+  // `subtitleStackView`, even if they can be constrained narrower.
   [NSLayoutConstraint activateConstraints:@[
     [_notSavedLabel.widthAnchor
         constraintEqualToAnchor:subtitleStackView.widthAnchor],

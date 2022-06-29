@@ -70,7 +70,7 @@
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* fakeOmniboxConstraints;
 // Constraint that pins the fake Omnibox to the top of the view. A subset of
-// |fakeOmniboxConstraints|.
+// `fakeOmniboxConstraints`.
 @property(nonatomic, strong) NSLayoutConstraint* headerTopAnchor;
 
 // Array of constraints used to pin the feed header to the top of the NTP. Only
@@ -79,8 +79,8 @@
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* feedHeaderConstraints;
 
-// |YES| if the initial scroll position is from the saved web state (when
-// navigating away and back), and |NO| if it is the top of the NTP.
+// `YES` if the initial scroll position is from the saved web state (when
+// navigating away and back), and `NO` if it is the top of the NTP.
 @property(nonatomic, assign, getter=isInitialOffsetFromSavedState)
     BOOL initialOffsetFromSavedState;
 
@@ -205,7 +205,7 @@
 
   [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
 
-  // Scrolls NTP into feed initially if |shouldScrollIntoFeed|.
+  // Scrolls NTP into feed initially if `shouldScrollIntoFeed`.
   if (self.shouldScrollIntoFeed) {
     [self scrollIntoFeed];
     self.shouldScrollIntoFeed = NO;
@@ -703,7 +703,7 @@
 
 // Lets this view own the fake omnibox and sticks it to the top of the NTP.
 - (void)stickFakeOmniboxToTop {
-  // If |self.headerController| is nil after removing it from the view hierarchy
+  // If `self.headerController` is nil after removing it from the view hierarchy
   // it means its no longer owned by anyone (e.g. The coordinator might have
   // been stopped.) and we shouldn't try to add it again.
   if (!self.headerController) {
@@ -902,9 +902,9 @@
 
 // Handles the pinning of the sticky elements to the top of the NTP. This
 // includes the fake omnibox and if Web Channels is enabled, the feed header. If
-// |force| is YES, the sticky elements will always be set based on the scroll
-// position. If |force| is NO, the sticky elements will only based on
-// |isScrolledIntoFeed| to prevent pinning them multiple times.
+// `force` is YES, the sticky elements will always be set based on the scroll
+// position. If `force` is NO, the sticky elements will only based on
+// `isScrolledIntoFeed` to prevent pinning them multiple times.
 // TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
@@ -1192,8 +1192,8 @@
                              kDiscoverFeedWrapperParent];
 }
 
-// Ensures that |subView| is a descendent of |parentView|. If not, logs a DCHECK
-// and adds the subview. Includes |relationshipID| for metrics recorder to log
+// Ensures that `subView` is a descendent of `parentView`. If not, logs a DCHECK
+// and adds the subview. Includes `relationshipID` for metrics recorder to log
 // which part of the view hierarchy was broken.
 // TODO(crbug.com/1262536): Remove this once bug is fixed.
 - (void)ensureView:(UIView*)subView
@@ -1214,8 +1214,8 @@
   self.scrolledToMinimumHeight = [self scrollPosition] >= pinnedOffsetY;
 }
 
-// Adds |viewController| as a child of |parentViewController| and adds
-// |viewController|'s view as a subview of |self.collectionView|.
+// Adds `viewController` as a child of `parentViewController` and adds
+// `viewController`'s view as a subview of `self.collectionView`.
 - (void)addViewController:(UIViewController*)viewController
     toParentViewController:(UIViewController*)parentViewController {
   [viewController willMoveToParentViewController:parentViewController];
@@ -1224,7 +1224,7 @@
   [viewController didMoveToParentViewController:parentViewController];
 }
 
-// Removes |viewController| and its corresponding view from the view hierarchy.
+// Removes `viewController` and its corresponding view from the view hierarchy.
 - (void)removeFromViewHierarchy:(UIViewController*)viewController {
   [viewController willMoveToParentViewController:nil];
   [viewController.view removeFromSuperview];

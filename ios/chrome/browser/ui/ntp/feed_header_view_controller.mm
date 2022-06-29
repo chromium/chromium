@@ -288,7 +288,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 #pragma mark - Setters
 
-// Sets |followingFeedSortType| and recreates the sort menu to assign the active
+// Sets `followingFeedSortType` and recreates the sort menu to assign the active
 // sort type.
 - (void)setFollowingFeedSortType:(FollowingFeedSortType)followingFeedSortType {
   _followingFeedSortType = followingFeedSortType;

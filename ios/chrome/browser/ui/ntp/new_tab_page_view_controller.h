@@ -53,7 +53,7 @@
 
 // View controller representing the NTP content suggestions. These suggestions
 // include the most visited site tiles, the shortcut tiles, the fake omnibox and
-// the Google doodle. |contentSuggestionsUIViewController| is used if
+// the Google doodle. `contentSuggestionsUIViewController` is used if
 // kContentSuggestionsUIViewControllerMigration is enabled.
 @property(nonatomic, strong)
     UICollectionViewController* contentSuggestionsCollectionViewController;
@@ -96,7 +96,7 @@
 // Stops scrolling in the scroll view.
 - (void)stopScrolling;
 
-// Sets the feed collection contentOffset from the saved state to |offset| to
+// Sets the feed collection contentOffset from the saved state to `offset` to
 // set the initial scroll position.
 - (void)setSavedContentOffset:(CGFloat)offset;
 
@@ -129,7 +129,7 @@
 // Returns the y content offset of the NTP collection view.
 - (CGFloat)scrollPosition;
 
-// Sets the NTP collection view's scroll position to |contentOffset|, unless it
+// Sets the NTP collection view's scroll position to `contentOffset`, unless it
 // is beyond the top of the feed. In that case, sets the scroll position to the
 // top of the feed.
 - (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset;

@@ -39,7 +39,7 @@
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Toggles the feed header's background blur. Animates the transition if
-// |animated| is YES.
+// `animated` is YES.
 - (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated;
 
 // Returns the height of the feed header.

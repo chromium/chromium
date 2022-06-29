@@ -89,10 +89,10 @@ class NTPTileSaverControllerTest : public BlockCleanupTest {
         });
   }
 
-  // Checks that |tile| has an image and no fallback data.
-  // Checks that |tile| title and url match |expected_title| and
-  // |expected_url|.
-  // Checks that the file pointed by |tile| match |mock_image_|.
+  // Checks that `tile` has an image and no fallback data.
+  // Checks that `tile` title and url match `expected_title` and
+  // `expected_url`.
+  // Checks that the file pointed by `tile` match `mock_image_`.
   void VerifyWithImage(NTPTile* tile,
                        NSString* expected_title,
                        NSURL* expected_url) {
@@ -114,10 +114,10 @@ class NTPTileSaverControllerTest : public BlockCleanupTest {
                 UIImagePNGRepresentation(mock_image_));
   }
 
-  // Checks that |tile| has fallback data.
-  // Checks that |tile| title and url match |expected_title| and
-  // |expected_url|.
-  // Checks that the file pointed by |tile| does not exist.
+  // Checks that `tile` has fallback data.
+  // Checks that `tile` title and url match `expected_title` and
+  // `expected_url`.
+  // Checks that the file pointed by `tile` does not exist.
   void VerifyWithFallback(NTPTile* tile,
                           NSString* expected_title,
                           NSURL* expected_url) {
@@ -134,10 +134,10 @@ class NTPTileSaverControllerTest : public BlockCleanupTest {
                              path]]);
   }
 
-  // Checks that |tile| has an image and fallback data.
-  // Checks that |tile| title and url match |expected_title| and
-  // |expected_url|.
-  // Checks that the file pointed by |tile| match |mock_image_|.
+  // Checks that `tile` has an image and fallback data.
+  // Checks that `tile` title and url match `expected_title` and
+  // `expected_url`.
+  // Checks that the file pointed by `tile` match `mock_image_`.
   void VerifyWithFallbackAndImage(NTPTile* tile,
                                   NSString* expected_title,
                                   NSURL* expected_url) {

@@ -44,7 +44,7 @@
   [super viewDidLoad];
 
   // Configure appropriate collection view based on feed visibility. If
-  // |feedViewController| exists, then the feed must be enabled and visible.
+  // `feedViewController` exists, then the feed must be enabled and visible.
   if (self.feedViewController && self.contentCollectionView) {
     [self configureFeedAsWrapper];
     [_delegate updateTheme];
