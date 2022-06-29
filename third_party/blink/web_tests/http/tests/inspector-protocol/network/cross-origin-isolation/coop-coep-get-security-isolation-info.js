@@ -16,11 +16,6 @@
   });
 
   async function onFrameNavigated(event) {
-    if (event.params.frame.unreachableUrl) {
-      // Retry navigation in case the URL couldn't load
-      session.navigate(event.params.frame.unreachableUrl);
-      return;
-    }
     const frameId = event.params.frame.id;
     const {result} = await session.protocol.Network.getSecurityIsolationStatus({frameId});
     results.set(event.params.frame.url, {coep: result.status.coep, coop: result.status.coop})
