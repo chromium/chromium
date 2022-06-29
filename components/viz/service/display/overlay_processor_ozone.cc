@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 #if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
@@ -267,6 +268,31 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         }
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Some platforms (e.g. AMD) do not provide a dedicated cursor plane, and
+    // the display hardware will need to blit the cursor to the topmost plane.
+    // If the topmost plane is scaled/translated, the cursor will then be
+    // transformed along with it. Thus, we need to reject the topmost candidate
+    // if the buffer size is transformed at all.
+    if (!has_independent_cursor_plane_) {
+      auto highest_zindex_surface =
+          std::max_element(ozone_surface_list.begin(), ozone_surface_list.end(),
+                           [](const auto& a, const auto& b) {
+                             return a.plane_z_order < b.plane_z_order;
+                           });
+      if (highest_zindex_surface != ozone_surface_list.end()) {
+        gfx::RectF display_rect = highest_zindex_surface->display_rect;
+        gfx::Size buffer_size = highest_zindex_surface->buffer_size;
+        if (!display_rect.origin().IsOrigin() ||
+            buffer_size != gfx::ToFlooredSize(display_rect.size())) {
+          int zindex = highest_zindex_surface->plane_z_order;
+          *highest_zindex_surface = ui::OverlaySurfaceCandidate();
+          highest_zindex_surface->plane_z_order = zindex;
+        }
+      }
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   overlay_candidates_->CheckOverlaySupport(&ozone_surface_list);
 
@@ -296,10 +322,6 @@ void OverlayProcessorOzone::MaybeObserveHardwareCapabilities() {
   }
   tried_observing_hardware_capabilities_ = true;
 
-  // HardwareCapabilities isn't necessary unless attempting multiple overlays.
-  if (max_overlays_config_ <= 1) {
-    return;
-  }
   if (overlay_candidates_) {
     overlay_candidates_->ObserveHardwareCapabilities(
         base::BindRepeating(&OverlayProcessorOzone::ReceiveHardwareCapabilities,
@@ -319,6 +341,8 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
         hardware_capabilities.num_overlay_capable_planes - 1;
     max_overlays_considered_ =
         std::min(max_overlays_supported, max_overlays_config_);
+    has_independent_cursor_plane_ =
+        hardware_capabilities.has_independent_cursor_plane;
 
     UMA_HISTOGRAM_COUNTS_100(
         "Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported",

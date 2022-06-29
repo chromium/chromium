@@ -195,6 +195,8 @@ class MockDrmDevice : public DrmDevice {
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
   bool SetCapability(uint64_t capability, uint64_t value) override;
+  absl::optional<std::string> GetDriverName() const override;
+  void SetDriverName(absl::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
@@ -245,6 +247,8 @@ class MockDrmDevice : public DrmDevice {
 
   uint32_t current_framebuffer_;
   uint32_t plane_crtc_id_prop_id_ = 0;
+
+  absl::optional<std::string> driver_name_ = "mock";
 
   std::vector<sk_sp<SkSurface>> buffers_;
 

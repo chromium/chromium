@@ -1224,6 +1224,22 @@ TEST_P(HardwareDisplayPlaneManagerTest, GetHardwareCapabilities) {
     }
     EXPECT_EQ(hc.num_overlay_capable_planes, expected_planes);
   }
+
+  {
+    fake_drm_->SetDriverName(absl::nullopt);
+    auto hc = fake_drm_->plane_manager()->GetHardwareCapabilities(kCrtcIdBase);
+    EXPECT_FALSE(hc.is_valid);
+
+    fake_drm_->SetDriverName("amdgpu");
+    hc = fake_drm_->plane_manager()->GetHardwareCapabilities(kCrtcIdBase);
+    EXPECT_TRUE(hc.is_valid);
+    EXPECT_FALSE(hc.has_independent_cursor_plane);
+
+    fake_drm_->SetDriverName("generic");
+    hc = fake_drm_->plane_manager()->GetHardwareCapabilities(kCrtcIdBase);
+    EXPECT_TRUE(hc.is_valid);
+    EXPECT_TRUE(hc.has_independent_cursor_plane);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

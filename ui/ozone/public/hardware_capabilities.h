@@ -16,6 +16,11 @@ struct HardwareCapabilities {
   // This is specifically the count of non-CURSOR planes, because some boards
   // may have extra PRIMARY planes that could be used for overlays.
   int num_overlay_capable_planes = 0;
+  // Whether the CURSOR plane can be displayed independently of the other
+  // planes. On some platforms, the CURSOR plane is flattened to the topmost
+  // plane before presentation, so all transformations on the topmost plane
+  // (e.g. translation, scaling) are erroneously applied to the CURSOR as well.
+  bool has_independent_cursor_plane = true;
 };
 using HardwareCapabilitiesCallback =
     base::RepeatingCallback<void(HardwareCapabilities)>;

@@ -545,6 +545,14 @@ bool MockDrmDevice::SetGammaRamp(
   return legacy_gamma_ramp_expectation_;
 }
 
+absl::optional<std::string> MockDrmDevice::GetDriverName() const {
+  return driver_name_;
+}
+
+void MockDrmDevice::SetDriverName(absl::optional<std::string> name) {
+  driver_name_ = name;
+}
+
 bool MockDrmDevice::SetCapability(uint64_t capability, uint64_t value) {
   return true;
 }

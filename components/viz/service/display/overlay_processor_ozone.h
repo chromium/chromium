@@ -60,6 +60,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   bool tried_observing_hardware_capabilities_ = false;
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates_;
   const std::vector<OverlayStrategy> available_strategies_;
+  bool has_independent_cursor_plane_ = true;
   const raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
 
   base::WeakPtrFactory<OverlayProcessorOzone> weak_ptr_factory_{this};

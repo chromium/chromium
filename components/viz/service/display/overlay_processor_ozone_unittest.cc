@@ -313,25 +313,4 @@ TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   EXPECT_EQ(processor.MaxOverlaysConsidered(), 1);
 }
 
-TEST(OverlayProcessorOzoneTest, NoObserveHardwareCapabilites) {
-  OverlayCandidateList candidates;
-  // Multiple overlays disabled.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(features::kUseMultipleOverlays);
-
-  auto fake_candidates_unique = std::make_unique<FakeOverlayCandidatesOzone>();
-  auto* fake_candidates = fake_candidates_unique.get();
-
-  OverlayProcessorOzone processor(std::move(fake_candidates_unique), {},
-                                  nullptr);
-
-  // No receive_callback yet.
-  EXPECT_TRUE(fake_candidates->receive_callback().is_null());
-
-  processor.CheckOverlaySupport(nullptr, &candidates);
-
-  // Receive callback is still unset because multiple overlays is disabled.
-  EXPECT_TRUE(fake_candidates->receive_callback().is_null());
-}
-
 }  // namespace viz
