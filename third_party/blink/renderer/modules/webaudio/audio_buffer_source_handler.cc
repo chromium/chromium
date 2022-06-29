@@ -76,9 +76,9 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  // The audio thread can't block on this lock, so we call tryLock() instead.
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  // The audio thread can't block on this lock, so we call TryLock() instead.
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     if (!Buffer()) {
       output_bus->Zero();
       return;
@@ -86,7 +86,7 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
 
     // After calling setBuffer() with a buffer having a different number of
     // channels, there can in rare cases be a slight delay before the output bus
-    // is updated to the new number of channels because of use of tryLocks() in
+    // is updated to the new number of channels because of use of TryLocks() in
     // the context's updating system.  In this case, if the the buffer has just
     // been changed and we're not quite ready yet, then just output silence.
     if (NumberOfChannels() != shared_buffer_->numberOfChannels()) {
@@ -120,7 +120,7 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
 
     output_bus->ClearSilentFlag();
   } else {
-    // Too bad - the tryLock() failed.  We must be in the middle of changing
+    // Too bad - the TryLock() failed.  We must be in the middle of changing
     // buffers and were already outputting silence anyway.
     output_bus->Zero();
   }
@@ -406,7 +406,7 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
   BaseAudioContext::GraphAutoLocker context_locker(Context());
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   if (!buffer) {
     // Clear out the shared buffer.
@@ -556,7 +556,7 @@ void AudioBufferSourceHandler::StartSource(double when,
 
   // This synchronizes with process(). updateSchedulingInfo will read some of
   // the variables being set here.
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   is_duration_given_ = is_duration_given;
   is_grain_ = true;
@@ -579,7 +579,7 @@ void AudioBufferSourceHandler::SetLoop(bool looping) {
   DCHECK(IsMainThread());
 
   // This synchronizes with `Process()`.
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   is_looping_ = looping;
   SetDidSetLooping(looping);
@@ -589,7 +589,7 @@ void AudioBufferSourceHandler::SetLoopStart(double loop_start) {
   DCHECK(IsMainThread());
 
   // This synchronizes with `Process()`.
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   loop_start_ = loop_start;
 }
@@ -598,7 +598,7 @@ void AudioBufferSourceHandler::SetLoopEnd(double loop_end) {
   DCHECK(IsMainThread());
 
   // This synchronizes with `Process()`.
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   loop_end_ = loop_end;
 }
@@ -650,10 +650,10 @@ bool AudioBufferSourceHandler::PropagatesSilence() const {
     return true;
   }
 
-  // Protect `shared_buffer_` with tryLock because it can be accessed by the
+  // Protect `shared_buffer_` with TryLock because it can be accessed by the
   // main thread.
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     return !shared_buffer_.get();
   } else {
     // Can't get lock. Assume `shared_buffer_` exists, so return false to
@@ -665,8 +665,8 @@ bool AudioBufferSourceHandler::PropagatesSilence() const {
 void AudioBufferSourceHandler::HandleStoppableSourceNode() {
   DCHECK(Context()->IsAudioThread());
 
-  MutexTryLocker try_locker(process_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
     // Can't get the lock, so just return.  It's ok to handle these at a later
     // time; this was just a hint anyway so stopping them a bit later is ok.
     return;

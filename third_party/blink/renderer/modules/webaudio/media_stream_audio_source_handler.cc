@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_handler.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -52,7 +53,7 @@ void MediaStreamAudioSourceHandler::SetFormat(uint32_t number_of_channels,
                      __func__, number_of_channels, source_sample_rate));
 
   {
-    MutexLocker locker(process_lock_);
+    base::AutoLock locker(process_lock_);
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                  "MediaStreamAudioSourceHandler::SetFormat under lock");
 
@@ -93,8 +94,8 @@ void MediaStreamAudioSourceHandler::Process(uint32_t number_of_frames) {
 
   AudioBus* output_bus = Output(0).Bus();
 
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     if (source_number_of_channels_ != output_bus->NumberOfChannels()) {
       output_bus->Zero();
       return;

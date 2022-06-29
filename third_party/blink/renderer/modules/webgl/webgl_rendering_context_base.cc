@@ -30,6 +30,7 @@
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -129,7 +130,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "ui/gfx/geometry/size.h"
 
 // Populates parameters from texImage2D except for border, width, height, and
@@ -168,9 +168,9 @@ namespace {
 constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
 
-Mutex& WebGLContextLimitMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& WebGLContextLimitLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 using WebGLRenderingContextBaseSet =
@@ -232,7 +232,7 @@ ScopedRGBEmulationColorMask::~ScopedRGBEmulationColorMask() {
 
 void WebGLRenderingContextBase::InitializeWebGLContextLimits(
     WebGraphicsContext3DProvider* context_provider) {
-  MutexLocker locker(WebGLContextLimitMutex());
+  base::AutoLock locker(WebGLContextLimitLock());
   if (!webgl_context_limits_initialized_) {
     // These do not change over the lifetime of the browser.
     auto webgl_preferences = context_provider->GetWebglPreferences();
@@ -244,7 +244,7 @@ void WebGLRenderingContextBase::InitializeWebGLContextLimits(
 }
 
 unsigned WebGLRenderingContextBase::CurrentMaxGLContexts() {
-  MutexLocker locker(WebGLContextLimitMutex());
+  base::AutoLock locker(WebGLContextLimitLock());
   DCHECK(webgl_context_limits_initialized_);
   return IsMainThread() ? max_active_webgl_contexts_
                         : max_active_webgl_contexts_on_worker_;

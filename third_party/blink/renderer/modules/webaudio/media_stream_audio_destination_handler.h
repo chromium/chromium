@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_MEDIA_STREAM_AUDIO_DESTINATION_HANDLER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -55,11 +55,11 @@ class MediaStreamAudioDestinationHandler final
 
   // This synchronizes dynamic changes to the channel count with
   // process() to manage the mix bus.
-  mutable Mutex process_lock_;
+  mutable base::Lock process_lock_;
 
   // This internal mix bus is for up/down mixing the input to the actual
   // number of channels in the destination.
-  scoped_refptr<AudioBus> mix_bus_;
+  scoped_refptr<AudioBus> mix_bus_ GUARDED_BY(process_lock_);
 };
 
 }  // namespace blink

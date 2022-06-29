@@ -9,10 +9,10 @@
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -53,17 +53,17 @@ class MODULES_EXPORT CodecPressureGauge {
   void Decrement();
 
   void set_pressure_threshold_for_testing(size_t threshold) {
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     pressure_threshold_ = threshold;
   }
 
   size_t global_pressure_for_testing() {
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     return global_pressure_;
   }
 
   bool is_global_pressure_exceeded_for_testing() {
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     return global_pressure_exceeded_;
   }
 
@@ -82,7 +82,7 @@ class MODULES_EXPORT CodecPressureGauge {
 
   void CheckForThresholdChanges_Locked();
 
-  Mutex lock_;
+  base::Lock lock_;
   bool global_pressure_exceeded_ GUARDED_BY(lock_) = false;
 
   size_t global_pressure_ GUARDED_BY(lock_) = 0u;

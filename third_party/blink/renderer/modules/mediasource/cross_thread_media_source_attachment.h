@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"
@@ -19,7 +20,6 @@
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -202,7 +202,7 @@ class CrossThreadMediaSourceAttachment final
   void VerifyCalledWhileContextsAliveForDebugging() const
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
 
-  mutable Mutex attachment_state_lock_;
+  mutable base::Lock attachment_state_lock_;
 
   // Cache of the registered worker-thread MediaSource. Retains strong reference
   // on all Oilpan heaps, from construction of this object until Unregister() is

@@ -136,7 +136,7 @@ void SQLiteDatabase::Close() {
     // DCHECK_EQ(currentThread(), m_openingThread);
     sqlite3* db = db_;
     {
-      MutexLocker locker(database_closing_mutex_);
+      base::AutoLock locker(database_closing_mutex_);
       db_ = nullptr;
     }
     sqlite3_close(db);
@@ -156,7 +156,7 @@ void SQLiteDatabase::SetMaximumSize(int64_t size) {
   DCHECK(current_page_size || !db_);
   int64_t new_max_page_count = current_page_size ? size / current_page_size : 0;
 
-  MutexLocker locker(authorizer_lock_);
+  base::AutoLock locker(authorizer_lock_);
   EnableAuthorizer(false);
 
   SQLiteStatement statement(
@@ -173,7 +173,7 @@ int SQLiteDatabase::PageSize() {
   // Since the page size of a database is locked in at creation and therefore
   // cannot be dynamic, we can cache the value for future use.
   if (page_size_ == -1) {
-    MutexLocker locker(authorizer_lock_);
+    base::AutoLock locker(authorizer_lock_);
     EnableAuthorizer(false);
 
     SQLiteStatement statement(*this, "PRAGMA page_size");
@@ -189,7 +189,7 @@ int64_t SQLiteDatabase::FreeSpaceSize() {
   int64_t freelist_count = 0;
 
   {
-    MutexLocker locker(authorizer_lock_);
+    base::AutoLock locker(authorizer_lock_);
     EnableAuthorizer(false);
     // Note: freelist_count was added in SQLite 3.4.1.
     SQLiteStatement statement(*this, "PRAGMA freelist_count");
@@ -204,7 +204,7 @@ int64_t SQLiteDatabase::TotalSize() {
   int64_t page_count = 0;
 
   {
-    MutexLocker locker(authorizer_lock_);
+    base::AutoLock locker(authorizer_lock_);
     EnableAuthorizer(false);
     SQLiteStatement statement(*this, "PRAGMA page_count");
     page_count = statement.GetColumnInt64(0);
@@ -245,7 +245,7 @@ int SQLiteDatabase::RunVacuumCommand() {
 }
 
 int SQLiteDatabase::RunIncrementalVacuumCommand() {
-  MutexLocker locker(authorizer_lock_);
+  base::AutoLock locker(authorizer_lock_);
   EnableAuthorizer(false);
 
   if (!ExecuteCommand("PRAGMA incremental_vacuum"))
@@ -373,7 +373,7 @@ void SQLiteDatabase::SetAuthorizer(DatabaseAuthorizer* authorizer) {
     return;
   }
 
-  MutexLocker locker(authorizer_lock_);
+  base::AutoLock locker(authorizer_lock_);
 
   authorizer_ = authorizer;
 

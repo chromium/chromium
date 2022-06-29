@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -308,7 +308,7 @@ class MediaSource final : public EventTargetWithInlineData,
   // |attachment_link_lock_| and
   // callbacks for RunExclusively, when using SameThreadMediaSourceAttachment,
   // on main thread).
-  mutable Mutex attachment_link_lock_;
+  mutable base::Lock attachment_link_lock_;
 
   Member<SourceBufferList> source_buffers_;
   Member<SourceBufferList> active_source_buffers_;

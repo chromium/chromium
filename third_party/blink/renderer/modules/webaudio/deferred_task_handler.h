@@ -29,6 +29,7 @@
 #include <atomic>
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -225,7 +226,8 @@ class MODULES_EXPORT DeferredTaskHandler final
   // `automatic_pull_handlers` by `UpdateAutomaticPullNodes()` at the beginning
   // or end of the render quantum.
   HashSet<scoped_refptr<AudioHandler>> automatic_pull_handlers_;
-  Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_;
+  Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_
+      GUARDED_BY(automatic_pull_handlers_lock_);
 
   // Keeps track if the `automatic_pull_handlers` storage is touched.
   bool automatic_pull_handlers_need_updating_ = false;
@@ -284,7 +286,7 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // Protects `rendering_automatic_pull_handlers_` when updating, processing,
   // and clearing. (See crbug.com/1061018)
-  mutable Mutex automatic_pull_handlers_lock_;
+  mutable base::Lock automatic_pull_handlers_lock_;
 
   std::atomic<base::PlatformThreadId> audio_thread_;
 };

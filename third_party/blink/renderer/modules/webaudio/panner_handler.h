@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/audio/distance_effect.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -171,7 +171,7 @@ class PannerHandler final : public AudioHandler {
 
   // Synchronize process() with setting of the panning model, source's location
   // information, listener, distance parameters and sound cones.
-  mutable Mutex process_lock_;
+  mutable base::Lock process_lock_;
 };
 
 }  // namespace blink

@@ -25,12 +25,12 @@ void ThreadSafeScriptContainer::RawScriptData::AddHeader(const String& key,
 }
 
 ThreadSafeScriptContainer::ThreadSafeScriptContainer()
-    : waiting_cv_(mutex_), are_all_data_added_(false) {}
+    : waiting_cv_(&lock_), are_all_data_added_(false) {}
 
 void ThreadSafeScriptContainer::AddOnIOThread(
     const KURL& url,
     std::unique_ptr<RawScriptData> data) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK_EQ(script_data_.end(), script_data_.find(url));
   ScriptStatus status = data ? ScriptStatus::kReceived : ScriptStatus::kFailed;
   script_data_.Set(url, std::make_pair(status, std::move(data)));
@@ -40,7 +40,7 @@ void ThreadSafeScriptContainer::AddOnIOThread(
 
 ThreadSafeScriptContainer::ScriptStatus
 ThreadSafeScriptContainer::GetStatusOnWorkerThread(const KURL& url) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   auto it = script_data_.find(url);
   if (it == script_data_.end())
     return ScriptStatus::kPending;
@@ -48,12 +48,12 @@ ThreadSafeScriptContainer::GetStatusOnWorkerThread(const KURL& url) {
 }
 
 void ThreadSafeScriptContainer::ResetOnWorkerThread(const KURL& url) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   script_data_.erase(url);
 }
 
 bool ThreadSafeScriptContainer::WaitOnWorkerThread(const KURL& url) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK(!waiting_url_.IsValid())
       << "The script container is unexpectedly shared among worker threads.";
   waiting_url_ = url;
@@ -74,7 +74,7 @@ bool ThreadSafeScriptContainer::WaitOnWorkerThread(const KURL& url) {
 
 std::unique_ptr<ThreadSafeScriptContainer::RawScriptData>
 ThreadSafeScriptContainer::TakeOnWorkerThread(const KURL& url) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   auto it = script_data_.find(url);
   DCHECK(it != script_data_.end())
       << "Script should have been received before calling Take";
@@ -85,7 +85,7 @@ ThreadSafeScriptContainer::TakeOnWorkerThread(const KURL& url) {
 }
 
 void ThreadSafeScriptContainer::OnAllDataAddedOnIOThread() {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   are_all_data_added_ = true;
   waiting_cv_.Broadcast();
 }

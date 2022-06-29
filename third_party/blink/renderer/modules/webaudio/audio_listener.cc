@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -278,8 +279,8 @@ void AudioListener::UpdateState() {
   // to check for the audio thread.)
   DCHECK(!IsMainThread());
 
-  const MutexTryLocker try_locker(listener_lock_);
-  if (try_locker.Locked()) {
+  const base::AutoTryLock try_locker(listener_lock_);
+  if (try_locker.is_acquired()) {
     const gfx::Point3F current_position = GetPosition();
     const gfx::Vector3dF current_forward = Orientation();
     const gfx::Vector3dF current_up = UpVector();
@@ -332,7 +333,7 @@ void AudioListener::setPosition(const gfx::Point3F& position,
   DCHECK(IsMainThread());
 
   // This synchronizes with panner's process().
-  const MutexLocker listener_locker(listener_lock_);
+  const base::AutoLock listener_locker(listener_lock_);
 
   const double now = position_x_->Context()->currentTime();
 
@@ -349,7 +350,7 @@ void AudioListener::setOrientation(const gfx::Vector3dF& orientation,
   DCHECK(IsMainThread());
 
   // This synchronizes with panner's process().
-  const MutexLocker listener_locker(listener_lock_);
+  const base::AutoLock listener_locker(listener_lock_);
 
   const double now = forward_x_->Context()->currentTime();
 
@@ -365,7 +366,7 @@ void AudioListener::SetUpVector(const gfx::Vector3dF& up_vector,
   DCHECK(IsMainThread());
 
   // This synchronizes with panner's process().
-  const MutexLocker listener_locker(listener_lock_);
+  const base::AutoLock listener_locker(listener_lock_);
 
   const double now = up_x_->Context()->currentTime();
 

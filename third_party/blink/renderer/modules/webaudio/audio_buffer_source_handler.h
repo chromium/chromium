@@ -106,7 +106,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
                                                  uint32_t frames_to_process);
 
   // Clamps grain parameters to the duration of the given AudioBuffer.
-  void ClampGrainParameters(const SharedAudioBuffer*);
+  void ClampGrainParameters(const SharedAudioBuffer*)
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Sample data for the outputs of this node. The shared buffer can safely be
   // accessed from the audio thread.

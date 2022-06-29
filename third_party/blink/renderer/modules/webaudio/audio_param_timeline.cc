@@ -455,7 +455,7 @@ void AudioParamTimeline::SetValueAtTime(float value,
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
   InsertEvent(ParamEvent::CreateSetValueEvent(value, time), exception_state);
 }
 
@@ -471,7 +471,7 @@ void AudioParamTimeline::LinearRampToValueAtTime(
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
   InsertEvent(
       ParamEvent::CreateLinearRampEvent(value, time, initial_value, call_time),
       exception_state);
@@ -498,7 +498,7 @@ void AudioParamTimeline::ExponentialRampToValueAtTime(
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
   InsertEvent(ParamEvent::CreateExponentialRampEvent(value, time, initial_value,
                                                      call_time),
               exception_state);
@@ -516,7 +516,7 @@ void AudioParamTimeline::SetTargetAtTime(float target,
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
 
   // If timeConstant = 0, we instantly jump to the target value, so
   // insert a SetValueEvent instead of SetTargetEvent.
@@ -547,7 +547,7 @@ void AudioParamTimeline::SetValueCurveAtTime(const Vector<float>& curve,
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
   InsertEvent(ParamEvent::CreateSetValueCurveEvent(curve, time, duration),
               exception_state);
 
@@ -703,9 +703,9 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
 bool AudioParamTimeline::HasValues(size_t current_frame,
                                    double sample_rate,
                                    unsigned render_quantum_frames) const {
-  MutexTryLocker try_locker(events_lock_);
+  base::AutoTryLock try_locker(events_lock_);
 
-  if (try_locker.Locked()) {
+  if (try_locker.is_acquired()) {
     unsigned n_events = events_.size();
 
     // Clearly, if there are no scheduled events, we have no timeline values.
@@ -794,7 +794,7 @@ void AudioParamTimeline::CancelScheduledValues(
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
 
   // Remove all events starting at startTime.
   for (wtf_size_t i = 0; i < events_.size(); ++i) {
@@ -827,7 +827,7 @@ void AudioParamTimeline::CancelAndHoldAtTime(double cancel_time,
     return;
   }
 
-  MutexLocker locker(events_lock_);
+  base::AutoLock locker(events_lock_);
 
   wtf_size_t i;
   // Find the first event at or just past `cancel_time`.
@@ -953,8 +953,8 @@ std::tuple<bool, float> AudioParamTimeline::ValueForContextTime(
     float max_value,
     unsigned render_quantum_frames) {
   {
-    MutexTryLocker try_locker(events_lock_);
-    if (!try_locker.Locked() || !events_.size() ||
+    base::AutoTryLock try_locker(events_lock_);
+    if (!try_locker.is_acquired() || !events_.size() ||
         audio_destination.CurrentTime() < events_[0]->Time()) {
       return std::make_tuple(false, default_value);
     }
@@ -984,8 +984,8 @@ float AudioParamTimeline::ValuesForFrameRange(size_t start_frame,
                                               float max_value,
                                               unsigned render_quantum_frames) {
   // We can't contend the lock in the realtime audio thread.
-  MutexTryLocker try_locker(events_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(events_lock_);
+  if (!try_locker.is_acquired()) {
     if (values) {
       for (unsigned i = 0; i < number_of_values; ++i) {
         values[i] = default_value;

@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -43,10 +43,8 @@ class MediaStreamAudioSourceHandler final : public AudioHandler {
 
   std::unique_ptr<AudioSourceProvider> audio_source_provider_;
 
-  // Protects `source_number_of_channels_`
-  Mutex process_lock_;
-
-  unsigned source_number_of_channels_ = 0;
+  base::Lock process_lock_;
+  unsigned source_number_of_channels_ GUARDED_BY(process_lock_) = 0;
 
   // Used to trigger one single textlog indicating that processing started as
   // intended. Set to true once in the first call to the Process callback.

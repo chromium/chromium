@@ -302,7 +302,7 @@ ScriptPromise OfflineAudioContext::suspendContext(
   }
 
   {
-    MutexLocker suspend_frames_locker(suspend_frames_lock_);
+    base::AutoLock suspend_frames_locker(suspend_frames_lock_);
     scheduled_suspend_frames_.insert(frame);
   }
 
@@ -432,7 +432,7 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
   SetContextState(kSuspended);
 
   {
-    MutexLocker locker(suspend_frames_lock_);
+    base::AutoLock locker(suspend_frames_lock_);
     DCHECK(scheduled_suspend_frames_.Contains(frame));
     scheduled_suspend_frames_.erase(frame);
   }
@@ -459,7 +459,7 @@ void OfflineAudioContext::RejectPendingResolvers() {
   DCHECK(IsMainThread());
 
   {
-    MutexLocker locker(suspend_frames_lock_);
+    base::AutoLock locker(suspend_frames_lock_);
     scheduled_suspend_frames_.clear();
   }
 
@@ -494,7 +494,7 @@ bool OfflineAudioContext::IsPullingAudioGraph() const {
 bool OfflineAudioContext::ShouldSuspend() {
   DCHECK(IsAudioThread());
 
-  MutexLocker locker(suspend_frames_lock_);
+  base::AutoLock locker(suspend_frames_lock_);
   return scheduled_suspend_frames_.Contains(CurrentSampleFrame());
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_handler.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -59,7 +60,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // MediaStreamDestination's channel count.
 
   // Synchronize with possible dynamic changes to the channel count.
-  MutexTryLocker try_locker(process_lock_);
+  base::AutoTryLock try_locker(process_lock_);
 
   auto source = source_.Lock();
 
@@ -67,7 +68,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // mix bus to a new channel count, if needed.  If not, just use the
   // old mix bus to do the mixing; we'll update the bus next time
   // around.
-  if (try_locker.Locked()) {
+  if (try_locker.is_acquired()) {
     unsigned count = ChannelCount();
     if (count != mix_bus_->NumberOfChannels()) {
       mix_bus_ = AudioBus::Create(
@@ -106,7 +107,7 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
 
   // Synchronize changes in the channel count with process() which
   // needs to update mix_bus_.
-  MutexLocker locker(process_lock_);
+  base::AutoLock locker(process_lock_);
 
   AudioHandler::SetChannelCount(channel_count, exception_state);
 }

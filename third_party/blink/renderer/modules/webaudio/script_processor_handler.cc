@@ -119,42 +119,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
   scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   AudioBus* output_bus = Output(0).Bus();
 
-  uint32_t double_buffer_index = DoubleBufferIndex();
-  DCHECK_LT(double_buffer_index, 2u);
-  DCHECK_LT(double_buffer_index, shared_input_buffers_.size());
-  DCHECK_LT(double_buffer_index, shared_output_buffers_.size());
-
-  SharedAudioBuffer* shared_input_buffer =
-      shared_input_buffers_.at(double_buffer_index).get();
-  SharedAudioBuffer* shared_output_buffer =
-      shared_output_buffers_.at(double_buffer_index).get();
-
-  bool buffers_are_good =
-      shared_output_buffer && BufferSize() == shared_output_buffer->length() &&
-      buffer_read_write_index_ + frames_to_process <= BufferSize();
-
-  if (internal_input_bus_->NumberOfChannels()) {
-    // If the number of input channels is zero, the zero length input buffer is
-    // fine.
-    buffers_are_good = buffers_are_good && shared_input_buffer &&
-                       BufferSize() == shared_input_buffer->length();
-  }
-
-  DCHECK(buffers_are_good);
-
-  // `BufferSize()` should be evenly divisible by `frames_to_process`.
-  DCHECK_GT(frames_to_process, 0u);
-  DCHECK_GE(BufferSize(), frames_to_process);
-  DCHECK_EQ(BufferSize() % frames_to_process, 0u);
-
-  uint32_t number_of_input_channels = internal_input_bus_->NumberOfChannels();
-  uint32_t number_of_output_channels = output_bus->NumberOfChannels();
-  DCHECK_EQ(number_of_input_channels, number_of_input_channels_);
-  DCHECK_EQ(number_of_output_channels, number_of_output_channels_);
-
   {
-    MutexTryLocker try_locker(GetBufferLock());
-    if (!try_locker.Locked()) {
+    base::AutoTryLock try_locker(buffer_lock_);
+    if (!try_locker.is_acquired()) {
       // Failed to acquire the output buffer, so output silence.
       TRACE_EVENT_INSTANT0(
           TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
@@ -165,6 +132,40 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
       Output(0).Bus()->Zero();
       return;
     }
+
+    uint32_t double_buffer_index = DoubleBufferIndex();
+    DCHECK_LT(double_buffer_index, 2u);
+    DCHECK_LT(double_buffer_index, shared_input_buffers_.size());
+    DCHECK_LT(double_buffer_index, shared_output_buffers_.size());
+
+    SharedAudioBuffer* shared_input_buffer =
+        shared_input_buffers_.at(double_buffer_index).get();
+    SharedAudioBuffer* shared_output_buffer =
+        shared_output_buffers_.at(double_buffer_index).get();
+
+    bool buffers_are_good =
+        shared_output_buffer &&
+        BufferSize() == shared_output_buffer->length() &&
+        buffer_read_write_index_ + frames_to_process <= BufferSize();
+
+    if (internal_input_bus_->NumberOfChannels()) {
+      // If the number of input channels is zero, the zero length input buffer
+      // is fine.
+      buffers_are_good = buffers_are_good && shared_input_buffer &&
+                         BufferSize() == shared_input_buffer->length();
+    }
+
+    DCHECK(buffers_are_good);
+
+    // `BufferSize()` should be evenly divisible by `frames_to_process`.
+    DCHECK_GT(frames_to_process, 0u);
+    DCHECK_GE(BufferSize(), frames_to_process);
+    DCHECK_EQ(BufferSize() % frames_to_process, 0u);
+
+    uint32_t number_of_input_channels = internal_input_bus_->NumberOfChannels();
+    uint32_t number_of_output_channels = output_bus->NumberOfChannels();
+    DCHECK_EQ(number_of_input_channels, number_of_input_channels_);
+    DCHECK_EQ(number_of_output_channels, number_of_output_channels_);
 
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                  "ScriptProcessorHandler::Process - data copy under lock",

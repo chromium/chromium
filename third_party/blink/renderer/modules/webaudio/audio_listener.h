@@ -120,7 +120,7 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
     SetUpVector(gfx::Vector3dF(up_x, up_y, up_z), exceptionState);
   }
 
-  Mutex& ListenerLock() { return listener_lock_; }
+  base::Lock& ListenerLock() { return listener_lock_; }
   void AddPanner(PannerHandler&);
   void RemovePanner(PannerHandler&);
 
@@ -144,7 +144,7 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
   void setOrientation(const gfx::Vector3dF&, ExceptionState&);
   void SetUpVector(const gfx::Vector3dF&, ExceptionState&);
 
-  void MarkPannersAsDirty(unsigned);
+  void MarkPannersAsDirty(unsigned) EXCLUSIVE_LOCKS_REQUIRED(listener_lock_);
 
   // Location of the listener
   Member<AudioParam> position_x_;
@@ -162,9 +162,9 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
   Member<AudioParam> up_z_;
 
   // The position, forward, and up vectors from the last rendering quantum.
-  gfx::Point3F last_position_;
-  gfx::Vector3dF last_forward_;
-  gfx::Vector3dF last_up_;
+  gfx::Point3F last_position_ GUARDED_BY(listener_lock_);
+  gfx::Vector3dF last_forward_ GUARDED_BY(listener_lock_);
+  gfx::Vector3dF last_up_ GUARDED_BY(listener_lock_);
 
   // Last time that the automations were updated.
   double last_update_time_ = -1;
@@ -189,7 +189,7 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
   AudioFloatArray up_z_values_;
 
   // Synchronize a panner's process() with setting of the state of the listener.
-  mutable Mutex listener_lock_;
+  mutable base::Lock listener_lock_;
   // List for pannerNodes in context. This is updated only in the main thread,
   // and can be referred in audio thread.
   // These raw pointers are safe because PannerHandler::uninitialize()

@@ -185,7 +185,7 @@ void AudioScheduledSourceHandler::Start(double when,
 
   // This synchronizes with process(). updateSchedulingInfo will read some of
   // the variables being set here.
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   // If `when` < `currentTime()`, the source must start now according to the
   // spec. So just set `start_time_` to `currentTime()` in this case to start
@@ -213,7 +213,7 @@ void AudioScheduledSourceHandler::Stop(double when,
   }
 
   // This synchronizes with process()
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   // stop() can be called more than once, with the last call to stop taking
   // effect, unless the source has already stopped due to earlier calls to stop.

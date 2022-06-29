@@ -231,7 +231,7 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementOnMainThread(
   DCHECK(!track_ids.IsEmpty());
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     DCHECK(IsMainThread());
     DCHECK(main_runner_->BelongsToCurrentThread());
@@ -355,7 +355,7 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread(
     String label,
     String language,
     bool enable_or_select) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(IsMainThread());
   DCHECK(main_runner_->BelongsToCurrentThread());
@@ -449,7 +449,7 @@ bool CrossThreadMediaSourceAttachment::FullyAttachedOrSameThread(
 bool CrossThreadMediaSourceAttachment::RunExclusively(
     bool abort_if_not_fully_attached,
     RunExclusivelyCB cb) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // We must only be used by the MSE API on the worker thread.
   DCHECK(!IsMainThread());
@@ -491,7 +491,7 @@ void CrossThreadMediaSourceAttachment::Unregister() {
   // races attempted usage of the object URL (or |registered_media_source_|
   // here).
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
     DCHECK(registered_media_source_);
 
     // MSE-in-Worker using MediaSourceHandle for attachment does NOT use object
@@ -522,7 +522,7 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
   DCHECK(success);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // There should not be the ability for a previous (or current) element's
     // context to have been destroyed (main thread), yet us being called again
@@ -623,7 +623,7 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
   DCHECK(web_media_source);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -661,7 +661,7 @@ void CrossThreadMediaSourceAttachment::
   DCHECK(web_media_source);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     DCHECK(!IsMainThread());
     DCHECK(worker_runner_->BelongsToCurrentThread());
@@ -707,7 +707,7 @@ void CrossThreadMediaSourceAttachment::
 }
 
 void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
   DVLOG(1) << __func__ << " this=" << this;
 
   // Note, this method may be called either explicitly to detach a loading
@@ -742,7 +742,7 @@ void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
 }
 
 void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
@@ -789,7 +789,7 @@ void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
 
 WebTimeRanges CrossThreadMediaSourceAttachment::BufferedInternal(
     MediaSourceTracer* /* tracer */) const {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -829,7 +829,7 @@ WebTimeRanges CrossThreadMediaSourceAttachment::BufferedInternal(
 
 WebTimeRanges CrossThreadMediaSourceAttachment::SeekableInternal(
     MediaSourceTracer* /* tracer */) const {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -871,7 +871,7 @@ WebTimeRanges CrossThreadMediaSourceAttachment::SeekableInternal(
 void CrossThreadMediaSourceAttachment::OnTrackChanged(
     MediaSourceTracer* /* tracer */,
     TrackBase* track) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -885,7 +885,7 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
   DVLOG(1) << __func__ << " this=" << this << ", time=" << time;
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -909,7 +909,7 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
 void CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache(
     base::TimeDelta time) {
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
     DCHECK(!IsMainThread());
     DCHECK(worker_runner_->BelongsToCurrentThread());
 
@@ -928,7 +928,7 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
   DVLOG(1) << __func__ << " this=" << this;
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -944,7 +944,7 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
 }
 
 void CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
@@ -957,7 +957,7 @@ void CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread() {
 }
 
 void CrossThreadMediaSourceAttachment::OnElementContextDestroyed() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -1026,7 +1026,7 @@ void CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache(
     WebTimeRanges new_seekable,
     bool has_new_duration,
     double new_duration) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(IsMainThread());
   DCHECK(main_runner_->BelongsToCurrentThread());

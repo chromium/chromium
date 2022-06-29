@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -657,8 +658,8 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   DCHECK_LE(frames_to_process, phase_increments_.size());
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
-  MutexTryLocker try_locker(process_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
     // Too bad - the tryLock() failed. We must be in the middle of changing
     // wave-tables.
     output_bus->Zero();
@@ -749,7 +750,7 @@ void OscillatorHandler::SetPeriodicWave(PeriodicWaveImpl* periodic_wave) {
   DCHECK(periodic_wave);
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   periodic_wave_ = periodic_wave;
   type_ = CUSTOM;
 }
@@ -761,8 +762,8 @@ bool OscillatorHandler::PropagatesSilence() const {
 void OscillatorHandler::HandleStoppableSourceNode() {
   double now = Context()->currentTime();
 
-  MutexTryLocker try_locker(process_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
     // Can't get the lock, so just return.  It's ok to handle these at a later
     // time; this was just a hint anyway so stopping them a bit later is ok.
     return;

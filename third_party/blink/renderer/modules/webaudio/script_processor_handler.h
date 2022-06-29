@@ -8,13 +8,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
@@ -55,7 +55,9 @@ class ScriptProcessorHandler final
     return number_of_output_channels_;
   }
 
-  Mutex& GetBufferLock() { return buffer_lock_; }
+  base::Lock& GetBufferLock() LOCK_RETURNED(buffer_lock_) {
+    return buffer_lock_;
+  }
 
  private:
   ScriptProcessorHandler(AudioNode&,
@@ -77,10 +79,11 @@ class ScriptProcessorHandler final
   void SwapBuffers() { double_buffer_index_ = 1 - double_buffer_index_; }
   uint32_t double_buffer_index_ = 0;
 
-  // Protects `shared_input_buffers_` and `shared_output_buffers_`.
-  mutable Mutex buffer_lock_;
-  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_input_buffers_;
-  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_output_buffers_;
+  mutable base::Lock buffer_lock_;
+  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_input_buffers_
+      GUARDED_BY(buffer_lock_);
+  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_output_buffers_
+      GUARDED_BY(buffer_lock_);
 
   uint32_t buffer_size_;
   uint32_t buffer_read_write_index_ = 0;

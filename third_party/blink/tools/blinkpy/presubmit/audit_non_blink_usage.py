@@ -47,6 +47,7 @@ _CONFIG = [
             'base::SampleMetadataScope',
             'base::AutoReset',
             'base::Contains',
+            'base::ConditionVariable',
             'base::CpuReductionExperimentFilter',
             'base::ValuesEquivalent',
             'base::Days',

@@ -29,12 +29,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_THREAD_H_
 
 #include <memory>
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -85,8 +86,8 @@ class DatabaseThread final : public GarbageCollected<DatabaseThread> {
   CrossThreadPersistent<SQLTransactionCoordinator> transaction_coordinator_;
   base::WaitableEvent* cleanup_sync_;
 
-  Mutex termination_requested_mutex_;
-  bool termination_requested_;
+  base::Lock termination_requested_lock_;
+  bool termination_requested_ GUARDED_BY(termination_requested_lock_);
 };
 
 }  // namespace blink

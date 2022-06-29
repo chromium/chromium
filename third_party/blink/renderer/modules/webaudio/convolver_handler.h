@@ -9,10 +9,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -53,12 +54,12 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
   unsigned ComputeNumberOfOutputChannels(unsigned input_channels,
                                          unsigned response_channels) const;
 
-  std::unique_ptr<Reverb> reverb_;
-  std::unique_ptr<SharedAudioBuffer> shared_buffer_;
+  std::unique_ptr<Reverb> reverb_ GUARDED_BY(process_lock_);
+  std::unique_ptr<SharedAudioBuffer> shared_buffer_ GUARDED_BY(process_lock_);
 
   // This synchronizes dynamic changes to the convolution impulse response with
   // process().
-  mutable Mutex process_lock_;
+  mutable base::Lock process_lock_;
 
   // Normalize the impulse response or not. Must default to true.
   bool normalize_ = true;

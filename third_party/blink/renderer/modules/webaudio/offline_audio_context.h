@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_CONTEXT_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -122,14 +123,13 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // protected by the offline context lock.
   SuspendMap scheduled_suspends_;
 
-  // Protects `scheduled_suspend_frames_`.
-  Mutex suspend_frames_lock_;
-
-  // Holds copies of `quantized_frame` in `schedueld_suspends_` to ensure
+  base::Lock suspend_frames_lock_;
+  // Holds copies of `quantized_frame` in `scheduled_suspends_` to ensure
   // a safe access from the audio thread.
   HashSet<size_t,
           WTF::DefaultHash<size_t>::Hash,
-          WTF::UnsignedWithZeroKeyHashTraits<size_t>> scheduled_suspend_frames_;
+          WTF::UnsignedWithZeroKeyHashTraits<size_t>>
+      scheduled_suspend_frames_ GUARDED_BY(suspend_frames_lock_);
 
   Member<ScriptPromiseResolver> complete_resolver_;
 

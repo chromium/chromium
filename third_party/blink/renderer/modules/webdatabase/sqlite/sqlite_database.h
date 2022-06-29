@@ -29,11 +29,12 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 struct sqlite3;
 
@@ -130,7 +131,7 @@ class SQLiteDatabase {
                                 const char*,
                                 const char*);
 
-  void EnableAuthorizer(bool enable);
+  void EnableAuthorizer(bool enable) EXCLUSIVE_LOCKS_REQUIRED(authorizer_lock_);
 
   int PageSize();
 
@@ -139,16 +140,16 @@ class SQLiteDatabase {
 
   bool transaction_in_progress_ = false;
 
-  Mutex authorizer_lock_;
+  base::Lock authorizer_lock_;
 
   // The raw pointer usage is safe because the DatabaseAuthorizer is guaranteed
   // to outlive this instance. The DatabaseAuthorizer is owned by the same
   // Database that owns this instance.
-  DatabaseAuthorizer* authorizer_ = nullptr;
+  DatabaseAuthorizer* authorizer_ GUARDED_BY(authorizer_lock_) = nullptr;
 
   base::PlatformThreadId opening_thread_ = 0;
 
-  Mutex database_closing_mutex_;
+  base::Lock database_closing_mutex_;
 
   int open_error_;
   std::string open_error_message_;

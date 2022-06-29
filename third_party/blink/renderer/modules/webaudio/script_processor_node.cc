@@ -255,7 +255,7 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
       static_cast<ScriptProcessorHandler&>(Handler());
 
   {
-    MutexLocker locker(handler.GetBufferLock());
+    base::AutoLock locker(handler.GetBufferLock());
     TRACE_EVENT1(
         TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
         "ScriptProcessorNode::DispatchEvent (copy input under lock)",
@@ -300,7 +300,7 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
       external_input_buffer_, external_output_buffer_, playback_time));
 
   {
-    MutexLocker locker(handler.GetBufferLock());
+    base::AutoLock locker(handler.GetBufferLock());
     TRACE_EVENT1(
         TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
         "ScriptProcessorNode::DispatchEvent (copy output under lock)",

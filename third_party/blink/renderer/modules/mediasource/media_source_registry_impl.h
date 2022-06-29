@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_REGISTRY_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_registry.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -38,14 +38,14 @@ class MediaSourceRegistryImpl final : public MediaSourceRegistry {
   // Regardless, must be called on the thread which created the URLRegistrable
   // (the MediaSourceAttachment).
   void RegisterURL(SecurityOrigin*, const KURL&, URLRegistrable*) override
-      LOCKS_EXCLUDED(map_mutex_);
+      LOCKS_EXCLUDED(map_lock_);
 
   // UnregisterURL removes the corresponding scoped_refptr and KURL from
   // |media_sources_| if its KURL was there. Can be called from either the main
   // thread (explicit revocation or automatic revocation on attachment success)
   // or from a worker thread (explicit revocation on worker context or worker
   // context destruction).
-  void UnregisterURL(const KURL&) override LOCKS_EXCLUDED(map_mutex_);
+  void UnregisterURL(const KURL&) override LOCKS_EXCLUDED(map_lock_);
 
   // MediaSourceRegistry override that finds |url| in |media_sources_| and
   // returns the corresponding scoped_refptr if found. Otherwise, returns an
@@ -53,7 +53,7 @@ class MediaSourceRegistryImpl final : public MediaSourceRegistry {
   // MediaSourceInWorkers feature, this must only be called on the main thread
   // (typically for attachment of MediaSource to an HTMLMediaElement).
   scoped_refptr<MediaSourceAttachment> LookupMediaSource(
-      const String& url) override LOCKS_EXCLUDED(map_mutex_);
+      const String& url) override LOCKS_EXCLUDED(map_lock_);
 
  private:
   // Construction of this singleton informs MediaSourceAttachment of this
@@ -61,9 +61,9 @@ class MediaSourceRegistryImpl final : public MediaSourceRegistry {
   // this registry like lookup, registration and unregistration.
   MediaSourceRegistryImpl();
 
-  mutable Mutex map_mutex_;
+  mutable base::Lock map_lock_;
   HashMap<String, scoped_refptr<MediaSourceAttachment>> media_sources_
-      GUARDED_BY(map_mutex_);
+      GUARDED_BY(map_lock_);
 };
 
 }  // namespace blink
