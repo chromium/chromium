@@ -31,7 +31,7 @@ def _FindDuplicates(entries):
       duplicates.add(entry)
     else:
       seen.add(entry)
-  return duplicates
+  return sorted(duplicates)
 
 def _CheckForDuplicateFeatures(enable_features, disable_features):
   enable_features = [f.split('<')[0] for f in enable_features]
