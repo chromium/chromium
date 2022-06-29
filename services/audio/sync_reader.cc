@@ -101,10 +101,10 @@ namespace audio {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<double> kBufferDurationPercent{
-    &kDynamicAudioTimeout, "buffer_duration_percent", 0.5};
+    &kDynamicAudioTimeout, "buffer_duration_percent", 0.95};
 #endif
 
 SyncReader::SyncReader(
