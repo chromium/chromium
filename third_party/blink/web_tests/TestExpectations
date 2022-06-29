@@ -6474,9 +6474,6 @@ crbug.com/1265311 http/tests/navigation/location-change-repeated-from-blank.html
 # Sheriff 2021-11-03
 crbug.com/1266221 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle.https.tentative.window.html [ Failure Pass ]
 
-# Sheriff 2021-11-08
-crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-overlapping-sources.js [ Failure Pass ]
-
 # Sheriff 2021-11-09
 crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass Timeout ]
 
@@ -6679,6 +6676,26 @@ crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/cs
 crbug.com/1250666 crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Failure Pass Timeout ]
 crbug.com/1250666 crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure Pass Timeout ]
 crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-009.https.html [ Failure ]
+
+# Temporarily disabled to unblock https://crrev.com/c/3657449
+crbug.com/1183990 http/tests/devtools/bindings/bindings-frame-attach-detach.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/bindings-frame-navigate.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/bindings-main-frame-navigated.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/contentscripts-bindings-multiple-frames.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/contentscripts-navigator-multiple-frames.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/dynamic-bindings-frame-attach-detach.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/dynamic-navigator-frame-attach-detach.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/jssourcemap-bindings-overlapping-sources.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/jssourcemap-navigator-overlapping-sources.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/shadowdom-bindings.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/sourcemap-bindings-multiple-frames.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/sourcemap-navigator-multiple-frames.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/suspendtarget-bindings.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/bindings/suspendtarget-navigator.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/sources/debugger/network-uisourcecode-provider.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-panel.js [ Failure Pass ]
+crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-with-same-source-url.js [ Failure Pass ]
 
 # Sheriff 2022-01-17
 crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeout ]
