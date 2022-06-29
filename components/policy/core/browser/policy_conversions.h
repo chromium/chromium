@@ -171,7 +171,7 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Additional Chrome policies that need to be displayed, though not available
   // through policy service.
-  void WithAdditionalChromePolicies(base::Value&& policies);
+  void WithAdditionalChromePolicies(base::Value::Dict policies);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
@@ -183,7 +183,7 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Value additional_chrome_policies_;
+  base::Value::Dict additional_chrome_policies_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 

@@ -587,7 +587,7 @@ void WiFiServiceImpl::SetProperties(const std::string& network_guid,
   base::Value::Dict* existing_properties =
       connect_properties_.FindDict(network_guid);
   if (existing_properties) {
-    existing_properties->Merge(properties);
+    existing_properties->Merge(std::move(properties));
   } else {
     connect_properties_.Set(network_guid, std::move(properties));
   }

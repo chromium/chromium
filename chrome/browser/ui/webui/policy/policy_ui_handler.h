@@ -131,7 +131,10 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   policy::PolicyService* GetPolicyService();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGotDevicePolicy(base::Value device_policy, base::Value legend_data);
+  void OnGotDevicePolicy(base::Value::Dict device_policy,
+                         base::Value::Dict legend_data);
+  void OnGotDevicePolicyDeprecated(base::Value device_policy,
+                                   base::Value legend_data);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   scoped_refptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
@@ -149,7 +152,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Value device_policy_;
+  base::Value::Dict device_policy_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

@@ -438,20 +438,20 @@ Value::Dict Value::Dict::Clone() const {
   return Dict(storage_);
 }
 
-void Value::Dict::Merge(const Dict& dict) {
+void Value::Dict::Merge(Dict dict) {
   for (const auto [key, value] : dict) {
-    if (const Dict* nested_dict = value.GetIfDict()) {
+    if (Dict* nested_dict = value.GetIfDict()) {
       if (Dict* current_dict = FindDict(key)) {
         // If `key` is a nested dictionary in this dictionary and the dictionary
         // being merged, recursively merge the two dictionaries.
-        current_dict->Merge(*nested_dict);
+        current_dict->Merge(std::move(*nested_dict));
         continue;
       }
     }
 
-    // Otherwise, unconditionally set the value, potentially overwriting any
-    // pre-existing key.
-    Set(key, value.Clone());
+    // Otherwise, unconditionally set the value, overwriting any value that may
+    // already be associated with the key.
+    Set(key, std::move(value));
   }
 }
 
@@ -1395,7 +1395,7 @@ void Value::DictClear() {
 }
 
 void Value::MergeDictionary(const Value* dictionary) {
-  return GetDict().Merge(dictionary->GetDict());
+  return GetDict().Merge(dictionary->GetDict().Clone());
 }
 
 bool Value::GetAsList(ListValue** out_value) {

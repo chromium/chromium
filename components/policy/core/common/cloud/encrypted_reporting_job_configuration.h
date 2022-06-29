@@ -83,7 +83,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
  public:
   EncryptedReportingJobConfiguration(CloudPolicyClient* client,
                                      const std::string& server_url,
-                                     const base::Value::Dict& merging_payload,
+                                     base::Value::Dict merging_payload,
                                      UploadCompleteCallback complete_cb);
   ~EncryptedReportingJobConfiguration() override;
 

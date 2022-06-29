@@ -223,7 +223,7 @@ void WiFiServiceMac::SetProperties(const std::string& network_guid,
   base::Value::Dict* existing_properties =
       network_properties_.FindDict(network_guid);
   if (existing_properties) {
-    existing_properties->Merge(properties);
+    existing_properties->Merge(std::move(properties));
   } else {
     network_properties_.Set(network_guid, std::move(properties));
   }

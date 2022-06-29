@@ -352,7 +352,7 @@ class PrintRenderFrameHelper
   // name, number of copies, page range, etc.
   bool UpdatePrintSettings(blink::WebLocalFrame* frame,
                            const blink::WebNode& node,
-                           const base::Value::Dict& passed_job_settings);
+                           base::Value::Dict passed_job_settings);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   // Returns final print settings from the user.

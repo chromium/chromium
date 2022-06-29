@@ -494,7 +494,7 @@ void NetworkService::StartNetLog(base::File file,
                                  net::NetLogCaptureMode capture_mode,
                                  base::Value::Dict client_constants) {
   base::Value::Dict constants = net::GetNetConstants();
-  constants.Merge(client_constants);
+  constants.Merge(std::move(client_constants));
 
   file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
       std::move(file), capture_mode,

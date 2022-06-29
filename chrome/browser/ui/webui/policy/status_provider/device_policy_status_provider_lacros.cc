@@ -4,21 +4,19 @@
 
 #include "chrome/browser/ui/webui/policy/status_provider/device_policy_status_provider_lacros.h"
 
+#include <utility>
+
 DevicePolicyStatusProviderLacros::DevicePolicyStatusProviderLacros()
     : PolicyStatusProvider() {}
 
 DevicePolicyStatusProviderLacros::~DevicePolicyStatusProviderLacros() {}
 
 void DevicePolicyStatusProviderLacros::SetDevicePolicyStatus(
-    base::Value status) {
+    base::Value::Dict status) {
   device_policy_status_ = std::move(status);
 }
 
 void DevicePolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
-  if (!device_policy_status_.is_dict()) {
-    return;
-  }
-  base::DictionaryValue* dict_value;
-  device_policy_status_.GetAsDictionary(&dict_value);
-  dict->Swap(dict_value);
+  static_cast<base::Value&>(*dict) =
+      base::Value(std::move(device_policy_status_));
 }

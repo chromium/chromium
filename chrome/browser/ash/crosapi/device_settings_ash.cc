@@ -48,6 +48,25 @@ void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
   const policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged()) {
+    std::move(callback).Run(base::Value::Dict(), base::Value::Dict());
+    return;
+  }
+
+  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
+      ProfileManager::GetActiveUserProfile());
+  client->EnableUserPolicies(false);
+  DeviceCloudPolicyStatusProviderChromeOS provider(connector);
+  base::DictionaryValue status;
+  provider.GetStatus(&status);
+  std::move(callback).Run(client->GetChromePolicies(),
+                          std::move(status.GetDict()));
+}
+
+void DeviceSettingsAsh::GetDevicePolicyDeprecated(
+    GetDevicePolicyDeprecatedCallback callback) {
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (!connector->IsDeviceEnterpriseManaged()) {
     std::move(callback).Run(base::Value(), base::Value());
     return;
   }

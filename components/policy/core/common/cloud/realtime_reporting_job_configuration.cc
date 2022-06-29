@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 
+#include <utility>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
@@ -66,7 +68,7 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value::Dict report) {
   // Overwrite internal context. |context_| will be merged with |payload_| in
   // |GetPayload|.
   if (context_.has_value()) {
-    context_->Merge(*context);
+    context_->Merge(std::move(*context));
   } else {
     context_ = std::move(*context);
   }

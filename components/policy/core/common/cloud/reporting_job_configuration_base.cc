@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/json/json_reader.h"
@@ -165,7 +166,7 @@ ReportingJobConfigurationBase::BrowserDictionaryBuilder::GetStringPath(
 std::string ReportingJobConfigurationBase::GetPayload() {
   // Move context keys to the payload.
   if (context_.has_value()) {
-    payload_.Merge(*context_);
+    payload_.Merge(std::move(*context_));
     context_.reset();
   }
 

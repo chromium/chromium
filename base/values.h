@@ -349,6 +349,11 @@ class BASE_EXPORT GSL_OWNER Value {
   // Returns a value for both `Value::Type::DOUBLE` and `Value::Type::INT`,
   // converting the latter to a double.
   double GetDouble() const;
+  // Callers that want to transfer ownership can use std::move() in conjunction
+  // with one of the mutable variants below, e.g.:
+  //   std::string taken_string = std::move(value.GetString());
+  //   base::Value::Dict taken_dict = std::move(value.GetDict());
+  //   base::Value::List taken_list = std::move(value.GetList());
   const std::string& GetString() const;
   std::string& GetString();
   const BlobStorage& GetBlob() const;
@@ -436,7 +441,7 @@ class BASE_EXPORT GSL_OWNER Value {
     // - if both entries are dictionaries, they will be recursively merged
     // - otherwise, the already-existing entry in this dictionary will be
     //   overwritten with the entry from `dict`.
-    void Merge(const Dict& dict);
+    void Merge(Dict dict);
 
     // Finds the entry corresponding to `key` in this dictionary. Returns
     // nullptr if there is no such entry.

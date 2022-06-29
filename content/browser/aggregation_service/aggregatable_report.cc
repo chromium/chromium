@@ -334,7 +334,7 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
     return value.contains(e.first);
   })) << "Additional fields in shared_info cannot duplicate existing fields";
 
-  value.Merge(additional_fields);
+  value.Merge(additional_fields.Clone());
 
   std::string serialized_value;
   bool succeeded = base::JSONWriter::Write(value, &serialized_value);

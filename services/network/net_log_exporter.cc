@@ -4,6 +4,8 @@
 
 #include "services/network/net_log_exporter.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -88,7 +90,7 @@ void NetLogExporter::Stop(base::Value::Dict polled_data,
 
   base::Value::Dict net_info =
       net::GetNetInfo(network_context_->url_request_context());
-  net_info.Merge(polled_data);
+  net_info.Merge(std::move(polled_data));
 
   file_net_observer_->StopObserving(
       std::make_unique<base::Value>(std::move(net_info)),
@@ -169,7 +171,7 @@ void NetLogExporter::StartWithScratchDir(
   state_ = STATE_RUNNING;
 
   base::Value::Dict constants = net::GetNetConstants();
-  constants.Merge(extra_constants);
+  constants.Merge(std::move(extra_constants));
   std::unique_ptr<base::Value> constants_value =
       std::make_unique<base::Value>(std::move(constants));
 

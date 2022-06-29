@@ -1663,7 +1663,7 @@ void WebTestControlHost::WebTestRuntimeFlagsChanged(
 
   // Stash the accumulated changes for future, not-yet-created renderers.
   accumulated_web_test_runtime_flags_changes_.Merge(
-      changed_web_test_runtime_flags);
+      changed_web_test_runtime_flags.Clone());
   web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
       accumulated_web_test_runtime_flags_changes_);
 

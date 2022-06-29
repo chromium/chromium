@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
@@ -355,13 +356,13 @@ class ConnectorsServiceAnalysisProfileBrowserTest
                policy::ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                    BuildBrowserDictionary(include_device_info));
     base::Value::Dict context = reporting::GetContext(browser()->profile());
-    output.Merge(context);
+    output.Merge(std::move(context));
     if (include_device_info) {
       base::Value::Dict device;
       device.Set("device", policy::ReportingJobConfigurationBase::
                                DeviceDictionaryBuilder ::BuildDeviceDictionary(
                                    kFakeBrowserDMToken, kFakeBrowserClientId));
-      output.Merge(device);
+      output.Merge(std::move(device));
     }
 
     return output;

@@ -14,13 +14,13 @@ class DevicePolicyStatusProviderLacros : public policy::PolicyStatusProvider {
   DevicePolicyStatusProviderLacros();
   ~DevicePolicyStatusProviderLacros() override;
 
-  void SetDevicePolicyStatus(base::Value status);
+  void SetDevicePolicyStatus(base::Value::Dict status);
 
   // PolicyStatusProvider implementation.
   void GetStatus(base::DictionaryValue* dict) override;
 
  private:
-  base::Value device_policy_status_;
+  base::Value::Dict device_policy_status_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_DEVICE_POLICY_STATUS_PROVIDER_LACROS_H_

@@ -152,8 +152,8 @@ PolicyUIHandler::~PolicyUIHandler() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void PolicyUIHandler::OnGotDevicePolicy(base::Value device_policy,
-                                        base::Value legend_data) {
+void PolicyUIHandler::OnGotDevicePolicy(base::Value::Dict device_policy,
+                                        base::Value::Dict legend_data) {
   if (device_policy != device_policy_) {
     device_policy_ = std::move(device_policy);
     static_cast<DevicePolicyStatusProviderLacros*>(
@@ -161,6 +161,13 @@ void PolicyUIHandler::OnGotDevicePolicy(base::Value device_policy,
         ->SetDevicePolicyStatus(std::move(legend_data));
     SendPolicies();
   }
+}
+
+void PolicyUIHandler::OnGotDevicePolicyDeprecated(base::Value device_policy,
+                                                  base::Value legend_data) {
+  // TODO(dcheng): Do we need to robustly handle errors here?
+  OnGotDevicePolicy(std::move(device_policy.GetDict()),
+                    std::move(legend_data.GetDict()));
 }
 #endif
 
@@ -329,14 +336,23 @@ void PolicyUIHandler::RegisterMessages() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   // Get device policy.
-  if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>() &&
-      service->GetInterfaceVersion(
-          crosapi::mojom::DeviceSettingsService::Uuid_) >=
-          static_cast<int>(crosapi::mojom::DeviceSettingsService::
-                               kGetDevicePolicyMinVersion)) {
-    service->GetRemote<crosapi::mojom::DeviceSettingsService>()
-        ->GetDevicePolicy(base::BindOnce(&PolicyUIHandler::OnGotDevicePolicy,
-                                         weak_factory_.GetWeakPtr()));
+  if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>()) {
+    if (service->GetInterfaceVersion(
+            crosapi::mojom::DeviceSettingsService::Uuid_) >=
+        static_cast<int>(crosapi::mojom::DeviceSettingsService::
+                             kGetDevicePolicyMinVersion)) {
+      service->GetRemote<crosapi::mojom::DeviceSettingsService>()
+          ->GetDevicePolicy(base::BindOnce(&PolicyUIHandler::OnGotDevicePolicy,
+                                           weak_factory_.GetWeakPtr()));
+    } else if (service->GetInterfaceVersion(
+                   crosapi::mojom::DeviceSettingsService::Uuid_) >=
+               static_cast<int>(crosapi::mojom::DeviceSettingsService::
+                                    kGetDevicePolicyDeprecatedMinVersion)) {
+      service->GetRemote<crosapi::mojom::DeviceSettingsService>()
+          ->GetDevicePolicyDeprecated(
+              base::BindOnce(&PolicyUIHandler::OnGotDevicePolicyDeprecated,
+                             weak_factory_.GetWeakPtr()));
+    }
   }
 #endif
 

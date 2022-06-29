@@ -1455,7 +1455,8 @@ void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
   }
 
   if (!UpdatePrintSettings(print_preview_context_.source_frame(),
-                           print_preview_context_.source_node(), settings)) {
+                           print_preview_context_.source_node(),
+                           settings.Clone())) {
     DidFinishPrinting(INVALID_SETTINGS);
     return;
   }
@@ -2391,7 +2392,7 @@ PrintRenderFrameHelper::SetOptionsFromPdfDocument() {
 bool PrintRenderFrameHelper::UpdatePrintSettings(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
-    const base::Value::Dict& passed_job_settings) {
+    base::Value::Dict passed_job_settings) {
   CHECK(!passed_job_settings.empty());
 
   base::Value::Dict modified_job_settings;
@@ -2400,7 +2401,7 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   if (source_is_html) {
     job_settings = &passed_job_settings;
   } else {
-    modified_job_settings.Merge(passed_job_settings);
+    modified_job_settings.Merge(std::move(passed_job_settings));
     modified_job_settings.Set(kSettingHeaderFooterEnabled, false);
     modified_job_settings.Set(kSettingMarginsType,
                               static_cast<int>(mojom::MarginType::kNoMargins));

@@ -96,7 +96,7 @@ void WebUIIOSDataSourceImpl::AddLocalizedString(const std::string& name,
 
 void WebUIIOSDataSourceImpl::AddLocalizedStrings(
     const base::Value::Dict& localized_strings) {
-  localized_strings_.GetDict().Merge(localized_strings);
+  localized_strings_.GetDict().Merge(localized_strings.Clone());
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
 }
