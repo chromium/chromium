@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -40,9 +41,24 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     return nullptr;
   }
 
-  // Only intercept main frame requests.
+  // Only intercept primary main frame and prerender main frame requests.
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  if (!main_frame || main_frame->GetFrameTreeNodeId() != frame_tree_node_id) {
+  bool is_primary_main_frame_navigation =
+      main_frame && main_frame->GetFrameTreeNodeId() == frame_tree_node_id;
+
+  // Use the is_outermost_main_frame flag instead of obtaining the
+  // corresponding RenderFrameHost via the `frame_tree_node_id` and checking
+  // whether it has no parent frame, since the multipage architecture allows a
+  // RenderFrameHost to be attached to another node, and we should avoid
+  // relying on this dependency.
+  bool can_activate_for_prerender =
+      SearchPrefetchUpgradeToPrerenderIsEnabled() &&
+      tentative_resource_request.is_outermost_main_frame &&
+      web_contents->IsPrerenderedFrame(frame_tree_node_id);
+
+  // This is not a primary navigation, nor can prerender use the prefetched
+  // response.
+  if (!is_primary_main_frame_navigation && !can_activate_for_prerender) {
     return nullptr;
   }
 
@@ -55,6 +71,10 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
       SearchPrefetchServiceFactory::GetForProfile(profile);
   if (!service)
     return nullptr;
+
+  if (can_activate_for_prerender) {
+    return service->TakePrerenderFromMemoryCache(tentative_resource_request);
+  }
 
   auto loader =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
