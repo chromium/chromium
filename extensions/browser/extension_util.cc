@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -289,7 +290,6 @@ void InitializeFileSchemeAccessForExtension(
   }
 }
 
-// TODO(solomonkinard): Take into account GUID-based dynamic URLs.
 ExtensionId GetExtensionIdForSiteInstance(
     content::SiteInstance& site_instance) {
   // <webview> guests always store the ExtensionId in the partition domain.
@@ -299,10 +299,22 @@ ExtensionId GetExtensionIdForSiteInstance(
   // This works for both apps and extensions because the site has been
   // normalized to the extension URL for hosted apps.
   const GURL& site_url = site_instance.GetSiteURL();
-  if (site_url.SchemeIs(kExtensionScheme))
-    return site_url.host();
+  if (!site_url.SchemeIs(kExtensionScheme))
+    return ExtensionId();
 
-  return ExtensionId();
+  // Navigating to a disabled (or uninstalled or not-yet-installed) extension
+  // will set the site URL to chrome-extension://invalid.
+  ExtensionId maybe_extension_id = site_url.host();
+  if (maybe_extension_id == "invalid")
+    return ExtensionId();
+
+  // Otherwise,`site_url.host()` should always be a valid extension id.  In
+  // particular, navigations should never commit a URL that uses a dynamic,
+  // GUID-based hostname (such navigations should redirect to the statically
+  // known, extension-id-based hostname).
+  DCHECK(crx_file::id_util::IdIsValid(maybe_extension_id))
+      << "; maybe_extension_id = " << maybe_extension_id;
+  return maybe_extension_id;
 }
 
 bool CanRendererHostExtensionOrigin(int render_process_id,
