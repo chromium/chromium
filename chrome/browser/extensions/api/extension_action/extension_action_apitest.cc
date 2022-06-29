@@ -738,7 +738,8 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
 }
 
 // Tests setting the icon dynamically from the background page.
-IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
+// TODO(crbug.com/1340330): flaky.
+IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Test Clicking",
