@@ -85,10 +85,10 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   bool CreateSessionLog(const base::FilePath& file_path);
 
   // Opens the select dialog.
-  void HandleSaveSessionLogRequest(const base::ListValue* args);
+  void HandleSaveSessionLogRequest(const base::Value::List& args);
 
   // Initializes Javascript.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(const base::Value::List& args);
 
   SelectFilePolicyCreator select_file_policy_creator_;
   std::unique_ptr<TelemetryLog> telemetry_log_;

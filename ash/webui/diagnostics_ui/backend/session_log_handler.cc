@@ -80,10 +80,10 @@ SessionLogHandler::~SessionLogHandler() {
 }
 
 void SessionLogHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize",
       base::BindRepeating(&SessionLogHandler::HandleInitialize, weak_ptr_));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "saveSessionLog",
       base::BindRepeating(&SessionLogHandler::HandleSaveSessionLogRequest,
                           weak_ptr_));
@@ -196,10 +196,10 @@ bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
 }
 
 void SessionLogHandler::HandleSaveSessionLogRequest(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
   DCHECK(save_session_log_callback_id_.empty());
-  save_session_log_callback_id_ = args->GetListDeprecated()[0].GetString();
+  save_session_log_callback_id_ = args[0].GetString();
 
   content::WebContents* web_contents = web_ui()->GetWebContents();
   gfx::NativeWindow owning_window =
@@ -221,8 +221,8 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
       /*params=*/nullptr);
 }
 
-void SessionLogHandler::HandleInitialize(const base::ListValue* args) {
-  DCHECK(args && args->GetListDeprecated().empty());
+void SessionLogHandler::HandleInitialize(const base::Value::List& args) {
+  DCHECK(args.empty());
   AllowJavascript();
 }
 
