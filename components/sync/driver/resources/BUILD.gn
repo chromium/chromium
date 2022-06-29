@@ -25,12 +25,12 @@ non_preprocessed_files = [
   "about.js",
   "chrome_sync.ts",
   "data.js",
-  "invalidations.js",
+  "invalidations.ts",
   "search.ts",
   "sync_log.ts",
   "sync_node_browser.ts",
   "sync_search.ts",
-  "traffic_log.js",
+  "traffic_log.ts",
   "user_events.ts",
 ]
 
