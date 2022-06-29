@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ash/file_manager/fusebox_moniker.h"
 
-#include <unordered_map>
+#include <map>
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace {
 
-base::NoDestructor<
-    std::unordered_map<base::Token, storage::FileSystemURL, base::TokenHash>>
+base::NoDestructor<std::map<base::Token, storage::FileSystemURL>>
     fusebox_monikers;
 
 }  // namespace
