@@ -72,6 +72,7 @@ mojom("mojom") {
     "mojom/activation_sequence.mojom",
     "mojom/api_permission_id.mojom",
     "mojom/app_window.mojom",
+    "mojom/automation_query.mojom",
     "mojom/channel.mojom",
     "mojom/code_injection.mojom",
     "mojom/css_origin.mojom",
