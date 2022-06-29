@@ -21,9 +21,12 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
 
@@ -62,6 +65,11 @@ class OffscreenDocumentBrowserTest : public ExtensionApiTest {
         content::ExecuteScriptAndExtractString(web_contents, script, &result))
         << script;
     return result;
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
  private:
@@ -306,6 +314,69 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, MessagingTest) {
     base::Value result = result_queue.GetNextResult();
     EXPECT_THAT(result, base::test::IsJson(expected));
   }
+}
+
+// Tests the cross-origin permissions of offscreen documents. While offscreen
+// documents have limited API access, they *should* retain the ability to
+// bypass CORS requirements if they have the corresponding host permission.
+// This is because one of the primary use cases for offscreen documents is
+// DOM parsing, which may be done via a fetch() + DOMParser.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
+                       CrossOriginFetchPermissions) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "host_permissions": ["http://allowed.example/*"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>Offscreen</html>");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
+
+  const GURL allowed_url = embedded_test_server()->GetURL(
+      "allowed.example", "/extensions/fetch1.html");
+  const GURL restricted_url = embedded_test_server()->GetURL(
+      "restricted.example", "/extensions/fetch2.html");
+
+  // Sanity check the permissions are as we expect them to be for the given
+  // URLs, independent of tab ID.
+  const int kTabId = extension_misc::kUnknownTabId;
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            extension->permissions_data()->GetPageAccess(allowed_url, kTabId,
+                                                         nullptr));
+  EXPECT_EQ(PermissionsData::PageAccess::kDenied,
+            extension->permissions_data()->GetPageAccess(restricted_url, kTabId,
+                                                         nullptr));
+
+  content::WebContents* contents = offscreen_document->host_contents();
+  static constexpr char kFetchScript[] =
+      R"((async () => {
+           let msg;
+           try {
+             let res = await fetch($1);
+             msg = await res.text();
+           } catch (e) {
+             msg = e.toString();
+           }
+           domAutomationController.send(msg);
+         })();)";
+
+  EXPECT_EQ("fetch1 - cat\n",
+            ExecuteScriptSync(contents,
+                              content::JsReplace(kFetchScript, allowed_url)));
+  EXPECT_EQ("TypeError: Failed to fetch",
+            ExecuteScriptSync(
+                contents, content::JsReplace(kFetchScript, restricted_url)));
 }
 
 }  // namespace extensions
