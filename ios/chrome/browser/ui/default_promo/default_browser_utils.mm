@@ -149,7 +149,7 @@ NSDate* MostRecentDateForType(DefaultPromoType type) {
 
 #pragma mark - Private
 
-// |YES| if user interacted with the first run default browser screen.
+// `YES` if user interacted with the first run default browser screen.
 BOOL HasUserInteractedWithFirstRunPromoBefore() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kUserHasInteractedWithFirstRunPromo];
@@ -172,7 +172,7 @@ void AddOneToDisplayedPromoCount() {
 
 // Computes cool down between promos.
 NSTimeInterval ComputeCooldown() {
-  // |true| if the user is in the short delay group experiment and tap on the
+  // `true` if the user is in the short delay group experiment and tap on the
   // "No thanks" button in first run default browser screen. Short cool down
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.

@@ -328,8 +328,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 #pragma mark - Timer Management
 
-// Start the timer to show a promo. |self.currentPromoReason| must be set to
-// the reason for this promo flow and must not be |PromoReasonNone|.
+// Start the timer to show a promo. `self.currentPromoReason` must be set to
+// the reason for this promo flow and must not be `PromoReasonNone`.
 - (void)startShowPromoTimer {
   DCHECK(self.currentPromoReason != PromoReasonNone);
 

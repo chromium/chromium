@@ -39,7 +39,7 @@ extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
-// past expired logs for |type| that have happened too far in the past.
+// past expired logs for `type` that have happened too far in the past.
 void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 
 // Logs the timestamp of a user tap on the "Remind Me Later" button in the
@@ -104,11 +104,11 @@ bool IsChromeLikelyDefaultBrowser7Days();
 
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
-// default browser for the passed |type|. Returns false otherwise.
+// default browser for the passed `type`. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 
 // Returns the most recent promo the user showed interest in. Defaults to
-// DefaultPromoTypeGeneral if no interest is found. If |skipAllTabsPromo| is
+// DefaultPromoTypeGeneral if no interest is found. If `skipAllTabsPromo` is
 // true, this type of promo will be ignored.
 DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
 

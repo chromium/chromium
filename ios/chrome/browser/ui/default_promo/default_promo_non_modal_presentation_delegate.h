@@ -12,7 +12,7 @@
 // Whether the default promo is currently showing.
 - (BOOL)defaultNonModalPromoIsShowing;
 
-// Asks the delegate to dismiss the promo, |animated|, and call |completion|
+// Asks the delegate to dismiss the promo, `animated`, and call `completion`
 // when the dismissal is done.
 - (void)dismissDefaultNonModalPromoAnimated:(BOOL)animated
                                  completion:(void (^)())completion;
