@@ -845,7 +845,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       // the plus sign cell in this point in code depends on
       // `item.sourceIndexPath`.
       // I.e., in this point in code, `collectionView.numberOfItemsInSection` is
-      // equal to `self.items.count + 1|.
+      // equal to `self.items.count + 1`.
       if (destinationIndex == plusSignCellIndex) {
         // Prevent the cell from being dropped where the plus sign cell is.
         destinationIndex = plusSignCellIndex - 1;
