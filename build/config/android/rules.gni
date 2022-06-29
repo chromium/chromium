@@ -1505,14 +1505,6 @@ if (enable_java_templates) {
     }
   }
 
-  # Alias for robolectric_binary pending cleanup. https://crbug.com/1336818.
-  template("junit_binary") {
-    robolectric_binary(target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    }
-  }
-
   # Declare a java library target
   #
   # Variables
