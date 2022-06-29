@@ -604,14 +604,9 @@ message SystemProfileProto {
     // Other platforms should use Stability.Counts2.
     optional int32 page_load_count = 2;
 
-    optional int32 renderer_crash_count = 3;
     // Logged on Android only as of Q2 2022. Used by only Android WebView. Other
     // platforms should use Stability.Counts2.
     optional int32 renderer_launch_count = 26;
-
-    // Number of renderer launches, crashes and failed launches that were for
-    // extensions. These are not counted in the renderer counts above.
-    optional int32 extension_renderer_crash_count = 5;
 
     // Number of times the browser has crashed while logged in as the "other
     // user" (guest) account.
