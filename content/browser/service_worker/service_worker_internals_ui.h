@@ -13,16 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 
@@ -82,13 +79,13 @@ class ServiceWorkerInternalsHandler : public WebUIMessageHandler {
   void RemoveObserverFromStoragePartition(StoragePartition* partition);
 
   // Called from Javascript.
-  void HandleGetOptions(const base::ListValue* args);
-  void HandleSetOption(const base::ListValue* args);
-  void HandleGetAllRegistrations(const base::ListValue* args);
-  void HandleStopWorker(const base::ListValue* args);
-  void HandleInspectWorker(const base::ListValue* args);
-  void HandleUnregister(const base::ListValue* args);
-  void HandleStartWorker(const base::ListValue* args);
+  void HandleGetOptions(const base::Value::List& args);
+  void HandleSetOption(const base::Value::List& args);
+  void HandleGetAllRegistrations(const base::Value::List& args);
+  void HandleStopWorker(const base::Value::List& args);
+  void HandleInspectWorker(const base::Value::List& args);
+  void HandleUnregister(const base::Value::List& args);
+  void HandleStartWorker(const base::Value::List& args);
 
   bool GetServiceWorkerContext(
       int partition_id,
