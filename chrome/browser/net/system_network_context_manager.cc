@@ -226,9 +226,13 @@ bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// TODO(https://crbug.com/1228958): update function with enterprise policy for
-// Chrome root store usage once this is created.
 bool ShouldUseChromeRootStore(PrefService* local_state) {
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  const PrefService::Preference* chrome_root_store_enabled_pref =
+      local_state->FindPreference(prefs::kChromeRootStoreEnabled);
+  if (chrome_root_store_enabled_pref->IsManaged())
+    return chrome_root_store_enabled_pref->GetValue()->GetBool();
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   // Note: intentionally checking the feature state here rather than falling
   // back to ChromeRootImpl::kRootDefault, as browser-side network context
   // initialization for TrialComparisonCertVerifier depends on knowing which
@@ -573,6 +577,12 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBuiltinCertificateVerifierEnabled,
                                 false);
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  // Note that the default value is not relevant because the pref is only
+  // evaluated when it is managed.
+  registry->RegisterBooleanPref(prefs::kChromeRootStoreEnabled, false);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 

@@ -3311,6 +3311,15 @@ const char kBuiltinCertificateVerifierEnabled[] =
     "builtin_certificate_verifier_enabled";
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+// Boolean that specifies whether the Chrome Root Store and built-in
+// certificate verifier should be used. If false, Chrome will not use the
+// Chrome Root Store. (The built-in certificate verifier may or may not be used
+// depending on the state of kBuiltinCertificateVerifierEnabled, if supported.)
+// If not set, Chrome will choose the root store based on experiments.
+const char kChromeRootStoreEnabled[] = "chrome_root_store_enabled";
+#endif
+
 const char kSharingVapidKey[] = "sharing.vapid_key";
 const char kSharingFCMRegistration[] = "sharing.fcm_registration";
 const char kSharingLocalSharingInfo[] = "sharing.local_sharing_info";

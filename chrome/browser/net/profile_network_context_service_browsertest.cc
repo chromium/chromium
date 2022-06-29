@@ -552,7 +552,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
   EXPECT_EQ(kCacheSize, network_context_params.http_cache_max_size);
 }
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) || \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 namespace {
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
                               Profile* profile,
@@ -561,7 +562,9 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
     run_loop->Quit();
 }
 }  // namespace
+#endif
 
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<bool> {
@@ -671,6 +674,115 @@ INSTANTIATE_TEST_SUITE_P(
     ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     ::testing::Bool());
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+class ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeatureState(
+        net::features::kChromeRootStoreUsed, use_chrome_root_store());
+
+    content::SetCertVerifierServiceFactoryForTesting(
+        &test_cert_verifier_service_factory_);
+
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    content::SetCertVerifierServiceFactoryForTesting(nullptr);
+  }
+
+  void SetUpOnMainThread() override {
+    test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
+  }
+
+  void ExpectUseChromeRootStoreCorrect(
+      cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl
+          use_chrome_root_store) {
+    ASSERT_LE(1ul, test_cert_verifier_service_factory_.num_captured_params());
+    for (size_t i = 0;
+         i < test_cert_verifier_service_factory_.num_captured_params(); i++) {
+      ASSERT_TRUE(test_cert_verifier_service_factory_.GetParamsAtIndex(i)
+                      ->creation_params);
+      EXPECT_EQ(use_chrome_root_store,
+                test_cert_verifier_service_factory_.GetParamsAtIndex(i)
+                    ->creation_params->use_chrome_root_store);
+    }
+
+    // Send them to the actual CertVerifierServiceFactory.
+    test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
+  }
+
+  Profile* CreateNewProfile() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath new_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    base::RunLoop run_loop;
+    profile_manager->CreateProfileAsync(
+        new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
+    run_loop.Run();
+    return profile_manager->GetProfileByPath(new_path);
+  }
+
+  bool use_chrome_root_store() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  cert_verifier::TestCertVerifierServiceFactoryImpl
+      test_cert_verifier_service_factory_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest,
+    Test) {
+  {
+    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
+
+    ExpectUseChromeRootStoreCorrect(
+        use_chrome_root_store()
+            ? cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                  kRootChrome
+            : cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                  kRootSystem);
+  }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  // If the BuiltinCertificateVerifierEnabled policy is set it should override
+  // the feature flag.
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kChromeRootStoreEnabled, base::Value(true));
+  UpdateProviderPolicy(policies);
+
+  {
+    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
+
+    ExpectUseChromeRootStoreCorrect(
+        cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+            kRootChrome);
+  }
+
+  SetPolicy(&policies, policy::key::kChromeRootStoreEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+
+  {
+    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
+
+    ExpectUseChromeRootStoreCorrect(
+        cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+            kRootSystem);
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest,
+    ::testing::Bool());
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest

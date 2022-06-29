@@ -2532,6 +2532,46 @@
       }
     ]
   },
+  "ChromeRootStoreEnabled": {
+    "os": [
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Policy not set. (The actual value isn't used as long as the pref is unmanaged.)",
+        "policies": {},
+        "prefs": {
+          "chrome_root_store_enabled": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeRootStoreEnabled": false
+        },
+        "prefs": {
+          "chrome_root_store_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeRootStoreEnabled": true
+        },
+        "prefs": {
+          "chrome_root_store_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "AuthSchemes": {
     "os": [
       "win",

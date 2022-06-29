@@ -1136,6 +1136,10 @@ extern const char kCACertificateManagementAllowed[];
 extern const char kBuiltinCertificateVerifierEnabled[];
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+extern const char kChromeRootStoreEnabled[];
+#endif
+
 extern const char kSharingVapidKey[];
 extern const char kSharingFCMRegistration[];
 extern const char kSharingLocalSharingInfo[];

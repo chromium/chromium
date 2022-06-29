@@ -1602,8 +1602,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
 
-
-
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  { key::kChromeRootStoreEnabled,
+    prefs::kChromeRootStoreEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 
   { key::kScrollToTextFragmentEnabled,
     prefs::kScrollToTextFragmentEnabled,
