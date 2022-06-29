@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #include "base/ios/ios_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -19,12 +20,38 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+// Unexpectedly, the first and last destinations in the carousel overlap their
+// neighbors. This makes |RightConstraint()| an insufficient layout constraint
+// for comparing destinations at the carousel's ends. A constraint with
+// negative minimum separation, |RightConstraintWithOverlap()|, must be
+// introduced to account for this.
+GREYLayoutConstraint* RightConstraintWithOverlap() {
+  return [GREYLayoutConstraint
+      layoutConstraintForDirection:kGREYLayoutDirectionRight
+              andMinimumSeparation:-1.0];
+}
+
+GREYLayoutConstraint* RightConstraint() {
+  return [GREYLayoutConstraint
+      layoutConstraintForDirection:kGREYLayoutDirectionRight
+              andMinimumSeparation:0.0];
+}
+
+}  // namespace
+
 // Tests the Smart Sorting algorithm correctly sorts destinations in the new
 // overflow menu carousel given certain usage.
 @interface DestinationUsageHistoryCase : ChromeTestCase
 @end
 
 @implementation DestinationUsageHistoryCase
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kOverflowMenuDestinationUsageHistory];
+}
 
 - (void)tearDown {
   // Close the overflow menu (popup menu).
@@ -49,61 +76,48 @@
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
-  // Unexpectedly, the first and last destinations in the carousel overlap their
-  // neighbors. This makes `rightConstraint` an insufficient layout constraint
-  // for comparing destinations at the carousel's ends. A constraint with
-  // negative minimum separation, `rightConstraintWithOverlap`, must be
-  // introduced to account for this.
-  GREYLayoutConstraint* rightConstraintWithOverlap = [GREYLayoutConstraint
-      layoutConstraintForDirection:kGREYLayoutDirectionRight
-              andMinimumSeparation:-1.0];
-
   // . . . Bookmarks, History . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HistoryDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraintWithOverlap ],
+                            @[ RightConstraintWithOverlap() ],
                             chrome_test_util::BookmarksDestinationButton())];
-
-  GREYLayoutConstraint* rightConstraint = [GREYLayoutConstraint
-      layoutConstraintForDirection:kGREYLayoutDirectionRight
-              andMinimumSeparation:0.0];
 
   // . . . History, Reading List . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ReadingListDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::HistoryDestinationButton())];
   // . . . Reading List, Password Manager . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::PasswordsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::ReadingListDestinationButton())];
   // . . . Password Manager, Downloads . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::DownloadsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::PasswordsDestinationButton())];
   // . . . Downloads, Recent Tabs . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::RecentTabsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::DownloadsDestinationButton())];
   // . . . Recent Tabs, Site Information . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SiteInfoDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::RecentTabsDestinationButton())];
   // . . . Site Information, Settings . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraintWithOverlap ],
+                            @[ RightConstraintWithOverlap() ],
                             chrome_test_util::SiteInfoDestinationButton())];
 }
 
@@ -122,55 +136,160 @@
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
-  // Unexpectedly, the first and last destinations in the carousel overlap their
-  // neighbors. This makes `rightConstraint` an insufficient layout constraint
-  // for comparing destinations at the carousel's ends. A constraint with
-  // negative minimum separation, `rightConstraintWithOverlap`, must be
-  // introduced to account for this.
-  GREYLayoutConstraint* rightConstraintWithOverlap = [GREYLayoutConstraint
-      layoutConstraintForDirection:kGREYLayoutDirectionRight
-              andMinimumSeparation:-1.0];
-
   // . . . Bookmarks, History . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HistoryDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraintWithOverlap ],
+                            @[ RightConstraintWithOverlap() ],
                             chrome_test_util::BookmarksDestinationButton())];
-
-  GREYLayoutConstraint* rightConstraint = [GREYLayoutConstraint
-      layoutConstraintForDirection:kGREYLayoutDirectionRight
-              andMinimumSeparation:0.0];
 
   // . . . History, Reading List . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ReadingListDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::HistoryDestinationButton())];
   // . . . Reading List, Password Manager . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::PasswordsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::ReadingListDestinationButton())];
   // . . . Password Manager, Downloads . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::DownloadsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::PasswordsDestinationButton())];
   // . . . Downloads, Recent Tabs . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::RecentTabsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraint ],
+                            @[ RightConstraint() ],
                             chrome_test_util::DownloadsDestinationButton())];
   // . . . Recent Tabs, Settings . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsDestinationButton()]
       assertWithMatcher:grey_layout(
-                            @[ rightConstraintWithOverlap ],
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::RecentTabsDestinationButton())];
+}
+
+// For the following tests, it's important to note the destinations carousel is
+// divided into two groups: (A) visible "above-the-fold" destinations and (B)
+// non-visible "below-the-fold" destinations; "below-the-fold" destinations are
+// made visible to the user when they scroll the carousel.
+
+// Tests an above-the-fold destination never moves within group (A), regardless
+// of usage.
+- (void)testAboveFoldDestinationNeverPromotes {
+  // Tap the above-fold destination, Password Manager, 5 times.
+  for (int i = 0; i < 5; i++) {
+    [ChromeEarlGreyUI openToolsMenu];
+    [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+    [ChromeEarlGreyUI
+        tapToolsMenuButton:chrome_test_util::PasswordsDestinationButton()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+        performAction:grey_tap()];
+  }
+
+  // Open the overflow menu to verify no changes to the carousel sort were made.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+
+  // . . . Bookmarks, History . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HistoryDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::BookmarksDestinationButton())];
+
+  // . . . History, Reading List . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ReadingListDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::HistoryDestinationButton())];
+  // . . . Reading List, Password Manager . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PasswordsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::ReadingListDestinationButton())];
+  // . . . Password Manager, Downloads . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::DownloadsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::PasswordsDestinationButton())];
+  // . . . Downloads, Recent Tabs . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::RecentTabsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::DownloadsDestinationButton())];
+  // . . . Recent Tabs, Settings . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::RecentTabsDestinationButton())];
+}
+
+// Tests a below-the-fold destination gets promoted.
+- (void)testBelowFoldDestinationPromotes {
+  // Tap the below-fold destination, Settings, 5 times.
+  for (int i = 0; i < 5; i++) {
+    [ChromeEarlGreyUI openToolsMenu];
+    [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+
+    [ChromeEarlGreyUI
+        tapToolsMenuButton:chrome_test_util::SettingsDestinationButton()];
+
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+        performAction:grey_tap()];
+  }
+
+  // Open the overflow menu to verify no changes to the carousel sort were made.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+
+  // . . . Settings, History . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HistoryDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::SettingsDestinationButton())];
+
+  // . . . History, Reading List . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ReadingListDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::HistoryDestinationButton())];
+  // . . . Reading List, Password Manager . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PasswordsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::ReadingListDestinationButton())];
+  // . . . Password Manager, Downloads . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::DownloadsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::PasswordsDestinationButton())];
+  // . . . Downloads, Recent Tabs . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::RecentTabsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::DownloadsDestinationButton())];
+  // . . . Recent Tabs, Bookmarks . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::BookmarksDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
                             chrome_test_util::RecentTabsDestinationButton())];
 }
 
