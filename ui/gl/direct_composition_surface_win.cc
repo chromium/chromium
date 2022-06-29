@@ -106,7 +106,7 @@ gfx::Size g_primary_monitor_size;
 // The number of all visible display monitors on a desktop.
 int g_num_of_monitors = 0;
 
-Microsoft::WRL::ComPtr<IDCompositionDevice2> g_dcomp_device;
+IDCompositionDevice2* g_dcomp_device = nullptr;
 
 DirectCompositionSurfaceWin::OverlayHDRInfoUpdateCallback
     g_overlay_hdr_gpu_info_callback;
@@ -479,22 +479,28 @@ void DirectCompositionSurfaceWin::InitializeOneOff(GLDisplayEGL* display) {
     return;
   }
 
-  hr = desktop_device.As(&g_dcomp_device);
+  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device;
+  hr = desktop_device.As(&dcomp_device);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to retrieve IDCompositionDevice2 with error 0x"
                 << std::hex << hr;
     return;
   }
+
+  g_dcomp_device = dcomp_device.Detach();
   DCHECK(g_dcomp_device);
 }
 
 // static
 void DirectCompositionSurfaceWin::ShutdownOneOff() {
-  g_dcomp_device.Reset();
+  if (g_dcomp_device) {
+    g_dcomp_device->Release();
+    g_dcomp_device = nullptr;
+  }
 }
 
 // static
-const Microsoft::WRL::ComPtr<IDCompositionDevice2>&
+IDCompositionDevice2*
 DirectCompositionSurfaceWin::GetDirectCompositionDevice() {
   return g_dcomp_device;
 }

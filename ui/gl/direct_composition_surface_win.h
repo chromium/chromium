@@ -63,8 +63,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   static void InitializeOneOff(GLDisplayEGL* display);
   static void ShutdownOneOff();
 
-  static const Microsoft::WRL::ComPtr<IDCompositionDevice2>&
-  GetDirectCompositionDevice();
+  static IDCompositionDevice2* GetDirectCompositionDevice();
 
   // Returns true if direct composition is supported.  We prefer to use direct
   // composition even without hardware overlays, because it allows us to bypass
