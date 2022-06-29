@@ -184,6 +184,7 @@
 #include "services/media_session/public/cpp/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "storage/browser/quota/quota_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
@@ -8668,6 +8669,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableFIDOProgressDialog)},
 #endif  // BUILDFLAG(IS_ANDROID)
+        //
+    {"enable-perfetto-system-tracing",
+     flag_descriptions::kEnablePerfettoSystemTracingName,
+     flag_descriptions::kEnablePerfettoSystemTracingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kEnablePerfettoSystemTracing)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

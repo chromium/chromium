@@ -682,6 +682,9 @@ extern const char kEnableNewDownloadBackendDescription[];
 extern const char kEnablePenetratingImageSelectionName[];
 extern const char kEnablePenetratingImageSelectionDescription[];
 
+extern const char kEnablePerfettoSystemTracingName[];
+extern const char kEnablePerfettoSystemTracingDescription[];
+
 extern const char kEnablePortalsName[];
 extern const char kEnablePortalsDescription[];
 

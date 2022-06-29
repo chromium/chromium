@@ -55512,6 +55512,7 @@ from previous Chrome versions.
   <int value="-1853570433" label="AdvancedPpdAttributes:enabled"/>
   <int value="-1853050064" label="FullRestoreForLacros:enabled"/>
   <int value="-1851980281" label="TabGroupsCollapse:enabled"/>
+  <int value="-1850155382" label="EnablePerfettoSystemTracing:enabled"/>
   <int value="-1849706663" label="enable-password-force-saving:disabled"/>
   <int value="-1847835522" label="disable-touch-adjustment"/>
   <int value="-1847776781"
@@ -57656,6 +57657,7 @@ from previous Chrome versions.
   <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
   <int value="-488779992" label="blink-settings"/>
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>
+  <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
   <int value="-482494879"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>

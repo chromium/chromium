@@ -1108,6 +1108,12 @@ const char kEnableNewDownloadBackendName[] = "Enable new download backend";
 const char kEnableNewDownloadBackendDescription[] =
     "Enables the new download backend that uses offline content provider";
 
+const char kEnablePerfettoSystemTracingName[] =
+    "Enable Perfetto system tracing";
+const char kEnablePerfettoSystemTracingDescription[] =
+    "When enabled, Chrome will attempt to connect to the system tracing "
+    "service";
+
 const char kEnablePortalsName[] = "Enable Portals.";
 const char kEnablePortalsDescription[] =
     "Portals are an experimental web platform feature that allows embedding"

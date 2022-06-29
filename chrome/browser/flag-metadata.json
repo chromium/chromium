@@ -2549,6 +2549,12 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-perfetto-system-tracing",
+    "owners": [ "woa-performance@google.com" ],
+    // This flag is used for recording system traces on Chrome for Android.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-phone-hub-call-notification",
     "owners": [ "dhnishi", "andychou", "samchiu" ],
     "expiry_milestone": 102
