@@ -440,7 +440,8 @@ bool ExtensionHost::CheckMediaAccessPermission(
 
 bool ExtensionHost::IsNeverComposited(content::WebContents* web_contents) {
   mojom::ViewType view_type = extensions::GetViewType(web_contents);
-  return view_type == extensions::mojom::ViewType::kExtensionBackgroundPage;
+  return view_type == mojom::ViewType::kExtensionBackgroundPage ||
+         view_type == mojom::ViewType::kOffscreenDocument;
 }
 
 content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(

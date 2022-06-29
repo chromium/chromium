@@ -119,6 +119,9 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   EXPECT_EQ(mojom::ViewType::kOffscreenDocument,
             offscreen_document->extension_host_type());
   EXPECT_EQ(mojom::ViewType::kOffscreenDocument, GetViewType(contents));
+  // The offscreen document should be marked as never composited, excluding it
+  // from certain a11y considerations.
+  EXPECT_TRUE(contents->GetDelegate()->IsNeverComposited(contents));
 
   {
     // Check the registration in the ProcessManager: the offscreen document
