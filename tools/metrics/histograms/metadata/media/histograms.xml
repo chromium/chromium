@@ -1243,6 +1243,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.{Type}.EarlyGlitchDetected" enum="BooleanDetected"
+    expires_after="2023-06-10">
+  <owner>olka@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <summary>
+    Whether a glitch in the capture/render audio at the OS level was detected
+    during the first 1000 OS callbacks of an active input/output stream. A
+    glitch is detected if the OS skips providing/requesting any frames of audio,
+    and is recorded when the stream ends, as long as the stream saw at least one
+    OS callback. Reported on Windows and Mac.
+  </summary>
+  <token key="Type">
+    <variant name="Capture"/>
+    <variant name="Render"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.{Type}.Glitches2" units="glitches"
     expires_after="2023-06-10">
   <owner>olka@chromium.org</owner>
