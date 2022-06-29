@@ -6,19 +6,23 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -28,12 +32,15 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
+
+import java.io.File;
 
 /**
  * Integration test for select file dialog used for <input type="file" />
@@ -100,9 +107,14 @@ public class SelectFileDialogTest {
 
             mWebContents = mActivityTestRule.getActivity().getCurrentWebContents();
             // TODO(aurimas) remove this wait once crbug.com/179511 is fixed.
-            mActivityTestRule.assertWaitForPageScaleFactorMatch(2);
+            // mActivityTestRule.assertWaitForPageScaleFactorMatch(2);
         });
         DOMUtils.waitForNonZeroNodeBounds(mWebContents, "input_file");
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityWindowAndroidForTest.destroy(); });
     }
 
     /**
@@ -180,6 +192,29 @@ public class SelectFileDialogTest {
         Assert.assertEquals(MediaStore.Audio.Media.RECORD_SOUND_ACTION,
                 mActivityWindowAndroidForTest.lastIntent.getAction());
         resetActivityWindowAndroidForTest();
+    }
+
+    /**
+     * Tests that content URI resolving to local app dir is checked correctly.
+     */
+    @Test
+    @MediumTest
+    @RequiresApi(Build.VERSION_CODES.O)
+    public void testIsContentUriUnderAppDir() throws Throwable {
+        File dataDir = ContextCompat.getDataDir(ContextUtils.getApplicationContext());
+        File childDir = new File(dataDir, "android");
+        childDir.mkdirs();
+        File temp = File.createTempFile("tmp", ".tmp", childDir);
+        temp.deleteOnExit();
+        TestContentProvider.resetResourceRequestCounts(ContextUtils.getApplicationContext());
+        TestContentProvider.setDataFilePath(
+                ContextUtils.getApplicationContext(), dataDir.getPath());
+        Assert.assertEquals(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O,
+                SelectFileDialog.isContentUriUnderAppDir(
+                        Uri.parse(TestContentProvider.createContentUrl(temp.getName())),
+                        ContextUtils.getApplicationContext()));
+        temp.delete();
+        childDir.delete();
     }
 
     private void resetActivityWindowAndroidForTest() {
