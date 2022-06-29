@@ -6,15 +6,11 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import android.content.ComponentName;
 
-import androidx.annotation.WorkerThread;
-
 import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -79,17 +75,12 @@ public class LocationPermissionUpdater {
                 });
     }
 
-    @WorkerThread
     private void updatePermission(
             Origin origin, long callback, ComponentName app, boolean enabled) {
-        // This method will be called by the TrustedWebActivityClient on a background thread, so
-        // hop back over to the UI thread to deal with the result.
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
-            mUmaRecorder.recordLocationPermissionRequestResult(enabled);
-            Log.d(TAG, "Updating origin location permissions to: %b", enabled);
+        mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
+        mUmaRecorder.recordLocationPermissionRequestResult(enabled);
+        Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
-            InstalledWebappBridge.onGetPermissionResult(callback, enabled);
-        });
+        InstalledWebappBridge.onGetPermissionResult(callback, enabled);
     }
 }

@@ -8,13 +8,11 @@ import android.content.ComponentName;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
@@ -26,7 +24,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -198,26 +195,16 @@ public class NotificationPermissionUpdater {
                                 doesBrowserBackWebApk ? webApkPackageName : null));
     }
 
-    @WorkerThread
     // TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
     private void updatePermission(Origin origin, String packageName, boolean enabled) {
-        // This method will be called by the TrustedWebActivityClient on a background thread, so
-        // hop back over to the UI thread to deal with the result.
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            Log.d(TAG, "Updating notification permission to: %b", enabled);
-            mPermissionManager.updatePermission(origin, packageName, TYPE, enabled);
-        });
+        Log.d(TAG, "Updating notification permission to: %b", enabled);
+        mPermissionManager.updatePermission(origin, packageName, TYPE, enabled);
     }
 
-    @WorkerThread
     private void updatePermission(Origin origin, long callback, String packageName,
             @ContentSettingValues int settingValue) {
-        // This method will be called by a service client on a background thread, so hop back over
-        // to the UI thread.
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            Log.d(TAG, "Updating notification permission to: %d", settingValue);
-            mPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);
-            InstalledWebappBridge.runPermissionCallback(callback, settingValue);
-        });
+        Log.d(TAG, "Updating notification permission to: %d", settingValue);
+        mPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);
+        InstalledWebappBridge.runPermissionCallback(callback, settingValue);
     }
 }
