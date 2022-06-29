@@ -3674,26 +3674,6 @@
             ]
         }
     ],
-    "DynamicAudioTimeout": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DynamicAudioTimeout_95_20211125",
-                    "params": {
-                        "buffer_duration_percent": "0.95"
-                    },
-                    "enable_features": [
-                        "DynamicAudioTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
     "EarlyExitOnNoopClassOrStyleChange": [
         {
             "platforms": [
