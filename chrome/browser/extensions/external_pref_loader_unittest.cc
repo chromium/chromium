@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -93,10 +92,10 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
   base::OnceClosure load_callback_;
 };
 
-class ExternalPrefLoaderTestBase : public ::testing::Test {
+class ExternalPrefLoaderTest : public ::testing::Test {
  public:
-  ExternalPrefLoaderTestBase(ExternalPrefLoaderTestBase&) = delete;
-  ExternalPrefLoaderTestBase& operator=(ExternalPrefLoaderTestBase&) = delete;
+  ExternalPrefLoaderTest(ExternalPrefLoaderTest&) = delete;
+  ExternalPrefLoaderTest& operator=(ExternalPrefLoaderTest&) = delete;
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -113,8 +112,8 @@ class ExternalPrefLoaderTestBase : public ::testing::Test {
   TestSyncService* sync_service() { return sync_service_; }
 
  protected:
-  ExternalPrefLoaderTestBase() = default;
-  ~ExternalPrefLoaderTestBase() override = default;
+  ExternalPrefLoaderTest() = default;
+  ~ExternalPrefLoaderTest() override = default;
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -124,35 +123,13 @@ class ExternalPrefLoaderTestBase : public ::testing::Test {
   TestSyncService* sync_service_ = nullptr;
 };
 
-// TODO(https://crbug.com/1249845): Remove parameterization after rolling out
-//                                  SyncSettingsCategorization.
-class ExternalPrefLoaderTest : public ExternalPrefLoaderTestBase,
-                               public ::testing::WithParamInterface<bool> {
- public:
-  ExternalPrefLoaderTest() {
-    if (ShouldEnableSyncSettingsCategorization()) {
-      feature_list_.InitAndEnableFeature(
-          chromeos::features::kSyncSettingsCategorization);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          chromeos::features::kSyncSettingsCategorization);
-    }
-  }
-  ~ExternalPrefLoaderTest() override = default;
-  ExternalPrefLoaderTest(ExternalPrefLoaderTest&) = delete;
-  ExternalPrefLoaderTest& operator=(ExternalPrefLoaderTest&) = delete;
-
- private:
-  bool ShouldEnableSyncSettingsCategorization() const { return GetParam(); }
-};
-
 // TODO(lazyboy): Add a test to cover
 // PrioritySyncReadyWaiter::OnIsSyncingChanged().
 
 // Tests that we fire pref reading correctly after priority sync state
 // is resolved by ExternalPrefLoader. This test checks that the flow works
 // regardless of the state of SyncSettingsCategorization.
-TEST_P(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
+TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader(
       new TestExternalPrefLoader(profile(), run_loop.QuitWhenIdleClosure()));
@@ -169,9 +146,5 @@ TEST_P(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   sync_service()->FireOnStateChanged();
   run_loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         ExternalPrefLoaderTest,
-                         ::testing::Bool());
 
 }  // namespace extensions
