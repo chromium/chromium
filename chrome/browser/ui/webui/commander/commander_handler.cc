@@ -37,22 +37,22 @@ CommanderHandler::CommanderHandler() = default;
 CommanderHandler::~CommanderHandler() = default;
 
 void CommanderHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kTextChangedMessage,
       base::BindRepeating(&CommanderHandler::HandleTextChanged,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kOptionSelectedMessage,
       base::BindRepeating(&CommanderHandler::HandleOptionSelected,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kCompositeCommandCancelledMessage,
       base::BindRepeating(&CommanderHandler::HandleCompositeCommandCancelled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kDismissMessage, base::BindRepeating(&CommanderHandler::HandleDismiss,
                                            base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kHeightChangedMessage,
       base::BindRepeating(&CommanderHandler::HandleHeightChanged,
                           base::Unretained(this)));
@@ -68,39 +68,39 @@ void CommanderHandler::OnJavascriptAllowed() {
     delegate_->OnHandlerEnabled(true);
 }
 
-void CommanderHandler::HandleTextChanged(const base::ListValue* args) {
+void CommanderHandler::HandleTextChanged(const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1u, args->GetListDeprecated().size());
-  std::string text = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1u, args.size());
+  std::string text = args[0].GetString();
   if (delegate_)
     delegate_->OnTextChanged(base::UTF8ToUTF16(text));
 }
 
-void CommanderHandler::HandleOptionSelected(const base::ListValue* args) {
+void CommanderHandler::HandleOptionSelected(const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(2u, args->GetListDeprecated().size());
-  int index = args->GetListDeprecated()[0].GetInt();
-  int result_set_id = args->GetListDeprecated()[1].GetInt();
+  CHECK_EQ(2u, args.size());
+  int index = args[0].GetInt();
+  int result_set_id = args[1].GetInt();
   if (delegate_)
     delegate_->OnOptionSelected(index, result_set_id);
 }
 
 void CommanderHandler::HandleCompositeCommandCancelled(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!delegate_)
     return;
   AllowJavascript();
   delegate_->OnCompositeCommandCancelled();
 }
 
-void CommanderHandler::HandleDismiss(const base::ListValue* args) {
+void CommanderHandler::HandleDismiss(const base::Value::List& args) {
   if (delegate_)
     delegate_->OnDismiss();
 }
 
-void CommanderHandler::HandleHeightChanged(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetListDeprecated().size());
-  int new_height = args->GetListDeprecated()[0].GetInt();
+void CommanderHandler::HandleHeightChanged(const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  int new_height = args[0].GetInt();
   if (delegate_)
     delegate_->OnHeightChanged(new_height);
 }
