@@ -171,6 +171,10 @@ class AttributionSimulatorInputParser {
       return;
     }
 
+    // `CanonicalCookie::Create()` will DCHECK.
+    if (time.is_null())
+      return;
+
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookie::Create(url, *line, time,
                                      /*server_time=*/absl::nullopt,
