@@ -499,4 +499,29 @@ suite('PasswordViewTest', function() {
         assertEquals('true', pageParams.get('removedFromAccount'));
         assertEquals('true', pageParams.get('removedFromDevice'));
       });
+
+  test('Copy password button shows the copy toast', async function() {
+    const passwordList = [
+      createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
+    ];
+
+    passwordManager.setPlaintextPassword(PASSWORD);
+    passwordManager.data.passwords = passwordList;
+    const page = document.createElement('password-view');
+    document.body.appendChild(page);
+    const params = new URLSearchParams({
+      username: USERNAME,
+      site: SITE,
+    });
+    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+    await flushTasks();
+
+    const copyButton = page.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#copyPasswordButton')!;
+    assertFalse(page.$.toast.open);
+    copyButton.click();
+    await passwordManager.whenCalled('requestPlaintextPassword');
+    await flushTasks();
+    assertTrue(page.$.toast.open);
+  });
 });
