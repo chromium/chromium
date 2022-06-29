@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -181,24 +180,32 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
   return specifics;
 }
 
-class SingleClientWithSyncSendInterestedDataTypesTest : public SyncTest {
+class SingleClientSyncInvalidationsTestBase : public SyncTest {
  public:
-  SingleClientWithSyncSendInterestedDataTypesTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes},
-        /*disabled_features=*/{syncer::kUseSyncInvalidations,
-                               syncer::kUseSyncInvalidationsForWalletAndOffer});
+  SingleClientSyncInvalidationsTestBase(
+      const std::vector<base::Feature>& enabled_features,
+      const std::vector<base::Feature>& disabled_features)
+      : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  SingleClientWithSyncSendInterestedDataTypesTest(
-      const SingleClientWithSyncSendInterestedDataTypesTest&) = delete;
-  SingleClientWithSyncSendInterestedDataTypesTest& operator=(
-      const SingleClientWithSyncSendInterestedDataTypesTest&) = delete;
-
-  ~SingleClientWithSyncSendInterestedDataTypesTest() override = default;
+  // Disable configuration refresher to make it sure that clients receive
+  // invalidations correctly during browser startup.
+  bool UseConfigurationRefresher() override { return false; }
 
  private:
   base::test::ScopedFeatureList override_features_;
+};
+
+class SingleClientWithSyncSendInterestedDataTypesTest
+    : public SingleClientSyncInvalidationsTestBase {
+ public:
+  SingleClientWithSyncSendInterestedDataTypesTest()
+      : SingleClientSyncInvalidationsTestBase(
+            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes},
+            /*disabled_features=*/{
+                syncer::kUseSyncInvalidations,
+                syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
@@ -230,25 +237,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
           .Wait());
 }
 
-class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
+class SingleClientWithUseSyncInvalidationsTest
+    : public SingleClientSyncInvalidationsTestBase {
  public:
-  SingleClientWithUseSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
-                              syncer::kUseSyncInvalidations},
-        /*disabled_features=*/{syncer::kUseSyncInvalidationsForWalletAndOffer});
-  }
-
-  SingleClientWithUseSyncInvalidationsTest(
-      const SingleClientWithUseSyncInvalidationsTest&) = delete;
-  SingleClientWithUseSyncInvalidationsTest& operator=(
-      const SingleClientWithUseSyncInvalidationsTest&) = delete;
-
-  ~SingleClientWithUseSyncInvalidationsTest() override = default;
-
-  // TODO(crbug.com/1329060): disable configuration refresher to verify
-  // invalidation delivery once invalidations are fixed.
-  bool UseConfigurationRefresher() override { return true; }
+  SingleClientWithUseSyncInvalidationsTest()
+      : SingleClientSyncInvalidationsTestBase(
+            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
+                                  syncer::kUseSyncInvalidations},
+            /*disabled_features=*/{
+                syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
 
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
@@ -272,9 +269,6 @@ class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
     syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
     return prefs.GetCacheGuid();
   }
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
@@ -459,17 +453,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                                      /*cryptographer=*/nullptr)
           .Wait());
 
-  // There will be one TriggerRefresh request in tests due to
-  // ConfigurationRefresher. There shouldn't be any additional GU_TRIGGER
-  // with nudge DeviceInfo data type.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS tests data types are configured twice and hence there are two
-  // expected TriggerRefresh calls during initialization. It happens due to
-  // SyncArcPackageHelper which eventually triggers reconfiguration.
-  EXPECT_EQ(2u, observer.num_nudged_get_updates_for_data_type());
-#else
-  EXPECT_EQ(1u, observer.num_nudged_get_updates_for_data_type());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(0u, observer.num_nudged_get_updates_for_data_type());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
@@ -495,29 +479,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
-    : public SyncTest {
+    : public SingleClientSyncInvalidationsTestBase {
  public:
   SingleClientWithUseSyncInvalidationsForWalletAndOfferTest()
-      : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
-                              syncer::kUseSyncInvalidations,
-                              syncer::kUseSyncInvalidationsForWalletAndOffer},
-        /*disabled_features=*/{});
-  }
-
-  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest(
-      const SingleClientWithUseSyncInvalidationsForWalletAndOfferTest&) =
-      delete;
-  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest& operator=(
-      const SingleClientWithUseSyncInvalidationsForWalletAndOfferTest&) =
-      delete;
-
-  ~SingleClientWithUseSyncInvalidationsForWalletAndOfferTest() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList override_features_;
+      : SingleClientSyncInvalidationsTestBase(
+            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
+                                  syncer::kUseSyncInvalidations,
+                                  syncer::
+                                      kUseSyncInvalidationsForWalletAndOffer},
+            /*disabled_features=*/{}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -681,6 +651,10 @@ class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
     features_override_.InitWithFeatureState(
         syncer::kSyncSendInterestedDataTypes, !content::IsPreTest());
   }
+
+  // Disable configuration refresher to make it sure that clients receive
+  // invalidations correctly during browser startup.
+  bool UseConfigurationRefresher() override { return false; }
 
   std::string GetLocalCacheGuid() {
     syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
