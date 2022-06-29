@@ -1003,17 +1003,17 @@
   'CROS_OCTOPUS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '103.0.5060.53',
-      'cros_img': 'octopus-release/R103-14816.64.0',
+      'cros_chrome_version': '104.0.5112.23',
+      'cros_img': 'octopus-release/R104-14909.26.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'OCTOPUS_RELEASE_BETA',
   },
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '102.0.5005.125',
-      'cros_img': 'octopus-release/R102-14695.107.0',
+      'cros_chrome_version': '103.0.5060.64',
+      'cros_img': 'octopus-release/R103-14816.82.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_STABLE',
@@ -1039,17 +1039,17 @@
   'CROS_STRONGBAD_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '103.0.5060.53',
-      'cros_img': 'strongbad-release/R103-14816.64.0',
+      'cros_chrome_version': '104.0.5112.23',
+      'cros_img': 'strongbad-release/R104-14909.26.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'STRONGBAD_RELEASE_BETA',
   },
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '102.0.5005.125',
-      'cros_img': 'strongbad-release/R102-14695.107.0',
+      'cros_chrome_version': '103.0.5060.64',
+      'cros_img': 'strongbad-release/R103-14816.82.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
