@@ -50,9 +50,9 @@
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Unexpectedly, the first and last destinations in the carousel overlap their
-  // neighbors. This makes |rightConstraint| an insufficient layout constraint
+  // neighbors. This makes `rightConstraint` an insufficient layout constraint
   // for comparing destinations at the carousel's ends. A constraint with
-  // negative minimum separation, |rightConstraintWithOverlap|, must be
+  // negative minimum separation, `rightConstraintWithOverlap`, must be
   // introduced to account for this.
   GREYLayoutConstraint* rightConstraintWithOverlap = [GREYLayoutConstraint
       layoutConstraintForDirection:kGREYLayoutDirectionRight
@@ -123,9 +123,9 @@
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Unexpectedly, the first and last destinations in the carousel overlap their
-  // neighbors. This makes |rightConstraint| an insufficient layout constraint
+  // neighbors. This makes `rightConstraint` an insufficient layout constraint
   // for comparing destinations at the carousel's ends. A constraint with
-  // negative minimum separation, |rightConstraintWithOverlap|, must be
+  // negative minimum separation, `rightConstraintWithOverlap`, must be
   // introduced to account for this.
   GREYLayoutConstraint* rightConstraintWithOverlap = [GREYLayoutConstraint
       layoutConstraintForDirection:kGREYLayoutDirectionRight

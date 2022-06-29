@@ -180,8 +180,9 @@ class OverflowMenuMediatorTest : public PlatformTest {
     browser_->GetWebStateList()->ActivateWebStateAt(0);
   }
 
-  // Checks that the overflowMenuModel is receiving a number of items
-  // corresponding to |number_items|.
+  // Checks that the overflowMenuModel is receiving a number of destination
+  // items corresponding to `destination_items` and the action group number
+  // corresponding to `action_items` content.
   void CheckMediatorSetItems(NSUInteger destination_items,
                              NSArray<NSNumber*>* action_items) {
     SetUpActiveWebState();

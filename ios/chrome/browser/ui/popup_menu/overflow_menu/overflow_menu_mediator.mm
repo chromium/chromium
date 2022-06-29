@@ -292,7 +292,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     [self updateModel];
     _webState->AddObserver(_webStateObserver.get());
 
-    // Observe the language::IOSLanguageDetectionTabHelper for |_webState|.
+    // Observe the language::IOSLanguageDetectionTabHelper for `_webState`.
     _iOSLanguageDetectionTabHelperObserverBridge =
         std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
             language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
@@ -767,14 +767,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   // The app actions vary based on page state, so they are set in
-  // |-updateModel|.
+  // `-updateModel`.
   self.appActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
                                                  actions:@[]
                                                   footer:nil];
 
   // The page actions vary based on page state, so they are set in
-  // |-updateModel|.
+  // `-updateModel`.
   self.pageActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
                                                  actions:@[]
@@ -989,7 +989,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           feature_engagement::kIPHBadgedReadingListFeature);
 }
 
-// Returns whether the page can be manually translated. If |forceMenuLogging| is
+// Returns whether the page can be manually translated. If `forceMenuLogging` is
 // true the translate client will log this result.
 - (BOOL)canManuallyTranslate:(BOOL)forceMenuLogging {
   if (!self.webState) {
@@ -1317,8 +1317,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher showClearBrowsingDataSettings];
 }
 
-// Updates the follow status of the website corresponding to |webPageURLs|
-// with |followStatus|, and dismisses the menu.
+// Updates the follow status of the website corresponding to `webPageURLs`
+// with `followStatus`, and dismisses the menu.
 - (void)updateFollowStatus:(BOOL)followStatus
      withFollowWebPageURLs:(FollowWebPageURLs*)webPageURLs {
   ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(

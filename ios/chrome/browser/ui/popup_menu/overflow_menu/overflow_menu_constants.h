@@ -19,15 +19,15 @@ enum class Destination {
   Settings = 7,
 };
 
-// Ingests |destination| string representation and returns corresponding
+// Ingests `destination` string representation and returns corresponding
 // overflow_menu::Destination enum.
 Destination DestinationForStringName(std::string destination);
 
-// Ingests overflow_menu::Destination |destination| and returns its string
+// Ingests overflow_menu::Destination `destination` and returns its string
 // representation.
 std::string StringNameForDestination(Destination destination);
 
-// Ingests overflow_menu::Destination |destination| and records the
+// Ingests overflow_menu::Destination `destination` and records the
 // corresponding UMA action.
 void RecordUmaActionForDestination(Destination destination);
 }  // namespace overflow_menu

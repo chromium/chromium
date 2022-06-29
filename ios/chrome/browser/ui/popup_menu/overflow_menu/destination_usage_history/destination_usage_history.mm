@@ -56,8 +56,8 @@ int TodaysDay() {
   return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 }
 
-// Returns whether |day| is within a valid window of the present day and
-// |window| days ago, inclusive.
+// Returns whether `day` is within a valid window of the present day and
+// `window` days ago, inclusive.
 bool ValidDay(int day, int window) {
   int windowEnd = TodaysDay();
   int windowStart = (windowEnd - window) + 1;
@@ -75,15 +75,15 @@ bool ValidDay(const std::string day, int window) {
   return false;
 }
 
-// Returns the number of clicks stored in |history| for a given |destination|.
+// Returns the number of clicks stored in `history` for a given `destination`.
 int NumClicks(overflow_menu::Destination destination,
               base::Value::Dict& history) {
   return history.FindInt(overflow_menu::StringNameForDestination(destination))
       .value_or(0);
 }
 
-// Destructively sort |ranking| in ascending or descending (indicated by
-// |ascending|) and corresponding number of clicks stored in |flatHistory|.
+// Destructively sort `ranking` in ascending or descending (indicated by
+// `ascending`) and corresponding number of clicks stored in `flatHistory`.
 std::vector<overflow_menu::Destination> SortByUsage(
     const std::vector<overflow_menu::Destination>& ranking,
     base::Value::Dict& flatHistory,
@@ -100,7 +100,7 @@ std::vector<overflow_menu::Destination> SortByUsage(
   return ordered_ranking;
 }
 
-// Returns above-the-fold destination with the lowest usage in |flatHistory|.
+// Returns above-the-fold destination with the lowest usage in `flatHistory`.
 overflow_menu::Destination LowestShown(
     const std::vector<overflow_menu::Destination>& ranking,
     int numVisibleDestinations,
@@ -110,7 +110,7 @@ overflow_menu::Destination LowestShown(
   return SortByUsage(shown, flatHistory, true).front();
 }
 
-// Returns below-the-fold destination with the highest usage in |flatHistory|
+// Returns below-the-fold destination with the highest usage in `flatHistory`
 overflow_menu::Destination HighestUnshown(
     const std::vector<overflow_menu::Destination>& ranking,
     int numVisibleDestinations,
@@ -120,7 +120,7 @@ overflow_menu::Destination HighestUnshown(
   return SortByUsage(unshown, flatHistory, false).front();
 }
 
-// Swaps |from| and |to| in |ranking|.
+// Swaps `from` and `to` in `ranking`.
 void Swap(std::vector<overflow_menu::Destination>& ranking,
           overflow_menu::Destination from,
           overflow_menu::Destination to) {
@@ -194,7 +194,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
     updatedRankWithCurrentRanking:
         (std::vector<overflow_menu::Destination>&)ranking
          numAboveFoldDestinations:(int)numAboveFoldDestinations {
-  // Delete expired usage data older than |kDataExpirationWindow| days before
+  // Delete expired usage data older than `kDataExpirationWindow` days before
   // running the ranking algorithm.
   [self deleteExpiredData];
 
@@ -229,7 +229,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   return newRanking;
 }
 
-// Track click for |destination| and associate it with TodaysDay().
+// Track click for `destination` and associate it with TodaysDay().
 - (void)trackDestinationClick:(overflow_menu::Destination)destination
      numAboveFoldDestinations:(int)numAboveFoldDestinations {
   DCHECK(self.prefService);
@@ -290,7 +290,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   }
 }
 
-// Delete expired usage data (data older than |kDataExpirationWindow| days) and
+// Delete expired usage data (data older than `kDataExpirationWindow` days) and
 // saves back to prefs. Returns true if expired usage data was found/removed,
 // false otherwise.
 - (void)deleteExpiredData {
@@ -336,7 +336,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
                        options:unrankedDestinations];
 }
 
-// Runs the ranking algorithm given a |previousRanking|. If |previousRanking| is
+// Runs the ranking algorithm given a `previousRanking`. If `previousRanking` is
 // invalid or doesn't exist, use the default ranking, based on statistical usage
 // of the old overflow menu.
 - (const base::Value::List)calculateNewRanking:
@@ -359,7 +359,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 
 // Returns the flattened destination usage history as a dictionary of the
 // following shape: destinationName (std::string) -> total number of clicks
-// (int). Only usage data within previous |window| days will be included in the
+// (int). Only usage data within previous `window` days will be included in the
 // returned result.
 - (base::Value::Dict)flattenedHistoryWithinWindow:(int)window {
   const base::Value* pref = self.prefService->GetDictionary(
@@ -417,7 +417,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 }
 
 // Converts base::Value::List* ranking to
-// NSArray<OverflowMenuDestination*>* ranking given a list, |options|, of
+// NSArray<OverflowMenuDestination*>* ranking given a list, `options`, of
 // OverflowMenuDestination* options.
 - (NSArray<OverflowMenuDestination*>*)
     destinationList:(const base::Value::List*)ranking

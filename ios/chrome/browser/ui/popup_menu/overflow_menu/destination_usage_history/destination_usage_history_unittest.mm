@@ -41,7 +41,7 @@ class DestinationUsageHistoryTest : public PlatformTest {
     return destination_usage_history_;
   }
 
-  // Creates CreateDestinationUsageHistory with past data and |ranking|.
+  // Creates CreateDestinationUsageHistory with past data and `ranking`.
   DestinationUsageHistory* CreateDestinationUsageHistoryWithData(
       std::vector<overflow_menu::Destination>& ranking,
       base::Value::Dict& history) {
@@ -63,14 +63,14 @@ class DestinationUsageHistoryTest : public PlatformTest {
   }
 
   // Helper for CreateDestinationUsageHistoryWithData(), inserts day history
-  // data and |ranking| for testing pref service.
+  // data and `ranking` for testing pref service.
   void CreatePrefsWithData(base::Value::List& storedRanking,
                            base::Value::Dict& storedHistory) {
     CreatePrefs();
 
-    // Set the passed in |storedHistory|.
+    // Set the passed in `storedHistory`.
     base::Value::Dict history = storedHistory.Clone();
-    // Set the passed in |storedRanking|.
+    // Set the passed in `storedRanking`.
     base::Value::List ranking = storedRanking.Clone();
     history.Set("ranking", std::move(ranking));
 
@@ -283,7 +283,7 @@ TEST_F(DestinationUsageHistoryTest,
   const base::Value::Dict* history_dict = history->GetIfDict();
   ASSERT_NE(history, nullptr);
 
-  // Query saved usage history for Bookmarks entry for |today|.
+  // Query saved usage history for Bookmarks entry for `TodaysDay`.
   const base::Value* target = history_dict->FindByDottedPath(
       DottedPath(TodaysDay(), overflow_menu::Destination::Bookmarks));
 

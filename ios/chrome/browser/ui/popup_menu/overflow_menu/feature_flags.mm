@@ -33,7 +33,7 @@ bool IsNewOverflowMenuEnabled() {
     return base::FeatureList::IsEnabled(kNewOverflowMenu);
   }
   // The new overflow menu isn't available on iOS <= 14 because it relies on
-  // |UISheetPresentationController|, which was introduced in iOS 15.
+  // `UISheetPresentationController`, which was introduced in iOS 15.
   return false;
 }
 
