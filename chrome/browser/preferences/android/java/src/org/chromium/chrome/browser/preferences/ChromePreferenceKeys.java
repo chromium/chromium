@@ -392,6 +392,18 @@ public final class ChromePreferenceKeys {
     public static final String INCOGNITO_SHORTCUT_ADDED = "incognito-shortcut-added";
 
     /**
+     * Indicates how many times the Incognito re-auth promo card was shown in the tab switcher.
+     */
+    public static final String INCOGNITO_REAUTH_PROMO_SHOW_COUNT =
+            "Chrome.IncognitoReauth.PromoShowCount";
+    /**
+     * Indicates whether the re-auth promo card is enabled. This gets disabled if either the re-auth
+     * feature is disabled or the INCONGITO_REAUTH_PROMO_SHOW_COUNT exceeds the limit.
+     */
+    public static final String INCOGNITO_REAUTH_PROMO_CARD_ENABLED =
+            "Chrome.IncognitoReauth.PromoCardEnabled";
+
+    /**
      * The last version the dex compile workaround ran on. See SplitChromeApplication for more
      * details.
      */
@@ -1006,6 +1018,8 @@ public final class ChromePreferenceKeys {
                 HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
+                INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
+                INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 INCOGNITO_TAB_COUNT,
                 IS_LAST_VISITED_TAB_SRP,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
