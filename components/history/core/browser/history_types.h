@@ -977,6 +977,10 @@ struct Cluster {
   // could be determined.
   absl::optional<std::u16string> label;
 
+  // The value of label with any leading or trailing quotation indicators
+  // removed.
+  absl::optional<std::u16string> raw_label;
+
   // The positions within the label that match the search query, if it exists.
   query_parser::Snippet::MatchPositions label_match_positions;
 

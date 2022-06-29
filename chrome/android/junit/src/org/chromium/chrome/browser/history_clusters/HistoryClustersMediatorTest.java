@@ -220,11 +220,11 @@ public class HistoryClustersMediatorTest {
                 new ArrayList<>(), mGurl3, 123L, new ArrayList<>());
         mVisit4 = new ClusterVisit(1.0F, mGurl3, "Title 4", "url3.com/foo", new ArrayList<>(),
                 new ArrayList<>(), mGurl3, 123L, new ArrayList<>());
-        mCluster1 = new HistoryCluster(Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2),
-                "label1", new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
-        mCluster2 = new HistoryCluster(Arrays.asList("bar", "baz"), Arrays.asList(mVisit3),
-                "label2", new ArrayList<>(), 123L, Collections.emptyList());
-        mCluster3 = new HistoryCluster(Arrays.asList("key"), Arrays.asList(mVisit4), "label3",
+        mCluster1 = new HistoryCluster(Arrays.asList(mVisit1, mVisit2), "\"label1\"", "label1",
+                new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
+        mCluster2 = new HistoryCluster(Arrays.asList(mVisit3), "hostname.com", "hostname.com",
+                new ArrayList<>(), 123L, Collections.emptyList());
+        mCluster3 = new HistoryCluster(Arrays.asList(mVisit4), "\"label3\"", "label3",
                 new ArrayList<>(), 789L, Collections.EMPTY_LIST);
         mHistoryClustersResultWithQuery = new HistoryClustersResult(
                 Arrays.asList(mCluster1, mCluster2), "query", true, false);

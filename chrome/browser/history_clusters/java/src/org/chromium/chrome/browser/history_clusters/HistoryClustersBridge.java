@@ -76,10 +76,9 @@ public class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static HistoryCluster buildCluster(ClusterVisit[] visits, String[] keywords, String label,
+    static HistoryCluster buildCluster(ClusterVisit[] visits, String label, String rawLabel,
             int[] labelMatchStarts, int[] labelMatchEnds, long timestamp,
             String[] relatedSearches) {
-        List<String> keywordList = Arrays.asList(keywords);
         List<ClusterVisit> clusterVisitList = Arrays.asList(visits);
 
         assert labelMatchEnds.length == labelMatchStarts.length;
@@ -90,8 +89,8 @@ public class HistoryClustersBridge {
         }
 
         List<String> relatedSearchesList = Arrays.asList(relatedSearches);
-        return new HistoryCluster(keywordList, clusterVisitList, label, matchPositions, timestamp,
-                relatedSearchesList);
+        return new HistoryCluster(
+                clusterVisitList, label, rawLabel, matchPositions, timestamp, relatedSearchesList);
     }
 
     @CalledByNative
