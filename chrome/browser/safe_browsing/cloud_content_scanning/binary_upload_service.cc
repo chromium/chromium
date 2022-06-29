@@ -6,9 +6,12 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/common/strings.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace safe_browsing {
 namespace {
@@ -44,9 +47,11 @@ BinaryUploadService::Request::Data::operator=(
     BinaryUploadService::Request::Data&& other) = default;
 BinaryUploadService::Request::Data::~Data() = default;
 
-BinaryUploadService::Request::Request(ContentAnalysisCallback callback,
-                                      GURL url)
-    : content_analysis_callback_(std::move(callback)), url_(url) {}
+BinaryUploadService::Request::Request(
+    ContentAnalysisCallback callback,
+    enterprise_connectors::CloudOrLocalAnalysisSettings settings)
+    : content_analysis_callback_(std::move(callback)),
+      cloud_or_local_settings_(std::move(settings)) {}
 
 BinaryUploadService::Request::~Request() = default;
 
@@ -167,8 +172,10 @@ void BinaryUploadService::Request::SerializeToString(
 }
 
 GURL BinaryUploadService::Request::GetUrlWithParams() const {
-  GURL url = GetUrlOverride().value_or(url_);
+  DCHECK(absl::holds_alternative<enterprise_connectors::CloudAnalysisSettings>(
+      cloud_or_local_settings_));
 
+  GURL url = GetUrlOverride().value_or(cloud_or_local_settings_.analysis_url());
   url = net::AppendQueryParameter(url, enterprise::kUrlParamDeviceToken,
                                   device_token());
 

@@ -594,8 +594,11 @@ class ValidateDataUploadRequest : public CloudBinaryUploadService::Request {
  public:
   ValidateDataUploadRequest(
       CloudBinaryUploadService::ContentAnalysisCallback callback,
-      GURL url)
-      : CloudBinaryUploadService::Request(std::move(callback), url) {}
+      enterprise_connectors::CloudAnalysisSettings settings)
+      : CloudBinaryUploadService::Request(
+            std::move(callback),
+            enterprise_connectors::CloudOrLocalAnalysisSettings(
+                std::move(settings))) {}
   ValidateDataUploadRequest(const ValidateDataUploadRequest&) = delete;
   ValidateDataUploadRequest& operator=(const ValidateDataUploadRequest&) =
       delete;
@@ -639,11 +642,14 @@ void CloudBinaryUploadService::IsAuthorized(
         std::move(callback));
     if (!pending_validate_data_upload_request_.contains(token_and_connector)) {
       pending_validate_data_upload_request_.insert(token_and_connector);
+      enterprise_connectors::CloudAnalysisSettings settings;
+      settings.analysis_url = url;
+      settings.dm_token = dm_token;
       auto request = std::make_unique<ValidateDataUploadRequest>(
           base::BindOnce(&CloudBinaryUploadService::
                              ValidateDataUploadRequestConnectorCallback,
                          weakptr_factory_.GetWeakPtr(), dm_token, connector),
-          url);
+          std::move(settings));
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
       request->set_per_profile_request(per_profile_request);

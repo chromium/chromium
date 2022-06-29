@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace enterprise_connectors {
 
@@ -241,8 +242,12 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
     if (GetParam().expected_settings != NoSettings() &&
-        !GetParam().expected_settings->analysis_url.is_valid()) {
-      GetParam().expected_settings->analysis_url =
+        !GetParam()
+             .expected_settings->cloud_settings()
+             .analysis_url.is_valid()) {
+      absl::get<CloudAnalysisSettings>(
+          GetParam().expected_settings->cloud_or_local_settings)
+          .analysis_url =
           GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
     }
     return GetParam().expected_settings;
@@ -271,8 +276,9 @@ TEST_P(AnalysisServiceSettingsTest, Test) {
               expected_settings()->block_large_files);
     ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
               expected_settings()->block_unsupported_file_types);
-    ASSERT_EQ(analysis_settings.value().analysis_url,
-              expected_settings()->analysis_url);
+    ASSERT_TRUE(analysis_settings.value().is_cloud_analysis());
+    ASSERT_EQ(analysis_settings.value().cloud_settings().analysis_url,
+              expected_settings()->cloud_settings().analysis_url);
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
     for (const auto& entry : expected_settings()->tags) {

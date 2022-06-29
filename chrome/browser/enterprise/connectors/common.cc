@@ -117,11 +117,6 @@ safe_browsing::EventResult CalculateEventResult(
                             : safe_browsing::EventResult::BLOCKED);
 }
 
-AnalysisSettings::AnalysisSettings() = default;
-AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
-AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;
-AnalysisSettings::~AnalysisSettings() = default;
-
 ReportingSettings::ReportingSettings() = default;
 ReportingSettings::ReportingSettings(GURL url,
                                      const std::string& dm_token,

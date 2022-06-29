@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
@@ -68,7 +69,7 @@ ContentAnalysisDelegate::Factory* GetFactoryStorage() {
 // from a string.
 class StringAnalysisRequest : public BinaryUploadService::Request {
  public:
-  StringAnalysisRequest(GURL analysis_url,
+  StringAnalysisRequest(CloudOrLocalAnalysisSettings settings,
                         std::string text,
                         BinaryUploadService::ContentAnalysisCallback callback);
   ~StringAnalysisRequest() override;
@@ -86,10 +87,10 @@ class StringAnalysisRequest : public BinaryUploadService::Request {
 };
 
 StringAnalysisRequest::StringAnalysisRequest(
-    GURL analysis_url,
+    CloudOrLocalAnalysisSettings settings,
     std::string text,
     BinaryUploadService::ContentAnalysisCallback callback)
-    : Request(std::move(callback), analysis_url) {
+    : Request(std::move(callback), std::move(settings)) {
   data_.size = text.size();
 
   // Only remember strings less than the maximum allowed.
@@ -483,7 +484,7 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
 
   if (!text_request_complete_) {
     auto request = std::make_unique<StringAnalysisRequest>(
-        data_.settings.analysis_url, std::move(full_text),
+        data_.settings.cloud_or_local_settings, std::move(full_text),
         base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
@@ -512,7 +513,8 @@ void ContentAnalysisDelegate::PreparePageRequest() {
 void ContentAnalysisDelegate::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Request* request) {
-  request->set_device_token(data_.settings.dm_token);
+  if (data_.settings.is_cloud_analysis())
+    request->set_device_token(data_.settings.cloud_settings().dm_token);
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(data_.url.spec());

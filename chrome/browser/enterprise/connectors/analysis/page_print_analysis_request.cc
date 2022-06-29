@@ -12,7 +12,9 @@
 namespace enterprise_connectors {
 
 namespace {
+
 constexpr size_t kMaxPageSize = 50 * 1024 * 1024;
+
 }  // namespace
 
 PagePrintAnalysisRequest::PagePrintAnalysisRequest(
@@ -21,7 +23,7 @@ PagePrintAnalysisRequest::PagePrintAnalysisRequest(
     safe_browsing::BinaryUploadService::ContentAnalysisCallback callback)
     : safe_browsing::BinaryUploadService::Request(
           std::move(callback),
-          analysis_settings.analysis_url),
+          analysis_settings.cloud_or_local_settings),
       page_(std::move(page)) {
   safe_browsing::IncrementCrashKey(
       safe_browsing::ScanningCrashKey::PENDING_PRINTS);

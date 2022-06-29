@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -69,8 +70,8 @@ class BinaryUploadService : public KeyedService {
   // page or string).
   class Request {
    public:
-    // `callback` will run on the UI thread.
-    Request(ContentAnalysisCallback, GURL url);
+    Request(ContentAnalysisCallback,
+            enterprise_connectors::CloudOrLocalAnalysisSettings settings);
     virtual ~Request();
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
@@ -172,8 +173,10 @@ class BinaryUploadService : public KeyedService {
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
     ContentAnalysisCallback content_analysis_callback_;
 
-    // The URL to send the data to for scanning.
-    GURL url_;
+    // Settings used to determine how the request is used in the cloud or
+    // locally.
+    enterprise_connectors::CloudOrLocalAnalysisSettings
+        cloud_or_local_settings_;
 
     // The URL of the page that initially triggered the scan.
     GURL tab_url_;

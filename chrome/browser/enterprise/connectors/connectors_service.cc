@@ -205,7 +205,11 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   if (!dm_token.has_value())
     return absl::nullopt;
 
-  settings.value().dm_token = dm_token.value().value;
+  if (settings.value().is_cloud_analysis()) {
+    absl::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
+        .dm_token = dm_token.value().value;
+  }
+
   settings.value().per_profile =
       dm_token.value().scope == policy::POLICY_SCOPE_USER;
   settings.value().client_metadata = BuildClientMetadata();

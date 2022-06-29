@@ -30,7 +30,8 @@ bool RequestHandlerBase::UploadData() {
 void RequestHandlerBase::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     safe_browsing::BinaryUploadService::Request* request) {
-  request->set_device_token(analysis_settings_.dm_token);
+  if (analysis_settings_.is_cloud_analysis())
+    request->set_device_token(analysis_settings_.cloud_settings().dm_token);
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(url_.spec());

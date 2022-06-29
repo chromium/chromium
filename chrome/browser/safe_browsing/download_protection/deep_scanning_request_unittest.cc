@@ -288,8 +288,12 @@ class DeepScanningRequestTest : public testing::Test {
 
     enterprise_connectors::AnalysisSettings default_settings;
     default_settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
-    default_settings.analysis_url =
+    enterprise_connectors::CloudAnalysisSettings cloud_settings;
+    cloud_settings.analysis_url =
         GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+    default_settings.cloud_or_local_settings =
+        enterprise_connectors::CloudOrLocalAnalysisSettings(
+            std::move(cloud_settings));
     default_settings.block_until_verdict =
         enterprise_connectors::BlockUntilVerdict::BLOCK;
 
@@ -309,7 +313,8 @@ class DeepScanningRequestTest : public testing::Test {
               default_settings.block_unsupported_file_types);
     ASSERT_EQ(settings.value().block_until_verdict,
               default_settings.block_until_verdict);
-    ASSERT_EQ(settings.value().analysis_url, default_settings.analysis_url);
+    ASSERT_EQ(settings.value().cloud_settings().analysis_url,
+              default_settings.cloud_settings().analysis_url);
   }
 
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
