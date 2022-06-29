@@ -119,8 +119,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-// Flaky on all platforms: crbug.com/1294825
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
