@@ -233,7 +233,8 @@ ACTION_P(InvokeEmptyConsumerWithForms, store) {
                        completionHandler:(void (^)())completionHandler;
 
 - (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
-                        withMaxUniqueID:(uint32_t)maxID;
+                        withMaxUniqueID:(uint32_t)maxID
+                  triggeredByFormChange:(BOOL)triggeredByFormChange;
 
 @end
 
@@ -2615,7 +2616,8 @@ TEST_F(PasswordControllerTest,
   FormData form = test_helpers::MakeSimpleFormData();
   [passwordController_.sharedPasswordController
       didFinishPasswordFormExtraction:{form}
-                      withMaxUniqueID:5];
+                      withMaxUniqueID:5
+                triggeredByFormChange:false];
 
   // Simulate user focusing the field in a form before the password store
   // response is received.
@@ -2664,7 +2666,8 @@ TEST_F(PasswordControllerTest,
   FormData form = test_helpers::MakeSimpleFormData();
   [passwordController_.sharedPasswordController
       didFinishPasswordFormExtraction:{form}
-                      withMaxUniqueID:5];
+                      withMaxUniqueID:5
+                triggeredByFormChange:false];
 
   // Simulate user focusing the field in a form before the password store
   // response is received.
