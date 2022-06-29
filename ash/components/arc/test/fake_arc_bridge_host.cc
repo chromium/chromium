@@ -20,7 +20,6 @@
 #include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
-#include "ash/components/arc/mojom/dark_theme.mojom.h"
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
@@ -118,9 +117,6 @@ void FakeArcBridgeHost::OnCompatibilityModeInstanceReady(
 void FakeArcBridgeHost::OnCrashCollectorInstanceReady(
     mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote) {
 }
-
-void FakeArcBridgeHost::OnDarkThemeInstanceReady(
-    mojo::PendingRemote<mojom::DarkThemeInstance> dark_theme_remote) {}
 
 void FakeArcBridgeHost::OnDigitalGoodsInstanceReady(
     mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote) {}
