@@ -19,46 +19,46 @@ class GURL;
 // browser with consistent titles, images and metrics structure.
 @interface BrowserActionFactory : ActionFactory
 
-// Initializes a factory instance for the current |browser| to create action
-// instances for the given |scenario|. |browser| can be nil, and in that case
+// Initializes a factory instance for the current `browser` to create action
+// instances for the given `scenario`. `browser` can be nil, and in that case
 // only actions that doesn't require browser will work, and other actions will
 // return nil;
 - (instancetype)initWithBrowser:(Browser*)browser
                        scenario:(MenuScenario)scenario;
 
-// Creates a UIAction instance configured for opening the |URL| in a new tab and
-// which will invoke the given |completion| block after execution.
+// Creates a UIAction instance configured for opening the `URL` in a new tab and
+// which will invoke the given `completion` block after execution.
 - (UIAction*)actionToOpenInNewTabWithURL:(const GURL)URL
                               completion:(ProceduralBlock)completion;
 
-// Creates a UIAction instance configured for opening the |URL| in a new
-// incognito tab and which will invoke the given |completion| block after
+// Creates a UIAction instance configured for opening the `URL` in a new
+// incognito tab and which will invoke the given `completion` block after
 // execution.
 - (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
                                        completion:(ProceduralBlock)completion;
 
 // Creates a UIAction instance whose title and icon are configured for opening a
 // URL in a new incognito tab. When triggered, the action will invoke the
-// |block| which needs to open a URL in a new incognito tab.
+// `block` which needs to open a URL in a new incognito tab.
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block;
 
-// Creates a UIAction instance configured for opening the |URL| in a new window
-// from |activityOrigin|.
+// Creates a UIAction instance configured for opening the `URL` in a new window
+// from `activityOrigin`.
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin;
 
 // Creates a UIAction instance configured for opening a new window using
-// |activity|.
+// `activity`.
 - (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity;
 
-// Creates a UIAction instance for opening an image |URL| in current tab and
-// invoke the given |completion| block after execution.
+// Creates a UIAction instance for opening an image `URL` in current tab and
+// invoke the given `completion` block after execution.
 - (UIAction*)actionOpenImageWithURL:(const GURL)URL
                          completion:(ProceduralBlock)completion;
 
-// Creates a UIAction instance for opening an image |params| in a new tab and
-// invoke the given |completion| block after execution.
+// Creates a UIAction instance for opening an image `params` in a new tab and
+// invoke the given `completion` block after execution.
 - (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
                                            completion:
                                                (ProceduralBlock)completion;
