@@ -426,6 +426,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.Auth.AndroidIdSource{ArcUserTypes}"
     enum="ArcAuthAndroidIdSource" expires_after="2022-08-09">
+  <obsolete>
+    Removed in M105.
+  </obsolete>
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1863,7 +1866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.SystemHealth.Upgrade.PackagesDeleted"
-    enum="BooleanDeletedOrNot" expires_after="2022-08-10">
+    enum="BooleanDeletedOrNot" expires_after="2022-12-27">
   <owner>mhasank@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>
