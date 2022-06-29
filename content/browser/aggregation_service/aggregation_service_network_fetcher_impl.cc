@@ -178,21 +178,33 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   base::Time response_time;
   // `expiry_time` will be null if the freshness lifetime is zero.
   base::Time expiry_time;
+  base::Time current_time = clock_.Now();
   if (const network::mojom::URLResponseHead* response_info =
           loader->ResponseInfo()) {
-    response_time = response_info->response_time.is_null()
-                        ? clock_.Now()
-                        : response_info->response_time;
+    response_time = response_info->response_time;
 
     if (const net::HttpResponseHeaders* headers =
             response_info->headers.get()) {
       base::TimeDelta freshness =
           headers->GetFreshnessLifetimes(response_time).freshness;
-      if (!freshness.is_zero())
-        expiry_time = response_time + freshness;
+      if (!freshness.is_zero()) {
+        DCHECK(freshness.is_positive());
+        // Uses `response_time` as current time to get the age at response time
+        // as an offset. `expiry_time` is calculated in the same way as
+        // `HttpResponseHeaders::RequiresValidation`.
+        expiry_time =
+            response_time + freshness -
+            headers->GetCurrentAge(response_info->request_time, response_time,
+                                   /*current_time=*/response_time);
+        if (expiry_time <= current_time) {
+          OnError(url, std::move(callback), FetchStatus::kExpiredKeyError,
+                  /*error_msg=*/"Public key has already expired.");
+          return;
+        }
+      }
     }
   } else {
-    response_time = clock_.Now();
+    response_time = current_time;
   }
 
   // Since DataDecoder parses untrusted data in a separate process if necessary,
@@ -253,7 +265,7 @@ void AggregationServiceNetworkFetcherImpl::OnError(
 void AggregationServiceNetworkFetcherImpl::RecordFetchStatus(
     FetchStatus status) const {
   base::UmaHistogramEnumeration(
-      "PrivacySandbox.AggregationService.KeyFetcher.Status", status);
+      "PrivacySandbox.AggregationService.KeyFetcher.Status2", status);
 }
 
 }  // namespace content

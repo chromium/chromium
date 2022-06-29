@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -26,6 +27,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -53,7 +55,7 @@ const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
 const std::vector<PublicKey> kExamplePublicKeys = {kExampleHpkeKey.public_key};
 
 constexpr char kKeyFetcherStatusHistogramName[] =
-    "PrivacySandbox.AggregationService.KeyFetcher.Status";
+    "PrivacySandbox.AggregationService.KeyFetcher.Status2";
 
 constexpr char kKeyFetcherHttpResponseOrNetErrorCodeHistogramName[] =
     "PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode";
@@ -346,6 +348,80 @@ TEST_F(AggregationServiceNetworkFetcherTest, MultipleRequests_AllCallbacksRun) {
 
   // kSuccess = 0
   histograms.ExpectUniqueSample(kKeyFetcherStatusHistogramName, 0, 10);
+}
+
+TEST_F(AggregationServiceNetworkFetcherTest, VerifyExpiryTime) {
+  base::HistogramTester histograms;
+
+  const base::Clock* clock = task_environment_.GetMockClock();
+  ASSERT_TRUE(clock);
+
+  base::Time now = clock->Now();
+
+  bool callback_run = false;
+  network_fetcher_->FetchPublicKeys(
+      GURL(kExampleUrl),
+      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+        EXPECT_TRUE(keyset.has_value());
+        EXPECT_TRUE(aggregation_service::PublicKeysEqual(kExamplePublicKeys,
+                                                         keyset->keys));
+        EXPECT_EQ(keyset->fetch_time, now);
+        EXPECT_EQ(keyset->expiry_time, now + base::Seconds(900));
+        callback_run = true;
+      }));
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  auto response_head =
+      network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
+  response_head->request_time = now;
+  response_head->response_time = now;
+
+  response_head->headers->SetHeader("cache-control", "max-age=1000");
+  response_head->headers->SetHeader("age", "100");
+
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(kExampleUrl), network::URLLoaderCompletionStatus(net::OK),
+      std::move(response_head), kExampleValidJson));
+  EXPECT_TRUE(callback_run);
+
+  // kSuccess = 0
+  histograms.ExpectUniqueSample(kKeyFetcherStatusHistogramName, 0, 1);
+}
+
+TEST_F(AggregationServiceNetworkFetcherTest, VerifyExpiredKeyOnFetch) {
+  base::HistogramTester histograms;
+
+  const base::Clock* clock = task_environment_.GetMockClock();
+  ASSERT_TRUE(clock);
+
+  base::Time now = clock->Now();
+
+  bool callback_run = false;
+  network_fetcher_->FetchPublicKeys(
+      GURL(kExampleUrl),
+      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+        EXPECT_FALSE(keyset.has_value());
+        callback_run = true;
+      }));
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  auto response_head =
+      network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
+  response_head->request_time = now;
+  response_head->response_time = now;
+
+  response_head->headers->SetHeader("cache-control", "max-age=1000");
+  response_head->headers->SetHeader("age", "1000");
+
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(kExampleUrl), network::URLLoaderCompletionStatus(net::OK),
+      std::move(response_head), kExampleValidJson));
+  EXPECT_TRUE(callback_run);
+
+  // kExpiredKeyError = 4
+  histograms.ExpectUniqueSample(kKeyFetcherStatusHistogramName, 4, 1);
 }
 
 }  // namespace content

@@ -70,7 +70,10 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
     // Invalid format or invalid keys were specified in the JSON string.
     kInvalidKeyError = 3,
 
-    kMaxValue = kInvalidKeyError,
+    // The response has expired.
+    kExpiredKeyError = 4,
+
+    kMaxValue = kExpiredKeyError,
   };
 
   // This is a std::list so that iterators remain valid during modifications.

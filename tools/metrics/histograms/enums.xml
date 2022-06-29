@@ -78494,6 +78494,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Download error"/>
   <int value="2" label="Json parse error"/>
   <int value="3" label="Invalid key error"/>
+  <int value="4" label="Expired key error"/>
 </enum>
 
 <enum name="PrivacySandboxAggregationServiceReportAssemblerStatus">

@@ -305,6 +305,19 @@ reviewer.
 <histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status"
     enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
     expires_after="2022-08-23">
+  <obsolete>
+    Replaced with PrivacySandbox.AggregationService.KeyFetcher.Status2, 06/2022.
+  </obsolete>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each key network fetch request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status2"
+    enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
+    expires_after="2022-12-23">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
