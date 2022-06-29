@@ -69,6 +69,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   absl::optional<std::string> handler_id;
   absl::optional<std::vector<GURL>> urls;
   absl::optional<int32_t> active_tab_index;
+  absl::optional<int32_t> first_non_pinned_tab_index;
   absl::optional<std::vector<base::FilePath>> file_paths;
   apps::IntentPtr intent = nullptr;
   absl::optional<bool> app_type_browser;
