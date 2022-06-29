@@ -58,7 +58,7 @@ declare_args() {
   # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_dts_audio = false
 
-  # TODO(crbug.com/1330636): Remove the `is_fuchsia` condition once fuchsia
+  # TODO(crbug.com/1329657): Remove the `is_fuchsia` condition once fuchsia
   # builds set enable_cast_receiver.
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs &&
@@ -74,7 +74,7 @@ declare_args() {
 
   # Enable HLS with SAMPLE-AES decryption.
   #
-  # TODO(crbug.com/1330636): Remove the `is_fuchsia` condition once fuchsia
+  # TODO(crbug.com/1329657): Remove the `is_fuchsia` condition once fuchsia
   # builds set enable_cast_receiver.
   enable_hls_sample_aes =
       proprietary_codecs && (enable_cast_receiver || is_fuchsia)
@@ -88,10 +88,7 @@ declare_args() {
 
   # Enable browser managed persistent metadata storage for EME persistent
   # session and persistent usage record session.
-  #
-  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition.
-  enable_media_drm_storage =
-      is_android || is_castos || (is_fuchsia && is_chromecast)
+  enable_media_drm_storage = is_android || is_castos
 
   # Enable HLS manifest parser and demuxer.
   enable_hls_demuxer = false

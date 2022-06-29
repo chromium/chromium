@@ -8558,9 +8558,7 @@ test("unit_tests") {
   # //chrome include.
   # TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
   # on Chromecast and remove this section entirely.
-  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-  # such builds no longer reach this file.
-  if (is_castos || (is_fuchsia && is_chromecast)) {
+  if (is_castos) {
     sources -= [
       "../browser/browsing_data/browsing_data_media_license_helper_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",

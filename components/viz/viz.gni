@@ -19,10 +19,8 @@ enable_vulkan_backend_tests =
 
 enable_dawn_backend_tests = skia_use_dawn && enable_skia_dawn_gtests
 
-# TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-# such builds no longer reach this file.
-enable_cast_overlay_strategy =
-    is_castos || is_cast_android || (is_fuchsia && is_chromecast)
+# TODO(crbug.com/1336055): Determine whether is_cast_android needs this.
+enable_cast_overlay_strategy = is_castos || is_cast_android
 
 viz_remove_configs = []
 viz_add_configs = [ "//build/config:precompiled_headers" ]

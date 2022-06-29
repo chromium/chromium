@@ -15,10 +15,7 @@ source_set("resource_format") {
   sources = [ "resources/resource_format.h" ]
 }
 
-# TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-# such builds no longer reach this file.
-always_enable_blending_for_primary =
-    is_castos || is_cast_android || (is_fuchsia && is_chromecast)
+always_enable_blending_for_primary = is_castos || is_cast_android
 assert(enable_cast_overlay_strategy || !always_enable_blending_for_primary)
 
 buildflag_header("buildflags") {

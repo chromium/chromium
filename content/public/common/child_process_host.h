@@ -18,10 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 #include <string>
 
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -182,10 +179,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
 // TODO(crbug.com/1328879): Remove this method when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Instructs the child process to run an instance of the named service. This
   // is DEPRECATED and should never be used.
   virtual void RunServiceDeprecated(

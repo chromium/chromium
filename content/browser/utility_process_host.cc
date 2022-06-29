@@ -119,10 +119,7 @@ bool UtilityProcessHost::Start() {
 }
 
 // TODO(crbug.com/1328879): Remove this method when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 void UtilityProcessHost::RunServiceDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe,
@@ -374,10 +371,7 @@ bool UtilityProcessHost::StartProcess() {
 void UtilityProcessHost::OnProcessLaunched() {
   launch_state_ = LaunchState::kLaunchComplete;
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   for (auto& callback : pending_run_service_callbacks_)
     std::move(callback).Run(process_->GetProcess().Pid());
   pending_run_service_callbacks_.clear();
@@ -389,10 +383,7 @@ void UtilityProcessHost::OnProcessLaunched() {
 void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
   launch_state_ = LaunchState::kLaunchFailed;
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   for (auto& callback : pending_run_service_callbacks_)
     std::move(callback).Run(absl::nullopt);
   pending_run_service_callbacks_.clear();

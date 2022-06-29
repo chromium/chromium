@@ -25,10 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 #include "base/callback.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #endif
@@ -182,10 +179,7 @@ class CONTENT_EXPORT ServiceProcessHost {
 };
 
 // TODO(crbug.com/1328879): Remove this method when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // DEPRECATED. DO NOT USE THIS. This is a helper for any remaining service
 // launching code which uses an older code path to launch services in a utility
 // process. All new code must use ServiceProcessHost instead of this API.

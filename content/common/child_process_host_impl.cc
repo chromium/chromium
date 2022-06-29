@@ -183,10 +183,7 @@ base::Process& ChildProcessHostImpl::GetPeerProcess() {
 }
 
 // TODO(crbug.com/1328879): Remove this method when fixing the bug.
-// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-// such builds no longer reach this file.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 void ChildProcessHostImpl::RunServiceDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe) {

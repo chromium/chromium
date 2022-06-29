@@ -63,8 +63,7 @@ mojom("mojom") {
 
   # TODO(crbug.com/1293520): Revisit this after the cast renderer has been
   # deprecated and removed.
-  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition.
-  if (is_castos || is_cast_android || (is_fuchsia && is_chromecast)) {
+  if (is_castos || is_cast_android) {
     sources += [ "cast_application_media_info_manager.mojom" ]
   }
 
