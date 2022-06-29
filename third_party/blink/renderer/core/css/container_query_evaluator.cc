@@ -120,7 +120,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   }
   if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
     match_result.SetDependsOnRemContainerQueries();
-  results_.Set(&query, Result{result, change});
+  results_.Set(&query, Result{result, unit_flags, change});
   unit_flags_ |= unit_flags;
   return result;
 }
@@ -138,12 +138,8 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
 
   Change change = ComputeChange();
 
-  // We can clear the results here because we will always recaculate the style
-  // of all descendants which depend on this evaluator whenever we return
-  // something other than kNone from this function, so the results will always
-  // be repopulated.
   if (change != Change::kNone)
-    ClearResults();
+    ClearResults(change);
 
   return change;
 }
@@ -186,10 +182,39 @@ void ContainerQueryEvaluator::SetData(Document& document,
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
-void ContainerQueryEvaluator::ClearResults() {
-  results_.clear();
-  referenced_by_unit_ = false;
-  unit_flags_ = 0;
+void ContainerQueryEvaluator::ClearResults(Change change) {
+  switch (change) {
+    case Change::kNone:
+      NOTREACHED();
+      break;
+    case Change::kNearestContainer: {
+      DCHECK(!referenced_by_unit_);
+      // We are going to recalculate the style of all descendants which depend
+      // on this container, *excluding* those that exist within nested
+      // containers. Therefore all entries with `change` greater than
+      // kNearestContainer need to remain.
+      unit_flags_ = 0;
+      HeapHashMap<Member<const ContainerQuery>, Result> new_results;
+      for (const auto& pair : results_) {
+        if (pair.value.change > change) {
+          new_results.Set(pair.key, pair.value);
+          unit_flags_ |= pair.value.unit_flags;
+        }
+      }
+      std::swap(new_results, results_);
+      break;
+    }
+    case Change::kDescendantContainers: {
+      // We are going to recalculate the style of all descendants which
+      // depend on this container, *including* those that exist within nested
+      // containers. Therefore all results will be repopulated, and we can clear
+      // everything.
+      results_.clear();
+      referenced_by_unit_ = false;
+      unit_flags_ = 0;
+      break;
+    }
+  }
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {

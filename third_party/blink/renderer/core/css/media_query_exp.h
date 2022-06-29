@@ -106,6 +106,8 @@ class CORE_EXPORT MediaQueryExpValue {
     kContainer = 1 << 4,
   };
 
+  static const int kUnitFlagsBits = 5;
+
   unsigned GetUnitFlags() const;
 
   String CssText() const;

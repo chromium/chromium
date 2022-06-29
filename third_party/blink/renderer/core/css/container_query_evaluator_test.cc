@@ -132,6 +132,20 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     return evaluator->EvalAndAdd(query, change, dummy_result);
   }
 
+  using Result = ContainerQueryEvaluator::Result;
+  const HeapHashMap<Member<const ContainerQuery>, Result>& GetResults(
+      ContainerQueryEvaluator* evaluator) const {
+    return evaluator->results_;
+  }
+
+  unsigned GetUnitFlags(ContainerQueryEvaluator* evaluator) const {
+    return evaluator->unit_flags_;
+  }
+
+  void ClearResults(ContainerQueryEvaluator* evaluator, Change change) const {
+    return evaluator->ClearResults(change);
+  }
+
   const PhysicalAxes none{kPhysicalAxisNone};
   const PhysicalAxes both{kPhysicalAxisBoth};
   const PhysicalAxes horizontal{kPhysicalAxisHorizontal};
@@ -191,48 +205,174 @@ TEST_F(ContainerQueryEvaluatorTest, ContainerChanged) {
   ASSERT_TRUE(container_query_100);
   ASSERT_TRUE(container_query_200);
 
-  // Note that the stored results of `ContainerQueryEvaluator` are cleared every
-  // time `ContainerChanged` is called.
-
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
   ContainerChanged(evaluator, size_100, type_size, horizontal);
 
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_100));
   EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_200));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 
+  // Calling ContainerChanged the values we already have should not produce
+  // a Change.
   EXPECT_EQ(Change::kNone,
             ContainerChanged(evaluator, size_100, type_size, horizontal));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // EvalAndAdding the same queries again is allowed.
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_100));
   EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_200));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 
+  // Resize from 100px to 200px.
   EXPECT_EQ(Change::kNearestContainer,
             ContainerChanged(evaluator, size_200, type_size, horizontal));
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
+  // Now both 100px and 200px queries should return true.
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_100));
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_200));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 
+  // Calling ContainerChanged the values we already have should not produce
+  // a Change.
   EXPECT_EQ(Change::kNone,
             ContainerChanged(evaluator, size_200, type_size, horizontal));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // Still valid to EvalAndAdd the same queries again.
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_100));
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_200));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 
+  // Setting contained_axes=vertical should invalidate the queries, since
+  // they query width.
   EXPECT_EQ(Change::kNearestContainer,
             ContainerChanged(evaluator, size_200, type_size, vertical));
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
   EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_100));
   EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_200));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 
+  // Switching back to horizontal.
   EXPECT_EQ(Change::kNearestContainer,
             ContainerChanged(evaluator, size_100, type_size, horizontal));
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
+  // Resize to 200px.
   EXPECT_EQ(Change::kNone,
             ContainerChanged(evaluator, size_200, type_size, horizontal));
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
+  // Add a query of each Change type.
   EXPECT_TRUE(
       EvalAndAdd(evaluator, *container_query_100, Change::kNearestContainer));
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_200,
                          Change::kDescendantContainers));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 
-  // Both container_query_100/200 changed their evaluation. `ContainerChanged`
-  // should return the biggest `Change`.
+  // Resize to 50px should cause both queries to change their evaluation.
+  // `ContainerChanged` should return the biggest `Change`.
   EXPECT_EQ(Change::kDescendantContainers,
             ContainerChanged(evaluator, size_50, type_size, horizontal));
+}
+
+TEST_F(ContainerQueryEvaluatorTest, ClearResults) {
+  PhysicalSize size_100(LayoutUnit(100), LayoutUnit(100));
+
+  ContainerQuery* container_query_px = ParseContainer("(min-width: 50px)");
+  ContainerQuery* container_query_em = ParseContainer("(min-width: 10em)");
+  ContainerQuery* container_query_vh = ParseContainer("(min-width: 10vh)");
+  ContainerQuery* container_query_cqw = ParseContainer("(min-width: 10cqw)");
+  ASSERT_TRUE(container_query_px);
+  ASSERT_TRUE(container_query_em);
+  ASSERT_TRUE(container_query_vh);
+  ASSERT_TRUE(container_query_cqw);
+
+  auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+  ContainerChanged(evaluator, size_100, type_size, horizontal);
+
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
+  using UnitFlags = MediaQueryExpValue::UnitFlags;
+
+  // EvalAndAdd (min-width: 50px), nearest.
+  EvalAndAdd(evaluator, *container_query_px, Change::kNearestContainer);
+  ASSERT_EQ(1u, GetResults(evaluator).size());
+  EXPECT_EQ(Change::kNearestContainer,
+            GetResults(evaluator).at(container_query_px).change);
+  EXPECT_EQ(UnitFlags::kNone,
+            GetResults(evaluator).at(container_query_px).unit_flags);
+  EXPECT_EQ(UnitFlags::kNone, GetUnitFlags(evaluator));
+
+  // EvalAndAdd (min-width: 10em), descendant
+  EvalAndAdd(evaluator, *container_query_em, Change::kDescendantContainers);
+  ASSERT_EQ(2u, GetResults(evaluator).size());
+  EXPECT_EQ(Change::kDescendantContainers,
+            GetResults(evaluator).at(container_query_em).change);
+  EXPECT_EQ(UnitFlags::kFontRelative,
+            GetResults(evaluator).at(container_query_em).unit_flags);
+  EXPECT_EQ(UnitFlags::kFontRelative, GetUnitFlags(evaluator));
+
+  // EvalAndAdd (min-width: 10vh), nearest
+  EvalAndAdd(evaluator, *container_query_vh, Change::kNearestContainer);
+  ASSERT_EQ(3u, GetResults(evaluator).size());
+  EXPECT_EQ(Change::kNearestContainer,
+            GetResults(evaluator).at(container_query_vh).change);
+  EXPECT_EQ(UnitFlags::kStaticViewport,
+            GetResults(evaluator).at(container_query_vh).unit_flags);
+  EXPECT_EQ(static_cast<unsigned>(UnitFlags::kFontRelative |
+                                  UnitFlags::kStaticViewport),
+            GetUnitFlags(evaluator));
+
+  // EvalAndAdd (min-width: 10cqw), descendant
+  EvalAndAdd(evaluator, *container_query_cqw, Change::kDescendantContainers);
+  ASSERT_EQ(4u, GetResults(evaluator).size());
+  EXPECT_EQ(Change::kDescendantContainers,
+            GetResults(evaluator).at(container_query_cqw).change);
+  EXPECT_EQ(UnitFlags::kContainer,
+            GetResults(evaluator).at(container_query_cqw).unit_flags);
+  EXPECT_EQ(
+      static_cast<unsigned>(UnitFlags::kFontRelative |
+                            UnitFlags::kStaticViewport | UnitFlags::kContainer),
+      GetUnitFlags(evaluator));
+
+  // Clearing kNearestContainer should leave all information originating from
+  // kDescendantContainers.
+  ClearResults(evaluator, Change::kNearestContainer);
+  ASSERT_EQ(2u, GetResults(evaluator).size());
+  EXPECT_EQ(Change::kDescendantContainers,
+            GetResults(evaluator).at(container_query_em).change);
+  EXPECT_EQ(Change::kDescendantContainers,
+            GetResults(evaluator).at(container_query_cqw).change);
+  EXPECT_EQ(UnitFlags::kFontRelative,
+            GetResults(evaluator).at(container_query_em).unit_flags);
+  EXPECT_EQ(UnitFlags::kContainer,
+            GetResults(evaluator).at(container_query_cqw).unit_flags);
+  EXPECT_EQ(
+      static_cast<unsigned>(UnitFlags::kFontRelative | UnitFlags::kContainer),
+      GetUnitFlags(evaluator));
+
+  // Clearing Change::kDescendantContainers should clear everything.
+  ClearResults(evaluator, Change::kDescendantContainers);
+  ASSERT_EQ(0u, GetResults(evaluator).size());
+  EXPECT_EQ(UnitFlags::kNone, GetUnitFlags(evaluator));
+
+  // Add everything again, to ensure that
+  // ClearResults(Change::kDescendantContainers) also clears
+  // Change::kNearestContainer.
+  EvalAndAdd(evaluator, *container_query_px, Change::kNearestContainer);
+  EvalAndAdd(evaluator, *container_query_em, Change::kDescendantContainers);
+  EvalAndAdd(evaluator, *container_query_vh, Change::kNearestContainer);
+  EvalAndAdd(evaluator, *container_query_cqw, Change::kDescendantContainers);
+  ASSERT_EQ(4u, GetResults(evaluator).size());
+  EXPECT_EQ(
+      static_cast<unsigned>(UnitFlags::kFontRelative |
+                            UnitFlags::kStaticViewport | UnitFlags::kContainer),
+      GetUnitFlags(evaluator));
+  ClearResults(evaluator, Change::kDescendantContainers);
+  ASSERT_EQ(0u, GetResults(evaluator).size());
+  EXPECT_EQ(UnitFlags::kNone, GetUnitFlags(evaluator));
 }
 
 TEST_F(ContainerQueryEvaluatorTest, SizeInvalidation) {
