@@ -6,7 +6,6 @@
 
 #import <WebKit/WebKit.h>
 
-#import "base/base64.h"
 #include "base/bind.h"
 #include "base/ios/ios_util.h"
 #include "base/json/json_reader.h"
@@ -15,193 +14,165 @@
 #import "base/strings/sys_string_conversions.h"
 #include "base/test/ios/wait_util.h"
 #include "base/values.h"
-#include "crypto/aead.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using crypto::SymmetricKey;
-
 namespace {
+
 const char kFrameId[] = "1effd8f52a067c8d3a01762d3c41dfd8";
-
-// A base64 encoded sample key.
-const char kFrameKey[] = "R7lsXtR74c6R9A9k691gUQ8JAd0be+w//Lntgcbjwrc=";
-
-// Returns a key which can be used to create a WebFrame.
-std::unique_ptr<SymmetricKey> CreateKey() {
-  std::string decoded_frame_key_string;
-  base::Base64Decode(kFrameKey, &decoded_frame_key_string);
-  return crypto::SymmetricKey::Import(crypto::SymmetricKey::Algorithm::AES,
-                                      decoded_frame_key_string);
-}
 
 }  // namespace
 
 namespace web {
 
-typedef web::WebTest WebFrameImplTest;
+class WebFrameImplTest : public web::WebTest {
+ protected:
+  WebFrameImplTest() {
+    mock_frame_info_ = OCMClassMock([WKFrameInfo class]);
+    mock_web_view_ = OCMClassMock([WKWebView class]);
 
-// Tests creation of a WebFrame for the main frame without an encryption key.
+    OCMStub([mock_web_view_ evaluateJavaScript:OCMOCK_ANY
+                                       inFrame:OCMOCK_ANY
+                                inContentWorld:OCMOCK_ANY
+                             completionHandler:OCMOCK_ANY])
+        .andDo(^(NSInvocation* invocation) {
+          [invocation retainArguments];
+          [invocation getArgument:&last_received_script_ atIndex:2];
+        });
+    OCMStub([mock_frame_info_ webView]).andReturn(mock_web_view_);
+  }
+
+  void SetUp() override {
+    web::WebTest::SetUp();
+
+    JavaScriptFeatureManager* java_script_feature_manager =
+        JavaScriptFeatureManager::FromBrowserState(GetBrowserState());
+    java_script_feature_manager->ConfigureFeatures({});
+
+    fake_web_state_.SetBrowserState(GetBrowserState());
+  }
+
+  id mock_frame_info_;
+  id mock_web_view_;
+  NSString* last_received_script_;
+
+  FakeWebState fake_web_state_;
+  GURL security_origin_;
+};
+
+// Tests creation of a WebFrame for the main frame.
 TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
-  FakeWebState fake_web_state;
-  GURL security_origin;
   WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/true, security_origin,
-                         &fake_web_state);
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_);
 
-  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
+  EXPECT_EQ(&fake_web_state_, web_frame.GetWebState());
   EXPECT_TRUE(web_frame.IsMainFrame());
   EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
-  EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
+  EXPECT_EQ(security_origin_, web_frame.GetSecurityOrigin());
   EXPECT_EQ(kFrameId, web_frame.GetFrameId());
 }
 
-// Tests creation of a WebFrame for the main frame with an encryption key.
-TEST_F(WebFrameImplTest, CreateWebFrameForMainFrameWithKey) {
-  FakeWebState fake_web_state;
-  GURL security_origin;
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/true, security_origin,
-                         &fake_web_state);
-  web_frame.SetEncryptionKey(CreateKey());
-
-  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
-  EXPECT_TRUE(web_frame.IsMainFrame());
-  EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
-  EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
-  EXPECT_EQ(kFrameId, web_frame.GetFrameId());
-}
-
-// Tests creation of a WebFrame for a frame which is not the main frame with an
-// encryption key.
-TEST_F(WebFrameImplTest, CreateWebFrameForIFrameWithKey) {
-  FakeWebState fake_web_state;
-  GURL security_origin;
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/false, security_origin,
-                         &fake_web_state);
-  web_frame.SetEncryptionKey(CreateKey());
-
-  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
-  EXPECT_FALSE(web_frame.IsMainFrame());
-  EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
-  EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
-  EXPECT_EQ(kFrameId, web_frame.GetFrameId());
-}
-
-// Tests that the WebFrame properly creates JavaScript for the main frame when
-// there is no encryption key.
-TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrameWithoutKey) {
-  FakeWebState fake_web_state;
-  fake_web_state.SetBrowserState(GetBrowserState());
-  GURL security_origin;
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/true, security_origin,
-                         &fake_web_state);
+// Tests that the WebFrame properly creates JavaScript for the main frame.
+TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_);
 
   std::vector<base::Value> function_params;
 
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  NSString* last_script =
-      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
-  EXPECT_NSEQ(@"__gCrWeb.functionName()", last_script);
+  EXPECT_NSEQ(@"__gCrWeb.functionName()", last_received_script_);
 
   function_params.push_back(base::Value("param1"));
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  last_script =
-      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
-  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_script);
+  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_received_script_);
 
   function_params.push_back(base::Value(true));
   function_params.push_back(base::Value(27));
   function_params.push_back(base::Value(3.14));
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  last_script =
-      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
-  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)", last_script);
+  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)",
+              last_received_script_);
 }
 
-// Tests that the WebFrame does not create JavaScript for an iframe when there
-// is no encryption key.
-TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrameFrameWithoutKey) {
-  FakeWebState fake_web_state;
-  fake_web_state.SetBrowserState(GetBrowserState());
-  GURL security_origin;
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/false, security_origin,
-                         &fake_web_state);
+// Tests that the WebFrame creates JavaScript for an iframe.
+TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/false, security_origin_,
+                         &fake_web_state_);
 
   std::vector<base::Value> function_params;
-  function_params.push_back(base::Value("plaintextParam"));
-  EXPECT_FALSE(
-      web_frame.CallJavaScriptFunction("functionName", function_params));
 
-  NSString* last_script =
-      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
-  EXPECT_EQ(last_script.length, 0ul);
+  EXPECT_TRUE(
+      web_frame.CallJavaScriptFunction("functionName", function_params));
+  EXPECT_NSEQ(@"__gCrWeb.functionName()", last_received_script_);
+
+  function_params.push_back(base::Value("param1"));
+  EXPECT_TRUE(
+      web_frame.CallJavaScriptFunction("functionName", function_params));
+  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_received_script_);
+
+  function_params.push_back(base::Value(true));
+  function_params.push_back(base::Value(27));
+  function_params.push_back(base::Value(3.14));
+  EXPECT_TRUE(
+      web_frame.CallJavaScriptFunction("functionName", function_params));
+  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)",
+              last_received_script_);
 }
 
-// Tests that the WebFrame can execute arbitrary JavaScript
-// if and only if it is a main frame.
+// Tests that the WebFrame can execute arbitrary JavaScript.
 TEST_F(WebFrameImplTest, ExecuteJavaScript) {
-  FakeWebState fake_web_state;
-  fake_web_state.SetBrowserState(GetBrowserState());
-  GURL security_origin;
-
   NSString* script = @"__gCrWeb = {};"
                      @"__gCrWeb['fakeFunction'] = function() {"
                      @"  return '10';"
                      @"}";
 
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/true, security_origin,
-                         &fake_web_state);
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_);
 
   EXPECT_TRUE(web_frame.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
 
-  WebFrameImpl web_frame2([[WKFrameInfo alloc] init], kFrameId,
-                          /*is_main_frame=*/false, security_origin,
-                          &fake_web_state);
-  // Executing arbitrary code on an iframe should return false.
-  EXPECT_FALSE(web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
+  WebFrameImpl web_frame2(mock_frame_info_, kFrameId,
+                          /*is_main_frame=*/false, security_origin_,
+                          &fake_web_state_);
+  EXPECT_TRUE(web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
 }
 
-// Tests that the WebFrame can execute arbitrary JavaScript given
-// a callback if and only if it is a main frame.
+// Tests that the WebFrame can execute arbitrary JavaScript given a callback.
 TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
-  FakeWebState fake_web_state;
-  fake_web_state.SetBrowserState(GetBrowserState());
-
-  GURL security_origin;
-
   NSString* script = @"__gCrWeb = {};"
                      @"__gCrWeb['fakeFunction'] = function() {"
                      @"  return '10';"
                      @"}";
 
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
-                         /*is_main_frame=*/true, security_origin,
-                         &fake_web_state);
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_);
 
   EXPECT_TRUE(
       web_frame.ExecuteJavaScript(base::SysNSStringToUTF16(script),
                                   base::BindOnce(^(const base::Value* value){
                                   })));
 
-  WebFrameImpl web_frame2([[WKFrameInfo alloc] init], kFrameId,
-                          /*is_main_frame=*/false, security_origin,
-                          &fake_web_state);
+  WebFrameImpl web_frame2(mock_frame_info_, kFrameId,
+                          /*is_main_frame=*/false, security_origin_,
+                          &fake_web_state_);
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script),
                                    base::BindOnce(^(const base::Value* value){
                                    })));

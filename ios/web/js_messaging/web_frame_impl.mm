@@ -6,19 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/ios/ios_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "crypto/aead.h"
-#include "crypto/random.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
@@ -31,7 +25,6 @@
 #endif
 
 namespace {
-const char kJavaScriptReplyCommandPrefix[] = "frameMessaging_";
 
 // Creates a JavaScript string for executing the function __gCrWeb.|name| with
 // |parameters|.
@@ -49,7 +42,7 @@ NSString* CreateFunctionCallWithParamaters(
       stringWithFormat:@"__gCrWeb.%s(%@)", name.c_str(),
                        [parameter_strings componentsJoinedByString:@","]];
 }
-}
+}  // namespace
 
 namespace web {
 
@@ -69,11 +62,6 @@ WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
   DCHECK(frame_info_);
   DCHECK(web_state_);
   web_state->AddObserver(this);
-
-  subscription_ = web_state->AddScriptCommandCallback(
-      base::BindRepeating(&WebFrameImpl::OnJavaScriptReply,
-                          base::Unretained(this), base::Unretained(web_state)),
-      GetScriptCommandPrefix());
 }
 
 WebFrameImpl::~WebFrameImpl() {
@@ -83,15 +71,6 @@ WebFrameImpl::~WebFrameImpl() {
 
 WebFrameInternal* WebFrameImpl::GetWebFrameInternal() {
   return this;
-}
-
-void WebFrameImpl::SetEncryptionKey(
-    std::unique_ptr<crypto::SymmetricKey> frame_key) {
-  frame_key_ = std::move(frame_key);
-}
-
-void WebFrameImpl::SetNextMessageId(int message_id) {
-  next_message_id_ = message_id;
 }
 
 WebState* WebFrameImpl::GetWebState() {
@@ -111,45 +90,11 @@ GURL WebFrameImpl::GetSecurityOrigin() const {
 }
 
 bool WebFrameImpl::CanCallJavaScriptFunction() const {
-  // JavaScript can always be called on the main frame without encryption
-  // because calling the function directly on the webstate with
-  // |ExecuteJavaScript| is secure. However, iframes require an encryption key
-  // in order to securely pass the function name and parameters to the frame.
-  return is_main_frame_ || frame_key_ || frame_info_;
+  return frame_info_;
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
   return GetWebState()->GetBrowserState();
-}
-
-const std::string WebFrameImpl::EncryptPayload(
-    base::Value payload,
-    const std::string& additiona_data) {
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(&frame_key_->key());
-
-  std::string payload_json;
-  base::JSONWriter::Write(payload, &payload_json);
-  std::string payload_iv;
-  crypto::RandBytes(base::WriteInto(&payload_iv, aead.NonceLength() + 1),
-                    aead.NonceLength());
-  std::string payload_ciphertext;
-  if (!aead.Seal(payload_json, payload_iv, additiona_data,
-                 &payload_ciphertext)) {
-    LOG(ERROR) << "Error sealing message payload for WebFrame.";
-    return std::string();
-  }
-  std::string encoded_payload_iv;
-  base::Base64Encode(payload_iv, &encoded_payload_iv);
-  std::string encoded_payload;
-  base::Base64Encode(payload_ciphertext, &encoded_payload);
-
-  std::string payload_string;
-  base::Value payload_dict(base::Value::Type::DICTIONARY);
-  payload_dict.SetKey("payload", base::Value(encoded_payload));
-  payload_dict.SetKey("iv", base::Value(encoded_payload_iv));
-  base::JSONWriter::Write(payload_dict, &payload_string);
-  return payload_string;
 }
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
@@ -160,54 +105,13 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   int message_id = next_message_id_;
   next_message_id_++;
 
-  if (content_world && content_world->GetWKContentWorld()) {
+  if (CanCallJavaScriptFunction() && content_world &&
+      content_world->GetWKContentWorld()) {
     return ExecuteJavaScriptFunction(content_world, name, parameters,
                                      message_id, reply_with_result);
   }
 
-  if (!CanCallJavaScriptFunction()) {
-    return false;
-  }
-
-  if (!frame_key_) {
-    return ExecuteJavaScriptFunction(name, parameters, message_id,
-                                     reply_with_result);
-  }
-
-  // There should always be a content_world now and
-  // `__gCrWeb.message.routeMessage` calls shouldn't be necessary.
-  // TODO(crbug.com/1339441): Remove custom iFrame messaging system.
-  NOTREACHED();
-
-  base::Value::Dict message_payload;
-  message_payload.Set("messageId", base::Value(message_id));
-  message_payload.Set("replyWithResult", base::Value(reply_with_result));
-  const std::string& encrypted_message_json =
-      EncryptPayload(base::Value(std::move(message_payload)), std::string());
-
-  base::Value::Dict function_payload;
-  function_payload.Set("functionName", name);
-  base::Value::List parameters_value;
-  for (auto& parameter : parameters) {
-    parameters_value.Append(parameter.Clone());
-  }
-  function_payload.Set("parameters", std::move(parameters_value));
-  const std::string& encrypted_function_json =
-      EncryptPayload(base::Value(std::move(function_payload)),
-                     base::NumberToString(message_id));
-
-  if (encrypted_message_json.empty() || encrypted_function_json.empty()) {
-    // Sealing the payload failed.
-    return false;
-  }
-
-  std::string script =
-      base::StringPrintf("__gCrWeb.message.routeMessage(%s, %s, '%s')",
-                         encrypted_message_json.c_str(),
-                         encrypted_function_json.c_str(), frame_id_.c_str());
-  GetWebState()->ExecuteJavaScript(base::UTF8ToUTF16(script));
-
-  return true;
+  return false;
 }
 
 bool WebFrameImpl::CallJavaScriptFunction(
@@ -290,10 +194,6 @@ bool WebFrameImpl::ExecuteJavaScript(
     ExecuteJavaScriptCallbackWithError callback) {
   DCHECK(frame_info_);
 
-  if (!IsMainFrame()) {
-    return false;
-  }
-
   NSString* ns_script = base::SysUTF16ToNSString(script);
   __block auto internal_callback = std::move(callback);
   void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
@@ -370,32 +270,6 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
   return true;
 }
 
-bool WebFrameImpl::ExecuteJavaScriptFunction(
-    const std::string& name,
-    const std::vector<base::Value>& parameters,
-    int message_id,
-    bool reply_with_result) {
-  if (!IsMainFrame()) {
-    return false;
-  }
-
-  NSString* script = CreateFunctionCallWithParamaters(name, parameters);
-  if (!reply_with_result) {
-    GetWebState()->ExecuteJavaScript(base::SysNSStringToUTF16(script));
-    return true;
-  }
-
-  base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
-  GetWebState()->ExecuteJavaScript(base::SysNSStringToUTF16(script),
-                                   base::BindOnce(^(const base::Value* result) {
-                                     if (weak_frame) {
-                                       weak_frame->CompleteRequest(message_id,
-                                                                   result);
-                                     }
-                                   }));
-  return true;
-}
-
 void WebFrameImpl::CompleteRequest(int message_id, const base::Value* result) {
   auto request = pending_requests_.find(message_id);
   if (request == pending_requests_.end()) {
@@ -423,35 +297,11 @@ void WebFrameImpl::CancelPendingRequests() {
   pending_requests_.clear();
 }
 
-void WebFrameImpl::OnJavaScriptReply(web::WebState* web_state,
-                                     const base::Value& command_json,
-                                     const GURL& page_url,
-                                     bool interacting,
-                                     WebFrame* sender_frame) {
-  const std::string* command_string = command_json.FindStringKey("command");
-  if (!command_string ||
-      *command_string != (GetScriptCommandPrefix() + ".reply")) {
-    return;
-  }
-
-  absl::optional<double> message_id = command_json.FindDoubleKey("messageId");
-  if (!message_id) {
-    return;
-  }
-
-  CompleteRequest(static_cast<int>(*message_id),
-                  command_json.FindKey("result"));
-}
-
 void WebFrameImpl::DetachFromWebState() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
-}
-
-const std::string WebFrameImpl::GetScriptCommandPrefix() {
-  return kJavaScriptReplyCommandPrefix + frame_id_;
 }
 
 void WebFrameImpl::WebStateDestroyed(web::WebState* web_state) {

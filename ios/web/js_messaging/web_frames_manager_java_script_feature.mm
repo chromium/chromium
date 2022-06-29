@@ -4,9 +4,7 @@
 
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 
-#include "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
-#include "crypto/symmetric_key.h"
 #include "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #include "ios/web/public/browser_state.h"
@@ -140,30 +138,9 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
   GURL message_frame_origin =
       web::GURLOriginWithWKSecurityOrigin(message.frameInfo.securityOrigin);
 
-  std::unique_ptr<crypto::SymmetricKey> frame_key;
-  if ([message.body[@"crwFrameKey"] isKindOfClass:[NSString class]] &&
-      [message.body[@"crwFrameKey"] length] > 0) {
-    std::string decoded_frame_key_string;
-    std::string encoded_frame_key_string =
-        base::SysNSStringToUTF8(message.body[@"crwFrameKey"]);
-    base::Base64Decode(encoded_frame_key_string, &decoded_frame_key_string);
-    frame_key = crypto::SymmetricKey::Import(
-        crypto::SymmetricKey::Algorithm::AES, decoded_frame_key_string);
-  }
-
   auto new_frame = std::make_unique<web::WebFrameImpl>(
       message.frameInfo, frame_id, message.frameInfo.mainFrame,
       message_frame_origin, web_state);
-  if (frame_key) {
-    new_frame->SetEncryptionKey(std::move(frame_key));
-  }
-
-  NSNumber* last_sent_message_id =
-      message.body[@"crwFrameLastReceivedMessageId"];
-  if ([last_sent_message_id isKindOfClass:[NSNumber class]]) {
-    int next_message_id = std::max(0, last_sent_message_id.intValue + 1);
-    new_frame->SetNextMessageId(next_message_id);
-  }
 
   static_cast<web::WebStateImpl*>(web_state)->WebFrameBecameAvailable(
       std::move(new_frame));
