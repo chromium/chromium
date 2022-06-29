@@ -32,17 +32,18 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
+#include <google/protobuf/compiler/java/java_enum_lite.h>
+
 #include <map>
 #include <string>
 
+#include <google/protobuf/io/printer.h>
+#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/compiler/java/java_context.h>
 #include <google/protobuf/compiler/java/java_doc_comment.h>
-#include <google/protobuf/compiler/java/java_enum_lite.h>
 #include <google/protobuf/compiler/java/java_helpers.h>
 #include <google/protobuf/compiler/java/java_name_resolver.h>
 #include <google/protobuf/descriptor.pb.h>
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/map_util.h>
 
 namespace google {
@@ -78,9 +79,10 @@ void EnumLiteGenerator::Generate(io::Printer* printer) {
   WriteEnumDocComment(printer, descriptor_);
   MaybePrintGeneratedAnnotation(context_, printer, descriptor_, immutable_api_);
   printer->Print(
-      "public enum $classname$\n"
+      "$deprecation$public enum $classname$\n"
       "    implements com.google.protobuf.Internal.EnumLite {\n",
-      "classname", descriptor_->name());
+      "classname", descriptor_->name(), "deprecation",
+      descriptor_->options().deprecated() ? "@java.lang.Deprecated " : "");
   printer->Annotate("classname", descriptor_);
   printer->Indent();
 

@@ -38,6 +38,7 @@
 
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/descriptor.pb.h>
 
 namespace google {
 namespace protobuf {
@@ -186,6 +187,30 @@ void WriteFieldDocComment(io::Printer* printer, const FieldDescriptor* field) {
   printer->Print(" */\n");
 }
 
+void WriteDeprecatedJavadoc(io::Printer* printer, const FieldDescriptor* field,
+                            const FieldAccessorType type) {
+  if (!field->options().deprecated()) {
+    return;
+  }
+
+  // Lite codegen does not annotate set & clear methods with @Deprecated.
+  if (field->file()->options().optimize_for() == FileOptions::LITE_RUNTIME &&
+      (type == SETTER || type == CLEARER)) {
+    return;
+  }
+
+  std::string startLine = "0";
+  SourceLocation location;
+  if (field->GetSourceLocation(&location)) {
+    startLine = std::to_string(location.start_line);
+  }
+
+  printer->Print(" * @deprecated $name$ is deprecated.\n", "name",
+                 field->full_name());
+  printer->Print(" *     See $file$;l=$line$\n", "file", field->file()->name(),
+                 "line", startLine);
+}
+
 void WriteFieldAccessorDocComment(io::Printer* printer,
                                   const FieldDescriptor* field,
                                   const FieldAccessorType type,
@@ -194,6 +219,7 @@ void WriteFieldAccessorDocComment(io::Printer* printer,
   WriteDocCommentBody(printer, field);
   printer->Print(" * <code>$def$</code>\n", "def",
                  EscapeJavadoc(FirstLineOf(field->DebugString())));
+  WriteDeprecatedJavadoc(printer, field, type);
   switch (type) {
     case HAZZER:
       printer->Print(" * @return Whether the $name$ field is set.\n", "name",
@@ -252,6 +278,7 @@ void WriteFieldEnumValueAccessorDocComment(io::Printer* printer,
   WriteDocCommentBody(printer, field);
   printer->Print(" * <code>$def$</code>\n", "def",
                  EscapeJavadoc(FirstLineOf(field->DebugString())));
+  WriteDeprecatedJavadoc(printer, field, type);
   switch (type) {
     case HAZZER:
       // Should never happen
@@ -321,6 +348,7 @@ void WriteFieldStringBytesAccessorDocComment(io::Printer* printer,
   WriteDocCommentBody(printer, field);
   printer->Print(" * <code>$def$</code>\n", "def",
                  EscapeJavadoc(FirstLineOf(field->DebugString())));
+  WriteDeprecatedJavadoc(printer, field, type);
   switch (type) {
     case HAZZER:
       // Should never happen
