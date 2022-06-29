@@ -408,8 +408,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorScreenshotCapturedImageBackground] = {ui::kColorBubbleBackground};
   mixer[kColorScreenshotCapturedImageBorder] = {ui::kColorMidground};
   mixer[kColorSidePanelBackground] = {kColorToolbar};
-  mixer[kColorSidePanelContentAreaSeparator] = {
-      kColorToolbarContentAreaSeparator};
+  mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
   mixer[kColorStatusBubbleBackgroundFrameActive] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorStatusBubbleBackgroundFrameInactive] = {
