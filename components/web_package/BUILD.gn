@@ -6,6 +6,10 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("web_package") {
   sources = [
+    "signed_web_bundles/ed25519_public_key.cc",
+    "signed_web_bundles/ed25519_public_key.h",
+    "signed_web_bundles/signed_web_bundle_id.cc",
+    "signed_web_bundles/signed_web_bundle_id.h",
     "web_bundle_builder.cc",
     "web_bundle_builder.h",
     "web_bundle_parser.cc",
@@ -18,6 +22,7 @@ static_library("web_package") {
 
   deps = [
     "//base",
+    "//components/base32",
     "//components/cbor",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -30,6 +35,8 @@ static_library("web_package") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "signed_web_bundles/ed25519_public_key_unittest.cc",
+    "signed_web_bundles/signed_web_bundle_id_unittest.cc",
     "web_bundle_builder_unittest.cc",
     "web_bundle_parser_factory_unittest.cc",
     "web_bundle_parser_unittest.cc",
