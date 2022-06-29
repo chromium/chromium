@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/fake_pepper_plugin_instance.h"
+#include "content/renderer/pepper/fake_pepper_plugin_instance.h"
 
 #include "base/files/file_path.h"
 #include "ppapi/c/pp_errors.h"

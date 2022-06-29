@@ -624,8 +624,6 @@ static_library("test_support") {
 
   if (enable_plugins) {
     sources += [
-      "../public/test/fake_pepper_plugin_instance.cc",
-      "../public/test/fake_pepper_plugin_instance.h",
       "../public/test/ppapi_test_utils.cc",
       "../public/test/ppapi_test_utils.h",
       "ppapi_unittest.cc",
@@ -1656,6 +1654,8 @@ test("content_browsertests") {
   if (enable_plugins) {
     sources += [
       "../browser/plugin_service_impl_browsertest.cc",
+      "../renderer/pepper/fake_pepper_plugin_instance.cc",
+      "../renderer/pepper/fake_pepper_plugin_instance.h",
       "../renderer/pepper/mock_renderer_ppapi_host.cc",
       "../renderer/pepper/mock_renderer_ppapi_host.h",
       "../renderer/pepper/pepper_device_enumeration_host_helper_unittest.cc",
