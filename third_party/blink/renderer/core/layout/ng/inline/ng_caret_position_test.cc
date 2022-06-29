@@ -575,4 +575,18 @@ TEST_F(NGCaretPositionTest, InlineBoxesRTL) {
       FragmentOf(&box2), kAtTextOffset, absl::optional<unsigned>(1));
 }
 
+// https://crbug.com/1340236
+TEST_F(NGCaretPositionTest, BeforeOrAfterInlineAreaElement) {
+  SetBodyInnerHTML("<area id=area>");
+
+  const Node& area = *GetElementById("area");
+  const PositionWithAffinity position1(Position::AfterNode(area));
+  // DCHECK failure or crash happens here.
+  blink::ComputeNGCaretPosition(position1);
+
+  const PositionWithAffinity position2(Position::BeforeNode(area));
+  // DCHECK failure or crash happens here.
+  blink::ComputeNGCaretPosition(position2);
+}
+
 }  // namespace blink

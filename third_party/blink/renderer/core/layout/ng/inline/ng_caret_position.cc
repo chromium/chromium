@@ -276,7 +276,10 @@ NGCaretPosition ComputeNGCaretPositionAfterInline(
 
   NGInlineCursor cursor;
   cursor.MoveToIncludingCulledInline(layout_inline);
-  DCHECK(cursor);
+  // This DCHECK can fail with the <area> element.
+  // DCHECK(cursor);
+  if (!cursor)
+    return NGCaretPosition();
   NGInlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
@@ -314,7 +317,10 @@ NGCaretPosition ComputeNGCaretPositionBeforeInline(
 
   NGInlineCursor cursor;
   cursor.MoveToIncludingCulledInline(layout_inline);
-  DCHECK(cursor);
+  // This DCHECK can fail with the <area> element.
+  // DCHECK(cursor);
+  if (!cursor)
+    return NGCaretPosition();
   NGInlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
