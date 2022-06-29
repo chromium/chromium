@@ -107,8 +107,8 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   // and return to chrome with the download shelf still open.
   mouse_watcher_.set_notify_on_exit_time(base::Seconds(5));
   SetID(VIEW_ID_DOWNLOAD_SHELF);
-  views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
-                                        kColorToolbar);
+  views::SetCascadingThemeProviderColor(this, views::kCascadingBackgroundColor,
+                                        ThemeProperties::COLOR_TOOLBAR);
 }
 
 DownloadShelfView::~DownloadShelfView() = default;
