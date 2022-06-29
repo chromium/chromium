@@ -595,6 +595,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.downloadManagerCoordinator.presenter =
       [[VerticalAnimationContainer alloc] init];
 
+  self.qrScannerCoordinator =
+      [[QRScannerLegacyCoordinator alloc] initWithBrowser:self.browser];
+
   _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
   _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
 
@@ -623,6 +626,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   _bubblePresenter.delegate = self.viewController;
   _bubblePresenter.rootViewController = self.viewController;
+
+  self.qrScannerCoordinator.baseViewController = self.viewController;
+  [self.qrScannerCoordinator start];
 }
 
 // Destroys the browser view controller dependencies.
@@ -702,11 +708,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   self.printController =
       [[PrintController alloc] initWithBaseViewController:self.viewController];
-
-  self.qrScannerCoordinator = [[QRScannerLegacyCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.qrScannerCoordinator start];
 
   self.lensCoordinator =
       [[LensCoordinator alloc] initWithBaseViewController:self.viewController
