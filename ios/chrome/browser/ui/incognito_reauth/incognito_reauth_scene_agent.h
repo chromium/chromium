@@ -30,7 +30,7 @@ class PrefService;
     : ObservingSceneAgent <IncognitoReauthCommands>
 
 // Designated initializer.
-// The |reauthModule| is used for authentication.
+// The `reauthModule` is used for authentication.
 - (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 
