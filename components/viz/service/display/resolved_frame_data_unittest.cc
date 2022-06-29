@@ -203,12 +203,13 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
 
   resolved_frame.MarkAsUsedInAggregation();
 
-  // The damage rect should not include TextureDrawQuad's damage_rect.
-  EXPECT_EQ(resolved_frame.GetSurfaceDamage(), pass_damage_rect);
-
-  // The quads to prewalk should only include the TextureDrawQuad.
-  EXPECT_THAT(resolved_frame.GetRootRenderPassData().prewalk_quads(),
-              testing::ElementsAre(IsTextureQuad()));
+  // GetSurfaceDamage() should be the union of render pass and quad damage if
+  // `include_per_quad_damage` is true, otherwise just render pass damage.
+  constexpr gfx::Rect full_damage_rect(10, 10, 80, 80);
+  EXPECT_EQ(resolved_frame.GetSurfaceDamage(/*include_per_quad_damage=*/true),
+            full_damage_rect);
+  EXPECT_EQ(resolved_frame.GetSurfaceDamage(/*include_per_quad_damage=*/false),
+            pass_damage_rect);
 }
 
 TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
@@ -286,7 +287,7 @@ TEST_F(ResolvedFrameDataTest, SetFullDamageNextAggregation) {
   // damaged.
   EXPECT_FALSE(resolved_frame.IsNextFrameSinceLastAggregation());
   EXPECT_FALSE(resolved_frame.IsSameFrameAsLastAggregation());
-  EXPECT_EQ(resolved_frame.GetSurfaceDamage(), kOutputRect);
+  EXPECT_EQ(resolved_frame.GetSurfaceDamage(false), kOutputRect);
 }
 
 }  // namespace
