@@ -366,6 +366,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
           builder->HasOutOfFlowInFragmentainerSubtree()),
       break_token_(std::move(builder->break_token_)),
       oof_data_(builder->oof_positioned_descendants_.IsEmpty() &&
+                        builder->anchor_query_.IsEmpty() &&
                         !has_fragmented_out_of_flow_data_
                     ? nullptr
                     : OutOfFlowDataFromBuilder(builder)) {
@@ -384,14 +385,14 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
   if (has_fragmented_out_of_flow_data_)
     oof_data = FragmentedOutOfFlowDataFromBuilder(builder);
 
+  const WritingModeConverter converter(
+      {builder->Style().GetWritingMode(), builder->Direction()}, Size());
+
   if (!builder->oof_positioned_descendants_.IsEmpty()) {
     if (!oof_data)
       oof_data = MakeGarbageCollected<OutOfFlowData>();
     oof_data->oof_positioned_descendants.ReserveCapacity(
         builder->oof_positioned_descendants_.size());
-    const PhysicalSize& size = Size();
-    const WritingModeConverter converter(
-        {builder->Style().GetWritingMode(), builder->Direction()}, size);
     for (const auto& descendant : builder->oof_positioned_descendants_) {
       NGInlineContainer<PhysicalOffset> inline_container(
           descendant.inline_container.container,
@@ -403,6 +404,18 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
           inline_container);
     }
   }
+
+  if (!builder->anchor_query_.IsEmpty()) {
+    DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+    if (!oof_data)
+      oof_data = MakeGarbageCollected<OutOfFlowData>();
+
+    for (const auto& it : builder->anchor_query_.anchor_references) {
+      oof_data->anchor_query.anchor_references.insert(
+          it.key, converter.ToPhysical(it.value));
+    }
+  }
+
   return oof_data;
 }
 
@@ -505,7 +518,7 @@ bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {
   // exists.
   DCHECK_EQ(
       !!oof_data_,
-      HasOutOfFlowPositionedDescendants() ||
+      HasOutOfFlowPositionedDescendants() || HasAnchorQuery() ||
           (FragmentedOutOfFlowData() &&
            FragmentedOutOfFlowData()->NeedsOOFPositionedInfoPropagation()));
   return !!oof_data_;

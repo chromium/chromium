@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
@@ -599,8 +600,10 @@ class CORE_EXPORT NGPhysicalFragment
 
   struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
    public:
+    virtual ~OutOfFlowData() = default;
     virtual void Trace(Visitor* visitor) const;
     HeapVector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
+    NGPhysicalAnchorQuery anchor_query;
   };
 
   // Returns true if some child is OOF in the fragment tree. This happens if
@@ -623,6 +626,15 @@ class CORE_EXPORT NGPhysicalFragment
 
   base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
       const;
+
+  bool HasAnchorQuery() const {
+    return oof_data_ && !oof_data_->anchor_query.IsEmpty();
+  }
+  const NGPhysicalAnchorQuery* AnchorQuery() const {
+    if (oof_data_)
+      return &oof_data_->anchor_query;
+    return nullptr;
+  }
 
   NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
 
