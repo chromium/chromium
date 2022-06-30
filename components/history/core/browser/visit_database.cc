@@ -342,6 +342,30 @@ bool VisitDatabase::GetRowForVisit(VisitID visit_id, VisitRow* out_visit) {
   return true;
 }
 
+bool VisitDatabase::GetLastRowForVisitByVisitTime(base::Time visit_time,
+                                                  VisitRow* out_visit) {
+  // In the case of redirects, there may be multiple visits with the same
+  // timestamp. In that case, the one with the largest ID should be the end of
+  // the redirect chain.
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT" HISTORY_VISIT_ROW_FIELDS
+      "FROM visits WHERE visit_time=? ORDER BY id DESC LIMIT 1"));
+  statement.BindInt64(0, visit_time.ToInternalValue());
+
+  if (!statement.Step())
+    return false;
+
+  FillVisitRow(statement, out_visit);
+
+  // We got a different visit than we asked for, something is wrong.
+  DCHECK_EQ(visit_time, out_visit->visit_time);
+  if (visit_time != out_visit->visit_time)
+    return false;
+
+  return true;
+}
+
 bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   // Don't store inconsistent data to the database.
   DCHECK_NE(visit.visit_id, visit.referring_visit);

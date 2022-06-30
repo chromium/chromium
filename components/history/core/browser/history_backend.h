@@ -35,6 +35,7 @@
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
+#include "components/history/core/browser/sync/history_backend_for_sync.h"
 #include "components/history/core/browser/visit_tracker.h"
 #include "sql/init_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -115,6 +116,7 @@ class QueuedHistoryDBTask {
 // functions in the history service. These functions are not documented
 // here, see the history service for behavior.
 class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
+                       public HistoryBackendForSync,
                        public HistoryBackendNotifier,
                        public favicon::FaviconBackendDelegate {
  public:
@@ -521,6 +523,21 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                  const std::vector<VisitInfo>& visits,
                  VisitSource visit_source);
 
+  // Adds a visit coming from another device. The visit's ID must be 0 (unset),
+  // and its originator_cache_guid must be populated.
+  VisitID AddSyncedVisit(const GURL& url,
+                         const std::u16string& title,
+                         bool hidden,
+                         const VisitRow& visit) override;
+
+  // Updates a visit coming from another device (typically to update its
+  // duration). The visit must be the end of a redirect chain (only chain ends
+  // have the visit duration populated), and the visit's ID must be 0 (unset),
+  // because for incoming remote visits, the local visit ID isn't know. The
+  // visit will be identified via its timestamp and originator_cache_guid
+  // instead.
+  bool UpdateSyncedVisit(const VisitRow& visit) override;
+
   bool RemoveVisits(const VisitVector& visits);
 
   // Returns the `VisitSource` associated with each one of the passed visits.
@@ -623,7 +640,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Returns true if the passed visit time is already expired (used by the sync
   // code to avoid syncing visits that would immediately be expired).
-  virtual bool IsExpiredVisitTime(const base::Time& time) const;
+  bool IsExpiredVisitTime(const base::Time& time) const override;
 
   base::Time GetFirstRecordedTimeForTest() { return first_recorded_time_; }
 
@@ -670,7 +687,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       VisitSource visit_source,
       bool should_increment_typed_count,
       VisitID opener_visit,
-      absl::optional<std::u16string> title = absl::nullopt);
+      absl::optional<std::u16string> title = absl::nullopt,
+      absl::optional<base::TimeDelta> visit_duration = absl::nullopt,
+      absl::optional<std::string> originator_cache_guid = absl::nullopt,
+      absl::optional<VisitID> originator_visit_id = absl::nullopt,
+      absl::optional<VisitID> originator_referring_visit = absl::nullopt,
+      absl::optional<VisitID> originator_opener_visit = absl::nullopt);
 
   // Returns a redirect chain in `redirects` for the VisitID
   // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that

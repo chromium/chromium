@@ -1084,4 +1084,65 @@ TEST_F(VisitDatabaseTest,
               IsEmpty());
 }
 
+TEST_F(VisitDatabaseTest, GetLastRowForVisitByVisitTime) {
+  const base::Time kVisitTime1 = base::Time::Now();
+  const base::Time kVisitTime2 = base::Time::Now() - base::Minutes(2);
+  const base::Time kVisitTime3 = base::Time::Now() + base::Minutes(3);
+
+  // Add some visits including redirect chains. Within a redirect chain, all
+  // visits have the same timestamp.
+  URLID url_id = 0;
+
+  VisitRow visit1(++url_id, kVisitTime1, /*arg_referring_visit=*/0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit1, SOURCE_BROWSED));
+
+  VisitRow visit2a(++url_id, kVisitTime2, /*arg_referring_visit=*/0,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START),
+                   0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit2a, SOURCE_BROWSED));
+  VisitRow visit2b(
+      ++url_id, kVisitTime2, /*arg_referring_visit=*/visit2a.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit2b, SOURCE_BROWSED));
+
+  VisitRow visit3a(++url_id, kVisitTime3, /*arg_referring_visit=*/0,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START),
+                   0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit3a, SOURCE_BROWSED));
+  VisitRow visit3b(
+      ++url_id, kVisitTime3, /*arg_referring_visit=*/visit3a.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CLIENT_REDIRECT),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit3b, SOURCE_BROWSED));
+  VisitRow visit3c(
+      ++url_id, kVisitTime3, /*arg_referring_visit=*/visit3b.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit3c, SOURCE_BROWSED));
+
+  // In all cases, GetLastRowForVisitByVisitTime should return the last entry of
+  // the chain (because that one was added last).
+  VisitRow result1;
+  GetLastRowForVisitByVisitTime(kVisitTime1, &result1);
+  EXPECT_TRUE(IsVisitInfoEqual(result1, visit1));
+  VisitRow result2;
+  GetLastRowForVisitByVisitTime(kVisitTime2, &result2);
+  EXPECT_TRUE(IsVisitInfoEqual(result2, visit2b));
+  VisitRow result3;
+  GetLastRowForVisitByVisitTime(kVisitTime3, &result3);
+  EXPECT_TRUE(IsVisitInfoEqual(result3, visit3c));
+}
+
 }  // namespace history

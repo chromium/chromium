@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DATABASE_H_
 
+#include <string>
 #include <vector>
 
 #include "components/history/core/browser/history_types.h"
@@ -48,9 +49,17 @@ class VisitDatabase {
   // doesn't exist, it will not do anything.
   void DeleteVisit(const VisitRow& visit);
 
-  // Query a VisitInfo giving an visit id, filling the given VisitRow.
+  // Query a VisitInfo given a visit id, filling the given VisitRow.
   // Returns true on success.
   bool GetRowForVisit(VisitID visit_id, VisitRow* out_visit);
+
+  // Query a VisitInfo given a visit time, filling the given VisitRow. If there
+  // are multiple visits with the given visit time (which happens in case of
+  // redirects), returns the one with the largest ID, i.e. the most recently
+  // added one, i.e. the end of the redirect chain.
+  // Returns true on success.
+  bool GetLastRowForVisitByVisitTime(base::Time visit_time,
+                                     VisitRow* out_visit);
 
   // Updates an existing row. The new information is set on the row, using the
   // VisitID as the key. The visit must exist. Returns true on success.

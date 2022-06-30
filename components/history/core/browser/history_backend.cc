@@ -1047,7 +1047,12 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     VisitSource visit_source,
     bool should_increment_typed_count,
     VisitID opener_visit,
-    absl::optional<std::u16string> title) {
+    absl::optional<std::u16string> title,
+    absl::optional<base::TimeDelta> visit_duration,
+    absl::optional<std::string> originator_cache_guid,
+    absl::optional<VisitID> originator_visit_id,
+    absl::optional<VisitID> originator_referring_visit,
+    absl::optional<VisitID> originator_opener_visit) {
   // See if this URL is already in the DB.
   URLRow url_info(url);
   URLID url_id = db_->GetRowForURL(url, &url_info);
@@ -1085,8 +1090,19 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   }
 
   // Add the visit with the time to the database.
-  VisitRow visit_info(url_id, time, referring_visit, transition, 0,
-                      should_increment_typed_count, opener_visit);
+  VisitRow visit_info(url_id, time, referring_visit, transition,
+                      /*arg_segment_id=*/0, should_increment_typed_count,
+                      opener_visit);
+  if (visit_duration.has_value())
+    visit_info.visit_duration = *visit_duration;
+  if (originator_cache_guid.has_value())
+    visit_info.originator_cache_guid = *originator_cache_guid;
+  if (originator_visit_id.has_value())
+    visit_info.originator_visit_id = *originator_visit_id;
+  if (originator_referring_visit.has_value())
+    visit_info.originator_referring_visit = *originator_referring_visit;
+  if (originator_opener_visit.has_value())
+    visit_info.originator_opener_visit = *originator_opener_visit;
   VisitID visit_id = db_->AddVisit(&visit_info, visit_source);
 
   if (visit_info.visit_time < first_recorded_time_)
@@ -1299,8 +1315,8 @@ bool HistoryBackend::AddVisits(const GURL& url,
                                VisitSource visit_source) {
   if (db_) {
     for (const auto& visit : visits) {
-      if (!AddPageVisit(url, visit.first, 0, visit.second,
-                        !ui::PageTransitionIsMainFrame(visit.second),
+      if (!AddPageVisit(url, visit.first, /*referring_visit=*/0, visit.second,
+                        /*hidden=*/!ui::PageTransitionIsMainFrame(visit.second),
                         visit_source, IsTypedIncrement(visit.second),
                         /*opener_visit=*/0)
                .first) {
@@ -1311,6 +1327,66 @@ bool HistoryBackend::AddVisits(const GURL& url,
     return true;
   }
   return false;
+}
+
+VisitID HistoryBackend::AddSyncedVisit(const GURL& url,
+                                       const std::u16string& title,
+                                       bool hidden,
+                                       const VisitRow& visit) {
+  DCHECK_EQ(visit.visit_id, 0);
+  DCHECK_EQ(visit.url_id, 0);
+  DCHECK(!visit.visit_time.is_null());
+  DCHECK(!visit.originator_cache_guid.empty());
+  if (!db_)
+    return 0;
+
+  auto [url_id, visit_id] = AddPageVisit(
+      url, visit.visit_time, visit.referring_visit, visit.transition, hidden,
+      VisitSource::SOURCE_SYNCED, IsTypedIncrement(visit.transition),
+      visit.opener_visit, title, visit.visit_duration,
+      visit.originator_cache_guid, visit.originator_visit_id,
+      visit.originator_referring_visit, visit.originator_opener_visit);
+
+  ScheduleCommit();
+  return visit_id;
+}
+
+bool HistoryBackend::UpdateSyncedVisit(const VisitRow& visit) {
+  DCHECK_EQ(visit.visit_id, 0);
+  DCHECK_EQ(visit.url_id, 0);
+  DCHECK(!visit.visit_time.is_null());
+  DCHECK(!visit.originator_cache_guid.empty());
+  DCHECK(visit.transition & ui::PAGE_TRANSITION_CHAIN_END);
+
+  if (!db_)
+    return false;
+
+  VisitRow original_row;
+  if (!db_->GetLastRowForVisitByVisitTime(visit.visit_time, &original_row)) {
+    return false;
+  }
+
+  if (original_row.originator_cache_guid != visit.originator_cache_guid) {
+    // The existing visit came from a different device; something is wrong.
+    return false;
+  }
+
+  VisitRow updated_row = visit;
+  // The fields `visit_id` and `url_id` aren't set in visits coming from sync,
+  // so take those from the existing row.
+  updated_row.visit_id = original_row.visit_id;
+  updated_row.url_id = original_row.url_id;
+  // Similarly, `referring_visit` and `opener_visit` aren't set in visits from
+  // sync (they have originator_referring_visit and originator_opener_visit
+  // instead.)
+  updated_row.referring_visit = original_row.referring_visit;
+  updated_row.opener_visit = original_row.opener_visit;
+
+  if (!db_->UpdateVisitRow(updated_row))
+    return false;
+
+  ScheduleCommit();
+  return true;
 }
 
 bool HistoryBackend::RemoveVisits(const VisitVector& visits) {
