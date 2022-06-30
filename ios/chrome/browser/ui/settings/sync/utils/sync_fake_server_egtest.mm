@@ -269,7 +269,8 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that autofill profile deleted from FakeServer gets deleted from client
 // as well.
-- (void)testSyncDeleteAutofillProfile {
+// TODO(crbug.com/1340545): This test is flaky.
+- (void)DISABLED_testSyncDeleteAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
