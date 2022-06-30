@@ -14,7 +14,6 @@ namespace blink {
 class CORE_EXPORT HTMLMainElement final : public HTMLElement {
  public:
   explicit HTMLMainElement(Document&);
-  void ChildrenChanged(const ChildrenChange&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
 
  private:

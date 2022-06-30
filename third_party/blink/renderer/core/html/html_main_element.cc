@@ -12,13 +12,6 @@ namespace blink {
 HTMLMainElement::HTMLMainElement(Document& document)
     : HTMLElement(html_names::kMainTag, document) {}
 
-void HTMLMainElement::ChildrenChanged(const ChildrenChange& children_change) {
-  HTMLElement::ChildrenChanged(children_change);
-  if (!children_change.ByParser()) {
-    NotifySoftNavigationHeuristics();
-  }
-}
-
 Node::InsertionNotificationRequest HTMLMainElement::InsertedInto(
     ContainerNode& container_node) {
   // Here we don't really know that the insertion was API driven rather than

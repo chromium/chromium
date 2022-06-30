@@ -45,6 +45,7 @@ class SoftNavigationHeuristics
 
  private:
   void CheckSoftNavigation(ScriptState*);
+  void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
   enum FlagType : uint8_t {
     kURLChange,
     kMainModification,

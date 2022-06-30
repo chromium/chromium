@@ -59,10 +59,22 @@ SoftNavigationHeuristics* SoftNavigationHeuristics::From(
   return heuristics;
 }
 
+void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
+    bool value) const {
+  LocalDOMWindow* window = GetSupplementable();
+  if (!window) {
+    return;
+  }
+  if (Document* document = window->document()) {
+    document->SetIsTrackingSoftNavigationHeuristics(value);
+  }
+}
+
 void SoftNavigationHeuristics::ResetHeuristic() {
   // Reset previously seen indicators and task IDs.
   flag_set_.Clear();
   potential_soft_navigation_task_ids_.clear();
+  SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
 void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
@@ -73,6 +85,7 @@ void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
   DCHECK(scheduler->GetTaskAttributionTracker());
   ResetHeuristic();
   scheduler->GetTaskAttributionTracker()->RegisterObserver(this);
+  SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
 }
 
 bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
@@ -126,6 +139,7 @@ void SoftNavigationHeuristics::ModifiedMain(ScriptState* script_state) {
     LogToConsole(script_state, mojom::blink::ConsoleMessageLevel::kVerbose,
                  String("Modified main element."));
   }
+  SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
 void SoftNavigationHeuristics::CheckSoftNavigation(ScriptState* script_state) {
