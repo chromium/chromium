@@ -106,8 +106,6 @@ public class SelectFileDialogTest {
             SelectFileDialog.setWindowAndroidForTests(mActivityWindowAndroidForTest);
 
             mWebContents = mActivityTestRule.getActivity().getCurrentWebContents();
-            // TODO(aurimas) remove this wait once crbug.com/179511 is fixed.
-            // mActivityTestRule.assertWaitForPageScaleFactorMatch(2);
         });
         DOMUtils.waitForNonZeroNodeBounds(mWebContents, "input_file");
     }
@@ -126,6 +124,9 @@ public class SelectFileDialogTest {
     @Feature({"TextInput", "Main"})
     @DisabledTest(message = "https://crbug.com/724163")
     public void testSelectFileAndCancelRequest() throws Throwable {
+        // TODO(aurimas) remove this wait once crbug.com/179511 is fixed.
+        // Wait for page scale will timeout and causing the test to fail.
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(2);
         {
             DOMUtils.clickNode(mWebContents, "input_file");
             verifyIntentSent();
