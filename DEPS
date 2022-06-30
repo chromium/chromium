@@ -1848,7 +1848,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'B3OURvNRKhj5YGKOIoUQ-L1ditcOYCAGWvR4vkGlnW0C',
+        'version': 'n_9ShiTPpdmxScyoQfD6NP0IYr-93vYHuY2ZSOmwx7wC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
