@@ -1103,15 +1103,24 @@ void OverviewGrid::CalculateWindowListAnimationStates(
       NOTREACHED();
   }
 
-  auto is_always_on_top_item = [](OverviewItem* item) -> bool {
+  // On top items are items that are higher up on the z-order, or in the always
+  // on top or float containers.
+  auto is_on_top_item = [](OverviewItem* item) -> bool {
     DCHECK(item);
-    return item->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
-           ui::ZOrderLevel::kNormal;
+    if (item->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
+        ui::ZOrderLevel::kNormal) {
+      return true;
+    }
+
+    aura::Window* parent = item->GetWindow()->parent();
+    aura::Window* root = parent->GetRootWindow();
+    return parent == root->GetChildById(kShellWindowId_AlwaysOnTopContainer) ||
+           parent == root->GetChildById(kShellWindowId_FloatContainer);
   };
 
-  // Create a copy of `window_list_` which has the selected item and
-  // always on top windows in the front.
-  std::vector<OverviewItem*> always_on_top_items;
+  // Create a copy of `window_list_` which has the selected item and on top
+  // windows in the front.
+  std::vector<OverviewItem*> on_top_items;
   std::vector<OverviewItem*> regular_items;
   for (const std::unique_ptr<OverviewItem>& item : window_list_) {
     OverviewItem* item_ptr = item.get();
@@ -1120,24 +1129,23 @@ void OverviewGrid::CalculateWindowListAnimationStates(
     if (item_ptr == selected_item)
       continue;
 
-    if (is_always_on_top_item(item_ptr))
-      always_on_top_items.push_back(item_ptr);
+    if (is_on_top_item(item_ptr))
+      on_top_items.push_back(item_ptr);
     else
       regular_items.push_back(item_ptr);
   }
 
   // Construct `items` so they are ordered like so.
-  //   1) Always on top window that is selected.
-  //   2) Always on top window.
-  //   3) Selected window which is not always on top.
+  //   1) Selected window which is on top.
+  //   2) On top windows.
+  //   3) Selected window which is not on top.
   //   4) Regular window.
   // Windows in the same group maintain their ordering from `window_list`.
   std::vector<OverviewItem*> items;
-  if (selected_item && is_always_on_top_item(selected_item))
+  if (selected_item && is_on_top_item(selected_item))
     items.insert(items.begin(), selected_item);
-  items.insert(items.end(), always_on_top_items.begin(),
-               always_on_top_items.end());
-  if (selected_item && !is_always_on_top_item(selected_item))
+  items.insert(items.end(), on_top_items.begin(), on_top_items.end());
+  if (selected_item && !is_on_top_item(selected_item))
     items.insert(items.end(), selected_item);
   items.insert(items.end(), regular_items.begin(), regular_items.end());
 

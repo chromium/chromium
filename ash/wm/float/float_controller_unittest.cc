@@ -12,12 +12,16 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
 
@@ -266,6 +270,36 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(gfx::Point(padding, 1600 - shelf_size - padding),
             window->bounds().bottom_left());
+}
+
+// Tests that a floated window animates to and from overview.
+TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
+  std::unique_ptr<aura::Window> floated_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> maximized_window = CreateTestWindow();
+
+  wm::ActivateWindow(floated_window.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  WindowState::Get(maximized_window.get())->OnWMEvent(&maximize_event);
+
+  // Activate 'maximized_window'. If the other window was not floated, then it
+  // would be hidden behind the maximized window and not animate.
+  wm::ActivateWindow(maximized_window.get());
+
+  // Enter overview, both windows should animate when entering overview, since
+  // both are visible to the user.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ToggleOverview();
+  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
+
+  // Both windows should animate when exiting overview as well.
+  WaitForOverviewEnterAnimation();
+  ToggleOverview();
+  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
 }
 
 }  // namespace ash
