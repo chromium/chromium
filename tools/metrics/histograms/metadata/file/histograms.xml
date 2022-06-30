@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DirectoryListLoad.{RootType}.{NumFiles}"
-    units="ms" expires_after="2022-08-09">
+    units="ms" expires_after="2023-06-27">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
