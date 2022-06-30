@@ -864,8 +864,6 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.creation_source = Browser::CreationSource::kSessionRestore;
     Browser* browser = Browser::Create(params);
 
-    browser->window()->MaybeRestoreSideSearchStatePerWindow(extra_data);
-
     return browser;
   }
 

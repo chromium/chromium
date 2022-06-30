@@ -3390,21 +3390,6 @@ void BrowserView::RightAlignedSidePanelWasClosed() {
   }
 }
 
-bool BrowserView::IsSideSearchPanelVisible() const {
-  if (side_search_controller_)
-    return side_search_controller_->GetSidePanelToggledOpen();
-
-  return false;
-}
-
-void BrowserView::MaybeRestoreSideSearchStatePerWindow(
-    const std::map<std::string, std::string>& extra_data) {
-  if (side_search_controller_) {
-    side_search::MaybeRestoreSideSearchWindowState(
-        side_search_controller_.get(), extra_data);
-  }
-}
-
 void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled())
     return;
@@ -3496,16 +3481,6 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
     // down. When the tab strip is empty we'll be called back again.
     frame_->Hide();
     result = views::CloseRequestResult::kCannotClose;
-  }
-
-  // Persist the side search browser controller's window side panel state for
-  // use during session restoration. Since the side panel is closed by default,
-  // we only want to persist the state if the side panel is currently open.
-  if (side_search_controller_ &&
-      side_search_controller_->GetSidePanelToggledOpen()) {
-    side_search::MaybeSaveSideSearchWindowSessionData(
-        GetProfile(), browser()->session_id(),
-        side_search_controller_->GetSidePanelToggledOpen());
   }
 
   browser_->OnWindowClosing();

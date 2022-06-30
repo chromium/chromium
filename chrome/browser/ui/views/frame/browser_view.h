@@ -727,10 +727,6 @@ class BrowserView : public BrowserWindow,
   // aligned side panels.
   void RightAlignedSidePanelWasClosed();
 
-  bool IsSideSearchPanelVisible() const override;
-  void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, std::string>& extra_data) override;
-
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.

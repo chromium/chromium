@@ -128,16 +128,7 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
 
 std::map<std::string, std::string>
 BrowserLiveTabContext::GetExtraDataForWindow() const {
-  std::map<std::string, std::string> extra_data;
-
-#if defined(TOOLKIT_VIEWS)
-  if (IsSideSearchEnabled(browser_->profile())) {
-    side_search::MaybeAddSideSearchWindowRestoreData(
-        browser_->window()->IsSideSearchPanelVisible(), extra_data);
-  }
-#endif  // defined(TOOLKIT_VIEWS)
-
-  return extra_data;
+  return std::map<std::string, std::string>();
 }
 
 absl::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
@@ -320,10 +311,6 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   create_params->initial_workspace = workspace;
   create_params->user_title = user_title;
   Browser* browser = Browser::Create(*create_params.get());
-
-#if defined(TOOLKIT_VIEWS)
-  browser->window()->MaybeRestoreSideSearchStatePerWindow(extra_data);
-#endif  // defined(TOOLKIT_VIEWS)
 
   return browser->live_tab_context();
 }

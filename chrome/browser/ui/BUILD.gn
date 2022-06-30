@@ -5087,7 +5087,6 @@ static_library("ui") {
 
     deps += [
       "side_search:side_search_tab_data_proto",
-      "side_search:side_search_window_data_proto",
       "//base",
       "//chrome/browser/ui/views",
       "//components/commerce/core:public",

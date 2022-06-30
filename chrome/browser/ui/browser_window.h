@@ -610,10 +610,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows an Incognito history disclaimer dialog.
   virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
 
-  virtual bool IsSideSearchPanelVisible() const = 0;
-  virtual void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, std::string>& extra_data) = 0;
-
  protected:
   friend class BrowserCloseManager;
   friend class BrowserView;

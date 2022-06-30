@@ -337,13 +337,6 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
 }
 
-bool TestBrowserWindow::IsSideSearchPanelVisible() const {
-  return false;
-}
-
-void TestBrowserWindow::MaybeRestoreSideSearchStatePerWindow(
-    const std::map<std::string, std::string>& extra_data) {}
-
 user_education::FeaturePromoController*
 TestBrowserWindow::GetFeaturePromoController() {
   return feature_promo_controller_.get();
