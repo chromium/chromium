@@ -1246,6 +1246,12 @@ const base::Feature kProjectorUpdateIndexableText(
     "ProjectorUpdateIndexableText",
     base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to use OAuth token for getting streaming URL from
+// get_video_info endpoint.
+const base::Feature kProjectorUseOAuthForGetVideoInfo(
+    "ProjectorUseOAuthForGetVideoInfo",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -2208,6 +2214,10 @@ bool IsProjectorShowShortPseudoTranscript() {
 
 bool IsProjectorUpdateIndexableTextEnabled() {
   return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
+}
+
+bool IsProjectorUseOAuthForGetVideoInfoEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorUseOAuthForGetVideoInfo);
 }
 
 bool IsQuickDimEnabled() {
