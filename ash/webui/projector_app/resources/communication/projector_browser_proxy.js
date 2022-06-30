@@ -70,9 +70,10 @@ export class ProjectorBrowserProxy {
    * @param {string=} requestBody the request body data.
    * @param {boolean=} useCredentials authorize the request with end user
    *     credentials. Used for getting streaming URL.
+   * @param {Object=} headers additional headers.
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
-  sendXhr(url, method, requestBody, useCredentials) {}
+  sendXhr(url, method, requestBody, useCredentials, headers) {}
 
   /**
    * Returns true if the "install speech recognition" button should be shown to
@@ -165,9 +166,9 @@ export class ProjectorBrowserProxyImpl {
   }
 
   /** @override */
-  sendXhr(url, method, requestBody, useCredentials) {
+  sendXhr(url, method, requestBody, useCredentials, headers) {
     return sendWithPromise(
-        'sendXhr', [url, method, requestBody, useCredentials]);
+        'sendXhr', [url, method, requestBody, useCredentials, headers]);
   }
 
   /** @override */

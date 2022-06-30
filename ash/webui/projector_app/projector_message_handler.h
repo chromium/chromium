@@ -10,7 +10,6 @@
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
-#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -23,6 +22,8 @@ struct AccessTokenInfo;
 class PrefService;
 
 namespace ash {
+
+class ProjectorXhrSender;
 
 // Enum to record the different errors that may occur in the Projector app.
 enum class ProjectorError {

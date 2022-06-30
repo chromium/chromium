@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
-#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace base {
@@ -54,13 +54,15 @@ class ProjectorXhrSender {
                     const std::string& method,
                     const std::string& request_body,
                     bool use_credentials,
-                    SendRequestCallback callback);
+                    SendRequestCallback callback,
+                    const base::Value::Dict& headers = base::Value::Dict());
 
  private:
   // Triggered when an OAuth token fetch completed.
   void OnAccessTokenRequestCompleted(const GURL& url,
                                      const std::string& method,
                                      const std::string& request_body,
+                                     const base::Value::Dict& headers,
                                      SendRequestCallback callback,
                                      const std::string& email,
                                      GoogleServiceAuthError error,
@@ -70,6 +72,7 @@ class ProjectorXhrSender {
                    const std::string& method,
                    const std::string& request_body,
                    const std::string& token,
+                   const base::Value::Dict& headers,
                    SendRequestCallback callback);
 
   // Triggered when an XHR request completed.

@@ -296,11 +296,12 @@ projectorApp.ClientDelegate.prototype.getPendingScreencasts = function() {};
  * @param {string} method the request method.
  * @param {string=} requestBody the request body data.
  * @param {boolean=} useCredentials authorize the request with end user
- *  credentials. Used for getting streaming URL.
+ *      credentials. Used for getting streaming URL.
+ * @param {Object=} additional headers.
  * @return {!Promise<!projectorApp.XhrResponse>}
  */
 projectorApp.ClientDelegate.prototype.sendXhr = function(
-    url, method, requestBody, useCredentials) {};
+    url, method, requestBody, useCredentials, headers) {};
 
 /**
  * Returns true if the device supports on device speech recognition.

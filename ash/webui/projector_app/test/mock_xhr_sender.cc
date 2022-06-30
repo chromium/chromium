@@ -21,7 +21,8 @@ void MockXhrSender::Send(const GURL& url,
                          const std::string& method,
                          const std::string& request_body,
                          bool use_credentials,
-                         SendRequestCallback callback) {
+                         SendRequestCallback callback,
+                         const base::Value::Dict& headers) {
   std::move(quit_closure_).Run(url, method, request_body);
 }
 }  // namespace ash

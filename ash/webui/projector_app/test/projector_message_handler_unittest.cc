@@ -8,6 +8,7 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -26,6 +27,8 @@ const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
 const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
 const char kTestXhrMethod[] = "POST";
 const char kTestXhrRequestBody[] = "{}";
+const char kTestXhrHeaderKey[] = "X-Goog-Drive-Resource-Keys";
+const char kTestXhrHeaderValue[] = "resource-key";
 
 const char kXhrResponseSuccessPath[] = "success";
 const char kXhrResponseErrorPath[] = "error";
@@ -206,6 +209,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add additional headers.
+  base::Value::Dict dict;
+  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
+  args.Append(std::move(dict));
   list_args.Append(std::move(args));
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
@@ -247,6 +254,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add additional headers.
+  base::Value::Dict dict;
+  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
+  args.Append(std::move(dict));
   list_args.Append(std::move(args));
 
   web_ui().HandleReceivedMessage("sendXhr", &list_args);

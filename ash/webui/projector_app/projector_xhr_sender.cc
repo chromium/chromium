@@ -70,7 +70,8 @@ void ProjectorXhrSender::Send(const GURL& url,
                               const std::string& method,
                               const std::string& request_body,
                               bool use_credentials,
-                              SendRequestCallback callback) {
+                              SendRequestCallback callback,
+                              const base::Value::Dict& headers) {
   if (!IsUrlAllowlisted(url.spec())) {
     std::move(callback).Run(
         /*success=*/false,
@@ -82,7 +83,7 @@ void ProjectorXhrSender::Send(const GURL& url,
   if (use_credentials) {
     // Use end user credentials to authorize the request. Doesn't need to fetch
     // OAuth token.
-    SendRequest(url, method, request_body, /*token=*/std::string(),
+    SendRequest(url, method, request_body, /*token=*/std::string(), headers,
                 std::move(callback));
     return;
   }
@@ -96,13 +97,14 @@ void ProjectorXhrSender::Send(const GURL& url,
       primary_account.email,
       base::BindOnce(&ProjectorXhrSender::OnAccessTokenRequestCompleted,
                      weak_factory_.GetWeakPtr(), url, method, request_body,
-                     std::move(callback)));
+                     headers.Clone(), std::move(callback)));
 }
 
 void ProjectorXhrSender::OnAccessTokenRequestCompleted(
     const GURL& url,
     const std::string& method,
     const std::string& request_body,
+    const base::Value::Dict& headers,
     SendRequestCallback callback,
     const std::string& email,
     GoogleServiceAuthError error,
@@ -115,13 +117,15 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
     return;
   }
 
-  SendRequest(url, method, request_body, info.token, std::move(callback));
+  SendRequest(url, method, request_body, info.token, headers,
+              std::move(callback));
 }
 
 void ProjectorXhrSender::SendRequest(const GURL& url,
                                      const std::string& method,
                                      const std::string& request_body,
                                      const std::string& token,
+                                     const base::Value::Dict& headers,
                                      SendRequestCallback callback) {
   // Build resource request.
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -135,6 +139,10 @@ void ProjectorXhrSender::SendRequest(const GURL& url,
   }
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       "application/json");
+
+  for (auto [key, value] : headers) {
+    resource_request->headers.SetHeader(key, value.GetString());
+  }
 
   // Send resource request.
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),

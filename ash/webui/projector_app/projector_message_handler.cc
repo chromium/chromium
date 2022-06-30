@@ -7,11 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -361,19 +361,26 @@ void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
   // 3. The request body data.
   // 4. A bool to indicate whether or not to use end user credential to
   // authorize the request.
-  DCHECK_EQ(func_args.size(), 4u);
+  // 5. Additional headers objects.
+  DCHECK_EQ(func_args.size(), 5u);
 
   const auto& url = func_args[0].GetString();
   const auto& method = func_args[1].GetString();
-  std::string request_body = func_args[2].GetString();
-  bool use_credentials = func_args[3].GetBool();
+
+  std::string request_body =
+      func_args[2].is_string() ? func_args[2].GetString() : std::string();
+  bool use_credentials =
+      func_args[3].is_bool() ? func_args[3].GetBool() : false;
+
   DCHECK(!url.empty());
   DCHECK(!method.empty());
 
   xhr_sender_->Send(
       GURL(url), method, request_body, use_credentials,
       base::BindOnce(&ProjectorMessageHandler::OnXhrRequestCompleted,
-                     GetWeakPtr(), callback_id));
+                     GetWeakPtr(), callback_id),
+      func_args[4].is_dict() ? func_args[4].GetDict().Clone()
+                             : base::Value::Dict());
 }
 
 void ProjectorMessageHandler::ShouldDownloadSoda(
