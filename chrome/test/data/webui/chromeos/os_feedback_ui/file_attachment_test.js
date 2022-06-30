@@ -231,6 +231,9 @@ export function fileAttachmentTestSuite() {
 
     // Error message should be visible.
     assertTrue(getElement('#fileTooBigErrorMessage').open);
+    assertEquals(
+        `Can't upload file larger than 10 MB`,
+        getElementContent('#fileTooBigErrorMessage > #errorMessage'));
     // There should not be a selected file.
     assertEquals('', getElementContent('#selectedFileName'));
     const attachedFile = await page.getAttachedFile();

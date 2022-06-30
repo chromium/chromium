@@ -82,6 +82,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"helpResourcesLabel", IDS_FEEDBACK_TOOL_HELP_RESOURCES_LABEL},
       {"buttonNewReport", IDS_FEEDBACK_TOOL_SEND_NEW_REPORT_BUTTON_LABEL},
       {"buttonDone", IDS_FEEDBACK_TOOL_DONE_BUTTON_LABEL},
+      {"fileTooBigErrorMessage", IDS_FEEDBACK_TOOL_FILE_TOO_BIG_ERROR_MESSAGE},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

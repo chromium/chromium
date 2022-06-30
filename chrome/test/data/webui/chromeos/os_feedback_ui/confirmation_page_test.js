@@ -19,7 +19,7 @@ const OFFLINE_TITLE = 'You\'re offline. Feedback will be sent later.';
 
 /** @type {string} */
 const ONLINE_MESSAGE =
-    'Your feedback helps improve ChromeOS and will be reviewed by ' +
+    'Your feedback helps improve Chrome OS and will be reviewed by ' +
     'our team. Because of the large number of reports, we won\’t be able ' +
     'to send a reply.';
 /** @type {string} */
