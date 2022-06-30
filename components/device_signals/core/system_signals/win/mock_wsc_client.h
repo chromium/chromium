@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_MOCK_WSC_CLIENT_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_MOCK_WSC_CLIENT_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_MOCK_WSC_CLIENT_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_MOCK_WSC_CLIENT_H_
 
-#include "components/device_signals/core/common/win/wsc_client.h"
+#include "components/device_signals/core/system_signals/win/wsc_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace device_signals {
@@ -20,4 +20,4 @@ class MockWscClient : public WscClient {
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_MOCK_WMI_CLIENT_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_MOCK_WSC_CLIENT_H_

@@ -5,10 +5,10 @@
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
 
 #include "base/win/windows_version.h"
-#include "components/device_signals/core/common/win/wmi_client.h"
-#include "components/device_signals/core/common/win/wmi_client_impl.h"
-#include "components/device_signals/core/common/win/wsc_client.h"
-#include "components/device_signals/core/common/win/wsc_client_impl.h"
+#include "components/device_signals/core/system_signals/win/wmi_client.h"
+#include "components/device_signals/core/system_signals/win/wmi_client_impl.h"
+#include "components/device_signals/core/system_signals/win/wsc_client.h"
+#include "components/device_signals/core/system_signals/win/wsc_client_impl.h"
 
 namespace system_signals {
 

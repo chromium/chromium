@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/win/wsc_client_impl.h"
+#include "components/device_signals/core/system_signals/win/wsc_client_impl.h"
 
 #include <iwscapi.h>
 #include <windows.h>
@@ -17,8 +17,8 @@
 #include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
-#include "components/device_signals/core/common/win/com_fakes.h"
 #include "components/device_signals/core/common/win/win_types.h"
+#include "components/device_signals/core/system_signals/win/com_fakes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_WMI_CLIENT_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_WMI_CLIENT_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_H_
 
 #include <string>
 #include <vector>
@@ -66,4 +66,4 @@ class WmiClient {
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_WMI_CLIENT_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_H_

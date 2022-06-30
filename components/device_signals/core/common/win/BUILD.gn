@@ -3,63 +3,20 @@
 # found in the LICENSE file.
 
 static_library("win") {
-  public = [
-    "win_types.h",
-    "wmi_client.h",
-    "wmi_client_impl.h",
-    "wsc_client.h",
-    "wsc_client_impl.h",
-  ]
+  public = [ "win_types.h" ]
 
-  sources = [
-    "win_types.cc",
-    "wmi_client.cc",
-    "wmi_client_impl.cc",
-    "wsc_client.cc",
-    "wsc_client_impl.cc",
-  ]
+  sources = [ "win_types.cc" ]
 
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "com_fakes.cc",
-    "com_fakes.h",
-    "mock_wmi_client.cc",
-    "mock_wmi_client.h",
-    "mock_wsc_client.cc",
-    "mock_wsc_client.h",
-  ]
-
-  deps = [
-    ":win",
-    "//base",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "win_types_unittest.cc",
-    "wmi_client_impl_unittest.cc",
-    "wsc_client_impl_unittest.cc",
-  ]
+  sources = [ "win_types_unittest.cc" ]
 
   deps = [
-    ":test_support",
     ":win",
     "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
     "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
   ]
 }

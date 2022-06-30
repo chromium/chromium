@@ -12,6 +12,7 @@ source_set("win") {
   public_deps = [
     "//components/device_signals/core/common/mojom",
     "//components/device_signals/core/common/win",
+    "//components/device_signals/core/system_signals/win",
     "//mojo/public/mojom/base",
   ]
 
@@ -28,7 +29,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/device_signals/core/common/mojom",
     "//components/device_signals/core/common/win",
-    "//components/device_signals/core/common/win:test_support",
+    "//components/device_signals/core/system_signals/win",
+    "//components/device_signals/core/system_signals/win:test_support",
     "//mojo/public/mojom/base",
     "//testing/gmock",
     "//testing/gtest",

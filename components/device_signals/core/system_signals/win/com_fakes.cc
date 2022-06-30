@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/win/com_fakes.h"
+#include "components/device_signals/core/system_signals/win/com_fakes.h"
 
 #include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"

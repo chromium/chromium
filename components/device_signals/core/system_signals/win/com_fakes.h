@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_COM_FAKES_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_COM_FAKES_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_COM_FAKES_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_COM_FAKES_H_
 
 #include <atlcomcli.h>
 #include <iwscapi.h>
@@ -231,4 +231,4 @@ class FakeWSCProductList : public IWSCProductList {
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_COM_FAKES_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_COM_FAKES_H_

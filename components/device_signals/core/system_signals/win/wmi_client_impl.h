@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_WMI_CLIENT_IMPL_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_WMI_CLIENT_IMPL_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_IMPL_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_IMPL_H_
 
 #include "base/callback.h"
-#include "components/device_signals/core/common/win/wmi_client.h"
+#include "components/device_signals/core/system_signals/win/wmi_client.h"
 
 // WMI interfaces are available on Windows Vista and above, and are officially
 // undocumented.
@@ -61,4 +61,4 @@ struct PRODUCT_STATE {
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_WMI_CLIENT_IMPL_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_IMPL_H_

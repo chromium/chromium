@@ -1,0 +1,63 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("win") {
+  public = [
+    "wmi_client.h",
+    "wmi_client_impl.h",
+    "wsc_client.h",
+    "wsc_client_impl.h",
+  ]
+
+  sources = [
+    "wmi_client.cc",
+    "wmi_client_impl.cc",
+    "wsc_client.cc",
+    "wsc_client_impl.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/device_signals/core/common/win",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "com_fakes.cc",
+    "com_fakes.h",
+    "mock_wmi_client.cc",
+    "mock_wmi_client.h",
+    "mock_wsc_client.cc",
+    "mock_wsc_client.h",
+  ]
+
+  deps = [
+    ":win",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "wmi_client_impl_unittest.cc",
+    "wsc_client_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":win",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
