@@ -5,6 +5,8 @@
 #include "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 
 #include "base/feature_list.h"
+#include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -15,12 +17,14 @@
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/features.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #include "ios/chrome/browser/segmentation_platform/model_provider_factory_impl.h"
+#include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,10 +36,36 @@ namespace {
 const base::FilePath::CharType kSegmentationPlatformStorageDirName[] =
     FILE_PATH_LITERAL("Segmentation Platform");
 
+const char kSegmentationPlatformProfileObserverKey[] =
+    "segmentation_platform_profile_observer";
+
 UkmDataManager* GetUkmDataManager() {
   static base::NoDestructor<DummyUkmDataManager> instance;
   return instance.get();
 }
+
+// Observes existance of Incognito tabs in the application.
+class IncognitoObserver : public OTRWebStateObserver::ObserverClient,
+                          public base::SupportsUserData::Data {
+ public:
+  IncognitoObserver(SegmentationPlatformService* service,
+                    OTRWebStateObserver* otr_observer)
+      : service_(service) {
+    observation_.Observe(otr_observer);
+  }
+
+  // OTRWebStateObserver::ObserverClient:
+  void OnOTRWebStateCountChanged(bool otr_state_exists) override {
+    const bool enable_metrics = !otr_state_exists;
+    service_->EnableMetrics(enable_metrics);
+  }
+
+ private:
+  base::ScopedObservation<OTRWebStateObserver,
+                          OTRWebStateObserver::ObserverClient>
+      observation_{this};
+  const raw_ptr<SegmentationPlatformService> service_;
+};
 
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     web::BrowserState* context) {
@@ -67,9 +97,18 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   // TODO(crbug.com/1333641): params->field_trial_register should be
   // initialized.
 
-  // TODO(crbug.com/1333641): The factory should call EnableMetrics() based on
-  // incognito profile creation.
-  return std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
+  auto service =
+      std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
+
+  auto* otr_observer =
+      GetApplicationContext()->GetSegmentationOTRWebStateObserver();
+  // Can be null in tests.
+  if (otr_observer) {
+    service->SetUserData(
+        kSegmentationPlatformProfileObserverKey,
+        std::make_unique<IncognitoObserver>(service.get(), otr_observer));
+  }
+  return service;
 }
 
 }  // namespace
