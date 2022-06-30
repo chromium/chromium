@@ -36,7 +36,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxSettingsPagesTest', 'TtsRateCommandOnSettingsPage',
     async function() {
       const realTts = ChromeVox.tts;

@@ -168,7 +168,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'DontScrollInSameScrollable',
     async function() {
       const root = await this.runWithFakeArcSimpleScrollable();
@@ -185,7 +185,7 @@ TEST_F(
           /*speechProps=*/ null));
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'PreventMultipleScrolling',
     async function() {
       const root = await this.runWithFakeArcSimpleScrollable();
@@ -211,7 +211,7 @@ TEST_F(
           /*speechProps=*/ null));
     });
 
-TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', async function() {
+AX_TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithFakeArcSimpleScrollable();
   mockFeedback.expectSpeech('1st item')
@@ -226,7 +226,7 @@ TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', async function() {
       .replay();
 });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'ScrollForwardReturnsFalse',
     async function() {
       const mockFeedback = this.createMockFeedback();
@@ -246,7 +246,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByObject', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcRecyclerView();
@@ -260,7 +260,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByWord', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcRecyclerView();
@@ -278,7 +278,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByCharacter',
     async function() {
       const mockFeedback = this.createMockFeedback();
@@ -307,7 +307,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByPredicate',
     async function() {
       // TODO(hirokisato): This test fails without '<p>unrelated content</p>' in

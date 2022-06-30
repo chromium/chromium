@@ -11,7 +11,7 @@ GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
 ChromeVoxLogStoreTest = class extends ChromeVoxNextE2ETest {};
 
 
-SYNC_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
+AX_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
   const logStore = new LogStore();
   for (let i = 0; i < 100; i++) {
     logStore.writeTextLog('test' + i, 'speech');
@@ -24,7 +24,7 @@ SYNC_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
   }
 });
 
-SYNC_TEST_F('ChromeVoxLogStoreTest', 'LongLogs', function() {
+AX_TEST_F('ChromeVoxLogStoreTest', 'LongLogs', function() {
   const logStore = new LogStore();
   for (let i = 0; i < LogStore.LOG_LIMIT + 500; i++) {
     logStore.writeTextLog('test' + i, 'speech');

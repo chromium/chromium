@@ -71,7 +71,7 @@ ChromeVoxPortalsTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F('ChromeVoxPortalsTest', 'ShouldFocusPortal', async function() {
+AX_TEST_F('ChromeVoxPortalsTest', 'ShouldFocusPortal', async function() {
   const root = await this.runWithLoadedTree(null, {
     url: `${testRunnerParams.testServerBaseUrl}portal/portal-and-button.html`
   });
@@ -96,7 +96,7 @@ TEST_F('ChromeVoxPortalsTest', 'ShouldFocusPortal', async function() {
       () => this.waitForPortal(portal).then(afterPortalIsReady));
 });
 
-TEST_F('ChromeVoxPortalsTest', 'PortalName', async function() {
+AX_TEST_F('ChromeVoxPortalsTest', 'PortalName', async function() {
   const root = await this.runWithLoadedTree(null, {
     url: `${testRunnerParams.testServerBaseUrl}portal/portal-with-text.html`
   });

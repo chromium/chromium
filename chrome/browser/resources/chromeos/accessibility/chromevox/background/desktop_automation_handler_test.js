@@ -41,7 +41,7 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'OnValueChangedSlider',
     async function() {
       const mockFeedback = this.createMockFeedback();
@@ -111,7 +111,7 @@ TEST_F(
     });
 
 // Ensures behavior when IME candidates are selected.
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<button>First</button><button>Second</button>`;
@@ -141,7 +141,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
     async function() {
       const mockFeedback = this.createMockFeedback();
@@ -167,7 +167,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'DatalistSelection',
     async function() {
       const mockFeedback = this.createMockFeedback();

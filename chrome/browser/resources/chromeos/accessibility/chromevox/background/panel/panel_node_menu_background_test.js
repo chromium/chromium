@@ -9,7 +9,7 @@ GEN_INCLUDE([
 
 // Fake Msgs object.
 const Msgs = {
-  getMsg: () => 'None'
+  getMsg: (id) => (id === 'panel_menu_item_none' ? 'None' : '_')
 };
 
 // Fake PanelBridge.
@@ -38,13 +38,13 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
   }
 
   assertItemMatches(expectedName, item, opt_isActive) {
-    assertEquals(expectedName, item.title);
+    const pattern = new RegExp(expectedName + '[_\\s]*');
+    assertTrue(pattern.test(item.title));
     assertTrue(
         item.callbackNodeIndex >= 0 &&
         item.callbackNodeIndex < PanelNodeMenuBackground.callbackNodes_.length);
-    assertEquals(
-        expectedName,
-        PanelNodeMenuBackground.callbackNodes_[item.callbackNodeIndex].name);
+    assertTrue(pattern.test(
+        PanelNodeMenuBackground.callbackNodes_[item.callbackNodeIndex].name));
     if (opt_isActive) {
       assertTrue(item.isActive);
     } else {
@@ -57,6 +57,13 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
       if (menu.menuId === id) {
         continue;
       }
+      if (menu.menuId === PanelNodeMenuId.FORM_CONTROL) {
+        // For this menu, expect to have 7 system form controls.
+        const calls = PanelBridge.calls.filter(this.isFormControl);
+        assertEquals(7, calls.length);
+        continue;
+      }
+
       const call = PanelBridge.calls.find(item => item.menuId === menu.menuId);
       assertNotNullNorUndefined(call);
       this.assertMenuItemIndicatesNoNodesFound(call);
@@ -64,6 +71,7 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
   }
 
   createAllNodeMenuBackgrounds(opt_activateMenu) {
+    PanelBackground.instance.saveCurrentNode_();
     PanelBridge.calls = [];
     PanelBackground.instance.createAllNodeMenuBackgrounds_();
   }
@@ -97,12 +105,6 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
       Documents.checkbox,
       Documents.color,
       Documents.slider,
-      Documents.switch,
-      Documents.tab,
-      Documents.tree,
-      `<script>
-          document.getElementById('tree').focus();
-        </script>`
     ].join('\n');
   }
 
@@ -170,43 +172,45 @@ AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Headings', async fun
   this.createAllNodeMenuBackgrounds();
 
   // Check that there are the correct number of calls (one for each menu,
-  // plus two extra for the additional headings found).
-  assertEquals(ALL_NODE_MENU_DATA.length + 2, PanelBridge.calls.length);
+  // plus two extra for the additional headings found, plus six for the
+  // additional system elements).
+  assertEquals(ALL_NODE_MENU_DATA.length + 2 + 6, PanelBridge.calls.length);
 
   // Expect that the three items are added to the headings menu
-  const headingItems = PanelBridge.calls.findAll(this.isHeading);
+  const headingItems = PanelBridge.calls.filter(this.isHeading);
   assertEquals(3, headingItems.length);
 
-  this.assertItemMatches('Heading 1', headingItems.unshift());
-  this.assertItemMatches('Heading 2', headingItems.unshift());
-  this.assertItemMatches('Heading 3', headingItems.unshift());
+  this.assertItemMatches('Heading 1', headingItems.shift());
+  this.assertItemMatches('Heading 2', headingItems.shift());
+  this.assertItemMatches('Heading 3', headingItems.shift());
 
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.HEADING);
 });
 
-AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Landmarks', async function() {
-  await this.runWithLoadedTree(this.landmarksDoc);
-  this.createAllNodeMenuBackgrounds();
+AX_TEST_F(
+    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Landmarks', async function() {
+      await this.runWithLoadedTree(this.landmarksDoc);
+      this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu,
-  // plus seven extra for the additional landmarks found).
-  assertEquals(ALL_NODE_MENU_DATA.length + 7, PanelBridge.calls.length);
+      // Check that there are the correct number of calls (one for each menu,
+      // plus seven extra for the additional landmarks found).
+      assertEquals(ALL_NODE_MENU_DATA.length + 7, PanelBridge.calls.length);
 
-  // Verify that eight items were added to the landmarks menu.
-  const landmarkItems = PanelBridge.calls.findAll(this.isLandmark);
-  assertEquals(8, landmarkItems.length);
+      // Verify that eight items were added to the landmarks menu.
+      const landmarkItems = PanelBridge.calls.filter(this.isLandmark);
+      assertEquals(8, landmarkItems.length);
 
-  this.assertItemMatches('application', landmarkItems.unshift());
-  this.assertItemMatches('banner', landmarkItems.unshift());
-  this.assertItemMatches('complementary', landmarkItems.unshift());
-  this.assertItemMatches('form', landmarkItems.unshift());
-  this.assertItemMatches('main', landmarkItems.unshift());
-  this.assertItemMatches('navigation', landmarkItems.unshift());
-  this.assertItemMatches('region', landmarkItems.unshift());
-  this.assertItemMatches('search', landmarkItems.unshift());
+      this.assertItemMatches('application', landmarkItems.shift());
+      this.assertItemMatches('banner', landmarkItems.shift());
+      this.assertItemMatches('complementary', landmarkItems.shift());
+      this.assertItemMatches('form', landmarkItems.shift());
+      this.assertItemMatches('main', landmarkItems.shift());
+      this.assertItemMatches('navigation', landmarkItems.shift());
+      this.assertItemMatches('region', landmarkItems.shift());
+      this.assertItemMatches('search', landmarkItems.shift());
 
-  this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LANDMARK);
-});
+      this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LANDMARK);
+    });
 
 AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Links', async function() {
   await this.runWithLoadedTree(this.linksDoc);
@@ -217,13 +221,13 @@ AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Links', async functi
   assertEquals(ALL_NODE_MENU_DATA.length + 3, PanelBridge.calls.length);
 
   // Verify that four items were added to the links menu.
-  const linkItems = PanelBridge.calls.findAll(this.isLink);
+  const linkItems = PanelBridge.calls.filter(this.isLink);
   assertEquals(4, linkItems.length);
 
-  this.assertItemMatches('Link 1', linkItems.unshift());
-  this.assertItemMatches('Link 2', linkItems.unshift());
-  this.assertItemMatches('Link 3', linkItems.unshift());
-  this.assertItemMatches('Link 4', linkItems.unshift());
+  this.assertItemMatches('Link 1', linkItems.shift());
+  this.assertItemMatches('Link 2', linkItems.shift());
+  this.assertItemMatches('Link 3', linkItems.shift());
+  this.assertItemMatches('Link 4', linkItems.shift());
 
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LINK);
 });
@@ -234,22 +238,20 @@ AX_TEST_F(
       this.createAllNodeMenuBackgrounds('panel_menu_form_controls');
 
       // Check that there are the correct number of calls (one for each menu,
-      // plus eight extra for the additional form controls found).
-      assertEquals(ALL_NODE_MENU_DATA.length + 8, PanelBridge.calls.length);
+      // plus five extra for the additional form controls found, plus seven for
+      // the system elements).
+      assertEquals(ALL_NODE_MENU_DATA.length + 5 + 7, PanelBridge.calls.length);
 
-      // Verify that nine items were added to the form controls menu.
-      const formItems = PanelBridge.calls.findAll(this.isFormControl);
-      assertEquals(9, formItems.length);
+      // Verify that all of the items were added to the form controls menu.
+      const formItems = PanelBridge.calls.filter(this.isFormControl);
+      assertEquals(6 + 7, formItems.length);
 
-      this.assertItemMatches('button', formItems.unshift());
-      this.assertItemMatches('textInput', formItems.unshift());
-      this.assertItemMatches('textarea', formItems.unshift());
-      this.assertItemMatches('checkbox', formItems.unshift());
-      this.assertItemMatches('color', formItems.unshift());
-      this.assertItemMatches('slider', formItems.unshift());
-      this.assertItemMatches('switch', formItems.unshift());
-      this.assertItemMatches('tab', formItems.unshift());
-      this.assertItemMatches('tree', formItems.unshift(), /* isActive= */ true);
+      this.assertItemMatches('button', formItems.shift());
+      this.assertItemMatches('textInput', formItems.shift());
+      this.assertItemMatches('textarea', formItems.shift());
+      this.assertItemMatches('checkbox', formItems.shift());
+      this.assertItemMatches('color.*', formItems.shift());
+      this.assertItemMatches('slider[_\s\d]*', formItems.shift());
 
       this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.FORM_CONTROL);
     });
@@ -263,7 +265,7 @@ AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Tables', async funct
   assertEquals(ALL_NODE_MENU_DATA.length + 1, PanelBridge.calls.length);
 
   // Verify that two items were added to the tables menu.
-  const tableItems = PanelBridge.calls.findAll(this.isTable);
+  const tableItems = PanelBridge.calls.filter(this.isTable);
   assertEquals(2, tableItems.length);
 
   this.assertItemMatches('grid', tableItems.unshift());
@@ -272,26 +274,27 @@ AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Tables', async funct
   this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.TABLE);
 });
 
-AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_MixedData', async function() {
-  await this.runWithLoadedTree(this.mixedDoc);
-  this.createAllNodeMenuBackgrounds();
+AX_TEST_F(
+    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_MixedData', async function() {
+      await this.runWithLoadedTree(this.mixedDoc);
+      this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu).
-  assertEquals(ALL_NODE_MENU_DATA.length, PanelBridge.calls.length);
+      // Check that there are the correct number of calls (one for each menu).
+      assertEquals(ALL_NODE_MENU_DATA.length, PanelBridge.calls.length);
 
-  // Check that each item was added to the correct menu.
-  const formItem = PanelBridge.calls.find(this.isFormControl);
-  this.assertItemMatches('button', formItem);
+      // Check that each item was added to the correct menu.
+      const formItem = PanelBridge.calls.find(this.isFormControl);
+      this.assertItemMatches('button', formItem);
 
-  const headingItem = PanelBridge.calls.find(this.isHeading);
-  this.assertItemMatches('header', headingItem);
+      const headingItem = PanelBridge.calls.find(this.isHeading);
+      this.assertItemMatches('header', headingItem);
 
-  const landmarkItem = PanelBridge.calls.find(this.isLandmark);
-  this.assertItemMatches('region', landmarkItem);
+      const landmarkItem = PanelBridge.calls.find(this.isLandmark);
+      this.assertItemMatches('region', landmarkItem);
 
-  const linkItem = PanelBridge.calls.find(this.isLink);
-  this.assertItemMatches('link', linkItem);
+      const linkItem = PanelBridge.calls.find(this.isLink);
+      this.assertItemMatches('link', linkItem);
 
-  const tableItem = PanelBridge.calls.find(this.isTable);
-  this.assertItemMatches('table', tableItem);
-});
+      const tableItem = PanelBridge.calls.find(this.isTable);
+      this.assertItemMatches('table', tableItem);
+    });
