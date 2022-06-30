@@ -533,7 +533,7 @@ bool isAppBarButtonOn(content::WebContents* app, const std::string& selector) {
     (async function isAppBarButtonOn() {
       const button =
           await getNode('$1', ['backlight-app-bar', 'backlight-app']);
-      return button.hasAttribute('on');
+      return button.hasAttribute('toggled');
     })();
   )";
   return MediaAppUiBrowserTest::EvalJsInAppFrame(
