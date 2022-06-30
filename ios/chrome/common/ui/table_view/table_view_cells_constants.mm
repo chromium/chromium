@@ -35,9 +35,6 @@ NSString* const kTableViewTabsSearchSuggestedHistoryItemId =
 NSString* const kTableViewURLCellFaviconBadgeViewID =
     @"TableViewURLCellFaviconBadgeView";
 
-NSString* const kImproveChromeItemAccessibilityIdentifier =
-    @"ImproveChromeItemAccessibilityIdentifier";
-
 CGFloat HorizontalPadding() {
   if (!IsSmallDevice())
     return 0;

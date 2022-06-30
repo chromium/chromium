@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -420,8 +419,6 @@ bool GetStatusForSigninPolicy() {
                         IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
                   detailStringID:
                       IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL];
-      improveChromeItem.accessibilityIdentifier =
-          kImproveChromeItemAccessibilityIdentifier;
       [items addObject:improveChromeItem];
     }
     if (self.userPrefService->IsManagedPreference(
