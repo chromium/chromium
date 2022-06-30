@@ -6070,6 +6070,22 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "IOSExperiments",
+                    "params": {
+                        "MaxZeroSuggestMatches": "15"
+                    },
+                    "enable_features": [
+                        "OmniboxMaxZeroSuggestMatches"
+                    ]
+                }
+            ]
         }
     ],
     "OmniboxLoggingMigration": [
