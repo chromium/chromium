@@ -40,7 +40,6 @@
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_workarounds.h"
