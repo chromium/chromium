@@ -34,6 +34,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             if (ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE == propertyKey) {
                 mDialog.setCanceledOnTouchOutside(
                         model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+            } else if (ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER == propertyKey) {
+                mDialog.getOnBackPressedDispatcher().addCallback(
+                        model.get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
             } else {
                 super.bind(model, view, propertyKey);
             }

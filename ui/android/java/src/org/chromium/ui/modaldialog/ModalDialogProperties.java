@@ -7,6 +7,7 @@ package org.chromium.ui.modaldialog;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -188,6 +189,13 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey EXCEED_MAX_HEIGHT =
             new WritableBooleanPropertyKey();
 
+    /**
+     * The handler for back presses done on a {@ModalDialogType.APP}. By default, a back press
+     * dismisses the dialog.
+     */
+    public static final WritableObjectPropertyKey<OnBackPressedCallback>
+            APP_MODAL_DIALOG_BACK_PRESS_HANDLER = new WritableObjectPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE_PARAGRAPH_1, MESSAGE_PARAGRAPH_2,
             CUSTOM_VIEW, CUSTOM_BUTTON_BAR_VIEW, POSITIVE_BUTTON_TEXT, POSITIVE_BUTTON_ICON,
@@ -195,5 +203,5 @@ public class ModalDialogProperties {
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
             CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
             TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG,
-            EXCEED_MAX_HEIGHT};
+            EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER};
 }
