@@ -224,6 +224,7 @@ body {
 
 .month-button:hover {
   background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
 }
 
 .month-popup-button:focus {
@@ -261,6 +262,7 @@ body {
 
 .calendar-navigation-button:hover {
   background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
 }
 
 .calendar-navigation-button:disabled {
@@ -387,6 +389,7 @@ body {
 :not(.week-picker) > .calendar-table-view > .scroll-view > .scroll-view-content
     > .calendar-row-cell > .day-cell:not(.selected):hover {
   background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
 }
 
 /*
@@ -408,6 +411,7 @@ body {
 .week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
     .day-cell:not(.selected):not(.disabled):nth-child(2) {
   background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
 }
 
 .calendar-table-view:focus .day-cell.selected,
@@ -443,6 +447,7 @@ body {
 .clear-button:hover,
 .today-button:hover {
   background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
 }
 
 .today-button:disabled {
@@ -651,6 +656,7 @@ body {
 
   .calendar-navigation-button:hover {
     background-color: #545454;
+    border: 1px solid white !important;
   }
 
   .calendar-navigation-button:disabled {
@@ -675,12 +681,14 @@ body {
   .month-button:hover {
     background-color: #D1E6FF;
     color: #3B3B3B;
+    border: 1px solid white !important;
   }
 
   :not(.week-picker) > .calendar-table-view > .scroll-view > .scroll-view-content
       > .calendar-row-cell > .day-cell:not(.selected):hover {
     background-color: #D1E6FF;
     color: #3B3B3B;
+    border: 1px solid white !important;
   }
 
   /*
@@ -703,6 +711,7 @@ body {
       .day-cell:not(.selected):not(.disabled):nth-child(2) {
     background-color: #D1E6FF;
     color: #3B3B3B;
+    border: 1px solid white !important;
   }
 
   .calendar-table-view:focus .day-cell.selected,
@@ -738,6 +747,7 @@ body {
   .today-button:hover {
     color: #D1E6FF;
     background-color: #545454;
+    border: 1px solid white !important;
   }
 
   .today-button:disabled {
