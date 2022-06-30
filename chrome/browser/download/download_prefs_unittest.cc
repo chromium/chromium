@@ -669,6 +669,23 @@ TEST(DownloadPrefsTest, DownloadPathWithMigrationFromOldFormat) {
   EXPECT_EQ(prefs.DownloadPath(),
             base::FilePath("/home/chronos/u-0123456789abcdef/MyFiles/a/b"));
 }
+
+// Tests that default download path pref is migrated from old format.
+TEST(DownloadPrefsTest, DefaultDownloadPathPrefMigrationFromOldFormat) {
+  content::BrowserTaskEnvironment task_environment;
+  ash::disks::DiskMountManager::InitializeForTesting(
+      new file_manager::FakeDiskMountManager);
+
+  TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+
+  DownloadPrefs prefs(&profile);
+  // The relative path should be preserved after migration.
+  EXPECT_EQ(
+      profile.GetTestingPrefService()->GetFilePath(
+          prefs::kDownloadDefaultDirectory),
+      base::FilePath("/home/chronos/u-0123456789abcdef/MyFiles/Downloads"));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
