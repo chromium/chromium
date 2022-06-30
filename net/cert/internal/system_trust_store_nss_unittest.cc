@@ -132,7 +132,7 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 // certificate stored on user slots.
 TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
   std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStoreNSSWithNoUserSlots();
+      CreateSslSystemTrustStoreNSSWithUserSlotRestriction(nullptr);
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 

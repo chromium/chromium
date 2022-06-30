@@ -182,32 +182,38 @@ class SystemTrustStoreNSS : public SystemTrustStore {
 }  // namespace
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<SystemTrustStoreNSS>(
-      std::make_unique<TrustStoreNSS>(trustSSL));
+  return std::make_unique<SystemTrustStoreNSS>(std::make_unique<TrustStoreNSS>(
+      trustSSL, TrustStoreNSS::kUseSystemTrust,
+      TrustStoreNSS::UseTrustFromAllUserSlots()));
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
   return std::make_unique<SystemTrustStoreChrome>(
-      std::move(chrome_root),
-      std::make_unique<TrustStoreNSS>(
-          trustSSL, TrustStoreNSS::IgnoreSystemTrustSettings()));
+      std::move(chrome_root), std::make_unique<TrustStoreNSS>(
+                                  trustSSL, TrustStoreNSS::kIgnoreSystemTrust,
+                                  TrustStoreNSS::UseTrustFromAllUserSlots()));
+}
+
+std::unique_ptr<SystemTrustStore>
+CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
+    std::unique_ptr<TrustStoreChrome> chrome_root,
+    crypto::ScopedPK11Slot user_slot_restriction) {
+  return std::make_unique<SystemTrustStoreChrome>(
+      std::move(chrome_root), std::make_unique<TrustStoreNSS>(
+                                  trustSSL, TrustStoreNSS::kIgnoreSystemTrust,
+                                  std::move(user_slot_restriction)));
 }
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 std::unique_ptr<SystemTrustStore>
 CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
-    crypto::ScopedPK11Slot user_slot) {
+    crypto::ScopedPK11Slot user_slot_restriction) {
   return std::make_unique<SystemTrustStoreNSS>(
-      std::make_unique<TrustStoreNSS>(trustSSL, std::move(user_slot)));
-}
-
-std::unique_ptr<SystemTrustStore>
-CreateSslSystemTrustStoreNSSWithNoUserSlots() {
-  return std::make_unique<SystemTrustStoreNSS>(std::make_unique<TrustStoreNSS>(
-      trustSSL, TrustStoreNSS::DisallowTrustForCertsOnUserSlots()));
+      std::make_unique<TrustStoreNSS>(trustSSL, TrustStoreNSS::kUseSystemTrust,
+                                      std::move(user_slot_restriction)));
 }
 
 #elif BUILDFLAG(IS_MAC)

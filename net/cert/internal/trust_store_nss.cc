@@ -14,34 +14,17 @@
 #include "net/cert/internal/trust_store.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
-#include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace net {
 
-TrustStoreNSS::TrustStoreNSS(SECTrustType trust_type)
-    : trust_type_(trust_type), filter_trusted_certs_by_slot_(false) {}
-
 TrustStoreNSS::TrustStoreNSS(SECTrustType trust_type,
-                             crypto::ScopedPK11Slot user_slot)
+                             SystemTrustSetting system_trust_setting,
+                             UserSlotTrustSetting user_slot_trust_setting)
     : trust_type_(trust_type),
-      filter_trusted_certs_by_slot_(true),
-      user_slot_(std::move(user_slot)) {
-  DCHECK(user_slot_);
-}
-
-TrustStoreNSS::TrustStoreNSS(
-    SECTrustType trust_type,
-    DisallowTrustForCertsOnUserSlots disallow_trust_for_certs_on_user_slots)
-    : trust_type_(trust_type), filter_trusted_certs_by_slot_(true) {}
-
-TrustStoreNSS::TrustStoreNSS(
-    SECTrustType trust_type,
-    IgnoreSystemTrustSettings ignore_system_trust_settings)
-    : trust_type_(trust_type),
-      ignore_system_trust_settings_(true),
-      filter_trusted_certs_by_slot_(false) {}
+      ignore_system_trust_settings_(system_trust_setting == kIgnoreSystemTrust),
+      user_slot_trust_setting_(std::move(user_slot_trust_setting)) {}
 
 TrustStoreNSS::~TrustStoreNSS() = default;
 
@@ -148,10 +131,10 @@ CertificateTrust TrustStoreNSS::GetTrust(
 }
 
 bool TrustStoreNSS::IsCertAllowedForTrust(CERTCertificate* cert) const {
-  // If |filter_trusted_certs_by_slot_| is false, allow trust for any
-  // certificate, no matter which slot it is stored on.
-  if (!filter_trusted_certs_by_slot_)
+  if (absl::holds_alternative<UseTrustFromAllUserSlots>(
+          user_slot_trust_setting_)) {
     return true;
+  }
 
   crypto::ScopedPK11SlotList slots_for_cert(
       PK11_GetAllSlotsForCert(cert, nullptr));
@@ -169,8 +152,11 @@ bool TrustStoreNSS::IsCertAllowedForTrust(CERTCertificate* cert) const {
         PK11_HasRootCerts(slot) ||
         // Allow read-only internal slots.
         (PK11_IsInternal(slot) && !PK11_IsRemovable(slot)) ||
-        // Allow |user_slot_| if specified.
-        (user_slot_ && slot == user_slot_.get());
+        // Allow configured user slot if specified.
+        (absl::holds_alternative<crypto::ScopedPK11Slot>(
+             user_slot_trust_setting_) &&
+         slot ==
+             absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get());
 
     if (allow_slot) {
       PK11_FreeSlotListElement(slots_for_cert.get(), slot_element);
