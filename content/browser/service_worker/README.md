@@ -126,7 +126,7 @@ renderer process:
 
 In the browser process, `ServiceWorkerContextCore` is root class which all other
 service worker classes are attached to. There is one context per [storage
-partition](/content/browser/public/storage_partition.h).
+partition](/content/public/browser/storage_partition.h).
 
 `ServiceWorkerContextCore` is owned by a thread-safe refcounted wrapper called
 `ServiceWorkerContextWrapper`. `StoragePartition` is the primary owner of this
@@ -206,7 +206,7 @@ with a `blink::ServiceWorkerGlobalScope` global.
 `ServiceWorkerGlobalScope` implements two Mojo interfaces:
 - `mojom.blink.ServiceWorker`, which the browser process uses to dispatch events
   to the service worker.
-- `mojom.blink.ServiceWorkerController`, which renderer processes use to
+- `mojom.blink.ControllerServiceWorker`, which other renderer processes use to
   dispatch fetch events to a service worker that controls a client in that
   process.
 
@@ -244,7 +244,7 @@ message pipe. `ServiceWorkerRegistration` has a remote to a
 `mojom.blink.ServiceWorkerRegistrationObjectHost` and `ServiceWorker` has a
 remote to a `ServiceWorkerObjectHost`. Conversely, the browser process has
 remotes to `mojom.blink.ServiceWorkerRegistrationObject` and
-`mojom.blink.ServiceWorkerRegistration`.
+`mojom.blink.ServiceWorkerObject`.
 
 > After making this design, there's been some realization that asynchronous
 > ownership makes destruction complicated because of non-deterministic
