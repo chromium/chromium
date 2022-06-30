@@ -170,6 +170,9 @@ crbug.com/1297151 [ mac intel debug no-passthrough ] GpuCrash_InfoForHardwareGpu
 # Flaky on Fuchsia
 crbug.com/1302749 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 
+# Failing on android N5
+crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
