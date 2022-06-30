@@ -1736,7 +1736,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2602501489742255173">Geser ke atas untuk memulai</translation>
 <translation id="2603115962224169880">Bersihkan komputer</translation>
 <translation id="2603355571917519942">Voice Match sudah siap</translation>
-<translation id="2604138917550693049">Telusuri gambar dengan Google Lens</translation>
 <translation id="2604255671529671813">Error koneksi jaringan</translation>
 <translation id="2605668923777146443">Buka <ph name="LINK_BEGIN" />Setelan<ph name="LINK_END" /> untuk melihat opsi Better Together.</translation>
 <translation id="2606246518223360146">Tautkan Data</translation>
@@ -1864,6 +1863,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Konversi Unit</translation>
 <translation id="2725200716980197196">Konektivitas jaringan dipulihkan</translation>
+<translation id="272741954544380994">Telusuri Gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
 <translation id="2727712005121231835">Ukuran Sebenarnya</translation>
 <translation id="2729314457178420145">Hapus juga data penjelajahan (<ph name="URL" />) yang mungkin akan membuat Anda logout dari Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5051836348807686060">Fitur periksa ejaan tidak didukung untuk bahasa yang Anda pilih</translation>
 <translation id="5052499409147950210">Edit situs</translation>
 <translation id="505347685865235222">Grup tanpa nama - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Telusuri Gambar dengan Google Lens</translation>
 <translation id="5054374119096692193">Lihat semua opsi kartu di menu <ph name="BEGIN_LINK" />Sesuaikan Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Menghubungkan ke penampung</translation>
 <translation id="5057110919553308744">Saat Anda mengklik ekstensi</translation>
@@ -8439,6 +8438,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="957960681186851048">Situs ini berupaya mendownload beberapa file secara otomatis</translation>
 <translation id="960987915827980018">Sekitar 1 jam lagi</translation>
 <translation id="962802172452141067">Cabang folder bookmark</translation>
+<translation id="963000966785016697">Telusuri gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Administrator IT telah menonaktifkan Chrome Goodies untuk perangkat Anda.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikasi}other{Aplikasi}}</translation>
 <translation id="964790508619473209">Pengaturan layar</translation>

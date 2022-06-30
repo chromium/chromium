@@ -1733,7 +1733,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2602501489742255173">Telezesha kidole kuelekea juu ili uanze</translation>
 <translation id="2603115962224169880">Futa programu hatari kwenye kompyuta yako</translation>
 <translation id="2603355571917519942">Voice Match iko tayari</translation>
-<translation id="2604138917550693049">Tafuta picha ukitumia Lenzi ya Google</translation>
 <translation id="2604255671529671813">Hitilafu ya muunganisho wa mtandao</translation>
 <translation id="2605668923777146443">Nenda kwenye <ph name="LINK_BEGIN" />Mipangilio<ph name="LINK_END" /> ili uone chaguo zako za Better Together.</translation>
 <translation id="2606246518223360146">Unganisha Data</translation>
@@ -1861,6 +1860,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="2724841811573117416">Kumbukumbu za WebRTC</translation>
 <translation id="272488616838512378">Ubadilishaji wa Vipimo</translation>
 <translation id="2725200716980197196">Muunganisho wa mtandao umerejeshwa</translation>
+<translation id="272741954544380994">Tafuta picha ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Usinikumbushe tena</translation>
 <translation id="2727712005121231835">Ukubwa Halisi</translation>
 <translation id="2729314457178420145">Futa pia data ya kuvinjari (<ph name="URL" />), hatua inayoweza kukuondoa kwenye akaunti ya Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4202,7 +4202,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5051836348807686060">Kikagua tahajia hakitumiki kwa lugha uliyochagua</translation>
 <translation id="5052499409147950210">Badilisha tovuti</translation>
 <translation id="505347685865235222">Kikundi kisicho na jina - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Tafuta Picha Ukitumia Lenzi ya Google</translation>
 <translation id="5054374119096692193">Angalia chaguo zote za kadi kwenye <ph name="BEGIN_LINK" />Weka Mapendeleo ya Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Inaunganisha kwenye metadata</translation>
 <translation id="5057110919553308744">Unapobofya kiendelezi</translation>
@@ -8435,6 +8434,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="957960681186851048">Tovuti hii imejaribu kupakua faili nyingi kiotomatiki</translation>
 <translation id="960987915827980018">Takriban saa 1 imesalia</translation>
 <translation id="962802172452141067">Kielelezo cha folda ya alamisho</translation>
+<translation id="963000966785016697">Tafuta picha ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Msimamizi wako wa Tehama amezima Zawadi za Chrome kwa kifaa chako.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Programu}other{Programu}}</translation>
 <translation id="964790508619473209">Mpangilio wa skrini</translation>

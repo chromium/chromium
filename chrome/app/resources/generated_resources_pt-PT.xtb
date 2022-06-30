@@ -1721,7 +1721,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2602501489742255173">Deslize rapidamente para cima para começar.</translation>
 <translation id="2603115962224169880">Limpar o computador</translation>
 <translation id="2603355571917519942">O Voice Match está pronto</translation>
-<translation id="2604138917550693049">Pesquisar imagem com o Google Lens</translation>
 <translation id="2604255671529671813">Erro de ligação à rede</translation>
 <translation id="2605668923777146443">Aceda a <ph name="LINK_BEGIN" />Definições<ph name="LINK_END" /> para ver as suas opções para a funcionalidade Better Together.</translation>
 <translation id="2606246518223360146">Associar dados</translation>
@@ -1849,6 +1848,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2724841811573117416">Registos de WebRTC</translation>
 <translation id="272488616838512378">Conversão de unidades</translation>
 <translation id="2725200716980197196">Conetividade de rede restaurada</translation>
+<translation id="272741954544380994">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Não lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
 <translation id="2729314457178420145">Limpar também os dados de navegação (<ph name="URL" />), o que poderá terminar a sua sessão em Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4192,7 +4192,6 @@ Pretende pará-lo?</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é suportada para os idiomas selecionados</translation>
 <translation id="5052499409147950210">Editar site</translation>
 <translation id="505347685865235222">Grupo sem nome – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pesquisar imagem com o Google Lens</translation>
 <translation id="5054374119096692193">Veja todas as opções de cartões em <ph name="BEGIN_LINK" />Personalizar o Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">A ligar ao contentor</translation>
 <translation id="5057110919553308744">Quando clica na extensão</translation>
@@ -8425,6 +8424,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="957960681186851048">Este site tentou transferir vários ficheiros automaticamente</translation>
 <translation id="960987915827980018">Falta cerca de 1 hora</translation>
 <translation id="962802172452141067">Árvore de pastas de marcadores</translation>
+<translation id="963000966785016697">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">O gestor de TI desativou os Extras do Chrome para o dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicação}other{Aplicações}}</translation>
 <translation id="964790508619473209">Posicionamento do ecrã</translation>

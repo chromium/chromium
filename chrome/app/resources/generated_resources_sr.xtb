@@ -1720,7 +1720,6 @@
 <translation id="2602501489742255173">Превуците нагоре да бисте започели</translation>
 <translation id="2603115962224169880">Очистите рачунар</translation>
 <translation id="2603355571917519942">Voice Match је спреман</translation>
-<translation id="2604138917550693049">Тражите слику уз Google објектив</translation>
 <translation id="2604255671529671813">Грешка мрежне везе</translation>
 <translation id="2605668923777146443">Идите у <ph name="LINK_BEGIN" />Подешавања<ph name="LINK_END" /> да бисте видели опције за Better Together.</translation>
 <translation id="2606246518223360146">Повежи податке</translation>
@@ -1848,6 +1847,7 @@
 <translation id="2724841811573117416">WebRTC евиденције</translation>
 <translation id="272488616838512378">Конверзија јединица</translation>
 <translation id="2725200716980197196">Веза са мрежом је поново успостављена</translation>
+<translation id="272741954544380994">Тражи слику уз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Не подсећај ме више</translation>
 <translation id="2727712005121231835">Стварна величина</translation>
 <translation id="2729314457178420145">Обриши и податке прегледања (<ph name="URL" />). Ово може да вас одјави са Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4190,7 +4190,6 @@
 <translation id="5051836348807686060">Провера правописа није подржана за језике које сте изабрали</translation>
 <translation id="5052499409147950210">Измените сајт</translation>
 <translation id="505347685865235222">Група без назива – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Тражите слику уз Google објектив</translation>
 <translation id="5054374119096692193">Прикажи све опције картица у менију <ph name="BEGIN_LINK" />Прилагодите Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Повезује се са контејнером</translation>
 <translation id="5057110919553308744">Када кликнете на додатак</translation>
@@ -8427,6 +8426,7 @@
 <translation id="957960681186851048">Овај сајт је покушао да аутоматски преузме више датотека</translation>
 <translation id="960987915827980018">Остало је око сат времена</translation>
 <translation id="962802172452141067">Стабло директоријума обележивача</translation>
+<translation id="963000966785016697">Тражи слику уз: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">ИТ администратор је онемогућио Chrome забавне стварчице за уређај.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апликација}one{Апликације}few{Апликације}other{Апликације}}</translation>
 <translation id="964790508619473209">Распоред на екрану</translation>

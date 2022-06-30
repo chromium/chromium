@@ -1725,7 +1725,6 @@
 <translation id="2602501489742255173">පටන් ගැනීමට උඩට ස්වයිප් කරන්න</translation>
 <translation id="2603115962224169880">පරිගණකය පිරිසිදු කරන්න</translation>
 <translation id="2603355571917519942">Voice Match සූදානම්</translation>
-<translation id="2604138917550693049">Google Lens සමගින් රූපය සොයන්න</translation>
 <translation id="2604255671529671813">ජාල සබැඳුම් දෝෂය</translation>
 <translation id="2605668923777146443">Better Together සඳහා ඔබගේ විකල්ප බැලීමට, <ph name="LINK_BEGIN" />සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
 <translation id="2606246518223360146">සබැඳි දත්ත</translation>
@@ -1852,6 +1851,7 @@
 <translation id="2724841811573117416">WebRTC වාර්ථා</translation>
 <translation id="272488616838512378">ඒකක පරිවර්තනය</translation>
 <translation id="2725200716980197196">ජාල සම්බන්ධතාවය ප්‍රතිසාධනය කෙරිණි</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> සමගින් රූපය සොයන්න</translation>
 <translation id="2727633948226935816">නැවත මට මතක් නොකරන්න</translation>
 <translation id="2727712005121231835">සත්‍ය ප්‍රමාණය</translation>
 <translation id="2729314457178420145">ඔබව Google.com වෙතින් වැරිය හැකි බ්‍රවුස් කිරීමේ දත්ත (<ph name="URL" />) ද හිස් කරන්න. <ph name="LEARN_MORE" /></translation>
@@ -4195,7 +4195,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5051836348807686060">අක්‍ෂර වින්‍යාස පරීක්‍ෂාව ඔබේ තෝරාගත් භාෂා සඳහා සහය නොදක්වයි</translation>
 <translation id="5052499409147950210">අඩවිය සංස්කරණය කරන්න</translation>
 <translation id="505347685865235222">නම් නොකළ සමූහය - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens සමගින් රූපය සොයන්න</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome අභිරුචිකරණය<ph name="END_LINK" /> තුළ සියලු කාඩ්පත් විකල්ප බලන්න</translation>
 <translation id="5056950756634735043">බහාලුමට සම්බන්ධ වෙමින්</translation>
 <translation id="5057110919553308744">ඔබ දිගුව ක්ලික් කළ විට</translation>
@@ -8426,6 +8425,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="957960681186851048">මෙම අඩවිය ගොනු කිහිපයක් ස්වයංක්‍රීයව බාගැනීමට උත්සාහ කළේය</translation>
 <translation id="960987915827980018">පැය 1ක් පමණ ඉතිරියි</translation>
 <translation id="962802172452141067">පිටුසන් ෆෝල්ඩර වෘක්ෂය</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> සමගින් රූපය සොයන්න</translation>
 <translation id="964286338916298286">ඔබේ තොරතුරු තාක්ෂණ කළමනාකරු ඔබේ උපාංගය සඳහා Chrome Goodies අබල කර ඇත.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{යෙදුම}one{යෙදුම්}other{යෙදුම්}}</translation>
 <translation id="964790508619473209">තිර පිළියෙළ</translation>

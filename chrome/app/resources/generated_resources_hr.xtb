@@ -1724,7 +1724,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2602501489742255173">Prijeđite prstom prema gore za početak</translation>
 <translation id="2603115962224169880">Očistite računalo</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
-<translation id="2604138917550693049">Pretraži sliku pomoću Google objektiva</translation>
 <translation id="2604255671529671813">Pogreška mrežne veze</translation>
 <translation id="2605668923777146443">Otvorite <ph name="LINK_BEGIN" />Postavke<ph name="LINK_END" /> da biste vidjeli svoje opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -1852,6 +1851,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="2724841811573117416">WebRTC zapisnici</translation>
 <translation id="272488616838512378">Pretvorba jedinica</translation>
 <translation id="2725200716980197196">Veza s mrežom ponovno je uspostavljena</translation>
+<translation id="272741954544380994">Pretraži sliku pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nemoj me više podsjećati</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
 <translation id="2729314457178420145">Izbrišite i podatke o pregledavanju (<ph name="URL" />), čime ćete se možda odjaviti s web-lokacije Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4194,7 +4194,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5051836348807686060">Provjera pravopisa nije podržana za jezike koje ste odabrali</translation>
 <translation id="5052499409147950210">Uređivanje web-lokacije</translation>
 <translation id="505347685865235222">Neimenovana grupa – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pretraži sliku pomoću Google objektiva</translation>
 <translation id="5054374119096692193">Pogledajte sve opcije kartica u odjeljku <ph name="BEGIN_LINK" />Prilagodba Chromea<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete proširenje</translation>
@@ -8428,6 +8427,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="957960681186851048">Ta je web-lokacija pokušala automatski preuzeti više datoteka</translation>
 <translation id="960987915827980018">Još otprilike 1 sat</translation>
 <translation id="962802172452141067">Stablo mape oznaka</translation>
+<translation id="963000966785016697">Pretraži sliku pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Vaš IT administrator onemogućio je Chrome pogodnosti za vaš uređaj.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacija}one{Aplikacije}few{Aplikacije}other{Aplikacija}}</translation>
 <translation id="964790508619473209">Raspored na zaslonu</translation>

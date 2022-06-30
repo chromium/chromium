@@ -1718,7 +1718,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2602501489742255173">Zum Starten nach oben wischen</translation>
 <translation id="2603115962224169880">Computer bereinigen</translation>
 <translation id="2603355571917519942">Voice Match ist bereit</translation>
-<translation id="2604138917550693049">Bild an Google Lens senden</translation>
 <translation id="2604255671529671813">Fehler bei der Netzwerkverbindung</translation>
 <translation id="2605668923777146443">Rufe <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> auf, um Better Together zu konfigurieren.</translation>
 <translation id="2606246518223360146">Daten verknüpfen</translation>
@@ -1846,6 +1845,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2724841811573117416">WebRTC-Protokolle</translation>
 <translation id="272488616838512378">Umrechnen von Einheiten</translation>
 <translation id="2725200716980197196">Netzwerkverbindung wiederhergestellt</translation>
+<translation id="272741954544380994">Bild an <ph name="VISUAL_SEARCH_PROVIDER" /> senden</translation>
 <translation id="2727633948226935816">Nicht mehr erinnern</translation>
 <translation id="2727712005121231835">Originalgröße</translation>
 <translation id="2729314457178420145">Auch Browserdaten (<ph name="URL" />) löschen, wodurch du möglicherweise von Google.com abgemeldet wirst. <ph name="LEARN_MORE" /></translation>
@@ -4188,7 +4188,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5051836348807686060">Die Rechtschreibprüfung wird für die ausgewählten Sprachen nicht unterstützt</translation>
 <translation id="5052499409147950210">Website bearbeiten</translation>
 <translation id="505347685865235222">Unbenannte Gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Bild an Google Lens senden</translation>
 <translation id="5054374119096692193">Unter <ph name="BEGIN_LINK" />Chrome anpassen<ph name="END_LINK" /> kannst du dir alle Kartenoptionen ansehen</translation>
 <translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
@@ -8416,6 +8415,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>
 <translation id="960987915827980018">Noch etwa 1 Stunde</translation>
 <translation id="962802172452141067">Lesezeichenordnerstruktur</translation>
+<translation id="963000966785016697">Bild an <ph name="VISUAL_SEARCH_PROVIDER" /> senden</translation>
 <translation id="964286338916298286">Dein IT-Administrator hat Chrome-Extras für dein Gerät deaktiviert.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Anwendung}other{Anwendungen}}</translation>
 <translation id="964790508619473209">Bildschirmanordnung</translation>

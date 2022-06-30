@@ -1723,7 +1723,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2602501489742255173">Glissez votre doigt vers le haut pour commencer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
 <translation id="2603355571917519942">Voice Match est prête à être utilisée</translation>
-<translation id="2604138917550693049">Rechercher l'image avec Lentille Google</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2605668923777146443">Accédez à <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" /> pour voir les options Better Together qui s'offrent à vous.</translation>
 <translation id="2606246518223360146">Associer les données</translation>
@@ -1851,6 +1850,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2724841811573117416">Journaux WebRTC</translation>
 <translation id="272488616838512378">Conversion d'unités</translation>
 <translation id="2725200716980197196">La connectivité réseau a été rétablie</translation>
+<translation id="272741954544380994">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne pas me le rappeler</translation>
 <translation id="2727712005121231835">Taille réelle</translation>
 <translation id="2729314457178420145">Aussi effacer les données de navigation (<ph name="URL" />), ce qui risque de vous déconnecter de Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4193,7 +4193,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5051836348807686060">Le correcteur orthographique n'est pas pris en charge pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
 <translation id="505347685865235222">Groupe sans nom : <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Rechercher l'image avec Lentille Google</translation>
 <translation id="5054374119096692193">Voir toutes les options de cartes dans <ph name="BEGIN_LINK" />Personnaliser Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Connexion au conteneur en cours…</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
@@ -8427,6 +8426,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>
 <translation id="960987915827980018">Il reste environ 1 heure</translation>
 <translation id="962802172452141067">Arborescence des dossiers de favoris</translation>
+<translation id="963000966785016697">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}one{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Position des écrans</translation>

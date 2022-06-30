@@ -1734,7 +1734,6 @@
 <translation id="2602501489742255173">စတင်ရန် အပေါ်သို့ ပွတ်ဆွဲပါ</translation>
 <translation id="2603115962224169880">ကွန်ပျူတာကို ရှင်းလင်းခြင်း</translation>
 <translation id="2603355571917519942">Voice Match အသင့်ဖြစ်ပြီ</translation>
-<translation id="2604138917550693049">Google Lens ဖြင့် ပုံရှာဖွေခြင်း</translation>
 <translation id="2604255671529671813">ကွန်ရက် ချိတ်ဆက်မှု အမှား</translation>
 <translation id="2605668923777146443">Better Together အတွက် သင့်ရွေးချယ်စရာများ ကြည့်ရန် <ph name="LINK_BEGIN" />ဆက်တင်များ<ph name="LINK_END" /> သို့ သွားပါ။</translation>
 <translation id="2606246518223360146">ဒေတာများကို လင့်ခ်ချိတ်ရန်</translation>
@@ -1862,6 +1861,7 @@
 <translation id="2724841811573117416">WebRTC မှတ်တမ်းများ</translation>
 <translation id="272488616838512378">ယူနစ်ပြောင်းလဲခြင်း</translation>
 <translation id="2725200716980197196">ကွန်ရက်ချိတ်ဆက်မှု ပြန်လည်သိုလှောင်ပြီး</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် ပုံရှာခြင်း</translation>
 <translation id="2727633948226935816">ထပ်ပြီးသတိမပေးပါနှင့်</translation>
 <translation id="2727712005121231835">မူရင်းဆိုဒ်</translation>
 <translation id="2729314457178420145">ဖွင့်ကြည့်ထားသည့် မှတ်တမ်းဒေတာ (<ph name="URL" />) ကိုလည်း ရှင်းထုတ်မည်ဖြစ်ပြီး Google.com မှ ထွက်သွားပါမည်။ <ph name="LEARN_MORE" /></translation>
@@ -4204,7 +4204,6 @@
 <translation id="5051836348807686060">သင်ရွေးချယ်ထားသော ဘာသာစကားများအတွက် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ပံ့ပိုးမထားပါ</translation>
 <translation id="5052499409147950210">ဝဘ်ဆိုက်ကို တည်းဖြတ်ရန်</translation>
 <translation id="505347685865235222">အမည်ပေးမထားသော အုပ်စု - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens ဖြင့် ပုံရှာဖွေခြင်း</translation>
 <translation id="5054374119096692193">ကတ်ရွေးချယ်မှုအားလုံးကို <ph name="BEGIN_LINK" />Chrome စိတ်ကြိုက်လုပ်ခြင်း<ph name="END_LINK" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="5056950756634735043">ကွန်တိန်နာနှင့် ချိတ်ဆက်နေသည်</translation>
 <translation id="5057110919553308744">နောက်ဆက်တွဲကို သင်နှိပ်သည့်အခါ</translation>
@@ -8433,6 +8432,7 @@
 <translation id="957960681186851048">ဤဝဘ်ဆိုက်သည် ဖိုင်အမြောက်အများကို အလိုအလျောက် ဒေါင်းလုဒ်လုပ်ရန် ကြိုးပမ်းခဲ့သည်</translation>
 <translation id="960987915827980018">၁ နာရီ ခန့် ကျန်နေ</translation>
 <translation id="962802172452141067">လိပ်စာအကန့် မြေပုံဇယား</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် ပုံရှာခြင်း</translation>
 <translation id="964286338916298286">သင်၏ IT စီမံခန့်ခွဲသူက သင့်ကိရိယာ အတွက် Chrome Goodies ကို ပိတ်ထားသည်။</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{အပလီကေးရှင်း}other{အပလီကေးရှင်းများ}}</translation>
 <translation id="964790508619473209">ဖန်သားပြင် အစီအစဉ်</translation>

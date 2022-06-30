@@ -1736,7 +1736,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2602501489742255173">Swiep op om te begin</translation>
 <translation id="2603115962224169880">Maak rekenaar skoon</translation>
 <translation id="2603355571917519942">Voice Match is gereed</translation>
-<translation id="2604138917550693049">Soek prent met Google Lens</translation>
 <translation id="2604255671529671813">Netwerkverbinding-fout</translation>
 <translation id="2605668923777146443">Gaan na <ph name="LINK_BEGIN" />Instellings<ph name="LINK_END" /> om jou opsies vir Beter Saam te sien.</translation>
 <translation id="2606246518223360146">Koppel data</translation>
@@ -1864,6 +1863,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2724841811573117416">WebRTC-loglêers</translation>
 <translation id="272488616838512378">Eenheidomskakeling</translation>
 <translation id="2725200716980197196">Netwerkverbinding is herstel</translation>
+<translation id="272741954544380994">Deursoek prent met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Moet my nie weer herinner nie</translation>
 <translation id="2727712005121231835">Werklike grootte</translation>
 <translation id="2729314457178420145">Vee ook blaaierdata uit (<ph name="URL" />), wat jou by Google.com kan afmeld. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5051836348807686060">Speltoets word nie gesteun vir die tale wat jy gekies het nie</translation>
 <translation id="5052499409147950210">Redigeer werf</translation>
 <translation id="505347685865235222">Naamlose groep – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Soek prent met Google Lens</translation>
 <translation id="5054374119096692193">Sien alle kaartopsies in <ph name="BEGIN_LINK" />Pasmaak Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Koppel tans aan die houer</translation>
 <translation id="5057110919553308744">Wanneer jy die uitbreiding klik</translation>
@@ -8439,6 +8438,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="957960681186851048">Hierdie werf het probeer om veelvuldige lêers outomaties af te laai</translation>
 <translation id="960987915827980018">Ongeveer 1 uur oor</translation>
 <translation id="962802172452141067">Boekmerkvouerboom</translation>
+<translation id="963000966785016697">Deursoek prent met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Jou IT-administrateur het Chrome Goeters vir jou toestel gedeaktiveer.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Program}other{Programme}}</translation>
 <translation id="964790508619473209">Skermrangskikking</translation>

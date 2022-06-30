@@ -1737,7 +1737,6 @@
 <translation id="2602501489742255173">Повлечете нагоре за да започнете</translation>
 <translation id="2603115962224169880">Чистење на компјутерот</translation>
 <translation id="2603355571917519942">Voice Match е подготвена</translation>
-<translation id="2604138917550693049">Пребарај ја сликата со Google Lens</translation>
 <translation id="2604255671529671813">Грешка во мрежното поврзување</translation>
 <translation id="2605668923777146443">Одете во <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" /> за да ги видите опциите за Better Together.</translation>
 <translation id="2606246518223360146">Поврзи ги податоците</translation>
@@ -1865,6 +1864,7 @@
 <translation id="2724841811573117416">WebRTC-дневници</translation>
 <translation id="272488616838512378">Конверзија на валути</translation>
 <translation id="2725200716980197196">Обновена мрежна поврзливост</translation>
+<translation id="272741954544380994">Пребарајте ја сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Не потсетувај ме повторно</translation>
 <translation id="2727712005121231835">Вистинска големина</translation>
 <translation id="2729314457178420145">Избриши ги и податоците од прелистувањето (<ph name="URL" />). Тоа може да ве одјави од Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4208,7 +4208,6 @@
 <translation id="5051836348807686060">Проверката на правопис не е поддржана за јазиците што ги избравте</translation>
 <translation id="5052499409147950210">Изменете го сајтот</translation>
 <translation id="505347685865235222">Неименувана група - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Пребарај ја сликата со Google Lens</translation>
 <translation id="5054374119096692193">Видете ги сите опции за картички во <ph name="BEGIN_LINK" />Приспособете го Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Се поврзува со контејнерот</translation>
 <translation id="5057110919553308744">Кога ќе кликнете на екстензијата</translation>
@@ -8445,6 +8444,7 @@
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>
 <translation id="960987915827980018">Преостанува околу 1 час</translation>
 <translation id="962802172452141067">Дрво на папката за обележувачи</translation>
+<translation id="963000966785016697">Пребарајте ја сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Администраторот за информатичка технологија оневозможил Chrome Goodies за вашиот уред.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апликација}one{Апликации}other{Апликации}}</translation>
 <translation id="964790508619473209">Подредување на екранот</translation>

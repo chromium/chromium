@@ -1737,7 +1737,6 @@
 <translation id="2602501489742255173">শুরু করতে স্ক্রিনের উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="2603115962224169880">কম্পিউটার সাফ করুন</translation>
 <translation id="2603355571917519942">Voice Match ব্যবহারের জন্য প্রস্তুত</translation>
-<translation id="2604138917550693049">Google Lens ব্যবহার করে ছবি সার্চ করুন</translation>
 <translation id="2604255671529671813">নেটওয়ার্ক সংযোগে সমস্যা</translation>
 <translation id="2605668923777146443">Better Together-এর জন্য বিকল্প দেখতে <ph name="LINK_BEGIN" />সেটিংস<ph name="LINK_END" />-এ যান।</translation>
 <translation id="2606246518223360146">ডেটা লিঙ্ক করুন</translation>
@@ -1864,6 +1863,7 @@
 <translation id="2724841811573117416">WebRTC লগগুলি</translation>
 <translation id="272488616838512378">ইউনিট কনর্ভাসন</translation>
 <translation id="2725200716980197196">নেটওয়ার্ক সংযোগ পুনঃস্থাপিত হয়েছে</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" />-এর সাহায্যে সার্চ করুন</translation>
 <translation id="2727633948226935816">আমাকে আবার মনে করাবেন না</translation>
 <translation id="2727712005121231835">আসল আকার</translation>
 <translation id="2729314457178420145">এছাড়াও ব্রাউজিং ডেটা (<ph name="URL" />) মুছে দিলে আপনি হয়ত Google.com থেকে সাইন-আউট হয়ে যাবেন। <ph name="LEARN_MORE" /></translation>
@@ -4208,7 +4208,6 @@
 <translation id="5051836348807686060">আপনার বেছে নেওয়া ভাষায় বানান পরীক্ষা করা যাবে না</translation>
 <translation id="5052499409147950210">সাইট সম্পাদনা করুন</translation>
 <translation id="505347685865235222">নামহীন গ্রুপ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens ব্যবহার করে ছবি সার্চ করুন</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />কাস্টমাইজ Chrome<ph name="END_LINK" />-এ সমস্ত কার্ডের বিকল্পগুলি দেখুন</translation>
 <translation id="5056950756634735043">কন্টেনারে কানেক্ট করা হচ্ছে</translation>
 <translation id="5057110919553308744">যখন আপনি এক্সটেনশনে ক্লিক করেন</translation>
@@ -8444,6 +8443,7 @@
 <translation id="957960681186851048">এই সাইটটি নিজে থেকে একাধিক ফাইল ডাউনলোড করার চেষ্টা করেছে</translation>
 <translation id="960987915827980018">প্রায় 1 ঘণ্টা বাকি</translation>
 <translation id="962802172452141067">বুকমার্ক ফোল্ডার ট্রি</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />-এর সাহায্যে ছবি সার্চ করুন</translation>
 <translation id="964286338916298286">আপনার আইটি অ্যাডমিনিস্ট্রেটর আপনার ডিভাইসের জন্য Chrome গুডিজগুলিকে বন্ধ করেছেন৷</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{অ্যাপ্লিকেশন}one{অ্যাপ্লিকেশনগুলি}other{অ্যাপ্লিকেশনগুলি}}</translation>
 <translation id="964790508619473209">স্ক্রিন সাজানো</translation>

@@ -1720,7 +1720,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2602501489742255173">Başlamaq üçün yuxarı sürüşdürün</translation>
 <translation id="2603115962224169880">Kompüteri təmizləyin</translation>
 <translation id="2603355571917519942">Voice Match hazırdır</translation>
-<translation id="2604138917550693049">Google Linza ilə şəkil axtarın</translation>
 <translation id="2604255671529671813">Şəbəkə bağlantı xətası</translation>
 <translation id="2605668923777146443">Better Together seçimlərinə baxmaq üçün <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" /> bölməsinə keçin</translation>
 <translation id="2606246518223360146">Link Datası</translation>
@@ -1847,6 +1846,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2724841811573117416">WebRTC loqlar</translation>
 <translation id="272488616838512378">Vahidin çevrilməsi</translation>
 <translation id="2725200716980197196">Şəbəkə bağlantısı bərpa edildi</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ilə şəkil axtarın</translation>
 <translation id="2727633948226935816">Daha yadıma salmayın</translation>
 <translation id="2727712005121231835">Aktual Ölçü</translation>
 <translation id="2729314457178420145">Həmçinin baxış datasını (<ph name="URL" />) silin, bunun nəticəsində Google.com ünvanından çıxa bilərsiniz. <ph name="LEARN_MORE" /></translation>
@@ -4187,7 +4187,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5051836348807686060">Seçdiyiniz dillərdə orfoqrafik yoxlanış dəstəklənmir</translation>
 <translation id="5052499409147950210">Sayta düzəliş edin</translation>
 <translation id="505347685865235222">Adsız qrup - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Linza ilə Şəkil Axtarın</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome'u Fərdiləşdirin<ph name="END_LINK" /> bölməsində bütün kart seçimlərini görə bilərsiniz</translation>
 <translation id="5056950756634735043">Konteynerə qoşulur</translation>
 <translation id="5057110919553308744">Artırmaya kliklədiyiniz vaxt</translation>
@@ -8413,6 +8412,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="957960681186851048">Bu sayt çoxsaylı faylları avtomatik endirməyə cəhd etdi</translation>
 <translation id="960987915827980018">Təxminən 1 saat qalıb</translation>
 <translation id="962802172452141067">Əlfəcin qovluğu ağacı</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ilə şəkil axtarın</translation>
 <translation id="964286338916298286">IT administratorunuz cihazda Chrome Goodie'ləri deaktiv etdi.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Tətbiq}other{Tətbiqlər}}</translation>
 <translation id="964790508619473209">Ekran tənzimlənməsi</translation>

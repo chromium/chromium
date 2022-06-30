@@ -1708,7 +1708,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2602501489742255173">Przesuń palcem w górę, by rozpocząć</translation>
 <translation id="2603115962224169880">Oczyść komputer</translation>
 <translation id="2603355571917519942">Funkcja Voice Match jest gotowa</translation>
-<translation id="2604138917550693049">Szukaj grafiki za pomocą Obiektywu Google</translation>
 <translation id="2604255671529671813">Błąd połączenia z siecią</translation>
 <translation id="2605668923777146443">Aby zobaczyć opcje Better Together, otwórz <ph name="LINK_BEGIN" />Ustawienia<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Połącz dane</translation>
@@ -1835,6 +1834,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2724841811573117416">Logi WebRTC</translation>
 <translation id="272488616838512378">Przeliczanie jednostek</translation>
 <translation id="2725200716980197196">Łączność z siecią przywrócona</translation>
+<translation id="272741954544380994">Przeszukaj obraz za pomocą narzędzia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nie przypominaj więcej</translation>
 <translation id="2727712005121231835">Rzeczywisty rozmiar</translation>
 <translation id="2729314457178420145">Wyczyść też dane przeglądania (<ph name="URL" />) – w rezultacie może dojść do wylogowania z Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4177,7 +4177,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5051836348807686060">Sprawdzanie pisowni w wybranych językach nie jest obsługiwane</translation>
 <translation id="5052499409147950210">Edytowanie strony internetowej</translation>
 <translation id="505347685865235222">Grupa bez nazwy – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Szukaj grafiki za pomocą Obiektywu Google</translation>
 <translation id="5054374119096692193">Zobacz wszystkie opcje kart w sekcji <ph name="BEGIN_LINK" />dostosowania Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Łączę się z kontenerem</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
@@ -8411,6 +8410,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="957960681186851048">Ta strona próbowała pobrać automatycznie wiele plików</translation>
 <translation id="960987915827980018">Zostało około 1 godziny</translation>
 <translation id="962802172452141067">Drzewo folderów zakładek</translation>
+<translation id="963000966785016697">Przeszukaj obraz za pomocą narzędzia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Twój administrator IT wyłączył możliwość korzystania z bonusów Chrome na tym urządzeniu.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacja}few{Aplikacje}many{Aplikacje}other{Aplikacje}}</translation>
 <translation id="964790508619473209">Rozmieszczanie ekranów</translation>

@@ -1736,7 +1736,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2602501489742255173">Leret ke atas untuk memulakan</translation>
 <translation id="2603115962224169880">Bersihkan komputer</translation>
 <translation id="2603355571917519942">Voice Match sudah sedia</translation>
-<translation id="2604138917550693049">Cari imej dengan Google Lens</translation>
 <translation id="2604255671529671813">Ralat sambungan rangkaian</translation>
 <translation id="2605668923777146443">Pergi ke <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" /> untuk melihat pilihan anda untuk Better Together.</translation>
 <translation id="2606246518223360146">Pautkan Data</translation>
@@ -1864,6 +1863,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Penukaran Unit</translation>
 <translation id="2725200716980197196">Sambungan rangkaian dipulihkan</translation>
+<translation id="272741954544380994">Cari Imej dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
 <translation id="2727712005121231835">Saiz Sebenar</translation>
 <translation id="2729314457178420145">Kosongkan data semakan imbas (<ph name="URL" />) juga, yang mungkin melog anda keluar daripada Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5051836348807686060">Semak ejaan tidak disokong untuk bahasa yang anda pilih</translation>
 <translation id="5052499409147950210">Edit tapak</translation>
 <translation id="505347685865235222">Kumpulan tidak bernama - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Cari Imej dengan Google Lens</translation>
 <translation id="5054374119096692193">Lihat semua pilihan kad dalam <ph name="BEGIN_LINK" />Sesuaikan Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Menyambung kepada bekas</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
@@ -8440,6 +8439,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="957960681186851048">Tapak ini cuba memuat turun berbilang fail secara automatik</translation>
 <translation id="960987915827980018">Tinggal kira-kira 1jam</translation>
 <translation id="962802172452141067">Pohon folder penanda halaman</translation>
+<translation id="963000966785016697">Cari Imej dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Pentadbir IT anda telah melumpuhkan Cenderahati Chrome untuk peranti anda.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikasi}other{Aplikasi}}</translation>
 <translation id="964790508619473209">Susunan skrin</translation>

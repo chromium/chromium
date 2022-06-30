@@ -1721,7 +1721,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2602501489742255173">Scorri verso l'alto per iniziare</translation>
 <translation id="2603115962224169880">Pulisci il computer</translation>
 <translation id="2603355571917519942">Funzionalità Voice Match pronta</translation>
-<translation id="2604138917550693049">Cerca immagine con Google Lens</translation>
 <translation id="2604255671529671813">Errore di connessione alla rete</translation>
 <translation id="2605668923777146443">Vai alle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" /> per visualizzare le opzioni disponibili per Better Together.</translation>
 <translation id="2606246518223360146">Collega dati</translation>
@@ -1849,6 +1848,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Conversione di unità</translation>
 <translation id="2725200716980197196">Connettività di rete ripristinata</translation>
+<translation id="272741954544380994">Cerca immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Non visualizzare più il promemoria</translation>
 <translation id="2727712005121231835">Dimensioni reali</translation>
 <translation id="2729314457178420145">Cancella anche i dati di navigazione (<ph name="URL" />) che potrebbero farti uscire dall'account su Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4191,7 +4191,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5051836348807686060">Il controllo ortografico non è supportato per le lingue selezionate</translation>
 <translation id="5052499409147950210">Modifica del sito</translation>
 <translation id="505347685865235222">Gruppo senza nome - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Cerca immagine con Google Lens</translation>
 <translation id="5054374119096692193">Visualizza tutte le opzioni relative alle schede nella sezione <ph name="BEGIN_LINK" />Personalizza Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Connessione al contenitore in corso…</translation>
 <translation id="5057110919553308744">Quando fai clic sull'estensione</translation>
@@ -8420,6 +8419,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>
 <translation id="960987915827980018">Circa un'ora rimanente</translation>
 <translation id="962802172452141067">Struttura ad albero della cartella dei preferiti</translation>
+<translation id="963000966785016697">Cerca immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Il tuo amministratore IT ha disattivato i vantaggi offerti da Chrome per il tuo dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Applicazione}other{Applicazioni}}</translation>
 <translation id="964790508619473209">Disposizione dello schermo</translation>

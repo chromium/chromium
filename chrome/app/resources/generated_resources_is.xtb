@@ -1737,7 +1737,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2602501489742255173">Strjúktu upp til að hefjast handa</translation>
 <translation id="2603115962224169880">Hreinsa tölvu</translation>
 <translation id="2603355571917519942">Voice Match er tilbúið</translation>
-<translation id="2604138917550693049">Leita að mynd með Google linsu</translation>
 <translation id="2604255671529671813">Villa í nettengingu</translation>
 <translation id="2605668923777146443">Farðu í <ph name="LINK_BEGIN" />stillingar<ph name="LINK_END" /> til að sjá valkosti þína fyrir Better Together.</translation>
 <translation id="2606246518223360146">Tengja gögn</translation>
@@ -1864,6 +1863,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2724841811573117416">WebRTC-annálar</translation>
 <translation id="272488616838512378">Umreiknuð mæligildi</translation>
 <translation id="2725200716980197196">Nettengingu komið á aftur</translation>
+<translation id="272741954544380994">Leita að mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ekki minna mig aftur á</translation>
 <translation id="2727712005121231835">Raunstærð</translation>
 <translation id="2729314457178420145">Hreinsaðu einnig vefskoðunargögn (<ph name="URL" />), en það gæti skráð þig út af Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5051836348807686060">Villuleit er ekki studd á þeim tungumálum sem þú valdir</translation>
 <translation id="5052499409147950210">Breyta vefsvæði</translation>
 <translation id="505347685865235222">Ónefndur hópur – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Leita að mynd með Google linsu</translation>
 <translation id="5054374119096692193">Sjáðu alla valkosti spjalda í <ph name="BEGIN_LINK" />Sérsníða Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
@@ -8441,6 +8440,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="957960681186851048">Þetta vefsvæði reyndi að sækja margar skrár sjálfkrafa</translation>
 <translation id="960987915827980018">Um 1 klukkustund eftir</translation>
 <translation id="962802172452141067">Möpputré bókamerkja</translation>
+<translation id="963000966785016697">Leita að mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Kerfisstjórinn þinn hefur gert Chrome Goodies glaðning óvirkan fyrir tækið þitt.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Forrit}one{Forrit}other{Forrit}}</translation>
 <translation id="964790508619473209">Uppsetning skjáa</translation>

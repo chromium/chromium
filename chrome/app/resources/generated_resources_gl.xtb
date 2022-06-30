@@ -1720,7 +1720,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2602501489742255173">Pasa o dedo cara arriba para comezar</translation>
 <translation id="2603115962224169880">Fai limpeza no ordenador</translation>
 <translation id="2603355571917519942">A función Voice Match está lista</translation>
-<translation id="2604138917550693049">Buscar imaxe con Google Lens</translation>
 <translation id="2604255671529671813">Produciuse un erro de conexión de rede</translation>
 <translation id="2605668923777146443">Accede a <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /> se queres ver as opcións dispoñibles para Better Together.</translation>
 <translation id="2606246518223360146">Ligar datos</translation>
@@ -1847,6 +1846,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2724841811573117416">Rexistros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conectividade da rede restaurada</translation>
+<translation id="272741954544380994">Buscar imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Non volver lembrar</translation>
 <translation id="2727712005121231835">Tamaño real</translation>
 <translation id="2729314457178420145">Borrar tamén os datos de navegación (<ph name="URL" />), o que pode provocar que peches sesión en Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4189,7 +4189,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5051836348807686060">O corrector ortográfico non é compatible cos idiomas que seleccionaches</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="505347685865235222">Grupo sen nome: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Buscar imaxe con Google Lens</translation>
 <translation id="5054374119096692193">Consulta todas as opcións relativas ás tarxetas en <ph name="BEGIN_LINK" />Personalizar Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Conectando co contedor</translation>
 <translation id="5057110919553308744">Cando fagas clic na extensión</translation>
@@ -8416,6 +8415,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="957960681186851048">Este sitio tentou descargar varios ficheiros automaticamente</translation>
 <translation id="960987915827980018">Queda aproximadamente 1 hora</translation>
 <translation id="962802172452141067">Estrutura en árbore dos cartafoles de marcadores</translation>
+<translation id="963000966785016697">Buscar imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">O teu administrador de TI desactivou os extras de Chrome para o teu dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicación}other{Aplicacións}}</translation>
 <translation id="964790508619473209">Disposición da pantalla</translation>

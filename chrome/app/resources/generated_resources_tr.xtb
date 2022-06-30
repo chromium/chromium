@@ -1719,7 +1719,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2602501489742255173">Başlamak için yukarı doğru kaydırın</translation>
 <translation id="2603115962224169880">Bilgisayarı temizleme</translation>
 <translation id="2603355571917519942">Voice Match hazır</translation>
-<translation id="2604138917550693049">Google Lens ile görsel ara</translation>
 <translation id="2604255671529671813">Ağ bağlantısı hatası</translation>
 <translation id="2605668923777146443">Better Together seçeneklerinizi görmek için <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'a gidin.</translation>
 <translation id="2606246518223360146">Verileri Bağla</translation>
@@ -1846,6 +1845,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2724841811573117416">WebRTC günlükleri</translation>
 <translation id="272488616838512378">Birim Dönüştürme</translation>
 <translation id="2725200716980197196">Ağ bağlantısı geri yüklendi</translation>
+<translation id="272741954544380994">Resmi <ph name="VISUAL_SEARCH_PROVIDER" /> ile ara</translation>
 <translation id="2727633948226935816">Bir daha hatırlatma</translation>
 <translation id="2727712005121231835">Gerçek Boyut</translation>
 <translation id="2729314457178420145">Ayrıca tarama verilerini (<ph name="URL" />) temizle. Bu işlem Google.com oturumunuzu kapatabilir. <ph name="LEARN_MORE" /></translation>
@@ -4188,7 +4188,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5051836348807686060">Yazım denetimi, seçtiğiniz diller için desteklenmiyor</translation>
 <translation id="5052499409147950210">Siteyi düzenle</translation>
 <translation id="505347685865235222">Adsız grup - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens ile görsel ara</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome'u Özelleştir<ph name="END_LINK" /> bölümündeki tüm kart seçeneklerini görün</translation>
 <translation id="5056950756634735043">Kapsayıcıya bağlanıyor</translation>
 <translation id="5057110919553308744">Uzantıyı tıkladığınızda</translation>
@@ -8420,6 +8419,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="957960681186851048">Bu site birden fazla dosyayı otomatik olarak indirmeye çalıştı</translation>
 <translation id="960987915827980018">Yaklaşık 1 saat kaldı</translation>
 <translation id="962802172452141067">Yer işareti klasör ağacı</translation>
+<translation id="963000966785016697">Resmi <ph name="VISUAL_SEARCH_PROVIDER" /> ile ara</translation>
 <translation id="964286338916298286">BT yöneticiniz cihazınızda Chrome Ekstraları'nı devre dışı bırakmış.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Uygulama}other{Uygulamalar}}</translation>
 <translation id="964790508619473209">Ekran düzenlemesi</translation>

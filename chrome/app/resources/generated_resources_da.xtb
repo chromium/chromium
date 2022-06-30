@@ -1737,7 +1737,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2602501489742255173">Stryg opad for at komme i gang</translation>
 <translation id="2603115962224169880">Ryd op på computeren</translation>
 <translation id="2603355571917519942">Voice Match er klar</translation>
-<translation id="2604138917550693049">Søg efter billedet med Google Lens</translation>
 <translation id="2604255671529671813">Fejl i netværksforbindelsen</translation>
 <translation id="2605668923777146443">Gå til <ph name="LINK_BEGIN" />Indstillinger<ph name="LINK_END" /> for at se valgmulighederne for Better Together.</translation>
 <translation id="2606246518223360146">Tilknyt data</translation>
@@ -1865,6 +1864,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2724841811573117416">WebRTC-logfiler</translation>
 <translation id="272488616838512378">Enhedsomregning</translation>
 <translation id="2725200716980197196">Forbindelsen til netværket er genoprettet</translation>
+<translation id="272741954544380994">Søg på billedet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Påmind mig ikke igen</translation>
 <translation id="2727712005121231835">Faktisk størrelse</translation>
 <translation id="2729314457178420145">Ryd også browserdata (<ph name="URL" />), hvilket muligvis logger dig ud af Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4208,7 +4208,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
 <translation id="505347685865235222">Unavngiven gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Søg efter billedet med Google Lens</translation>
 <translation id="5054374119096692193">Se alle kortmuligheder i <ph name="BEGIN_LINK" />Tilpas Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Opretter forbindelse til containeren</translation>
 <translation id="5057110919553308744">Når du klikker på udvidelsen</translation>
@@ -8443,6 +8442,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="957960681186851048">Dette website har forsøgt at downloade flere filer automatisk</translation>
 <translation id="960987915827980018">Omkring én time tilbage</translation>
 <translation id="962802172452141067">Bogmærkemappe i trævisning</translation>
+<translation id="963000966785016697">Søg på billedet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Din it-administrator har deaktiveret Chrome Goodies for din enhed.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{App}one{App}other{Apps}}</translation>
 <translation id="964790508619473209">Skærmopstilling</translation>

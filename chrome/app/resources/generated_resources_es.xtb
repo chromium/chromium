@@ -1722,7 +1722,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2602501489742255173">Desliza el dedo hacia arriba para empezar</translation>
 <translation id="2603115962224169880">Limpiar ordenador</translation>
 <translation id="2603355571917519942">Voice Match está listo</translation>
-<translation id="2604138917550693049">Buscar imagen con Google Lens</translation>
 <translation id="2604255671529671813">No se ha podido establecer conexión con la red</translation>
 <translation id="2605668923777146443">Accede a <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /> para ver las opciones de Better Together.</translation>
 <translation id="2606246518223360146">Vincular datos</translation>
@@ -1849,6 +1848,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2724841811573117416">Registros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conexión de red restaurada</translation>
+<translation id="272741954544380994">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">No volver a recordármelo</translation>
 <translation id="2727712005121231835">Tamaño real</translation>
 <translation id="2729314457178420145">Borrar también los datos de navegación (<ph name="URL" />), lo que puede hacer que se cierre tu sesión en Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4190,7 +4190,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5051836348807686060">La revisión ortográfica no es compatible con los idiomas que has seleccionado</translation>
 <translation id="5052499409147950210">Editar sitio web</translation>
 <translation id="505347685865235222">Grupo sin nombre - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Buscar imagen con Google Lens</translation>
 <translation id="5054374119096692193">Consulta todas las opciones de las tarjetas en <ph name="BEGIN_LINK" />Personalizar Chrome<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Conectando con el contenedor</translation>
 <translation id="5057110919553308744">Al hacer clic en la extensión</translation>
@@ -8422,6 +8421,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="957960681186851048">Este sitio web ha intentado descargar varios archivos automáticamente</translation>
 <translation id="960987915827980018">Aproximadamente 1 hora</translation>
 <translation id="962802172452141067">Árbol de la carpeta de marcadores</translation>
+<translation id="963000966785016697">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Tu administrador de TI ha inhabilitado el contenido adicional de Chrome para tu dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicación}other{Aplicaciones}}</translation>
 <translation id="964790508619473209">Disposición de la pantalla</translation>

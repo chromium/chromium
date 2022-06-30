@@ -1723,7 +1723,6 @@
 <translation id="2602501489742255173">Чтобы начать, проведите по экрану вверх.</translation>
 <translation id="2603115962224169880">Удаление вредоносного ПО с компьютера</translation>
 <translation id="2603355571917519942">Функция Voice Match настроена</translation>
-<translation id="2604138917550693049">Найти через Google Объектив</translation>
 <translation id="2604255671529671813">Ошибка подключения к сети</translation>
 <translation id="2605668923777146443">Чтобы посмотреть параметры режима Better Together, откройте <ph name="LINK_BEGIN" />Настройки<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Связать данные</translation>
@@ -1850,6 +1849,7 @@
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Преобразование единиц измерения</translation>
 <translation id="2725200716980197196">Подключение к сети восстановлено.</translation>
+<translation id="272741954544380994">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Больше не напоминать</translation>
 <translation id="2727712005121231835">Фактический размер</translation>
 <translation id="2729314457178420145">Также удалить данные о работе в браузере (<ph name="URL" />). Возможно, при этом вы выйдете из аккаунта на сайте google.com. <ph name="LEARN_MORE" /></translation>
@@ -4192,7 +4192,6 @@
 <translation id="5051836348807686060">Проверка правописания не поддерживается для выбранных языков.</translation>
 <translation id="5052499409147950210">Изменение сайта</translation>
 <translation id="505347685865235222">Группа без названия: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Найти через Google Объектив</translation>
 <translation id="5054374119096692193">Чтобы посмотреть все варианты карточек, выберите <ph name="BEGIN_LINK" />Настроить Chrome<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
@@ -8432,6 +8431,7 @@
 <translation id="957960681186851048">Этот сайт попытался автоматически скачать несколько файлов</translation>
 <translation id="960987915827980018">Осталось около часа</translation>
 <translation id="962802172452141067">Дерево папок с закладками</translation>
+<translation id="963000966785016697">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Администратор отключил бонусы Chrome для вашего устройства.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Приложение}one{Приложения}few{Приложения}many{Приложения}other{Приложения}}</translation>
 <translation id="964790508619473209">Расположение экранов</translation>

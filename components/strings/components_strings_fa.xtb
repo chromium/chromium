@@ -72,7 +72,7 @@
 <translation id="1165852471352757509">مستند تلویزیونی و غیرتخیلی</translation>
 <translation id="1174723505405632867">می‌خواهید به <ph name="EMBEDDED_URL" /> اجازه دهید از کوکی‌ها و داده‌های سایت در <ph name="TOP_LEVEL_URL" /> استفاده کند؟
 
-اگر اجازه ندهید، تنظیمات حریم‌خصوصی مانع از این دسترسی می‌شود. این اجازه کمک می‌کند محتوایی که با آن تعامل داشته‌اید درست کار کند، اما می‌تواند به <ph name="EMBEDDED_URL" /> هم اجازه دهد فعالیت شما را ردیابی کند.</translation>
+اگر اجازه ندهید، تنظیمات حریم خصوصی مانع از این دسترسی می‌شود. این اجازه کمک می‌کند محتوایی که با آن تعامل داشته‌اید درست کار کند، اما می‌تواند به <ph name="EMBEDDED_URL" /> هم اجازه دهد فعالیت شما را ردیابی کند.</translation>
 <translation id="1175364870820465910">&amp;چاپ...</translation>
 <translation id="1175875016430184367">سه منگنه در راست</translation>
 <translation id="1177802847690410663">مرورگر وب</translation>
@@ -179,7 +179,7 @@
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1408787208417187241">سه منگنه در بالا</translation>
 <translation id="1413407968866574823">بازی‌های اکشن و سکویی</translation>
-<translation id="1413809658975081374">خطای حریم‌خصوصی</translation>
+<translation id="1413809658975081374">خطای حریم خصوصی</translation>
 <translation id="1414134146594747368">پیش‌دبستانی</translation>
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
 <translation id="1426410128494586442">بله</translation>
@@ -343,7 +343,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">برگه‌های بازتان در اینجا نشان داده می‌شوند</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
-<translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم‌خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، چند کنش دردسترس است، برای جابه‌جایی بین آن‌ها، کلید Tab را فشار دهید</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803020234906945288">تغذیه سالم</translation>
@@ -556,7 +556,7 @@
 <translation id="2413155254802890957">قدیمی</translation>
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414886740292270097">تاریک</translation>
-<translation id="2430968933669123598">‏مدیریت «حساب Google»؛ برای مدیریت اطلاعات، حریم‌خصوصی، و امنیت در «حساب Google»، کلید «ورود» را فشار دهید</translation>
+<translation id="2430968933669123598">‏مدیریت «حساب Google»؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «ورود» را فشار دهید</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2438874542388153331">چهار سوراخ در راست</translation>
 <translation id="2448295565072560657">لوازم جانبی متصل به این دستگاه در مدت ورود به سیستم</translation>
@@ -1116,7 +1116,7 @@
 <translation id="4010758435855888356">دسترسی به فضای ذخیره‌سازی مجاز شود؟</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏سند PDF {COUNT} صفحه دارد}one{‏سند PDF {COUNT} صفحه دارد}other{‏سند PDF {COUNT} صفحه دارد}}</translation>
 <translation id="4023431997072828269">از آنجایی‌که این فرم درحال ارسال ازطریق اتصال ناامنی است، دیگران می‌توانند اطلاعات شما را ببینند.</translation>
-<translation id="4025913568718019429">‏دکمه «مدیریت تنظیمات حریم‌خصوصی Google»؛ برای رفتن به تنظیمات حریم‌خصوصی «حساب Google»، کلید «ورود» را فشار دهید</translation>
+<translation id="4025913568718019429">‏دکمه «مدیریت تنظیمات حریم خصوصی Google»؛ برای رفتن به تنظیمات حریم خصوصی «حساب Google»، کلید «ورود» را فشار دهید</translation>
 <translation id="4030383055268325496">&amp;واگرد افزودن</translation>
 <translation id="4040350669425716613">دانشکده و دانشگاه</translation>
 <translation id="4056223980640387499">سپیا</translation>
@@ -1499,7 +1499,7 @@
 <translation id="5035135400558156732">باغبانی</translation>
 <translation id="5039762155821394373">اندازه قلم</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
-<translation id="5040262127954254034">حریم‌خصوصی</translation>
+<translation id="5040262127954254034">حریم خصوصی</translation>
 <translation id="5043480802608081735">پیوندی که کپی کرده‌اید</translation>
 <translation id="5044545992476246592">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «دستیار Google» می‌تواند گذرواژه‌تان را به‌طور خودکار تغییر دهد.</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
@@ -1837,7 +1837,7 @@
 <translation id="598637245381783098">برنامه پرداخت باز نشد</translation>
 <translation id="5989320800837274978">‏سرور پروکسی ثابت و URL اسکریپت pac. تعیین نشده‌اند.</translation>
 <translation id="5992691462791905444">‏تاخوردگی Z شکل مهندسی</translation>
-<translation id="5995727681868049093">‏مدیریت اطلاعات، حریم‌خصوصی، و امنیت در «حساب Google»</translation>
+<translation id="5995727681868049093">‏مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»</translation>
 <translation id="5997247540087773573">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید و گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6006484371116297560">کلاسيک</translation>
@@ -2155,7 +2155,7 @@
 <translation id="695140971690006676">بازنشانی همه</translation>
 <translation id="6954049078461159956">هاكی</translation>
 <translation id="6957887021205513506">به نظر می‌رسد که گواهی سرور جعلی باشد.</translation>
-<translation id="6958564499836457428">‏مدیریت تنظیمات حریم‌خصوصی Google در «حساب Google»</translation>
+<translation id="6958564499836457428">‏مدیریت تنظیمات حریم خصوصی Google در «حساب Google»</translation>
 <translation id="695864015080711809">شغل و تحصیلات</translation>
 <translation id="6961733224437895943">بیمه مسکن</translation>
 <translation id="6961844873822989059">می‌تواند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهد</translation>
@@ -2188,7 +2188,7 @@
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030436163253143341">گواهی معتبر نیست</translation>
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
-<translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات حریم‌خصوصی «حساب Google» خود، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات حریم خصوصی «حساب Google» خود، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="7050187094878475250">تلاش کردید به دامنه <ph name="DOMAIN" /> بروید اما گواهینامه‌ای که سرور ارائه کرد، دارای یک تاریخ اعتبار بسیار طولانی است و مورداعتماد نیست.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{درحال‌حاضر این کارت ذخیره نمی‌شود}one{درحال‌حاضر این کارت‌ها ذخیره نمی‌شوند}other{درحال‌حاضر این کارت‌ها ذخیره نمی‌شوند}}</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
@@ -2276,7 +2276,7 @@
 <translation id="7298195798382681320">توصیه می‌شود</translation>
 <translation id="7300012071106347854">آبی پررنگ</translation>
 <translation id="7304030187361489308">بالا</translation>
-<translation id="7304562222803846232">‏مدیریت تنظیمات حریم‌خصوصی «حساب Google»</translation>
+<translation id="7304562222803846232">‏مدیریت تنظیمات حریم خصوصی «حساب Google»</translation>
 <translation id="7305756307268530424">شروع آهسته‌تر</translation>
 <translation id="7308436126008021607">همگام‌سازی پس‌زمینه</translation>
 <translation id="7310392214323165548">دستگاه به‌زودی بازراه‌اندازی خواهد شد</translation>

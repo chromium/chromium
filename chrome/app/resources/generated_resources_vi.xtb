@@ -1736,7 +1736,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2602501489742255173">Vuốt lên để bắt đầu</translation>
 <translation id="2603115962224169880">Dọn dẹp máy tính</translation>
 <translation id="2603355571917519942">Voice Match đã sẵn sàng</translation>
-<translation id="2604138917550693049">Tìm hình ảnh bằng Google Ống kính</translation>
 <translation id="2604255671529671813">Lỗi kết nối mạng</translation>
 <translation id="2605668923777146443">Chuyển tới phần <ph name="LINK_BEGIN" />Cài đặt<ph name="LINK_END" /> để xem các tùy chọn cho tính năng Better Together.</translation>
 <translation id="2606246518223360146">Liên kết dữ liệu</translation>
@@ -1864,6 +1863,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2724841811573117416">Nhật ký WebRTC</translation>
 <translation id="272488616838512378">Chuyển đổi đơn vị</translation>
 <translation id="2725200716980197196">Đã khôi phục kết nối mạng</translation>
+<translation id="272741954544380994">Tìm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Đừng nhắc tôi lần nữa</translation>
 <translation id="2727712005121231835">Kích thước Thực</translation>
 <translation id="2729314457178420145">Xóa cả dữ liệu duyệt web (<ph name="URL" />), việc này có thể khiến bạn bị đăng xuất khỏi Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5051836348807686060">Các ngôn ngữ bạn đã chọn không hỗ trợ tính năng kiểm tra chính tả</translation>
 <translation id="5052499409147950210">Chỉnh sửa trang web</translation>
 <translation id="505347685865235222">Nhóm chưa có tên – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Tìm hình ảnh bằng Google Ống kính</translation>
 <translation id="5054374119096692193">Xem tất cả tuỳ chọn về thẻ trong phần <ph name="BEGIN_LINK" />Tuỳ chỉnh Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Đang kết nối với vùng chứa</translation>
 <translation id="5057110919553308744">Khi bạn nhấp vào tiện ích</translation>
@@ -8439,6 +8438,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="957960681186851048">Trang web này đã cố gắng tự động tải nhiều tệp xuống</translation>
 <translation id="960987915827980018">Còn khoảng 1 giờ</translation>
 <translation id="962802172452141067">Cây thư mục dấu trang</translation>
+<translation id="963000966785016697">Tìm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Quản trị viên CNTT đã tắt các Ưu đãi của Chrome trên thiết bị của bạn.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ứng dụng}other{Các ứng dụng}}</translation>
 <translation id="964790508619473209">Sắp xếp màn hình</translation>

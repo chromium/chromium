@@ -1737,7 +1737,6 @@
 <translation id="2602501489742255173">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2603115962224169880">ਕੰਪਿਊਟਰ ਸਾਫ਼ ਕਰੋ</translation>
 <translation id="2603355571917519942">Voice Match ਤਿਆਰ ਹੈ</translation>
-<translation id="2604138917550693049">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="2604255671529671813">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="2605668923777146443">Better Together ਲਈ ਆਪਣੇ ਵਿਕਲਪ ਦੇਖਣ ਵਾਸਤੇ <ph name="LINK_BEGIN" />ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="2606246518223360146">ਡਾਟਾ ਲਿੰਕ ਕਰੋ</translation>
@@ -1865,6 +1864,7 @@
 <translation id="2724841811573117416">WebRTC ਲੌਗਸ</translation>
 <translation id="272488616838512378">ਇਕਾਈ ਰੂਪਾਂਤਰਨ</translation>
 <translation id="2725200716980197196">ਨੈੱਟਵਰਕ ਕਨੈਕਟੀਵਿਟੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="2727633948226935816">ਮੈਨੂੰ ਦੁਬਾਰਾ ਯਾਦ ਨਾ ਕਰਵਾਓ</translation>
 <translation id="2727712005121231835">ਅਸਲੀ ਆਕਾਰ</translation>
 <translation id="2729314457178420145">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ (<ph name="URL" />) ਵੀ ਕਲੀਅਰ ਕਰੋ ਜੋ ਸ਼ਾਇਦ ਤੁਹਾਨੂੰ Google.com ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦੇਵੇ। <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@
 <translation id="5051836348807686060">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਦੀ ਸੁਵਿਧਾ ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੀਆਂ ਭਾਸ਼ਾਵਾਂ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="5052499409147950210">ਸਾਈਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="505347685865235222">ਬੇਨਾਮ ਗਰੁੱਪ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ<ph name="END_LINK" /> ਵਿੱਚ ਕਾਰਡਾਂ ਦੇ ਸਾਰੇ ਵਿਕਲਪ ਦੇਖੋ</translation>
 <translation id="5056950756634735043">ਕੰਟੇਨਰ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5057110919553308744">ਜਦੋਂ ਤੁਸੀਂ ਐਕਸਟੈਂਸ਼ਨ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ</translation>
@@ -8441,6 +8440,7 @@
 <translation id="957960681186851048">ਇਸ ਸਾਈਟ ਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ</translation>
 <translation id="960987915827980018">ਲਗਭਗ 1 ਘੰਟਾ ਬਾਕੀ</translation>
 <translation id="962802172452141067">ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ ਰੁੱਖ</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="964286338916298286">ਤੁਹਾਡੇ IT ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ 'Chrome ਦੀਆਂ ਆਕਰਸ਼ਕ ਪੇਸ਼ਕਸ਼ਾਂ' ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ਐਪਲੀਕੇਸ਼ਨ}one{ਐਪਲੀਕੇਸ਼ਨ}other{ਐਪਲੀਕੇਸ਼ਨਾਂ}}</translation>
 <translation id="964790508619473209">ਸਕ੍ਰੀਨ ਦਾ ਪ੍ਰਬੰਧ</translation>

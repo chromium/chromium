@@ -1735,7 +1735,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2602501489742255173">Prevucite prema gore da počnete</translation>
 <translation id="2603115962224169880">Očisti računar</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
-<translation id="2604138917550693049">Pretraži sliku uz Google Objektiv</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2605668923777146443">Idite u <ph name="LINK_BEGIN" />Postavke<ph name="LINK_END" /> da vidite opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -1862,6 +1861,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2724841811573117416">WebRTC zapisnici</translation>
 <translation id="272488616838512378">Pretvaranje jedinica</translation>
 <translation id="2725200716980197196">Veza s mrežom ponovno je uspostavljena</translation>
+<translation id="272741954544380994">Traži sliku pomoću <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne podsjećaj me ponovo</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
 <translation id="2729314457178420145">Također obrišite podatke pregledanja (<ph name="URL" />), što vas može odjaviti s domene Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4205,7 +4205,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5051836348807686060">Alat za provjeru pravopisa nije podržan za odabrane jezike</translation>
 <translation id="5052499409147950210">Uredite web lokaciju</translation>
 <translation id="505347685865235222">Neimenovana grupa – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pretraži sliku uz Google Objektiv</translation>
 <translation id="5054374119096692193">Pogledajte sve opcije kartica u odjeljku <ph name="BEGIN_LINK" />Prilagodite Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete na ekstenziju</translation>
@@ -8443,6 +8442,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="957960681186851048">Ova web lokacija je pokušala automatski preuzeti više fajlova</translation>
 <translation id="960987915827980018">Još otprilike 1 sat</translation>
 <translation id="962802172452141067">Stablo foldera za oznake</translation>
+<translation id="963000966785016697">Traži sliku pomoću <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Vaš IT administrator je onemogućio Chrome Goodies za vaš uređaj.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacija}one{Aplikacija}few{Aplikacije}other{Aplikacija}}</translation>
 <translation id="964790508619473209">Raspored na ekranu</translation>

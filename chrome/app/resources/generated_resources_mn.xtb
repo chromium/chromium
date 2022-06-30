@@ -1732,7 +1732,6 @@
 <translation id="2602501489742255173">Эхлүүлэхийн тулд дээш шударна уу</translation>
 <translation id="2603115962224169880">Компьютерийг цэвэрлэх</translation>
 <translation id="2603355571917519942">Voice Match бэлэн байна</translation>
-<translation id="2604138917550693049">Google Lens-р зураг хайх</translation>
 <translation id="2604255671529671813">Сүлжээний холболтын алдаа</translation>
 <translation id="2605668923777146443">"Better Together" онцлогийн сонголтоо харахын тулд <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="2606246518223360146">Өгөгдлийг холбох</translation>
@@ -1860,6 +1859,7 @@
 <translation id="2724841811573117416">WebRTC бүртгэлүүд</translation>
 <translation id="272488616838512378">Нэгж хөрвүүлэлт</translation>
 <translation id="2725200716980197196">Сүлжээний холболтыг дахин сэргээсэн байна.</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийг хайх</translation>
 <translation id="2727633948226935816">Надад дахин битгий сануул</translation>
 <translation id="2727712005121231835">Бодит хэмжээ</translation>
 <translation id="2729314457178420145">Мөн хайлтын өгөгдлийг (<ph name="URL" />) устгах. Ингэснээр таныг Google.com-с гаргаж болзошгүй. <ph name="LEARN_MORE" /></translation>
@@ -4202,7 +4202,6 @@
 <translation id="5051836348807686060">Таны сонгосон хэл дээр зөв бичгийн дүрмийн алдаа шалгагч нь дэмжигдээгүй байна</translation>
 <translation id="5052499409147950210">Сайтыг засах</translation>
 <translation id="505347685865235222">Нэргүй бүлэг - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens-р зураг хайх</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Customize Chrome-н<ph name="END_LINK" /> картын бүх сонголтыг харах</translation>
 <translation id="5056950756634735043">Агуулагчтай холбогдож байна</translation>
 <translation id="5057110919553308744">Та өргөтгөл гэснийг товших үед</translation>
@@ -8429,6 +8428,7 @@
 <translation id="957960681186851048">Энэ сайт автоматаар олон файл татахаар оролдсон</translation>
 <translation id="960987915827980018">Ойролцоогоор 1 цаг үлдсэн байна</translation>
 <translation id="962802172452141067">Хавчуургын фолдерын хажуугийн хэсэг</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайх</translation>
 <translation id="964286338916298286">Таны IT (МТ) админ таны төхөөрөмжийн Chrome Goodies-г идэвхгүй болгосон байна.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апп}other{Аппууд}}</translation>
 <translation id="964790508619473209">Дэлгэцийн зохион байгуулалт</translation>

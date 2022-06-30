@@ -1724,7 +1724,6 @@
 <translation id="2602501489742255173">مرِّر سريعًا للأعلى للبدء.</translation>
 <translation id="2603115962224169880">إزالة البرامج الضارة من جهاز الكمبيوتر</translation>
 <translation id="2603355571917519942">‏ميزة Voice Match جاهزة للاستخدام</translation>
-<translation id="2604138917550693049">‏ابحث في الصور عبر "عدسة Google"</translation>
 <translation id="2604255671529671813">خطأ في اتصال الشبكة</translation>
 <translation id="2605668923777146443">يُرجى الانتقال إلى <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" /> للاطِّلاع على الخيارات المتاحة لميزة "الربط بالهاتف".</translation>
 <translation id="2606246518223360146">ربط البيانات</translation>
@@ -1852,6 +1851,7 @@
 <translation id="2724841811573117416">‏سجلات WebRTC</translation>
 <translation id="272488616838512378">تحويل الوحدات</translation>
 <translation id="2725200716980197196">تمت استعادة اتصال الشبكة</translation>
+<translation id="272741954544380994">البحث عن الصورة باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="2727633948226935816">لا تذكرني مرة أخرى</translation>
 <translation id="2727712005121231835">الحجم الفعلي</translation>
 <translation id="2729314457178420145">‏قد يؤدي محو بيانات تصفّح (<ph name="URL" />) أيضًا إلى تسجيل خروجك من Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4193,7 +4193,6 @@
 <translation id="5051836348807686060">لا تتوفر ميزة التدقيق الإملائي للغات التي اخترتها.</translation>
 <translation id="5052499409147950210">تعديل موقع إلكتروني</translation>
 <translation id="505347685865235222">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">‏البحث باستخدام الصورة بواسطة "عدسة Google"</translation>
 <translation id="5054374119096692193">‏الاطّلاع على كل خيارات البطاقة في القسم <ph name="BEGIN_LINK" />تخصيص Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
@@ -8439,6 +8438,7 @@
 <translation id="957960681186851048">حاول هذا الموقع تنزيل عدة ملفات تلقائيًا</translation>
 <translation id="960987915827980018">تتبقى ساعة واحدة تقريبًا</translation>
 <translation id="962802172452141067">شجرة مجلد الإشارات المرجعية</translation>
+<translation id="963000966785016697">البحث عن الصورة باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="964286338916298286">‏أوقف مشرف تقنية المعلومات ميزات Chrome الإضافية لجهازك.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{تطبيق}zero{تطبيقات}two{تطبيقان}few{تطبيقات}many{تطبيقات}other{تطبيقات}}</translation>
 <translation id="964790508619473209">ترتيب موضع الشاشة</translation>

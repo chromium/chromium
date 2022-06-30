@@ -1736,7 +1736,6 @@
 <translation id="2602501489742255173">Σύρετε προς τα επάνω για να ξεκινήσετε</translation>
 <translation id="2603115962224169880">Εκκαθάριση υπολογιστή</translation>
 <translation id="2603355571917519942">Το Voice Match είναι έτοιμο</translation>
-<translation id="2604138917550693049">Αναζήτηση εικόνας με το Google Lens</translation>
 <translation id="2604255671529671813">Σφάλμα σύνδεσης δικτύου</translation>
 <translation id="2605668923777146443">Μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις<ph name="LINK_END" />, για να δείτε τις επιλογές που έχετε στη διάθεσή σας για τη λειτουργία Better Together.</translation>
 <translation id="2606246518223360146">Σύνδεση δεδομένων</translation>
@@ -1864,6 +1863,7 @@
 <translation id="2724841811573117416">Αρχεία καταγραφής WebRTC</translation>
 <translation id="272488616838512378">Μετατροπή μονάδων</translation>
 <translation id="2725200716980197196">Αποκαταστάθηκε η συνδεσιμότητα δικτύου</translation>
+<translation id="272741954544380994">Αναζήτηση εικόνας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Να μην μου ξαναγίνει υπενθύμιση</translation>
 <translation id="2727712005121231835">Πραγματικό Μέγεθος</translation>
 <translation id="2729314457178420145">Επίσης, διαγράψτε δεδομένα περιήγησης (<ph name="URL" />) τα οποία ενδέχεται να σας αποσυνδέσουν από το Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@
 <translation id="5051836348807686060">Δεν υποστηρίζεται ορθογραφικός έλεγχος για τις γλώσσες που επιλέξατε</translation>
 <translation id="5052499409147950210">Επεξεργασία ιστοτόπου</translation>
 <translation id="505347685865235222">Ομάδα χωρίς όνομα - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Αναζήτηση εικόνας με το Google Lens</translation>
 <translation id="5054374119096692193">Δείτε όλες τις επιλογές καρτών στην ενότητα <ph name="BEGIN_LINK" />Προσαρμογή του Chrome<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Σύνδεση στο κοντέινερ</translation>
 <translation id="5057110919553308744">Όταν κάνετε κλικ στην επέκταση</translation>
@@ -8438,6 +8437,7 @@
 <translation id="957960681186851048">Αυτός ο ιστότοπος επιχείρησε να κατεβάσει αυτόματα πολλά αρχεία</translation>
 <translation id="960987915827980018">Απομένει περίπου 1 ώρα</translation>
 <translation id="962802172452141067">Δέντρο φακέλου σελιδοδεικτών</translation>
+<translation id="963000966785016697">Αναζήτηση εικόνας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Ο διαχειριστής τεχνολογιών πληροφορικής της συσκευής σας απενεργοποίησε τα Καλούδια Chrome για τη συσκευή σας.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Εφαρμογή}other{Εφαρμογές}}</translation>
 <translation id="964790508619473209">Διάταξη οθόνης</translation>

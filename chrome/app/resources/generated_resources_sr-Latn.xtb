@@ -1720,7 +1720,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2602501489742255173">Prevucite nagore da biste započeli</translation>
 <translation id="2603115962224169880">Očistite računar</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
-<translation id="2604138917550693049">Tražite sliku uz Google objektiv</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2605668923777146443">Idite u <ph name="LINK_BEGIN" />Podešavanja<ph name="LINK_END" /> da biste videli opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -1848,6 +1847,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2724841811573117416">WebRTC evidencije</translation>
 <translation id="272488616838512378">Konverzija jedinica</translation>
 <translation id="2725200716980197196">Veza sa mrežom je ponovo uspostavljena</translation>
+<translation id="272741954544380994">Traži sliku uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne podsećaj me više</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
 <translation id="2729314457178420145">Obriši i podatke pregledanja (<ph name="URL" />). Ovo može da vas odjavi sa Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4190,7 +4190,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5051836348807686060">Provera pravopisa nije podržana za jezike koje ste izabrali</translation>
 <translation id="5052499409147950210">Izmenite sajt</translation>
 <translation id="505347685865235222">Grupa bez naziva – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Tražite sliku uz Google objektiv</translation>
 <translation id="5054374119096692193">Prikaži sve opcije kartica u meniju <ph name="BEGIN_LINK" />Prilagodite Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezuje se sa kontejnerom</translation>
 <translation id="5057110919553308744">Kada kliknete na dodatak</translation>
@@ -8427,6 +8426,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="957960681186851048">Ovaj sajt je pokušao da automatski preuzme više datoteka</translation>
 <translation id="960987915827980018">Ostalo je oko sat vremena</translation>
 <translation id="962802172452141067">Stablo direktorijuma obeleživača</translation>
+<translation id="963000966785016697">Traži sliku uz: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">IT administrator je onemogućio Chrome zabavne stvarčice za uređaj.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacija}one{Aplikacije}few{Aplikacije}other{Aplikacije}}</translation>
 <translation id="964790508619473209">Raspored na ekranu</translation>

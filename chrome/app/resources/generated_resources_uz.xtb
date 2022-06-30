@@ -1723,7 +1723,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2602501489742255173">Boshlash uchun tepaga suring</translation>
 <translation id="2603115962224169880">Kompyuterni tozalash vositasi</translation>
 <translation id="2603355571917519942">Voice Match tayyor</translation>
-<translation id="2604138917550693049">Google Lens orqali rasm qidirish</translation>
 <translation id="2604255671529671813">Tarmoqqa ulanishda xato</translation>
 <translation id="2605668923777146443">Better Together rejimi parametrlarini koʻrish uchun <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> sahifasini oching.</translation>
 <translation id="2606246518223360146">Hisoblarni ulash</translation>
@@ -1851,6 +1850,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2724841811573117416">WebRTC jurnallari</translation>
 <translation id="272488616838512378">Birliklar konvertori</translation>
 <translation id="2725200716980197196">Tarmoq aloqasi tiklandi</translation>
+<translation id="272741954544380994">Rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="2727633948226935816">Boshqa eslatilmasin</translation>
 <translation id="2727712005121231835">Asl hajmi</translation>
 <translation id="2729314457178420145">Shuningdek, brauzer tarixi (<ph name="URL" />) ham tozalansin (Google.com hisobingizdan avtomatik chiqib ketasiz). <ph name="LEARN_MORE" /></translation>
@@ -4194,7 +4194,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5051836348807686060">Tanlangan tilda imlo tekshirilmaydi</translation>
 <translation id="5052499409147950210">Saytni tahrirlash</translation>
 <translation id="505347685865235222">Nomsiz guruh – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens orqali rasm qidirish</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chromeni moslash<ph name="END_LINK" /> sahifasidagi barcha kartochka sozlamalarini ochish</translation>
 <translation id="5056950756634735043">Konteynerga ulanmoqda</translation>
 <translation id="5057110919553308744">Kengaytma bosilganda</translation>
@@ -8424,6 +8423,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="957960681186851048">Bu sayt bir necha fayllarni avtomatik yuklab olishga urinib ko‘rdi</translation>
 <translation id="960987915827980018">1 soatcha qoldi</translation>
 <translation id="962802172452141067">Xatcho‘plar javoni</translation>
+<translation id="963000966785016697">Rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="964286338916298286">IT administratoringiz qurilmangiz uchun Chrome bonuslarini failsizlantirgan.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ilova}other{Ilovalar}}</translation>
 <translation id="964790508619473209">Ekran joylashuv tartibi</translation>

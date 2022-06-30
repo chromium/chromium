@@ -1723,7 +1723,6 @@
 <translation id="2602501489742255173">Սկսելու համար մատը սահեցրեք վերև</translation>
 <translation id="2603115962224169880">Մաքրեք համակարգիչը</translation>
 <translation id="2603355571917519942">Voice Match-ը պատրաստ է</translation>
-<translation id="2604138917550693049">Որոնել պատկերը Google Տեսապակու միջոցով</translation>
 <translation id="2604255671529671813">Ցանցի միացման սխալ</translation>
 <translation id="2605668923777146443">Better Together ռեժիմի ընտրանքները տեսնելու համար անցեք <ph name="LINK_BEGIN" />Կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="2606246518223360146">Կցել տվյալները</translation>
@@ -1850,6 +1849,7 @@
 <translation id="2724841811573117416">WebRTC մատյաններ</translation>
 <translation id="272488616838512378">Չափման միավորների փոխարկում</translation>
 <translation id="2725200716980197196">Ցանցի կապակցումը վերականգնվել է</translation>
+<translation id="272741954544380994">Որոնել պատկերը <ph name="VISUAL_SEARCH_PROVIDER" /> ծառայության միջոցով</translation>
 <translation id="2727633948226935816">Այլևս չհիշեցնել</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729314457178420145">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից Google.com կայքում։ <ph name="LEARN_MORE" /></translation>
@@ -4191,7 +4191,6 @@
 <translation id="5051836348807686060">Ուղղագրության ստուգումը չի աջակցվում ձեր ընտրած լեզուների համար</translation>
 <translation id="5052499409147950210">Փոփոխեք կայքը</translation>
 <translation id="505347685865235222">Անանուն խումբ – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Որոնել պատկերը Google Տեսապակու միջոցով</translation>
 <translation id="5054374119096692193">Տեսեք քարտերի բոլոր տարբերակները <ph name="BEGIN_LINK" />Անհատականացնել Chrome-ը<ph name="END_LINK" /> բաժնում</translation>
 <translation id="5056950756634735043">Միացում կոնտեյներին</translation>
 <translation id="5057110919553308744">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
@@ -8422,6 +8421,7 @@
 <translation id="957960681186851048">Այս կայքը փորձում էր ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
 <translation id="960987915827980018">Մնացել է մոտ 1 ժամ</translation>
 <translation id="962802172452141067">Էջանիշների պանակների ծառ</translation>
+<translation id="963000966785016697">Որոնել պատկերը <ph name="VISUAL_SEARCH_PROVIDER" /> ծառայության միջոցով</translation>
 <translation id="964286338916298286">Ադմինիստրատորն անջատել է Chrome-ի բոնուսները ձեր սարքի համար:</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Հավելված}one{Հավելված}other{Հավելվածներ}}</translation>
 <translation id="964790508619473209">Էկրանի դիրքը</translation>

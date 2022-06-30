@@ -1734,7 +1734,6 @@
 <translation id="2602501489742255173">আৰম্ভ কৰিবলৈ ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="2603115962224169880">কম্পিউটাৰৰ ডেটা মচক</translation>
 <translation id="2603355571917519942">Voice Match সুবিধাটো সাজু আছে</translation>
-<translation id="2604138917550693049">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="2604255671529671813">নেটৱৰ্ক সংযোগ সম্পর্কীয় আসোঁৱাহ</translation>
 <translation id="2605668923777146443">উন্নত সমাযোজনৰ বাবে আপোনাৰ বিকল্প চাবলৈ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="2606246518223360146">ডেটা লিংক কৰক</translation>
@@ -1861,6 +1860,7 @@
 <translation id="2724841811573117416">WebRTC লগ</translation>
 <translation id="272488616838512378">একক ৰূপান্তৰণ</translation>
 <translation id="2725200716980197196">নেটৱর্ক সংযোগ পুনঃস্থাপন কৰা হ’ল</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" />ৰ জৰিয়তে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="2727633948226935816">মোক পুনৰ সোঁৱৰাই নিদিব</translation>
 <translation id="2727712005121231835">প্ৰকৃত আকাৰ</translation>
 <translation id="2729314457178420145">লগতে ব্ৰাউজিঙৰ ডেটাও (<ph name="URL" />) মচক যিয়ে আপোনাক Google.comৰ পৰা ছাইন আউট কৰাব পাৰে। <ph name="LEARN_MORE" /></translation>
@@ -4203,7 +4203,6 @@
 <translation id="5051836348807686060">আপুনি বাছনি কৰা ভাষাৰ ক্ষেত্ৰত বানান পৰীক্ষক সমৰ্থিত নহয়</translation>
 <translation id="5052499409147950210">ছাইট সম্পাদনা কৰক</translation>
 <translation id="505347685865235222">নামবিহীন গোট - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome কাষ্টমাইজ কৰক<ph name="END_LINK" />ত থকা কাৰ্ডৰ আটাইবোৰ বিকল্প চাওক</translation>
 <translation id="5056950756634735043">কণ্টেইনাৰৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="5057110919553308744">যেতিয়া আপুনি এক্সটেনশ্বনটো ক্লিক কৰে</translation>
@@ -8436,6 +8435,7 @@
 <translation id="957960681186851048">এই ছাইটটোৱে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ চেষ্টা কৰিছিল</translation>
 <translation id="960987915827980018">প্ৰায় ১ ঘণ্টা বাকী আছে</translation>
 <translation id="962802172452141067">বুকমার্ক ফ’ল্ডাৰৰ ট্ৰী</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />ৰ জৰিয়তে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="964286338916298286">আইটি প্ৰশাসকে আপোনাৰ ডিভাইচত Chrome Goodies অক্ষম কৰিছে।</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{এপ্লিকেশ্বন}one{এপ্লিকেশ্বন}other{এপ্লিকেশ্বন}}</translation>
 <translation id="964790508619473209">স্ক্ৰীনৰ ব্যৱস্থাপনা</translation>

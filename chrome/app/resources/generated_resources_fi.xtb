@@ -1735,7 +1735,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2602501489742255173">Aloita pyyhkäisemällä ylös</translation>
 <translation id="2603115962224169880">Puhdista tietokone</translation>
 <translation id="2603355571917519942">Voice Match on valmiina</translation>
-<translation id="2604138917550693049">Hae kuvaa Google Lensilla</translation>
 <translation id="2604255671529671813">Verkkoyhteysvirhe</translation>
 <translation id="2605668923777146443">Katso Better Together ‑vaihtoehdot <ph name="LINK_BEGIN" />asetuksista<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Yhdistä tiedot</translation>
@@ -1863,6 +1862,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2724841811573117416">WebRTC-lokit</translation>
 <translation id="272488616838512378">Yksikkömuunnos</translation>
 <translation id="2725200716980197196">Verkkoyhteys palautettu</translation>
+<translation id="272741954544380994">Hae kuvaa: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Älä muistuta uudelleen</translation>
 <translation id="2727712005121231835">Todellinen koko</translation>
 <translation id="2729314457178420145">Poista lisäksi selaustiedot (<ph name="URL" />). Tämä saattaa kirjata sinut ulos Google.comista. <ph name="LEARN_MORE" /></translation>
@@ -4203,7 +4203,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5051836348807686060">Oikeinkirjoituksen tarkistusta ei tueta valitsemillasi kielillä</translation>
 <translation id="5052499409147950210">Muokkaa sivustoa</translation>
 <translation id="505347685865235222">Nimetön ryhmä – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Hae kuvaa Google Lensilla</translation>
 <translation id="5054374119096692193">Katso kaikki korttivaihtoehdot <ph name="BEGIN_LINK" />Yksilöi Chromea<ph name="END_LINK" /> ‑osiosta</translation>
 <translation id="5056950756634735043">Muodostetaan yhteyttä säilöön</translation>
 <translation id="5057110919553308744">Kun klikkaat laajennusta</translation>
@@ -8434,6 +8433,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="957960681186851048">Tämä sivusto yrittää ladata useita tiedostoja automaattisesti</translation>
 <translation id="960987915827980018">Noin tunti jäljellä</translation>
 <translation id="962802172452141067">Kirjanmerkkien kansiopuu</translation>
+<translation id="963000966785016697">Hae kuvaa: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">IT-järjestelmänvalvojasi on poistanut Chrome Goodies ‑tarjoukset käytöstä laitteellasi.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Sovellus}other{Sovellukset}}</translation>
 <translation id="964790508619473209">Näytön asettelu</translation>

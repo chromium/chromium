@@ -1736,7 +1736,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2602501489742255173">Swipe up to get started</translation>
 <translation id="2603115962224169880">Clean up computer</translation>
 <translation id="2603355571917519942">Voice Match is ready</translation>
-<translation id="2604138917550693049">Search image with Google Lens</translation>
 <translation id="2604255671529671813">Network connection error</translation>
 <translation id="2605668923777146443">Go to <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" /> to see your options for Better Together.</translation>
 <translation id="2606246518223360146">Link Data</translation>
@@ -1864,6 +1863,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2724841811573117416">WebRTC logs</translation>
 <translation id="272488616838512378">Unit conversion</translation>
 <translation id="2725200716980197196">Network connectivity restored</translation>
+<translation id="272741954544380994">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Don't remind me again</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729314457178420145">Also clear browsing data (<ph name="URL" />) which may sign you out of Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5051836348807686060">Spellcheck isn’t supported for the languages that you have selected</translation>
 <translation id="5052499409147950210">Edit site</translation>
 <translation id="505347685865235222">Unnamed group – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Search Image with Google Lens</translation>
 <translation id="5054374119096692193">See all card options in <ph name="BEGIN_LINK" />Customise Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
@@ -8439,6 +8438,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>
 <translation id="960987915827980018">About 1 hour left</translation>
 <translation id="962802172452141067">Bookmark folder tree</translation>
+<translation id="963000966785016697">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Your IT administrator has disabled Chrome Goodies for your device.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Screen arrangement</translation>

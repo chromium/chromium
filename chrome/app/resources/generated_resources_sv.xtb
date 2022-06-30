@@ -1736,7 +1736,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2602501489742255173">Kom igång genom att svepa uppåt</translation>
 <translation id="2603115962224169880">Rensa upp på datorn</translation>
 <translation id="2603355571917519942">Voice Match har konfigurerats</translation>
-<translation id="2604138917550693049">Bildsökning med Google Lens</translation>
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
 <translation id="2605668923777146443">Du hittar alternativ för Better Together i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Länka Data</translation>
@@ -1864,6 +1863,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2724841811573117416">WebRTC-loggar</translation>
 <translation id="272488616838512378">Enhetskonvertering</translation>
 <translation id="2725200716980197196">Nätverksanslutning har återställts</translation>
+<translation id="272741954544380994">Bildsökning med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Påminn mig inte igen</translation>
 <translation id="2727712005121231835">Faktisk storlek</translation>
 <translation id="2729314457178420145">Rensa även webbinformation (<ph name="URL" />), vilket kan innebära att du loggas ut från Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5051836348807686060">Stavningskontroll stöds inte för de språk du valt</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
 <translation id="505347685865235222">Namnlös grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Bildsökning med Google Lens</translation>
 <translation id="5054374119096692193">Se alla kortalternativ i <ph name="BEGIN_LINK" />Anpassa Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Ansluter till behållaren</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
@@ -8439,6 +8438,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="957960681186851048">Den här webbplatsen försökte ladda ned flera filer automatiskt</translation>
 <translation id="960987915827980018">Ca 1 timme kvar</translation>
 <translation id="962802172452141067">Mappstruktur för bokmärken</translation>
+<translation id="963000966785016697">Bildsökning med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">IT-administratören har inaktiverat Godbitar från Chrome för din enhet.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{App}other{Appar}}</translation>
 <translation id="964790508619473209">Skärmuppställning</translation>

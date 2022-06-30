@@ -1735,7 +1735,6 @@
 <translation id="2602501489742255173">ປັດຂຶ້ນເພື່ອເລີ່ມຕົ້ນ</translation>
 <translation id="2603115962224169880">ອະນາໄມຄອມພິວເຕີ</translation>
 <translation id="2603355571917519942">Voice Match ພ້ອມແລ້ວ</translation>
-<translation id="2604138917550693049">ຊອກຫາຮູບພາບດ້ວຍ Google Lens</translation>
 <translation id="2604255671529671813">ການເຊື່ອມຕໍ່ເຄືອຂ່າຍຜິດພາດ</translation>
 <translation id="2605668923777146443">ໄປຫາ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="LINK_END" /> ເພື່ອເບິ່ງຕົວເລືອກຂອງທ່ານສຳລັບ Better Together.</translation>
 <translation id="2606246518223360146">ລິ້ງຂໍ້ມູນ</translation>
@@ -1863,6 +1862,7 @@
 <translation id="2724841811573117416">ບັນ​ທຶກ WebRTC</translation>
 <translation id="272488616838512378">ການປ່ຽນແປງຫົວໜ່ວຍ</translation>
 <translation id="2725200716980197196">ເອົາການ​ເຊື່ອມ​ຕໍ່​ເຄືອຄືນມາແລ້ວ</translation>
+<translation id="272741954544380994">ຊອກຫາຮູບດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">ຢ່າ​ເຕືອນ​ຂ້ອຍ​ອີກ</translation>
 <translation id="2727712005121231835">ຂະໜາດຕົວຈິງ</translation>
 <translation id="2729314457178420145">ລຶບລ້າງຂໍ້ມູນການນຳໃຊ້ (<ph name="URL" />) ນຳ ເຊິ່ງອາດຈະນຳທ່ານອອກຈາກລະບົບ Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4206,7 +4206,6 @@
 <translation id="5051836348807686060">ບໍ່ຮອງຮັບການກວດການສະກົດຄຳສຳລັບພາສາທີ່ທ່ານເລືອກ</translation>
 <translation id="5052499409147950210">ແກ້ໄຂເວັບໄຊ</translation>
 <translation id="505347685865235222">ກຸ່ມບໍ່ມີຊື່ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">ຊອກຫາຮູບພາບດ້ວຍ Google Lens</translation>
 <translation id="5054374119096692193">ເບິ່ງຕົວເລືອກບັດທັງໝົດໃນ <ph name="BEGIN_LINK" />ປັບແຕ່ງ Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">ກຳລັງເຊື່ອມຕໍ່ຫາກ່ອງບັນຈຸ</translation>
 <translation id="5057110919553308744">ເມື່ອທ່ານຄລິກສ່ວນຂະຫຍາຍ</translation>
@@ -8435,6 +8434,7 @@
 <translation id="957960681186851048">ເວັບໄຊນີ້ໄດ້ພະຍາຍາມດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="960987915827980018">ຍັງເຫຼືອປະ​ມານ 1 ຊົ່ວ​ໂມງ</translation>
 <translation id="962802172452141067">ໂຄງສ້າງໂຟນເດີບຸກມາກ</translation>
+<translation id="963000966785016697">ຊອກຫາຮູບດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">ຜູ້ເບິ່ງແຍງລະບົບ IT ຂອງທ່ານໄດ້ປິດນຳໃຊ້ Chrome Goodies ສຳລັບອຸປະກອນຂອງທ່ານແລ້ວ.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ແອັບພລິເຄຊັນ}other{ແອັບພລິເຄຊັນ}}</translation>
 <translation id="964790508619473209">ການຈັດວາງໜ້າຈໍ</translation>

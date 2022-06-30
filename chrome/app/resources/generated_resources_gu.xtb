@@ -1719,7 +1719,6 @@
 <translation id="2602501489742255173">શરૂ કરવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="2603115962224169880">કમ્પ્યુટર સાફ કરો</translation>
 <translation id="2603355571917519942">Voice Match તૈયાર છે</translation>
-<translation id="2604138917550693049">Google Lens વડે છબી શોધો</translation>
 <translation id="2604255671529671813">નેટવર્ક કનેક્શનમાં ભૂલ</translation>
 <translation id="2605668923777146443">Better Together સુવિધાના તમારા વિકલ્પો જોવા માટે <ph name="LINK_BEGIN" />સેટિંગ<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="2606246518223360146">ડેટાને લિંક કરો</translation>
@@ -1847,6 +1846,7 @@
 <translation id="2724841811573117416">WebRTC લૉગ્સ</translation>
 <translation id="272488616838512378">એકમ રૂપાંતરણ</translation>
 <translation id="2725200716980197196">નેટવર્ક કનેક્ટિવિટી પુનઃસ્થાપિત કરી</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબી શોધો</translation>
 <translation id="2727633948226935816">મને ફરીથી યાદ કરાવશો નહીં</translation>
 <translation id="2727712005121231835">વાસ્તવિક કદ</translation>
 <translation id="2729314457178420145">બ્રાઉઝિંગ ડેટા (<ph name="URL" />) પણ સાફ કરો જે તમને Google.comમાંથી સાઇન આઉટ કરી શકે છે. <ph name="LEARN_MORE" /></translation>
@@ -4189,7 +4189,6 @@
 <translation id="5051836348807686060">તમે પસંદ કરેલી ભાષાઓ માટે જોડણીતપાસ સમર્થિત નથી</translation>
 <translation id="5052499409147950210">સાઇટમાં ફેરફાર કરો</translation>
 <translation id="505347685865235222">નામ વિનાનું ગ્રૂપ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens વડે છબી શોધો</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chromeને કસ્ટમાઇઝ કરો<ph name="END_LINK" />માં કાર્ડના તમામ વિકલ્પો જુઓ</translation>
 <translation id="5056950756634735043">કન્ટેનર સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="5057110919553308744">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
@@ -8420,6 +8419,7 @@ USB ડિવાઇસ</translation>
 <translation id="957960681186851048">આ સાઇટે એકથી વધુ ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનો પ્રયાસ કર્યો</translation>
 <translation id="960987915827980018">લગભગ 1 કલાક બાકી</translation>
 <translation id="962802172452141067">બુકમાર્ક ફોલ્ડર વૃક્ષ</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબી શોધો</translation>
 <translation id="964286338916298286">તમારા IT વ્યવસ્થાપકે તમારા ઉપકરણ માટે Chrome ઑફરો બંધ કરેલી છે.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ઍપ્લિકેશન}one{ઍપ્લિકેશનો}other{ઍપ્લિકેશનો}}</translation>
 <translation id="964790508619473209">સ્ક્રીનની ગોઠવણી</translation>

@@ -1719,7 +1719,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2602501489742255173">Rrëshqit shpejt lart për të filluar</translation>
 <translation id="2603115962224169880">Pastro kompjuterin</translation>
 <translation id="2603355571917519942">Voice Match është gati</translation>
-<translation id="2604138917550693049">Kërko imazh me "Lenten e Google"</translation>
 <translation id="2604255671529671813">Gabim në lidhjen e rrjetit</translation>
 <translation id="2605668923777146443">Shko te <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" /> për të parë opsionet e tua për Better Together.</translation>
 <translation id="2606246518223360146">Lidh të dhënat</translation>
@@ -1846,6 +1845,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2724841811573117416">Regjistrat WebRTC</translation>
 <translation id="272488616838512378">Konvertimi i njësive</translation>
 <translation id="2725200716980197196">Lidhshmëria e rrjetit u restaurua</translation>
+<translation id="272741954544380994">Kërko për imazhin me: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Mos më kujto më</translation>
 <translation id="2727712005121231835">Madhësia aktuale</translation>
 <translation id="2729314457178420145">Pastro gjithashtu të dhënat e shfletimit, (<ph name="URL" />)gjë që mund të të bëjë të dalësh nga Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4188,7 +4188,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5051836348807686060">Kontrolli drejtshkrimor nuk mbështetet për gjuhët që zgjodhe</translation>
 <translation id="5052499409147950210">Modifiko sajtin</translation>
 <translation id="505347685865235222">Grup pa emër - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Kërko imazh me "Lenten e Google"</translation>
 <translation id="5054374119096692193">Shiko të gjitha opsionet e kartave te <ph name="BEGIN_LINK" />Personalizimi i Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Lidhja me kontejnerin</translation>
 <translation id="5057110919553308744">Kur klikon te shtesa</translation>
@@ -8417,6 +8416,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="957960681186851048">Ky sajt u përpoq të shkarkonte automatikisht shumë skedarë</translation>
 <translation id="960987915827980018">Rreth 1 orë e mbetur</translation>
 <translation id="962802172452141067">Pema e dosjes së faqeshënuesve</translation>
+<translation id="963000966785016697">Kërko për imazhin me: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Administratori i teknologjisë së informacionit ka çaktivizuar "Chrome Goodies" për pajisjen tënde.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacioni}other{Aplikacionet}}</translation>
 <translation id="964790508619473209">Sistemimi i ekranit</translation>

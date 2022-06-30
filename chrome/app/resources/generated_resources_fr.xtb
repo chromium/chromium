@@ -1722,7 +1722,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2602501489742255173">Balayez l'écran vers le haut pour démarrer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
 <translation id="2603355571917519942">Voice Match est prêt</translation>
-<translation id="2604138917550693049">Rechercher l'image avec Google Lens</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2605668923777146443">Accédez aux <ph name="LINK_BEGIN" />paramètres<ph name="LINK_END" /> afin de voir vos options pour Better Together.</translation>
 <translation id="2606246518223360146">Associer les données</translation>
@@ -1850,6 +1849,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2724841811573117416">Journaux WebRTC</translation>
 <translation id="272488616838512378">Conversion d'unités</translation>
 <translation id="2725200716980197196">La connectivité du réseau a été rétablie</translation>
+<translation id="272741954544380994">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne plus afficher ce rappel</translation>
 <translation id="2727712005121231835">Taille réelle</translation>
 <translation id="2729314457178420145">Effacer également les données de navigation (<ph name="URL" />), ce qui risque de vous déconnecter de Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4192,7 +4192,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5051836348807686060">La vérification orthographique n'est pas disponible pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
 <translation id="505347685865235222">Groupe sans nom – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Rechercher l'image avec Google Lens</translation>
 <translation id="5054374119096692193">Consultez toutes les options des fiches dans <ph name="BEGIN_LINK" />Personnaliser Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Connexion au conteneur</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
@@ -8428,6 +8427,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="957960681186851048">Une tentative de téléchargement automatique de plusieurs fichiers a été initiée via ce site</translation>
 <translation id="960987915827980018">Environ 1 heure restante</translation>
 <translation id="962802172452141067">Arborescence de dossiers des favoris</translation>
+<translation id="963000966785016697">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}one{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Mode d'affichage de l'écran</translation>

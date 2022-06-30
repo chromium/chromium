@@ -1723,7 +1723,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2602501489742255173">Začnite potiahnutím nahor</translation>
 <translation id="2603115962224169880">Vyčistiť počítač</translation>
 <translation id="2603355571917519942">Funkcia Voice Match je pripravená</translation>
-<translation id="2604138917550693049">Hľadať obrázok pomocou funkcie Google Lens</translation>
 <translation id="2604255671529671813">Chyba sieťového pripojenia</translation>
 <translation id="2605668923777146443">Možnosti funkcie Better Together nájdete v <ph name="LINK_BEGIN" />Nastaveniach<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Prepojiť dáta</translation>
@@ -1851,6 +1850,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2724841811573117416">Denníky WebRTC</translation>
 <translation id="272488616838512378">Prevod jednotiek</translation>
 <translation id="2725200716980197196">Pripojenie k sieti bolo obnovené</translation>
+<translation id="272741954544380994">Hľadať obrázok pomocou funkcie <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Viac nepripomínať</translation>
 <translation id="2727712005121231835">Skutočná veľkosť</translation>
 <translation id="2729314457178420145">Vymazať tiež dáta prehliadania (<ph name="URL" />), po čom vás môže systém odhlásiť z domény Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4193,7 +4193,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5051836348807686060">Kontrola pravopisu nie je v prípade vybraných jazykov podporovaná</translation>
 <translation id="5052499409147950210">Úprava webu</translation>
 <translation id="505347685865235222">Skupina bez názvu – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Hľadať obrázok pomocou funkcie Google Lens</translation>
 <translation id="5054374119096692193">Prezrite si všetky možnosti karty v sekcii <ph name="BEGIN_LINK" />Prispôsobenie Chromu<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Pripája sa ku kontajneru</translation>
 <translation id="5057110919553308744">Keď kliknete na rozšírenie</translation>
@@ -8430,6 +8429,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="957960681186851048">Tento web sa pokúsil automaticky stiahnuť viacero súborov</translation>
 <translation id="960987915827980018">Zostáva približne 1 hodina</translation>
 <translation id="962802172452141067">Stromová štruktúra priečinka so záložkami</translation>
+<translation id="963000966785016697">Hľadať obrázok pomocou funkcie <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Správca IT zakázal v zariadení doplnky Chrome Goodies.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikácia}few{Aplikácie}many{Aplikácie}other{Aplikácie}}</translation>
 <translation id="964790508619473209">Usporiadanie obrazovky</translation>

@@ -1737,7 +1737,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2602501489742255173">Deslize para cima para começar</translation>
 <translation id="2603115962224169880">Limpar o computador</translation>
 <translation id="2603355571917519942">O Voice Match está pronto</translation>
-<translation id="2604138917550693049">Pesquisar imagem com o Lens</translation>
 <translation id="2604255671529671813">Erro de conexão da rede</translation>
 <translation id="2605668923777146443">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para ver suas opções do Better Together.</translation>
 <translation id="2606246518223360146">Vincular dados</translation>
@@ -1865,6 +1864,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2724841811573117416">Registros WebRTC</translation>
 <translation id="272488616838512378">Conversão de unidades</translation>
 <translation id="2725200716980197196">Conectividade de rede restaurada</translation>
+<translation id="272741954544380994">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Não me lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
 <translation id="2729314457178420145">Remover também os dados de navegação (<ph name="URL" />). Sua conta poderá ser desconectada de google.com.br. <ph name="LEARN_MORE" /></translation>
@@ -4209,7 +4209,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é compatível com os idiomas selecionados</translation>
 <translation id="5052499409147950210">Editar site</translation>
 <translation id="505347685865235222">Grupo sem nome: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pesquisar imagem com o Lens</translation>
 <translation id="5054374119096692193">Veja todas as opções de cards em <ph name="BEGIN_LINK" />Personalizar o Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Conectando ao contêiner</translation>
 <translation id="5057110919553308744">Quando você clicar na extensão</translation>
@@ -8445,6 +8444,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="957960681186851048">Este site tentou fazer o download de vários arquivos automaticamente</translation>
 <translation id="960987915827980018">Cerca de 1 hora restante</translation>
 <translation id="962802172452141067">Árvore de pastas de favoritos</translation>
+<translation id="963000966785016697">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Seu administrador de TI desativou os Goodies do Chrome para seu dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicativo}one{Aplicativo}other{Aplicativos}}</translation>
 <translation id="964790508619473209">Disposição da tela</translation>

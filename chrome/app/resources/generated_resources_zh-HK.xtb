@@ -1736,7 +1736,6 @@
 <translation id="2602501489742255173">向上滑動即可開始</translation>
 <translation id="2603115962224169880">清理電腦</translation>
 <translation id="2603355571917519942">Voice Match 已準備就緒</translation>
-<translation id="2604138917550693049">使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="2604255671529671813">網絡連線錯誤</translation>
 <translation id="2605668923777146443">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」以查看您 Better Together 的選項。﻿</translation>
 <translation id="2606246518223360146">連結資料</translation>
@@ -1864,6 +1863,7 @@
 <translation id="2724841811573117416">WebRTC 記錄</translation>
 <translation id="272488616838512378">單位轉換</translation>
 <translation id="2725200716980197196">網絡連線已恢復</translation>
+<translation id="272741954544380994">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="2727633948226935816">不要再提醒我</translation>
 <translation id="2727712005121231835">實際大小</translation>
 <translation id="2729314457178420145">一併清除瀏覽資料 (<ph name="URL" />) 可能會將您登出 Google.com。<ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@
 <translation id="5051836348807686060">您所選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="5054374119096692193">在「<ph name="BEGIN_LINK" />自訂 Chrome<ph name="END_LINK" />」中查看所有資訊卡選項</translation>
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
@@ -8437,6 +8436,7 @@
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>
 <translation id="960987915827980018">還有約 1 個小時</translation>
 <translation id="962802172452141067">樹狀分枝書籤</translation>
+<translation id="963000966785016697">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="964286338916298286">IT 管理員已為您的裝置停用 Chrome Goodies。</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{應用程式}other{應用程式}}</translation>
 <translation id="964790508619473209">螢幕安排</translation>

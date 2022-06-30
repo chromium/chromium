@@ -1737,7 +1737,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2602501489742255173">Swayiphela phezulu ukuze uqalise</translation>
 <translation id="2603115962224169880">Hlanza ikhompuyutha</translation>
 <translation id="2603355571917519942">I-Voice Match seyilungile</translation>
-<translation id="2604138917550693049">Sesha isithombe Ngama-Google Lens</translation>
 <translation id="2604255671529671813">Iphutha lokuxhuma inethiwekhi</translation>
 <translation id="2605668923777146443">Iya kokuthi <ph name="LINK_BEGIN" />Amasethingi<ph name="LINK_END" /> ukuze ubone izinketho zakho ze-Better Together.</translation>
 <translation id="2606246518223360146">Xhumanisa idatha</translation>
@@ -1865,6 +1864,7 @@ bese u-Ctrl+Alt+Brightness down ukuze uhlehlise isithombe.</translation>
 <translation id="2724841811573117416">Amalogu we-WebRTC</translation>
 <translation id="272488616838512378">Ukuguqulwa kweyunithi</translation>
 <translation id="2725200716980197196">Kubuyiselwe ukuxhumeka kwenethiwekhi</translation>
+<translation id="272741954544380994">Sesha Umfanekiso nge-<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ungaphindi ungikhumbuze futhi</translation>
 <translation id="2727712005121231835">Usayizi wangempela</translation>
 <translation id="2729314457178420145">Futhi sula idatha yopheqululo (<ph name="URL" />) engase ikwenze uphume ngemvume ku-Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="5051836348807686060">Ukuhlolwa kokupeleta akusekelwe kuzilimi ozikhethile</translation>
 <translation id="5052499409147950210">Hlela isayithi</translation>
 <translation id="505347685865235222">Iqembu elingaqanjiwe - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Sesha isithombe Ngama-Google Lens</translation>
 <translation id="5054374119096692193">Bona konke okukhethwayo kwekhadi kokuthi <ph name="BEGIN_LINK" />Yenza ngokwezifiso I-Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Xhuma esiqukathini</translation>
 <translation id="5057110919553308744">Uma uchofoza isandiso</translation>
@@ -8443,6 +8442,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="957960681186851048">Leli sayithi lizame ukulanda amafayela amaningi ngokuzenzakalela</translation>
 <translation id="960987915827980018">Kusele okungenani ihora elingu-1</translation>
 <translation id="962802172452141067">Isihlahla sefolda yebhukhimakhi</translation>
+<translation id="963000966785016697">Sesha umfanekiso nge-<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Umlawuli wakho we-IT ukhubaze izinto ze-Chrome zedivayisi yakho.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Uhlelo lokusebenza}one{Izinhlelo zokusebenza}other{Izinhlelo zokusebenza}}</translation>
 <translation id="964790508619473209">Ukuhleleka kwesikrini</translation>

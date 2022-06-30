@@ -1739,7 +1739,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2602501489742255173">Sweipiwch i fyny i gychwyn arni</translation>
 <translation id="2603115962224169880">Glanhau'r cyfrifiadur</translation>
 <translation id="2603355571917519942">Mae Voice Match yn barod</translation>
-<translation id="2604138917550693049">Chwilio llun â Google Lens</translation>
 <translation id="2604255671529671813">Bu gwall cysylltiad rhwydwaith</translation>
 <translation id="2605668923777146443">Ewch i'r <ph name="LINK_BEGIN" />Gosodiadau<ph name="LINK_END" /> i weld eich dewisiadau ar gyfer Better Together.</translation>
 <translation id="2606246518223360146">Cysylltu Data</translation>
@@ -1867,6 +1866,7 @@ a Ctrl+Alt+Lleihau Disgleirdeb i bellhau.</translation>
 <translation id="2724841811573117416">Cofnodion WebRTC</translation>
 <translation id="272488616838512378">Trosi Uned</translation>
 <translation id="2725200716980197196">Adferwyd cysylltedd rhwydwaith</translation>
+<translation id="272741954544380994">Chwilio Llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Peidio â fy atgoffa eto</translation>
 <translation id="2727712005121231835">Maint Gwirioneddol</translation>
 <translation id="2729314457178420145">Clirio data pori (<ph name="URL" />) hefyd a allai eich allgofnodi o Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4210,7 +4210,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="5051836348807686060">Ni chefnogir gwirio sillafu ar gyfer yr ieithoedd a ddewisoch</translation>
 <translation id="5052499409147950210">Golygu'r wefan</translation>
 <translation id="505347685865235222">Grŵp dienw - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Chwilio Llun â Google Lens</translation>
 <translation id="5054374119096692193">Gweld pob opsiwn cerdyn yn <ph name="BEGIN_LINK" />Personoleiddio Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Wrthi'n cysylltu â'r cynhwysydd</translation>
 <translation id="5057110919553308744">Pan fyddwch yn clicio'r estyniad</translation>
@@ -8453,6 +8452,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="957960681186851048">Gwnaeth y wefan hon geisio lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="960987915827980018">Tua 1 awr ar ôl</translation>
 <translation id="962802172452141067">Coeden ffolderi nodau tudalen</translation>
+<translation id="963000966785016697">Chwilio llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Mae eich gweinyddwr TG wedi diffodd Chrome Goodies o'ch dyfais.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ap}zero{Apiau}two{Apiau}few{Apiau}many{Apiau}other{Apiau}}</translation>
 <translation id="964790508619473209">Trefniant sgriniau</translation>

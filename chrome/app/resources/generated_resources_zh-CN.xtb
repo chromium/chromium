@@ -1713,7 +1713,6 @@
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
 <translation id="2603355571917519942">Voice Match 已设置完毕</translation>
-<translation id="2604138917550693049">使用 Google 智能镜头搜索图片</translation>
 <translation id="2604255671529671813">网络连接错误</translation>
 <translation id="2605668923777146443">转到<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />即可查看您的 Better Together 选项。</translation>
 <translation id="2606246518223360146">关联数据</translation>
@@ -1840,6 +1839,7 @@
 <translation id="2724841811573117416">WebRTC日志</translation>
 <translation id="272488616838512378">单位换算</translation>
 <translation id="2725200716980197196">网络连接已恢复</translation>
+<translation id="272741954544380994">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="2727633948226935816">不再提醒</translation>
 <translation id="2727712005121231835">实际大小</translation>
 <translation id="2729314457178420145">一并清除浏览数据 (<ph name="URL" />)，这可能会使您在 Google.com 上退出帐号。<ph name="LEARN_MORE" /></translation>
@@ -4179,7 +4179,6 @@
 <translation id="5051836348807686060">所选语言不支持拼写检查</translation>
 <translation id="5052499409147950210">修改网站</translation>
 <translation id="505347685865235222">未命名的组 - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">使用 Google 智能镜头搜索图片</translation>
 <translation id="5054374119096692193">在<ph name="BEGIN_LINK" />自定义 Chrome<ph name="END_LINK" /> 部分中查看所有卡片选项</translation>
 <translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
@@ -8407,6 +8406,7 @@
 <translation id="957960681186851048">此网站试图自动下载多个文件</translation>
 <translation id="960987915827980018">约剩 1 小时</translation>
 <translation id="962802172452141067">书签文件夹树</translation>
+<translation id="963000966785016697">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="964286338916298286">您的 IT 管理员已禁止您的设备享用 Chrome 附赠的好礼。</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{应用}other{应用}}</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>

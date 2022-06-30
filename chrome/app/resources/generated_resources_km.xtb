@@ -1736,7 +1736,6 @@
 <translation id="2602501489742255173">អូស​ឡើងលើ ដើម្បី​ចាប់ផ្ដើម</translation>
 <translation id="2603115962224169880">សម្អាត​កុំព្យូទ័រ</translation>
 <translation id="2603355571917519942">អាចប្រើ​មុខងារ Voice Match បានហើយ</translation>
-<translation id="2604138917550693049">ស្វែងរករូបភាពដោយប្រើ Google Lens</translation>
 <translation id="2604255671529671813">មាន​បញ្ហា​ក្នុង​ការភ្ជាប់បណ្តាញ</translation>
 <translation id="2605668923777146443">ចូលទៅ​កាន់<ph name="LINK_BEGIN" />ការកំណត់<ph name="LINK_END" /> ដើម្បី​មើល​ជម្រើស​របស់អ្នក​សម្រាប់​មុខងារ Better Together។</translation>
 <translation id="2606246518223360146">ភ្ជាប់​ទិន្នន័យ</translation>
@@ -1864,6 +1863,7 @@
 <translation id="2724841811573117416">កំណត់ត្រា WebRTC</translation>
 <translation id="272488616838512378">ការបំប្លែងខ្នាត</translation>
 <translation id="2725200716980197196">ការភ្ជាប់បណ្តាញត្រូវបានស្តារ</translation>
+<translation id="272741954544380994">ស្វែងរក​រូបភាព​ដោយ​ប្រើ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">កុំរំលឹកខ្ញុំម្តងទៀត</translation>
 <translation id="2727712005121231835">ទំហំពិតប្រាកដ</translation>
 <translation id="2729314457178420145">ក៏សម្អាត​ទិន្នន័យ​រុករក (<ph name="URL" />) ដែលអាច​នាំអ្នក​ចេញពី Google.com ផងដែរ។ <ph name="LEARN_MORE" /></translation>
@@ -4207,7 +4207,6 @@
 <translation id="5051836348807686060">មិនស្គាល់​ការពិនិត្យ​អក្ខរាវិរុទ្ធសម្រាប់​ភាសា​ដែលអ្នក​បានជ្រើសរើស​ទេ</translation>
 <translation id="5052499409147950210">កែ​សម្រួល​ទំព័រ</translation>
 <translation id="505347685865235222">ក្រុមដែលគ្មានឈ្មោះ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">ស្វែងរករូបភាពដោយប្រើ Google Lens</translation>
 <translation id="5054374119096692193">មើលជម្រើសកាតទាំងអស់នៅក្នុងផ្នែក "<ph name="BEGIN_LINK" />ប្ដូរ Chrome តាមបំណង<ph name="END_LINK" />"</translation>
 <translation id="5056950756634735043">កំពុងភ្ជាប់ជាមួយទម្រង់ផ្ទុក</translation>
 <translation id="5057110919553308744">នៅពេលអ្នកចុច​កម្មវិធីបន្ថែម</translation>
@@ -8440,6 +8439,7 @@
 <translation id="957960681186851048">ទំព័រ​នេះ​បាន​ព្យាយាម​ទាញយក​ឯកសារ​ជាច្រើន​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="960987915827980018">នៅសល់ប្រហែលមួយម៉ោងទៀត</translation>
 <translation id="962802172452141067">មែកធាង​ថត​ចំណាំ</translation>
+<translation id="963000966785016697">ស្វែងរក​រូបភាព​ដោយ​ប្រើ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">អ្នកគ្រប់គ្រង IT របស់អ្នកបានបិទដំណើរការផ្តល់ជូនពិសេសរបស់ Chrome សម្រាប់ឧបករណ៍របស់អ្នក។</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{កម្មវិធី}other{កម្មវិធី}}</translation>
 <translation id="964790508619473209">ការគ្រប់គ្រង​អេក្រង់</translation>

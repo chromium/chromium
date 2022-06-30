@@ -1723,7 +1723,6 @@
 <translation id="2602501489742255173">شروع کرنے کیلئے اوپر سوائپ کریں</translation>
 <translation id="2603115962224169880">کمپیوٹر صاف کریں</translation>
 <translation id="2603355571917519942">‏Voice Match تیار ہے</translation>
-<translation id="2604138917550693049">‏Google لینز سے تصویر تلاش کریں</translation>
 <translation id="2604255671529671813">نیٹ ورک کنکشن میں خرابی</translation>
 <translation id="2605668923777146443">‏Better Together کی خاطر اپنے اختیارات دیکھنے کیلئے <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="2606246518223360146">ڈیٹا کو لنک کریں</translation>
@@ -1850,6 +1849,7 @@
 <translation id="2724841811573117416">‏WebRTC لاگز</translation>
 <translation id="272488616838512378">یونٹ کی تبدیلی</translation>
 <translation id="2725200716980197196">نیٹ ورک کنیکٹویٹی بحال کر دی گئی</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصویر تلاش کریں</translation>
 <translation id="2727633948226935816">مجھے دوبارہ یاد نہ دلائیں</translation>
 <translation id="2727712005121231835">اصل سائز</translation>
 <translation id="2729314457178420145">‏براؤزنگ ڈیٹا (<ph name="URL" />) بھی صاف کریں جس سے آپ Google.com سے سائن آؤٹ ہو سکتے ہیں۔ <ph name="LEARN_MORE" /></translation>
@@ -4192,7 +4192,6 @@
 <translation id="5051836348807686060">املا کی جانچ آپ کی منتخب زبانوں کے لیے تعاون یافتہ نہیں ہے</translation>
 <translation id="5052499409147950210">سائٹ میں ترمیم کریں</translation>
 <translation id="505347685865235222">بغیر نام کے گروپ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">‏Google لینز سے تصویر تلاش کریں</translation>
 <translation id="5054374119096692193">‏<ph name="BEGIN_LINK" />حسب ضرورت Chrome<ph name="END_LINK" /> میں کارڈ کے تمام اختیارات دیکھیں</translation>
 <translation id="5056950756634735043">کنٹینر سے منسلک ہو رہا ہے</translation>
 <translation id="5057110919553308744">جب آپ ایکسٹینشن پر کلک کرتے ہیں</translation>
@@ -8421,6 +8420,7 @@
 <translation id="957960681186851048">اس سائٹ نے متعدد فائلز کو خودکار طور پر ڈاؤن لوڈ کرنے کی کوشش کی ہے</translation>
 <translation id="960987915827980018">قریب 1 گھنٹہ باقی ہے</translation>
 <translation id="962802172452141067">بُک مارک فولڈر کا درخت</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصویر تلاش کریں</translation>
 <translation id="964286338916298286">‏آپ کے IT کے منتظم نے آپ کے آلے کیلئے "Chrome کی اچھی چیزوں" کو غیر فعال کر دیا ہے۔</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ایپلیکیشن}other{ایپلیکیشنز}}</translation>
 <translation id="964790508619473209">اسکرین کا انتظام</translation>

@@ -1722,7 +1722,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2602501489742255173">Glisează în sus pentru a începe</translation>
 <translation id="2603115962224169880">Curăță computerul</translation>
 <translation id="2603355571917519942">Voice Match este gata</translation>
-<translation id="2604138917550693049">Caută imaginea cu Google Lens</translation>
 <translation id="2604255671529671813">Eroare de conectare la rețea</translation>
 <translation id="2605668923777146443">Accesează <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" /> ca să vezi opțiunile pentru Better Together.</translation>
 <translation id="2606246518223360146">Conectează datele</translation>
@@ -1850,6 +1849,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2724841811573117416">Jurnale WebRTC</translation>
 <translation id="272488616838512378">Conversia unităților</translation>
 <translation id="2725200716980197196">Conexiunea la rețea a fost restabilită</translation>
+<translation id="272741954544380994">Caută imaginea cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nu-mi mai reaminti</translation>
 <translation id="2727712005121231835">Dimensiunea actuală</translation>
 <translation id="2729314457178420145">Șterge și datele de navigare (<ph name="URL" />), acțiune care te poate deconecta de la Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4192,7 +4192,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5051836348807686060">Verificarea ortografiei nu este acceptată pentru limbile selectate</translation>
 <translation id="5052499409147950210">Editează site-ul</translation>
 <translation id="505347685865235222">Grup nedenumit – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Caută imaginea cu Google Lens</translation>
 <translation id="5054374119096692193">Vezi toate opțiunile pentru carduri în <ph name="BEGIN_LINK" />Personalizează Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Se conectează la container</translation>
 <translation id="5057110919553308744">Când dai clic pe extensie</translation>
@@ -8426,6 +8425,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="957960681186851048">Acest site a încercat să descarce automat mai multe fișiere</translation>
 <translation id="960987915827980018">A mai rămas aproape 1 oră</translation>
 <translation id="962802172452141067">Arborele cu dosarele de marcaje</translation>
+<translation id="963000966785016697">Caută imaginea cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Administratorul IT a dezactivat accesoriile Chrome pentru dispozitiv.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicație}few{Aplicații}other{Aplicații}}</translation>
 <translation id="964790508619473209">Aranjarea pe ecran</translation>

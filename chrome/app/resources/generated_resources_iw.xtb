@@ -1735,7 +1735,6 @@
 <translation id="2602501489742255173">יש להחליק כלפי מעלה כדי להתחיל</translation>
 <translation id="2603115962224169880">ניקוי המחשב</translation>
 <translation id="2603355571917519942">‏התכונה Voice Match מוכנה</translation>
-<translation id="2604138917550693049">‏חיפוש תמונה באמצעות Google Lens</translation>
 <translation id="2604255671529671813">שגיאת חיבור רשת</translation>
 <translation id="2605668923777146443">‏כדי לראות את האפשרויות של Better Together יש לעבור אל <ph name="LINK_BEGIN" />ההגדרות<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">קישור נתונים</translation>
@@ -1863,6 +1862,7 @@
 <translation id="2724841811573117416">‏יומני WebRTC</translation>
 <translation id="272488616838512378">המרת יחידות</translation>
 <translation id="2725200716980197196">קישוריות הרשת התחדשה</translation>
+<translation id="272741954544380994">חיפוש התמונה באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">אני לא רוצה לקבל עוד תזכורת</translation>
 <translation id="2727712005121231835">גודל ממשי</translation>
 <translation id="2729314457178420145">‏אני רוצה גם לנקות את נתוני הגלישה (<ph name="URL" />). פעולה זו עשויה לנתק אותך מ-Google.com.
@@ -4207,7 +4207,6 @@
 <translation id="5051836348807686060">בשפות שבחרת אין תמיכה בבדיקת איות</translation>
 <translation id="5052499409147950210">עריכת אתר</translation>
 <translation id="505347685865235222">קבוצה ללא שם – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">‏חיפוש תמונה באמצעות Google Lens</translation>
 <translation id="5054374119096692193">‏הצגת כל אפשרויות הכרטיסים ב<ph name="BEGIN_LINK" />התאמה האישית של Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">מתבצעת התחברות למאגר</translation>
 <translation id="5057110919553308744">בלחיצה על התוסף</translation>
@@ -8446,6 +8445,7 @@
 <translation id="957960681186851048">האתר הזה ניסה להוריד קבצים מרובים באופן אוטומטי</translation>
 <translation id="960987915827980018">נותרה בערך שעה אחת</translation>
 <translation id="962802172452141067">עץ תיקיות של סימניות</translation>
+<translation id="963000966785016697">חיפוש התמונה באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">‏מנהל המערכת שלך השבית את ההטבות של Chrome בשביל המכשיר שלך.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{אפליקציה}two{אפליקציות}many{אפליקציות}other{אפליקציות}}</translation>
 <translation id="964790508619473209">פריסת מסכים</translation>

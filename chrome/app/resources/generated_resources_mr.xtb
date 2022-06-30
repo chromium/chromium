@@ -1735,7 +1735,6 @@
 <translation id="2602501489742255173">सुरू करण्यासाठी वर स्वाइप करा</translation>
 <translation id="2603115962224169880">काँप्युटर साफ करा</translation>
 <translation id="2603355571917519942">Voice Match तयार आहे</translation>
-<translation id="2604138917550693049">Google Lens सह इमेज शोधा</translation>
 <translation id="2604255671529671813">नेटवर्क कनेक्शन एरर</translation>
 <translation id="2605668923777146443">Better Together साठी तुमचे पर्याय पाहण्याकरिता <ph name="LINK_BEGIN" />सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
 <translation id="2606246518223360146">डेटा लिंक करा</translation>
@@ -1863,6 +1862,7 @@
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">युनिट कन्व्हर्जन</translation>
 <translation id="2725200716980197196">नेटवर्क कनेक्टिव्हिटी पुनर्संचयित</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>
 <translation id="2727633948226935816">मला पुन्‍हा स्‍मरण करून देऊ नका</translation>
 <translation id="2727712005121231835">वास्तविक आकार</translation>
 <translation id="2729314457178420145">तसेच ब्राउझिंग डेटा (<ph name="URL" />) साफ करा ज्यामुळे तुम्ही कदाचित Google.com वरून साइन आउट व्हाल. <ph name="LEARN_MORE" /></translation>
@@ -4204,7 +4204,6 @@
 <translation id="5051836348807686060">तुम्ही निवडलेल्या भाषांसाठी स्पेल चेक सपोर्ट करत नाही</translation>
 <translation id="5052499409147950210">साइट संपादित करा</translation>
 <translation id="505347685865235222">निनावी गट - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens सह इमेज शोधा</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome कस्टमाइझ करा<ph name="END_LINK" /> मध्ये कार्डशी संबंधित सर्व पर्याय पहा</translation>
 <translation id="5056950756634735043">कंटेनरशी कनेक्ट करत आहे</translation>
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
@@ -8436,6 +8435,7 @@
 <translation id="957960681186851048">या साइटने एकाहून अधिक फाइल आपोआप डाउनलोड करण्याचा प्रयत्न केला</translation>
 <translation id="960987915827980018">सुमारे 1 तास बाकी</translation>
 <translation id="962802172452141067">फोल्डर ट्री बुकमार्क करा</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>
 <translation id="964286338916298286">तुमच्या IT ॲडमिनिस्ट्रेटरने तुमच्या डिव्हाइसाठी Chrome Goodies बंद केले आहे.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ॲप्लिकेशन}other{ॲप्लिकेशन}}</translation>
 <translation id="964790508619473209">स्क्रीन व्यवस्था</translation>

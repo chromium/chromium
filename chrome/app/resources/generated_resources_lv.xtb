@@ -1723,7 +1723,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2602501489742255173">Lai sāktu darbu, velciet augšup</translation>
 <translation id="2603115962224169880">Tīriet datoru</translation>
 <translation id="2603355571917519942">Funkcija Voice Match ir gatava darbam</translation>
-<translation id="2604138917550693049">Meklēt attēlu ar Google Lens</translation>
 <translation id="2604255671529671813">Tīkla savienojuma kļūda</translation>
 <translation id="2605668923777146443">Lai skatītu funkcijas Better Together opcijas, pārejiet uz sadaļu <ph name="LINK_BEGIN" />Iestatījumi<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Saistīt datus</translation>
@@ -1851,6 +1850,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2724841811573117416">WebRTC žurnāli</translation>
 <translation id="272488616838512378">Izteikšana citās mērvienībās</translation>
 <translation id="2725200716980197196">Tīkla savienojums atjaunots</translation>
+<translation id="272741954544380994">Meklēt attēlu, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Turpmāk vairs neatgādināt</translation>
 <translation id="2727712005121231835">Faktiskais izmērs</translation>
 <translation id="2729314457178420145">Arī notīrīt pārlūkošanas datus (<ph name="URL" />). Tādējādi varat tikt izrakstīts no vietnes Google.com. <ph name="LEARN_MORE" /></translation>
@@ -4193,7 +4193,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5051836348807686060">Pareizrakstības pārbaude netiek atbalstīta atlasītajās valodās</translation>
 <translation id="5052499409147950210">Vietnes rediģēšana</translation>
 <translation id="505347685865235222">Grupa bez nosaukuma — <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Meklēt attēlu ar Google Lens</translation>
 <translation id="5054374119096692193">Skatiet visas kartīšu opcijas sadaļā <ph name="BEGIN_LINK" />Chrome pielāgošana<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Notiek savienojuma izveide ar konteineru</translation>
 <translation id="5057110919553308744">Kad noklikšķināt uz paplašinājuma</translation>
@@ -8427,6 +8426,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="957960681186851048">Šī vietne mēģināja automātiski lejupielādēt vairākus failus</translation>
 <translation id="960987915827980018">Atlikusi apmēram 1 stunda</translation>
 <translation id="962802172452141067">Grāmatzīmju mapju koks</translation>
+<translation id="963000966785016697">Meklēt attēlu, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">IT administrators ir atspējojis Chrome piedāvājumus jūsu ierīcei.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Lietojumprogramma}zero{Lietojumprogrammas}one{Lietojumprogrammas}other{Lietojumprogrammas}}</translation>
 <translation id="964790508619473209">Ekrāna izkārtojums</translation>

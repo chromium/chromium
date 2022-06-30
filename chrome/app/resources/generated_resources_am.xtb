@@ -1730,7 +1730,6 @@
 <translation id="2602501489742255173">ለመጀመር በጣት ይጥረጉ</translation>
 <translation id="2603115962224169880">ኮምፒውተርን አጽዳ</translation>
 <translation id="2603355571917519942">Voice Match ዝግጁ ነው</translation>
-<translation id="2604138917550693049">በGoogle ሌንስ አማካኝነት ምስልን ይፈልጉ</translation>
 <translation id="2604255671529671813">የአውታረ መረብ ግንኙነት ስህተት</translation>
 <translation id="2605668923777146443">ለተሻለ አብሮነት የእርስዎን ምርጫዎች ለማየት ወደ <ph name="LINK_BEGIN" />ቅንብሮች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="2606246518223360146">ውሂብ አገናኝ</translation>
@@ -1858,6 +1857,7 @@
 <translation id="2724841811573117416">የWebRTC ምዝግብ ማስታወሻዎች</translation>
 <translation id="272488616838512378">የአሃድ ልወጣ</translation>
 <translation id="2725200716980197196">የአውታረ መረብ ግንኙነት ወደነበረበት ተመልሷል</translation>
+<translation id="272741954544380994">በ<ph name="VISUAL_SEARCH_PROVIDER" /> ምስልን ፈልግ</translation>
 <translation id="2727633948226935816">ዳግም አታስታውሰኝ</translation>
 <translation id="2727712005121231835">ትክክለኛ መጠን</translation>
 <translation id="2729314457178420145">እርስዎን ከGoogle.com ሊያስወጣዎት የሚችለውን የአሰሳ ውሂብ (<ph name="URL" />) በተጨማሪ ያጽዱ። <ph name="LEARN_MORE" /></translation>
@@ -4198,7 +4198,6 @@
 <translation id="5051836348807686060">ፊደል ማረሚያ ለመረጧቸው ቋንቋዎች አይደገፍም</translation>
 <translation id="5052499409147950210">ጣቢያን አርትዕ ያድርጉ</translation>
 <translation id="505347685865235222">ያልተሰየመ ቡድን - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">በGoogle ሌንስ አማካኝነት ምስልን ይፈልጉ</translation>
 <translation id="5054374119096692193">በ<ph name="BEGIN_LINK" />Chrome አብጅ<ph name="END_LINK" /> ውስጥ ሁሉንም የካርድ አማራጮች ይመልከቱ</translation>
 <translation id="5056950756634735043">ከመያዣው ጋር በመገናኘት ላይ</translation>
 <translation id="5057110919553308744">ቅጥያውን ጠቅ ሲያደርጉ</translation>
@@ -8438,6 +8437,7 @@ nil</translation>
 <translation id="957960681186851048">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር ለማውረድ ሞክሯል</translation>
 <translation id="960987915827980018">1 ሰዓት አካባቢ ቀርቷል</translation>
 <translation id="962802172452141067">የእልባት አቃፊ ዛፍ</translation>
+<translation id="963000966785016697">በ<ph name="VISUAL_SEARCH_PROVIDER" /> ምስልን ፈልግ</translation>
 <translation id="964286338916298286">የእርስዎ የአይቲ አስተዳዳሪ Chrome Goodiesን ለመሣሪያዎ አሰናክሏል።</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{መተግበሪያ}one{መተግበሪያዎች}other{መተግበሪያዎች}}</translation>
 <translation id="964790508619473209">የማያ ገጽ አደራደር</translation>

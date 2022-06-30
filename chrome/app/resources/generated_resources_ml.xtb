@@ -1720,7 +1720,6 @@
 <translation id="2602501489742255173">ആരംഭിക്കുന്നതിന് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2603115962224169880">നിങ്ങളുടെ കമ്പ്യൂട്ടർ ക്ലീൻ ചെയ്യുക</translation>
 <translation id="2603355571917519942">Voice Match തയ്യാറാണ്</translation>
-<translation id="2604138917550693049">Google Lens-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="2604255671529671813">നെറ്റ്‌വർക്ക് കണക്ഷൻ പിശക്</translation>
 <translation id="2605668923777146443">Better Together-നുള്ള നിങ്ങളുടെ ഓപ്ഷനുകൾ കാണാൻ <ph name="LINK_BEGIN" />ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="2606246518223360146">ഡാറ്റ ലിങ്ക് ചെയ്യുക</translation>
@@ -1848,6 +1847,7 @@
 <translation id="2724841811573117416">WebRTC ലോഗുകൾ</translation>
 <translation id="272488616838512378">യൂണിറ്റ് പരിവർത്തനം</translation>
 <translation id="2725200716980197196">നെറ്റ്‌വർക്ക് കണക്‌റ്റിവിറ്റി പുനഃസ്‌ഥാപിച്ചു</translation>
+<translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രം തിരയുക</translation>
 <translation id="2727633948226935816">എന്നെ വീണ്ടും ഓർമ്മപ്പെടുത്തരുത്</translation>
 <translation id="2727712005121231835">യഥാര്‍ത്ഥ വലിപ്പം</translation>
 <translation id="2729314457178420145">Google.com-ൽ നിന്ന് നിങ്ങളെ സൈൻ ഔട്ട് ചെയ്‌തേക്കാവുന്ന ബ്രൗസിംഗ് ഡാറ്റയും (<ph name="URL" />) മായ്‌ക്കുക. <ph name="LEARN_MORE" /></translation>
@@ -4189,7 +4189,6 @@
 <translation id="5051836348807686060">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷകൾക്ക് സ്പെൽ ചെക്ക് പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="5052499409147950210">സൈറ്റ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="505347685865235222">പേരില്ലാത്ത ഗ്രൂപ്പ് - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome ഇഷ്‌ടാനുസൃതമാക്കുക<ph name="END_LINK" /> എന്നതിൽ എല്ലാ കാർഡ് ഓപ്ഷനുകളും കാണുക</translation>
 <translation id="5056950756634735043">കണ്ടെയ്‌നറിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="5057110919553308744">നിങ്ങൾ വിപുലീകരണം ക്ലിക്ക് ചെയ്യുമ്പോൾ</translation>
@@ -8421,6 +8420,7 @@
 <translation id="957960681186851048">ഈ സൈറ്റ് ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ ശ്രമിച്ചു</translation>
 <translation id="960987915827980018">ഏകദേശം 1 മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="962802172452141067">ഫോൾഡർ ട്രീ ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
+<translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രം തിരയുക</translation>
 <translation id="964286338916298286">ഐടി അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണത്തിനായുള്ള Chrome ഗുഡി പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ആപ്പ്}other{ആപ്പുകൾ}}</translation>
 <translation id="964790508619473209">സ്ക്രീൻ ക്രമീകരണം</translation>

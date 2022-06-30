@@ -1721,7 +1721,6 @@
 <translation id="2602501489742255173">เลื่อนขึ้นเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="2603115962224169880">ล้างข้อมูลในคอมพิวเตอร์</translation>
 <translation id="2603355571917519942">Voice Match พร้อมใช้งานแล้ว</translation>
-<translation id="2604138917550693049">ค้นหาภาพด้วย Google Lens</translation>
 <translation id="2604255671529671813">ข้อผิดพลาดในการเชื่อมต่อเครือข่าย</translation>
 <translation id="2605668923777146443">ไปที่<ph name="LINK_BEGIN" />การตั้งค่า<ph name="LINK_END" />เพื่อดูตัวเลือกสำหรับ Better Together</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
@@ -1849,6 +1848,7 @@
 <translation id="2724841811573117416">บันทึก WebRTC</translation>
 <translation id="272488616838512378">การแปลงหน่วย</translation>
 <translation id="2725200716980197196">กู้คืนการเชื่อมต่อเครือข่ายแล้ว</translation>
+<translation id="272741954544380994">ค้นหารูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">ไม่ต้องเตือนฉันอีก</translation>
 <translation id="2727712005121231835">ขนาดจริง</translation>
 <translation id="2729314457178420145">รวมถึงล้างข้อมูลการท่องเว็บ (<ph name="URL" />) ซึ่งอาจนำคุณออกจากระบบของ Google.com <ph name="LEARN_MORE" /></translation>
@@ -4191,7 +4191,6 @@
 <translation id="5051836348807686060">การตรวจตัวสะกดไม่รองรับภาษาที่คุณเลือก</translation>
 <translation id="5052499409147950210">แก้ไขเว็บไซต์</translation>
 <translation id="505347685865235222">กลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">ค้นหาภาพด้วย Google Lens</translation>
 <translation id="5054374119096692193">ดูตัวเลือกการ์ดทั้งหมดใน<ph name="BEGIN_LINK" />ปรับแต่ง Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">กำลังเชื่อมต่อกับคอนเทนเนอร์</translation>
 <translation id="5057110919553308744">เมื่อคุณคลิกส่วนขยาย</translation>
@@ -8419,6 +8418,7 @@
 <translation id="957960681186851048">เว็บไซต์นี้พยายามดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="960987915827980018">เหลือเวลาอีกประมาณ 1 ชั่วโมง</translation>
 <translation id="962802172452141067">แผนผังของโฟลเดอร์บุ๊กมาร์ก</translation>
+<translation id="963000966785016697">ค้นหารูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">ผู้ดูแลระบบไอทีได้ปิดการใช้สินค้าจาก Chrome ในอุปกรณ์ของคุณ</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{แอปพลิเคชัน}other{แอปพลิเคชัน}}</translation>
 <translation id="964790508619473209">การจัดตำแหน่งหน้าจอ</translation>
