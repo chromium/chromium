@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
@@ -53,7 +52,6 @@ namespace ash {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   android_sms::AndroidSmsServiceFactory::GetInstance();
-  arc::ArcAccessibilityHelperBridge::CreateFactory();
   CalendarKeyedServiceFactory::GetInstance();
   full_restore::FullRestoreServiceFactory::GetInstance();
   HoldingSpaceKeyedServiceFactory::GetInstance();
