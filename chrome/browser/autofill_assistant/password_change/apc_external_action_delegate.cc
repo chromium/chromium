@@ -273,7 +273,19 @@ void ApcExternalActionDelegate::HandleGeneratedPasswordPrompt(
 void ApcExternalActionDelegate::HandleUpdateSidePanel(
     const autofill_assistant::password_change::UpdateSidePanelSpecification&
         specification) {
-  EndAction(false);
+  if (specification.has_top_icon()) {
+    SetTopIcon(specification.top_icon());
+  }
+  if (specification.has_progress_step()) {
+    SetProgressBarStep(specification.progress_step());
+  }
+  if (specification.has_description()) {
+    SetDescription(base::UTF8ToUTF16(specification.description()));
+  }
+  if (specification.has_title()) {
+    SetTitle(base::UTF8ToUTF16(specification.title()));
+  }
+  EndAction(true);
 }
 
 void ApcExternalActionDelegate::OnBasePromptDomUpdateReceived(

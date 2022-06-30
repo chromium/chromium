@@ -107,7 +107,7 @@ autofill_assistant::external::Action CreateAction(
     const autofill_assistant::password_change::BasePromptSpecification& proto) {
   autofill_assistant::external::Action action;
   autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
-  spec.mutable_base_prompt()->CopyFrom(proto);
+  *spec.mutable_base_prompt() = proto;
   spec.SerializeToString(action.mutable_info()->mutable_action_payload());
 
   return action;
@@ -120,7 +120,18 @@ autofill_assistant::external::Action CreateAction(
         UseGeneratedPasswordPromptSpecification& proto) {
   autofill_assistant::external::Action action;
   autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
-  spec.mutable_use_generated_password_prompt()->CopyFrom(proto);
+  *spec.mutable_use_generated_password_prompt() = proto;
+  spec.SerializeToString(action.mutable_info()->mutable_action_payload());
+
+  return action;
+}
+
+autofill_assistant::external::Action CreateAction(
+    const autofill_assistant::password_change::UpdateSidePanelSpecification&
+        proto) {
+  autofill_assistant::external::Action action;
+  autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
+  *spec.mutable_update_side_panel() = proto;
   spec.SerializeToString(action.mutable_info()->mutable_action_payload());
 
   return action;
@@ -513,4 +524,35 @@ TEST_F(ApcExternalActionDelegateTest,
           result.result_info().result_payload()));
   EXPECT_FALSE(use_generated_password_prompt_specification_result
                    .generated_password_accepted());
+}
+
+TEST_F(ApcExternalActionDelegateTest, ReceiveUpdateSidePanelAction) {
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  EXPECT_CALL(*display(), SetTopIcon(kTopIcon));
+  EXPECT_CALL(*display(), SetProgressBarStep(kStep));
+  EXPECT_CALL(*display(), SetDescription).Times(0);
+  EXPECT_CALL(*display(),
+              SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle))));
+
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+
+  // DOM checks will never be started.
+  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+
+  autofill_assistant::password_change::UpdateSidePanelSpecification
+      update_side_panel_specification;
+  update_side_panel_specification.set_top_icon(kTopIcon);
+  update_side_panel_specification.set_progress_step(kStep);
+  update_side_panel_specification.set_title(kTitle);
+
+  action_delegate()->OnActionRequested(
+      CreateAction(update_side_panel_specification),
+      start_dom_checks_callback.Get(), result_callback.Get());
+
+  EXPECT_TRUE(result.success());
 }
