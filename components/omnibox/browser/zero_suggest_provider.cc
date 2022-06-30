@@ -643,9 +643,7 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
       can_send_current_url) {
     if (input.focus_type() == OmniboxFocusType::ON_FOCUS &&
         (base::FeatureList::IsEnabled(
-             omnibox::kOnFocusSuggestionsContextualWeb) ||
-         base::FeatureList::IsEnabled(
-             omnibox::kOnFocusSuggestionsContextualWebOnContent))) {
+            omnibox::kFocusTriggersContextualWebZeroSuggest))) {
       return REMOTE_SEND_URL;
     }
 
@@ -660,8 +658,7 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
   if (IsSearchResultsPage(current_page_classification) &&
       can_send_current_url) {
     if (input.focus_type() == OmniboxFocusType::ON_FOCUS &&
-        base::FeatureList::IsEnabled(
-            omnibox::kOnFocusSuggestionsContextualWebAllowSRP)) {
+        base::FeatureList::IsEnabled(omnibox::kFocusTriggersSRPZeroSuggest)) {
       return REMOTE_SEND_URL;
     }
 

@@ -1214,15 +1214,6 @@ const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
      kOmniboxBookmarkPathsDynamicReplaceUrl,
      std::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
 
-const FeatureEntry::FeatureVariation
-    kOmniboxOnFocusSuggestionsContextualWebVariations[] = {
-        {"GOC Only", {}, 0, "t3317583"},
-        {"pSuggest Only", {}, 0, "t3318055"},
-        {"GOC, pSuggest Fallback", {}, 0, "t3317692"},
-        {"GOC, pSuggest Backfill", {}, 0, "t3317694"},
-        {"GOC, Default Hidden", {}, 0, "t3317834"},
-};
-
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
     {"MaxZeroSuggestMatches", "5"}};
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches6[] = {
@@ -4952,20 +4943,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-on-focus-suggestions-contextual-web",
-     flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,
-     flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kOnFocusSuggestionsContextualWeb,
-         kOmniboxOnFocusSuggestionsContextualWebVariations,
-         "OmniboxGoogleOnContent")},
-
-    {"omnibox-on-focus-suggestions-contextual-web-allow-srp",
-     flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebAllowSRPName,
+     flag_descriptions::kOmniboxFocusTriggersContextualWebZeroSuggestName,
      flag_descriptions::
-         kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription,
+         kOmniboxFocusTriggersContextualWebZeroSuggestDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOnFocusSuggestionsContextualWebAllowSRP)},
+     FEATURE_VALUE_TYPE(omnibox::kFocusTriggersContextualWebZeroSuggest)},
+
+    {"omnibox-on-focus-suggestions-srp",
+     flag_descriptions::kOmniboxFocusTriggersSRPZeroSuggestName,
+     flag_descriptions::kOmniboxFocusTriggersSRPZeroSuggestDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kFocusTriggersSRPZeroSuggest)},
 
     {"omnibox-experimental-suggest-scoring",
      flag_descriptions::kOmniboxExperimentalSuggestScoringName,

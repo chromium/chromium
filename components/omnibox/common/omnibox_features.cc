@@ -89,18 +89,29 @@ const base::Feature kOmniboxMaxURLMatches{"OmniboxMaxURLMatches",
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
                                             enabled_by_default_desktop_android};
 
-// If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
-// Chrome will request remote ZeroSuggest suggestions for the OTHER page
-// classification (contextual web), which does NOT include the SRP.
+// Enable on-clobber (i.e., when the user clears the whole omnibox text)
+// zero-prefix suggestions on the Open Web, that are contextual to the current
+// URL. Will only work if user is signed-in and syncing, or is otherwise
+// eligible to send the current page URL to the suggest server.
 const base::Feature kClobberTriggersContextualWebZeroSuggest{
     "OmniboxClobberTriggersContextualWebZeroSuggest",
     enabled_by_default_desktop_only};
 
-// If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
-// Chrome will request remote ZeroSuggest suggestions for the SRP (search
-// results page).
+// Enable on-clobber (i.e., when the user clears the whole omnibox text)
+// zero-prefix suggestions on the SRP.
 const base::Feature kClobberTriggersSRPZeroSuggest{
     "OmniboxClobberTriggersSRPZeroSuggest", enabled_by_default_desktop_only};
+
+// Enable on-focus zero-prefix suggestions on the Open Web, that are contextual
+// to the current URL. Will only work if user is signed-in and syncing, or is
+// otherwise eligible to send the current page URL to the suggest server.
+const base::Feature kFocusTriggersContextualWebZeroSuggest{
+    "OmniboxFocusTriggersContextualWebZeroSuggest",
+    enabled_by_default_android_only};
+
+// Enables on-focus zero-prefix suggestions on the SRP.
+const base::Feature kFocusTriggersSRPZeroSuggest{
+    "OmniboxFocusTriggersSRPZeroSuggest", enabled_by_default_android_only};
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
@@ -117,29 +128,6 @@ const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
 const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
     enabled_by_default_desktop_android};
-
-// Enables on-focus suggestions on the Open Web, that are contextual to the
-// current URL. Will only work if user is signed-in and syncing, or is
-// otherwise eligible to send the current page URL to the suggest server.
-//
-// There's multiple flags here for multiple backend configurations:
-//  - Default (search queries)
-//  - SRP specific toggle (enables SRP on top of Web Pages for features below)
-//  - On-Content Suggestions
-//
-// TODO(tommycli): It's confusing whether Contextual Web includes SRP or not.
-// `kOnFocusSuggestionsContextualWebAllowSRP` suggests it's included, but
-// `kClobberTriggersContextualWebZeroSuggest` suggests it's not. Make this
-// consistent, probably by renaming flags to distinguish between OTHER and SRP.
-const base::Feature kOnFocusSuggestionsContextualWeb{
-    "OmniboxOnFocusSuggestionsContextualWeb",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
-    "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-    enabled_by_default_android_only};
-const base::Feature kOnFocusSuggestionsContextualWebOnContent{
-    "OmniboxOnFocusSuggestionsContextualWebOnContent",
-    enabled_by_default_android_only};
 
 // Revamps how local search history is extracted and processed for generating
 // zero-prefix and prefix suggestions.

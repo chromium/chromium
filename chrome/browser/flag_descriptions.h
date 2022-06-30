@@ -1068,11 +1068,11 @@ extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 
-extern const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPName[];
-extern const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription[];
+extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];
+extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
 
-extern const char kOmniboxOnFocusSuggestionsContextualWebName[];
-extern const char kOmniboxOnFocusSuggestionsContextualWebDescription[];
+extern const char kOmniboxFocusTriggersContextualWebZeroSuggestName[];
+extern const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[];
 
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];

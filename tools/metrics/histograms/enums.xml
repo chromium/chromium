@@ -55623,6 +55623,8 @@ from previous Chrome versions.
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
   <int value="-1779753607" label="VizDisplayCompositor:disabled"/>
   <int value="-1778993296" label="ContextualSearchMlTapSuppression:disabled"/>
+  <int value="-1778760568"
+      label="OmniboxFocusTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
@@ -57071,6 +57073,7 @@ from previous Chrome versions.
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
+  <int value="-868041476" label="OmniboxFocusTriggersSRPZeroSuggest:enabled"/>
   <int value="-867087281" label="enable-virtual-keyboard"/>
   <int value="-867085393" label="WebNotesDynamicTemplates:enabled"/>
   <int value="-866993841" label="OfflinePagesCTV2:disabled"/>
@@ -57605,8 +57608,6 @@ from previous Chrome versions.
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
   <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
-  <int value="-522075903"
-      label="OmniboxOnFocusSuggestionsContextualWeb:enabled"/>
   <int value="-521251533" label="PrivacyGuideAndroid:enabled"/>
   <int value="-520221221" label="UserDataSnapshot:enabled"/>
   <int value="-520004021" label="WebXRHitTest:disabled"/>
@@ -58258,8 +58259,6 @@ from previous Chrome versions.
   <int value="-77789682" label="SharingPreferVapid:disabled"/>
   <int value="-77713912" label="EnableKeyboardBacklightToggle:enabled"/>
   <int value="-77328559" label="IncognitoReauthenticationForAndroid:enabled"/>
-  <int value="-77230883"
-      label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:enabled"/>
   <int value="-77084779" label="ExperimentalFlingAnimation:enabled"/>
   <int value="-76631048" label="disable-offline-auto-reload-visible-only"/>
   <int value="-76445689" label="WasmCodeCache:enabled"/>
@@ -59966,8 +59965,6 @@ from previous Chrome versions.
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
-  <int value="1028817487"
-      label="OmniboxOnFocusSuggestionsContextualWeb:disabled"/>
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>
   <int value="1031239808" label="ForceMajorVersion100InUserAgent:disabled"/>
   <int value="1031281564"
@@ -59975,6 +59972,8 @@ from previous Chrome versions.
   <int value="1033148287" label="NTPShortcuts:disabled"/>
   <int value="1033412163" label="OmniboxDisplayTitleForCurrentUrl:enabled"/>
   <int value="1033597574" label="disable-layer-squashing"/>
+  <int value="1034347979"
+      label="OmniboxFocusTriggersContextualWebZeroSuggest:disabled"/>
   <int value="1036068554" label="enable-android-pay-integration-v2"/>
   <int value="1036501658" label="UseClientConfigIPH:disabled"/>
   <int value="1036565901" label="AssistPersonalInfo:enabled"/>
@@ -60993,8 +60992,6 @@ from previous Chrome versions.
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:enabled"/>
   <int value="1706682238" label="ContextualSearchTranslations:disabled"/>
   <int value="1707283026" label="SyncPseudoUSSExtensions:disabled"/>
-  <int value="1707873180"
-      label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:disabled"/>
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
   <int value="1710630380"
@@ -61301,6 +61298,7 @@ from previous Chrome versions.
   <int value="1910240042" label="enable-experimental-fullscreen-exit-ui"/>
   <int value="1910562940" label="SharedHighlightingRefinedBlocklist:disabled"/>
   <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
+  <int value="1911623289" label="OmniboxFocusTriggersSRPZeroSuggest:disabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>
   <int value="1913926782" label="ChromeModernAlternateCardLayout:disabled"/>

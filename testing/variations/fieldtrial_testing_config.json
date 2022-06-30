@@ -4174,8 +4174,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OmniboxMostVisitedTiles",
-                        "OmniboxOnFocusSuggestionsContextualWebOnContent"
+                        "OmniboxFocusTriggersContextualWebZeroSuggest",
+                        "OmniboxMostVisitedTiles"
                     ]
                 }
             ]
@@ -6059,9 +6059,9 @@
                     "enable_features": [
                         "AndroidAuxiliarySearch",
                         "OmniboxDynamicMaxAutocomplete",
+                        "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
-                        "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
                         "OmniboxRetainSuggestionsWithHeaders",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "ZeroSuggestPrefetching"

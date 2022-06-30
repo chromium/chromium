@@ -4670,11 +4670,11 @@
   },
   {
     "name": "omnibox-on-focus-suggestions-contextual-web",
-    "owners": [ "ender", "stkhapugin", "tommycli", "chrome-omnibox-team@google.com" ],
+    "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-on-focus-suggestions-contextual-web-allow-srp",
+    "name": "omnibox-on-focus-suggestions-srp",
     "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110
   },
