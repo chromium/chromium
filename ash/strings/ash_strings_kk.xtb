@@ -258,7 +258,7 @@
 <translation id="2501920221385095727">Жабысқақ пернелер</translation>
 <translation id="2509468283778169019">CAPS LOCK қосулы</translation>
 <translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
-<translation id="255671100581129685">Google Assistant әркімге қолжетімді сеанста жұмыс істемейді.</translation>
+<translation id="255671100581129685">Google Assistant баршаға ашық сеанста жұмыс істемейді.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
 <translation id="2570734079541893434">Параметрлерді басқару</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> құрылғысы қосылмады</translation>
@@ -415,7 +415,7 @@
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Сөре автоматты түрде жасырылған.</translation>
 <translation id="3509391053705095206">Телефон табылмады. Онда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
-<translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
+<translation id="3510164367642747937">Тінтуір курсорын ерекшелеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын аккаунт</translation>
 <translation id="3518604429872942239">Күй жолағы, уақыты: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -652,7 +652,7 @@
 <translation id="4804818685124855865">Ажырату</translation>
 <translation id="4814539958450445987">Аккаунтқа кіру экраны</translation>
 <translation id="4831034276697007977">Автоматты түрде басу функциясын шынымен де өшіргіңіз келе ме?</translation>
-<translation id="4849058404725798627">Нысанды пернетақта фокусымен бөлектеу</translation>
+<translation id="4849058404725798627">Нысанды пернетақта фокусымен ерекшелеу</translation>
 <translation id="485592688953820832">Ештеңе істемеу (кідірту)</translation>
 <translation id="485634149294284819">Пернетақта мәзіріне кіру</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> файлын жүктеп алу үшін желі байланысын тексеріңіз.</translation>
@@ -709,7 +709,7 @@
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> және <ph name="IN_PLACE_APP" /> қолданбалары қосылып, бір қалта жасалды.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Тағы 1 хабарландыру}other{Тағы # хабарландыру}}</translation>
-<translation id="5207949376430453814">Мәтін курсорын бөлектеу</translation>
+<translation id="5207949376430453814">Мәтін курсорын ерекшелеу</translation>
 <translation id="5208059991603368177">Қосулы</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> дейін өшірулі</translation>
 <translation id="5222676887888702881">Шығу</translation>

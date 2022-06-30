@@ -550,9 +550,9 @@
 <translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5669691691057771421">Жаңа PIN кодын енгізіңіз</translation>
 <translation id="5678784840044122290">Linux қолданбасы терминалда қолжетімді болады және Launcher қолданбасында белгіше көрсетіледі.</translation>
-<translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалды дискіден ажырату мүмкін емес<ph name="END_BOLD" />
+<translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалдық дискіден ажырату мүмкін емес<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   Мұрағаттағы немесе виртуалды дискідегі барлық файлдарды жауып, әрекетті қайталаңыз.</translation>
+   Мұрағаттағы немесе виртуалдық дискідегі барлық файлдарды жауып, әрекетті қайталаңыз.</translation>
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> деген файл енді жоқ.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Құлыпты ашу</translation>
 <translation id="5700087501958648444">Аудиофайл ақпараты</translation>
