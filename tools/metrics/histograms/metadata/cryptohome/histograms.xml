@@ -845,11 +845,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.WrappingKeyDerivation.Create"
-    enum="WrappingKeyDerivation" expires_after="2022-05-01">
+    enum="WrappingKeyDerivation" expires_after="2023-05-01">
   <owner>tnagel@chromium.org</owner>
   <owner>zauri@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
-  <owner>cros-privacy-core@google.com</owner>
+  <owner>pwg-cros@google.com</owner>
   <summary>
     Derivation types of the Cryptohome's wrapping key. Reporting happens when
     the Cryptohome is being created or when the new keys are added to the
@@ -860,11 +860,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.WrappingKeyDerivation.Mount"
-    enum="WrappingKeyDerivation" expires_after="2022-05-01">
+    enum="WrappingKeyDerivation" expires_after="2023-05-01">
   <owner>tnagel@chromium.org</owner>
   <owner>zauri@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
-  <owner>cros-privacy-core@google.com</owner>
+  <owner>pwg-cros@google.com</owner>
   <summary>
     Derivation types of the Cryptohome's wrapping key. Reporting happens mostly
     when the Cryptohome is being mounted. Concretely the reporting happens
