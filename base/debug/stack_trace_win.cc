@@ -5,6 +5,7 @@
 #include "base/debug/stack_trace.h"
 
 #include <windows.h>
+
 #include <dbghelp.h>
 #include <stddef.h>
 
@@ -32,6 +33,10 @@ LPTOP_LEVEL_EXCEPTION_FILTER g_previous_filter = NULL;
 
 bool g_initialized_symbols = false;
 DWORD g_init_error = ERROR_SUCCESS;
+// STATUS_INFO_LENGTH_MISMATCH is declared in <ntstatus.h>, but including that
+// header creates a conflict with base/win/windows_types.h, so re-declaring it
+// here.
+DWORD g_status_info_length_mismatch = 0xC0000004;
 
 // Prints the exception call stack.
 // This is the unit tests exception filter.
@@ -118,12 +123,32 @@ FilePath GetExePath() {
   return FilePath(system_buffer);
 }
 
+constexpr size_t kSymInitializeRetryCount = 3;
+
+// A wrapper for SymInitialize. SymInitialize seems to occasionally fail
+// because of an internal race condition. So  wrap it and retry a finite
+// number of times.
+// See crbug.com/1339753
+bool SymInitializeWrapper(HANDLE handle, BOOL invade_process) {
+  for (size_t i = 0; i < kSymInitializeRetryCount; ++i) {
+    if (SymInitialize(handle, nullptr, invade_process))
+      return true;
+
+    g_init_error = GetLastError();
+    if (g_init_error != g_status_info_length_mismatch)
+      return false;
+  }
+  DLOG(ERROR) << "SymInitialize failed repeatedly.";
+  return false;
+}
+
 bool SymInitializeCurrentProc() {
   const HANDLE current_process = GetCurrentProcess();
-  if (SymInitialize(current_process, nullptr, TRUE))
+  if (SymInitializeWrapper(current_process, TRUE))
     return true;
 
-  g_init_error = GetLastError();
+  // g_init_error is updated by SymInitializeWrapper.
+  // No need to do "g_init_error = GetLastError()" here.
   if (g_init_error != ERROR_INVALID_PARAMETER)
     return false;
 
@@ -133,10 +158,9 @@ bool SymInitializeCurrentProc() {
   // almost immediately after startup. In such a case, try to reinit to see if
   // that succeeds.
   SymCleanup(current_process);
-  if (SymInitialize(current_process, nullptr, TRUE))
+  if (SymInitializeWrapper(current_process, TRUE))
     return true;
 
-  g_init_error = GetLastError();
   return false;
 }
 
