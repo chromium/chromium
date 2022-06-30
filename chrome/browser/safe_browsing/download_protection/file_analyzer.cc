@@ -164,8 +164,18 @@ void FileAnalyzer::OnZipAnalysisFinished(
   // Even if !results.success, some of the zip may have been parsed.
   // Some unzippers will successfully unpack archives that we cannot,
   // so we're lenient here.
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -183,8 +193,8 @@ void FileAnalyzer::OnZipAnalysisFinished(
     results_.type = ClientDownloadRequest::ZIPPED_EXECUTABLE;
   }
 
-  results_.file_count = archive_results.file_count;
-  results_.directory_count = archive_results.directory_count;
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -209,8 +219,18 @@ void FileAnalyzer::OnRarAnalysisFinished(
                                 archive_results.analysis_result);
   LogAnalysisDurationWithAndWithoutSuffix("Rar");
 
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -228,8 +248,8 @@ void FileAnalyzer::OnRarAnalysisFinished(
     results_.type = ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE;
   }
 
-  results_.file_count = archive_results.file_count;
-  results_.directory_count = archive_results.directory_count;
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -277,8 +297,6 @@ void FileAnalyzer::OnDmgAnalysisFinished(
       archive_results.detached_code_signatures);
 
   // Even if !results.success, some of the DMG may have been parsed.
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -288,6 +306,19 @@ void FileAnalyzer::OnDmgAnalysisFinished(
     results_.type = ClientDownloadRequest::MAC_EXECUTABLE;
   } else {
     results_.type = ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING;
+  }
+
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
   }
 
   std::move(callback_).Run(std::move(results_));

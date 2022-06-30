@@ -923,6 +923,16 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.Set("document_summary", std::move(dict_document_summary));
   }
 
+  if (cdr.has_archive_summary()) {
+    base::Value::Dict dict_archive_summary;
+    auto archive_summary = cdr.archive_summary();
+    dict_archive_summary.Set("parser_status", archive_summary.parser_status());
+    dict_archive_summary.Set("file_count", archive_summary.file_count());
+    dict_archive_summary.Set("directory_count",
+                             archive_summary.directory_count());
+    dict.Set("archive_summary", std::move(dict_archive_summary));
+  }
+
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
   serializer.set_pretty_print(true);
