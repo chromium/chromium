@@ -4719,6 +4719,22 @@
             ]
         }
     ],
+    "IOSNewOverflowMenuExperiments": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "BothActions",
+                    "enable_features": [
+                        "NewOverflowMenuCBDAction",
+                        "NewOverflowMenuSettingsAction"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOfflinePageRefactoring": [
         {
             "platforms": [
