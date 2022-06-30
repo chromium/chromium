@@ -1038,6 +1038,11 @@ void BrowserMainLoop::RunMainMessageLoop() {
 }
 
 void BrowserMainLoop::PreShutdown() {
+  // Clear OnNextIdleCallback if it's still pending. Failure to do so can result
+  // in an OnFirstIdle phase incorrectly triggering during shutdown if an early
+  // exit paths results in a shutdown path that happens to RunLoop.
+  base::CurrentThread::Get()->RegisterOnNextIdleCallback(base::NullCallback());
+
   ui::Clipboard::OnPreShutdownForCurrentThread();
 }
 

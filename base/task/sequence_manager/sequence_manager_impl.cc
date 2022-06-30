@@ -1219,7 +1219,7 @@ void SequenceManagerImpl::RemoveDestructionObserver(
 
 void SequenceManagerImpl::RegisterOnNextIdleCallback(
     OnceClosure on_next_idle_callback) {
-  DCHECK(!main_thread_only().on_next_idle_callback);
+  DCHECK(!main_thread_only().on_next_idle_callback || !on_next_idle_callback);
   main_thread_only().on_next_idle_callback = std::move(on_next_idle_callback);
 }
 
