@@ -75,7 +75,7 @@ def fyi_coverage_builder(*, name, **kwargs):
 def fyi_ios_builder(*, name, **kwargs):
     kwargs.setdefault("cores", None)
     if kwargs.get("builderless", False):
-        kwargs.setdefault("os", os.MAC_11)
+        kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("xcode", xcode.x13main)
     return ci.builder(name = name, **kwargs)
 
@@ -1411,7 +1411,7 @@ fyi_coverage_builder(
         short_name = "ios",
     ),
     cores = None,
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],

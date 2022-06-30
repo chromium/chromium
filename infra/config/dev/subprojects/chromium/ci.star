@@ -92,7 +92,7 @@ ci_builder(
 ci_builder(
     name = "mac-arm-rel-swarming",
     cpu = cpu.ARM64,
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
 )
 
 ci_builder(
