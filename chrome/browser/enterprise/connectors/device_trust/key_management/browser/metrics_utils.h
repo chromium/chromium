@@ -11,12 +11,12 @@
 
 namespace enterprise_connectors {
 
-// Contains all known key generation trust levels (generated via TPM or not).
-// These values are persisted to logs and should not be renumbered. Please
+// Contains all known key generation trust levels (generated via hardware or
+// not). These values are persisted to logs and should not be renumbered. Please
 // update the DTKeyTrustLevel enum in enums.xml when adding a new step here.
 enum class DTKeyTrustLevel {
   kUnspecified = 0,
-  kTpm = 1,
+  kHw = 1,
   kOs = 2,
   kMaxValue = kOs,
 };

@@ -19,8 +19,8 @@ namespace enterprise_connectors {
 namespace test {
 class MockKeyPersistenceDelegate;
 
-// Class used in tests to mock retrieval of TPM signing key pairs. Creating an
-// instance of this will prevent tests from having to actually store signing
+// Class used in tests to mock retrieval of hardware signing key pairs. Creating
+// an instance of this will prevent tests from having to actually store signing
 // key pairs (which requires an elevated process).
 class ScopedKeyPersistenceDelegateFactory
     : public KeyPersistenceDelegateFactory {
@@ -28,18 +28,18 @@ class ScopedKeyPersistenceDelegateFactory
   ScopedKeyPersistenceDelegateFactory();
   ~ScopedKeyPersistenceDelegateFactory() override;
 
-  const std::vector<uint8_t>& tpm_wrapped_key() { return tpm_wrapped_key_; }
+  const std::vector<uint8_t>& hw_wrapped_key() { return hw_wrapped_key_; }
   const std::vector<uint8_t>& ec_wrapped_key() { return ec_wrapped_key_; }
 
-  // Returns a mocked instance which is already setup to mimic a TPM-backed
+  // Returns a mocked instance which is already setup to mimic a hardware-backed
   // persistence delegate (with a provider and valid key).
-  std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedTpmDelegate();
+  std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedHardwareDelegate();
 
-  // Returns a mocked instance which is already setup to mimic a TPM-backed
+  // Returns a mocked instance which is already setup to mimic a hardware-backed
   // persistence delegate (with a provider and valid key). The mock will invoke
   // `side_effect` before returning the key value in LoadKeyPair.
   std::unique_ptr<MockKeyPersistenceDelegate>
-  CreateMockedTpmDelegateWithLoadingSideEffect(
+  CreateMockedHardwareDelegateWithLoadingSideEffect(
       base::RepeatingClosure& side_effect);
 
   // Returns a mocked instance which is already setup to mimic an EC-backed
@@ -61,7 +61,7 @@ class ScopedKeyPersistenceDelegateFactory
 
  private:
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
-  std::vector<uint8_t> tpm_wrapped_key_;
+  std::vector<uint8_t> hw_wrapped_key_;
   std::vector<uint8_t> ec_wrapped_key_;
 
   base::RepeatingClosure do_nothing_ = base::DoNothing();

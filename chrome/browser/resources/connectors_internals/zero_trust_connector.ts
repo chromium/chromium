@@ -9,7 +9,7 @@ import {getTemplate} from './zero_trust_connector.html.js';
 
 const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
-  [KeyTrustLevel.TPM]: 'TPM',
+  [KeyTrustLevel.HW]: 'HW',
   [KeyTrustLevel.OS]: 'OS'
 };
 

@@ -15,7 +15,7 @@ enum KeyManagerInitializedValue {
 // Trust level of the signing key which is equivalent to the key provider type.
 enum KeyTrustLevel {
   UNSPECIFIED = 0,
-  TPM = 1,
+  HW = 1,
   OS = 2,
 };
 

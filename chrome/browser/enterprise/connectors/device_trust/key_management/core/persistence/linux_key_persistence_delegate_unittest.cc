@@ -28,7 +28,7 @@ constexpr char kValidKeyWrappedBase64[] =
 // String containing invalid base64 characters, like % and the whitespace.
 constexpr char kInvalidBase64String[] = "? %";
 
-constexpr char kValidTPMKeyFileContent[] =
+constexpr char kValidHWKeyFileContent[] =
     "{\"signingKey\":"
     "\"MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3VGyKUYrI0M5VOGIw0dh3D0s"
     "260xeKGcOKZ76A+LTQuhRANCAAQ8rmn96lycvM/"
@@ -124,25 +124,25 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidOSKeyPair) {
   EXPECT_EQ(kValidOSKeyFileContent, GetFileContents());
 }
 
-// Tests when a TPM key is stored and file contents are modified before storing
-// a new TPM key pair.
-TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidTPMKeyPair) {
+// Tests when a hardware key is stored and file contents are modified before
+// storing a new hardware key pair.
+TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidHWKeyPair) {
   CreateFile("");
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
-      BPKUR::CHROME_BROWSER_TPM_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
-  EXPECT_EQ(kValidTPMKeyFileContent, GetFileContents());
+      BPKUR::CHROME_BROWSER_HW_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
+  EXPECT_EQ(kValidHWKeyFileContent, GetFileContents());
 
   // Modifying file contents
   base::File file = base::File(GetKeyFilePath(),
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
   EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
-  std::string expected_file_contents(kValidTPMKeyFileContent);
+  std::string expected_file_contents(kValidHWKeyFileContent);
   expected_file_contents.append(kGibberish);
   EXPECT_EQ(expected_file_contents, GetFileContents());
 
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
-      BPKUR::CHROME_BROWSER_TPM_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
-  EXPECT_EQ(kValidTPMKeyFileContent, GetFileContents());
+      BPKUR::CHROME_BROWSER_HW_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
+  EXPECT_EQ(kValidHWKeyFileContent, GetFileContents());
 }
 
 // Tests trying to load a key when there is no file.
@@ -161,11 +161,11 @@ TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidOSKeyFile) {
   EXPECT_EQ(wrapped, ParseKeyWrapped(kValidKeyWrappedBase64));
 }
 
-// Tests loading a valid TPM key from a key file.
-TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidTPMKeyFile) {
-  ASSERT_TRUE(CreateFile(kValidTPMKeyFileContent));
+// Tests loading a valid hardware key from a key file.
+TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidHWKeyFile) {
+  ASSERT_TRUE(CreateFile(kValidHWKeyFileContent));
   auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::CHROME_BROWSER_TPM_KEY);
+  EXPECT_EQ(trust_level, BPKUR::CHROME_BROWSER_HW_KEY);
   EXPECT_FALSE(wrapped.empty());
   EXPECT_EQ(wrapped, ParseKeyWrapped(kValidKeyWrappedBase64));
 }
@@ -238,7 +238,7 @@ TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_KeyNotBase64) {
 // Tests the flow of both storing and loading a key.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreAndLoadKeyPair) {
   ASSERT_TRUE(CreateFile(""));
-  auto trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
+  auto trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
   auto wrapped = ParseKeyWrapped(kValidKeyWrappedBase64);
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(trust_level, wrapped));
 

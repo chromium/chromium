@@ -26,8 +26,8 @@ DTKeyTrustLevel ConvertTrustLevel(BPKUR::KeyTrustLevel trust_level) {
   switch (trust_level) {
     case BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED:
       return DTKeyTrustLevel::kUnspecified;
-    case BPKUR::CHROME_BROWSER_TPM_KEY:
-      return DTKeyTrustLevel::kTpm;
+    case BPKUR::CHROME_BROWSER_HW_KEY:
+      return DTKeyTrustLevel::kHw;
     case BPKUR::CHROME_BROWSER_OS_KEY:
       return DTKeyTrustLevel::kOs;
   }

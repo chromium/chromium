@@ -3996,8 +3996,8 @@ message BrowserPublicKeyUploadRequest {
   enum KeyTrustLevel {
     // UNSPECIFIED.
     KEY_TRUST_LEVEL_UNSPECIFIED = 0;
-    // Chrome Browser with the key stored in TPM.
-    CHROME_BROWSER_TPM_KEY = 1;
+    // Chrome Browser with the key stored in the device hardware.
+    CHROME_BROWSER_HW_KEY = 1;
     // Chrome Browser with the key stored at OS level.
     CHROME_BROWSER_OS_KEY = 2;
   }

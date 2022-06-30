@@ -166,8 +166,8 @@ KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
   // Get the trust level.
   auto stored_trust_level = keyinfo->FindIntKey(kSigningKeyTrustLevel);
   KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
-  if (stored_trust_level == BPKUR::CHROME_BROWSER_TPM_KEY) {
-    trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
+  if (stored_trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
+    trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
   } else if (stored_trust_level == BPKUR::CHROME_BROWSER_OS_KEY) {
     trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
   } else {

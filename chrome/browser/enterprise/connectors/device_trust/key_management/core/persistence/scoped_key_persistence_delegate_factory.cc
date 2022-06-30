@@ -19,7 +19,7 @@ namespace test {
 
 namespace {
 
-std::vector<uint8_t> GenerateTpmWrapped() {
+std::vector<uint8_t> GenerateHardwareWrapped() {
   auto provider = crypto::GetUnexportableKeyProvider();
   DCHECK(provider);
   auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -47,16 +47,16 @@ ScopedKeyPersistenceDelegateFactory::~ScopedKeyPersistenceDelegateFactory() {
 }
 
 std::unique_ptr<MockKeyPersistenceDelegate>
-ScopedKeyPersistenceDelegateFactory::CreateMockedTpmDelegate() {
-  return CreateMockedTpmDelegateWithLoadingSideEffect(do_nothing_);
+ScopedKeyPersistenceDelegateFactory::CreateMockedHardwareDelegate() {
+  return CreateMockedHardwareDelegateWithLoadingSideEffect(do_nothing_);
 }
 
 std::unique_ptr<MockKeyPersistenceDelegate>
 ScopedKeyPersistenceDelegateFactory::
-    CreateMockedTpmDelegateWithLoadingSideEffect(
+    CreateMockedHardwareDelegateWithLoadingSideEffect(
         base::RepeatingClosure& side_effect) {
-  if (tpm_wrapped_key_.empty()) {
-    tpm_wrapped_key_ = GenerateTpmWrapped();
+  if (hw_wrapped_key_.empty()) {
+    hw_wrapped_key_ = GenerateHardwareWrapped();
   }
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
@@ -64,7 +64,7 @@ ScopedKeyPersistenceDelegateFactory::
       .WillByDefault(testing::DoAll(
           testing::Invoke([&side_effect]() { side_effect.Run(); }),
           testing::Return(KeyPersistenceDelegate::KeyInfo(
-              BPKUR::CHROME_BROWSER_TPM_KEY, tpm_wrapped_key_))));
+              BPKUR::CHROME_BROWSER_HW_KEY, hw_wrapped_key_))));
   ON_CALL(*mocked_delegate.get(), GetTpmBackedKeyProvider)
       .WillByDefault(testing::Invoke([]() {
         // This is mocked via crypto::ScopedMockUnexportableKeyProvider.
@@ -94,8 +94,8 @@ ScopedKeyPersistenceDelegateFactory::CreateKeyPersistenceDelegate() {
     return std::move(next_instance_);
   }
 
-  // If no mock instance was set, simply default to a mocked TPM delegate.
-  return CreateMockedTpmDelegate();
+  // If no mock instance was set, simply default to a mocked hardware delegate.
+  return CreateMockedHardwareDelegate();
 }
 
 }  // namespace test
