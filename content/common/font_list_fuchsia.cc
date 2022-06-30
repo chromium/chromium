@@ -10,8 +10,8 @@
 
 namespace content {
 
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
-  return std::make_unique<base::ListValue>();
+base::Value::List GetFontList_SlowBlocking() {
+  return base::Value::List();
 }
 
 }  // namespace content

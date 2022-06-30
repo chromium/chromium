@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -153,8 +154,8 @@ class FontSettingsGetFontListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void FontListHasLoaded(std::unique_ptr<base::ListValue> list);
-  ResponseValue CopyFontsToResult(base::ListValue* fonts);
+  void FontListHasLoaded(base::Value::List list);
+  ResponseValue CopyFontsToResult(const base::Value::List& fonts);
 };
 
 // Base class for extension API functions that clear a browser font pref.

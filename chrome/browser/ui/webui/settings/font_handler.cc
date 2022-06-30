@@ -58,12 +58,11 @@ void FontHandler::HandleFetchFontsData(const base::Value::List& args) {
 }
 
 void FontHandler::FontListHasLoaded(std::string callback_id,
-                                    std::unique_ptr<base::ListValue> list) {
-  base::Value::ListView list_view = list->GetListDeprecated();
+                                    base::Value::List list) {
   // Font list. Selects the directionality for the fonts in the given list.
-  for (auto& i : list_view) {
+  for (auto& i : list) {
     DCHECK(i.is_list());
-    base::Value::ConstListView font = i.GetListDeprecated();
+    base::Value::List& font = i.GetList();
 
     DCHECK(font.size() >= 2u && font[1].is_string());
     std::u16string value = base::UTF8ToUTF16(font[1].GetString());
@@ -72,10 +71,11 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
     i.Append(has_rtl_chars ? "rtl" : "ltr");
   }
 
-  base::DictionaryValue response;
-  response.SetKey("fontList", base::Value::FromUniquePtrValue(std::move(list)));
+  base::Value::Dict response;
+  response.Set("fontList", std::move(list));
 
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(response)));
 }
 
 }  // namespace settings

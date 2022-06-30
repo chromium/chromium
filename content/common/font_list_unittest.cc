@@ -18,11 +18,11 @@
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-bool HasFontWithName(const base::ListValue& list,
+bool HasFontWithName(const base::Value::List& list,
                      base::StringPiece expected_font_id,
                      base::StringPiece expected_display_name) {
-  for (const auto& font : list.GetListDeprecated()) {
-    const auto& font_names = font.GetListDeprecated();
+  for (const auto& font : list) {
+    const auto& font_names = font.GetList();
     std::string font_id = font_names[0].GetString();
     std::string display_name = font_names[1].GetString();
     if (font_id == expected_font_id && display_name == expected_display_name)
@@ -42,18 +42,16 @@ TEST(FontList, GetFontList) {
 
   content::GetFontListTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce([] {
-        std::unique_ptr<base::ListValue> fonts =
-            content::GetFontList_SlowBlocking();
-        ASSERT_TRUE(fonts);
+        base::Value::List fonts = content::GetFontList_SlowBlocking();
 
 #if BUILDFLAG(IS_WIN)
-        EXPECT_TRUE(HasFontWithName(*fonts, "MS Gothic", "MS Gothic"));
-        EXPECT_TRUE(HasFontWithName(*fonts, "Segoe UI", "Segoe UI"));
-        EXPECT_TRUE(HasFontWithName(*fonts, "Verdana", "Verdana"));
+        EXPECT_TRUE(HasFontWithName(fonts, "MS Gothic", "MS Gothic"));
+        EXPECT_TRUE(HasFontWithName(fonts, "Segoe UI", "Segoe UI"));
+        EXPECT_TRUE(HasFontWithName(fonts, "Verdana", "Verdana"));
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-        EXPECT_TRUE(HasFontWithName(*fonts, "Arimo", "Arimo"));
+        EXPECT_TRUE(HasFontWithName(fonts, "Arimo", "Arimo"));
 #else
-        EXPECT_TRUE(HasFontWithName(*fonts, "Arial", "Arial"));
+        EXPECT_TRUE(HasFontWithName(fonts, "Arial", "Arial"));
 #endif
       }));
   task_environment.RunUntilIdle();
@@ -63,16 +61,12 @@ TEST(FontList, GetFontList) {
 #if BUILDFLAG(IS_WIN)
 TEST(FontList, GetFontListLocalized) {
   base::i18n::SetICUDefaultLocale("ja-JP");
-  std::unique_ptr<base::ListValue> ja_fonts =
-      content::GetFontList_SlowBlocking();
-  ASSERT_TRUE(ja_fonts);
-  EXPECT_TRUE(HasFontWithName(*ja_fonts, "MS Gothic", "ＭＳ ゴシック"));
+  base::Value::List ja_fonts = content::GetFontList_SlowBlocking();
+  EXPECT_TRUE(HasFontWithName(ja_fonts, "MS Gothic", "ＭＳ ゴシック"));
 
   base::i18n::SetICUDefaultLocale("ko-KR");
-  std::unique_ptr<base::ListValue> ko_fonts =
-      content::GetFontList_SlowBlocking();
-  ASSERT_TRUE(ko_fonts);
-  EXPECT_TRUE(HasFontWithName(*ko_fonts, "Malgun Gothic", "맑은 고딕"));
+  base::Value::List ko_fonts = content::GetFontList_SlowBlocking();
+  EXPECT_TRUE(HasFontWithName(ko_fonts, "Malgun Gothic", "맑은 고딕"));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -81,10 +75,10 @@ TEST(FontList, GetFontListLocalized) {
 // Ensure that someone (CTFontManager or our FontList code) filters these fonts
 // on all OS versions that we support.
 TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
-  std::unique_ptr<base::ListValue> fonts = content::GetFontList_SlowBlocking();
+  base::Value::List fonts = content::GetFontList_SlowBlocking();
 
-  for (const auto& font : fonts->GetListDeprecated()) {
-    const auto& font_names = font.GetListDeprecated();
+  for (const auto& font : fonts) {
+    const auto& font_names = font.GetList();
     const std::string& font_id = font_names[0].GetString();
 
     // The checks are inspired by Gecko's gfxMacPlatformFontList::AddFamily.

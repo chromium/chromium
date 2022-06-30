@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;
@@ -35,8 +36,7 @@ class FontHandler : public SettingsPageUIHandler {
   void HandleFetchFontsData(const base::Value::List& args);
 
   // Callback to handle fonts loading.
-  void FontListHasLoaded(std::string callback_id,
-                         std::unique_ptr<base::ListValue> list);
+  void FontListHasLoaded(std::string callback_id, base::Value::List list);
 
   base::WeakPtrFactory<FontHandler> weak_ptr_factory_{this};
 };

@@ -88,14 +88,14 @@ std::string GetOperatingSystemVersion() {
 }
 
 // Adds the list of |fonts| to the |machine|.
-void AddFontsToFingerprint(const base::ListValue& fonts,
+void AddFontsToFingerprint(const base::Value::List& fonts,
                            Fingerprint::MachineCharacteristics* machine) {
-  for (const auto& it : fonts.GetListDeprecated()) {
+  for (const auto& it : fonts) {
     // Each item in the list is a two-element list such that the first element
     // is the font family and the second is the font name.
     DCHECK(it.is_list());
 
-    std::string font_name = it.GetListDeprecated()[1].GetString();
+    std::string font_name = it.GetList()[1].GetString();
 
     machine->add_font(font_name);
   }
@@ -203,7 +203,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   void OnGpuInfoUpdate() override;
 
   // Callbacks for asynchronously loaded data.
-  void OnGotFonts(std::unique_ptr<base::ListValue> fonts);
+  void OnGotFonts(base::Value::List fonts);
   void OnGotPlugins(const std::vector<content::WebPluginInfo>& plugins);
   void OnGotGeoposition(device::mojom::GeopositionPtr geoposition);
 
@@ -238,7 +238,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   const base::Time install_time_;
 
   // Data that will be loaded asynchronously.
-  std::unique_ptr<base::ListValue> fonts_;
+  std::unique_ptr<base::Value::List> fonts_;
   std::vector<content::WebPluginInfo> plugins_;
   bool waiting_on_plugins_;
   device::mojom::Geoposition geoposition_;
@@ -329,9 +329,9 @@ void FingerprintDataLoader::OnGpuInfoUpdate() {
   MaybeFillFingerprint();
 }
 
-void FingerprintDataLoader::OnGotFonts(std::unique_ptr<base::ListValue> fonts) {
+void FingerprintDataLoader::OnGotFonts(base::Value::List fonts) {
   DCHECK(!fonts_);
-  fonts_ = std::move(fonts);
+  fonts_ = std::make_unique<base::Value::List>(std::move(fonts));
   MaybeFillFingerprint();
 }
 
