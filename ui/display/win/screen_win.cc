@@ -299,14 +299,14 @@ Display CreateDisplayFromDisplayInfo(
   } else if (hdr_enabled_on_any_display) {
     float sdr_white_level = display_info.sdr_white_level();
     float hdr_max_luminance_relative = 0.f;
-    if (dxgi_output_desc) {
+    if (dxgi_output_desc && dxgi_output_desc->hdr_enabled) {
       hdr_max_luminance_relative =
           dxgi_output_desc->max_luminance / sdr_white_level;
-      if (!dxgi_output_desc->hdr_enabled)
-        sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     }
     hdr_max_luminance_relative = std::max(hdr_max_luminance_relative,
                                           kMinHDRCapableMaxLuminanceRelative);
+    // TODO(https://crbug.com/1339352): Do not allow non-HDR-enabled displays
+    // to use HDR color spaces.
     color_spaces = GetDisplayColorSpacesForHdr(sdr_white_level,
                                                hdr_max_luminance_relative);
   } else {
