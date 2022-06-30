@@ -643,6 +643,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   self.qrScannerCoordinator.baseViewController = self.viewController;
   [self.qrScannerCoordinator start];
+
+  [_dispatcher startDispatchingToTarget:self.viewController
+                            forProtocol:@protocol(BrowserCommands)];
+  [_dispatcher startDispatchingToTarget:self.viewController
+                            forProtocol:@protocol(NewTabPageCommands)];
 }
 
 // Destroys the browser view controller dependencies.

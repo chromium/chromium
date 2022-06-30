@@ -536,15 +536,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
     self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
 
-    // TODO(crbug.com/1329090): Have BrowserCoordinator set up dispatch to the
-    // BVC for these commands.
-    [self.commandDispatcher
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(BrowserCommands)];
-    [self.commandDispatcher
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(NewTabPageCommands)];
-
     _inNewTabAnimation = NO;
 
     _fullscreenController = FullscreenController::FromBrowser(browser);
