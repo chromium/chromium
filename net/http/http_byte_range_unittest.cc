@@ -28,12 +28,12 @@ TEST(HttpByteRangeTest, ValidRanges) {
     {  -1, -1, 100000, true },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     HttpByteRange range;
-    range.set_first_byte_position(tests[i].first_byte_position);
-    range.set_last_byte_position(tests[i].last_byte_position);
-    range.set_suffix_length(tests[i].suffix_length);
-    EXPECT_EQ(tests[i].valid, range.IsValid());
+    range.set_first_byte_position(test.first_byte_position);
+    range.set_last_byte_position(test.last_byte_position);
+    range.set_suffix_length(test.suffix_length);
+    EXPECT_EQ(test.valid, range.IsValid());
   }
 }
 
@@ -60,24 +60,24 @@ TEST(HttpByteRangeTest, SetInstanceSize) {
     {  10, 10000, -1, 1000000, true, 10, 10000 },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     HttpByteRange range;
-    range.set_first_byte_position(tests[i].first_byte_position);
-    range.set_last_byte_position(tests[i].last_byte_position);
-    range.set_suffix_length(tests[i].suffix_length);
+    range.set_first_byte_position(test.first_byte_position);
+    range.set_last_byte_position(test.last_byte_position);
+    range.set_suffix_length(test.suffix_length);
 
-    bool return_value = range.ComputeBounds(tests[i].instance_size);
-    EXPECT_EQ(tests[i].expected_return_value, return_value);
+    bool return_value = range.ComputeBounds(test.instance_size);
+    EXPECT_EQ(test.expected_return_value, return_value);
     if (return_value) {
-      EXPECT_EQ(tests[i].expected_lower_bound, range.first_byte_position());
-      EXPECT_EQ(tests[i].expected_upper_bound, range.last_byte_position());
+      EXPECT_EQ(test.expected_lower_bound, range.first_byte_position());
+      EXPECT_EQ(test.expected_upper_bound, range.last_byte_position());
 
       // Try to call SetInstanceSize the second time.
-      EXPECT_FALSE(range.ComputeBounds(tests[i].instance_size));
+      EXPECT_FALSE(range.ComputeBounds(test.instance_size));
       // And expect there's no side effect.
-      EXPECT_EQ(tests[i].expected_lower_bound, range.first_byte_position());
-      EXPECT_EQ(tests[i].expected_upper_bound, range.last_byte_position());
-      EXPECT_EQ(tests[i].suffix_length, range.suffix_length());
+      EXPECT_EQ(test.expected_lower_bound, range.first_byte_position());
+      EXPECT_EQ(test.expected_upper_bound, range.last_byte_position());
+      EXPECT_EQ(test.suffix_length, range.suffix_length());
     }
   }
 }
@@ -93,8 +93,8 @@ TEST(HttpByteRangeTest, GetHeaderValue) {
       {HttpByteRange::RightUnbounded(100), "bytes=100-"},
       {HttpByteRange::Suffix(100), "bytes=-100"},
   };
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    EXPECT_EQ(tests[i].expected, tests[i].range.GetHeaderValue());
+  for (const auto& test : tests) {
+    EXPECT_EQ(test.expected, test.range.GetHeaderValue());
   }
 }
 

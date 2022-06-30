@@ -1877,8 +1877,8 @@ void BackendImpl::LogStats() {
   StatsItems stats;
   GetStats(&stats);
 
-  for (size_t index = 0; index < stats.size(); index++)
-    VLOG(1) << stats[index].first << ": " << stats[index].second;
+  for (const auto& stat : stats)
+    VLOG(1) << stat.first << ": " << stat.second;
 }
 
 void BackendImpl::ReportStats() {

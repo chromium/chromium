@@ -264,8 +264,8 @@ std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreateRstStream(
 std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreateSettings(
     const spdy::SettingsMap& values) const {
   spdy::SpdySettingsIR settings_ir;
-  for (auto it = values.begin(); it != values.end(); ++it) {
-    settings_ir.AddSetting(it->first, it->second);
+  for (const auto& it : values) {
+    settings_ir.AddSetting(it.first, it.second);
   }
   return std::make_unique<spdy::SpdySerializedFrame>(
       spdy_framer_.SerializeSettings(settings_ir));

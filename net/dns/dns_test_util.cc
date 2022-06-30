@@ -419,17 +419,17 @@ class MockDnsTransactionFactory::MockTransaction
       // Find the relevant rule which matches |qtype|, |secure|, prefix of
       // |hostname_|, and |url_request_context| (iff the rule context is not
       // null).
-      for (size_t i = 0; i < rules.size(); ++i) {
-        const std::string& prefix = rules[i].prefix;
-        if ((rules[i].qtype == qtype) && (rules[i].secure == secure) &&
+      for (const auto& rule : rules) {
+        const std::string& prefix = rule.prefix;
+        if ((rule.qtype == qtype) && (rule.secure == secure) &&
             (hostname_.size() >= prefix.size()) &&
             (hostname_.compare(0, prefix.size(), prefix) == 0) &&
-            (!rules[i].context ||
-             rules[i].context == resolve_context->url_request_context())) {
-          const MockDnsClientRule::Result* result = &rules[i].result;
+            (!rule.context ||
+             rule.context == resolve_context->url_request_context())) {
+          const MockDnsClientRule::Result* result = &rule.result;
           result_ = MockDnsClientRule::Result(result->type);
           result_.net_error = result->net_error;
-          delayed_ = rules[i].delay;
+          delayed_ = rule.delay;
 
           // Generate a DnsResponse when not provided with the rule.
           std::vector<DnsResourceRecord> authority_records;
@@ -648,10 +648,9 @@ SecureDnsMode MockDnsTransactionFactory::GetSecureDnsModeForTest() {
 void MockDnsTransactionFactory::CompleteDelayedTransactions() {
   DelayedTransactionList old_delayed_transactions;
   old_delayed_transactions.swap(delayed_transactions_);
-  for (auto it = old_delayed_transactions.begin();
-       it != old_delayed_transactions.end(); ++it) {
-    if (it->get())
-      (*it)->FinishDelayedTransaction();
+  for (auto& old_delayed_transaction : old_delayed_transactions) {
+    if (old_delayed_transaction.get())
+      old_delayed_transaction->FinishDelayedTransaction();
   }
 }
 

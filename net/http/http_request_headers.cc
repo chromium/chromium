@@ -180,16 +180,16 @@ void HttpRequestHeaders::AddHeadersFromString(
 }
 
 void HttpRequestHeaders::MergeFrom(const HttpRequestHeaders& other) {
-  for (auto it = other.headers_.begin(); it != other.headers_.end(); ++it) {
-    SetHeader(it->key, it->value);
+  for (const auto& header : other.headers_) {
+    SetHeader(header.key, header.value);
   }
 }
 
 std::string HttpRequestHeaders::ToString() const {
   std::string output;
-  for (auto it = headers_.begin(); it != headers_.end(); ++it) {
-    base::StringAppendF(&output, "%s: %s\r\n", it->key.c_str(),
-                        it->value.c_str());
+  for (const auto& header : headers_) {
+    base::StringAppendF(&output, "%s: %s\r\n", header.key.c_str(),
+                        header.value.c_str());
   }
   output.append("\r\n");
   return output;

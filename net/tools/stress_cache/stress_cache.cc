@@ -333,8 +333,8 @@ void StressTheCache(int iteration) {
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);
 
-  for (int i = 0; i < kNumKeys; i++)
-    g_data->keys[i] = GenerateStressKey();
+  for (auto& key : g_data->keys)
+    key = GenerateStressKey();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                 base::BindOnce(&LoopTask));

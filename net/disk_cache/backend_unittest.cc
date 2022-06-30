@@ -1205,9 +1205,9 @@ void DiskCacheBackendTest::BackendLoad() {
   srand(seed);
 
   disk_cache::Entry* entries[kLargeNumEntries];
-  for (int i = 0; i < kLargeNumEntries; i++) {
+  for (auto*& entry : entries) {
     std::string key = GenerateKey(true);
-    ASSERT_THAT(CreateEntry(key, &entries[i]), IsOk());
+    ASSERT_THAT(CreateEntry(key, &entry), IsOk());
   }
   EXPECT_EQ(kLargeNumEntries, cache_->GetEntryCount());
 
@@ -1219,13 +1219,13 @@ void DiskCacheBackendTest::BackendLoad() {
     entries[source2] = temp;
   }
 
-  for (int i = 0; i < kLargeNumEntries; i++) {
-    disk_cache::Entry* entry;
-    ASSERT_THAT(OpenEntry(entries[i]->GetKey(), &entry), IsOk());
-    EXPECT_TRUE(entry == entries[i]);
+  for (auto* entry : entries) {
+    disk_cache::Entry* new_entry;
+    ASSERT_THAT(OpenEntry(entry->GetKey(), &new_entry), IsOk());
+    EXPECT_TRUE(new_entry == entry);
+    new_entry->Close();
+    entry->Doom();
     entry->Close();
-    entries[i]->Doom();
-    entries[i]->Close();
   }
   FlushQueueForTest();
   EXPECT_EQ(0, cache_->GetEntryCount());
@@ -1479,9 +1479,9 @@ void DiskCacheBackendTest::BackendInvalidEntryWithLoad() {
 
   const int kNumEntries = 100;
   disk_cache::Entry* entries[kNumEntries];
-  for (int i = 0; i < kNumEntries; i++) {
+  for (auto*& entry : entries) {
     std::string key = GenerateKey(true);
-    ASSERT_THAT(CreateEntry(key, &entries[i]), IsOk());
+    ASSERT_THAT(CreateEntry(key, &entry), IsOk());
   }
   EXPECT_EQ(kNumEntries, cache_->GetEntryCount());
 
@@ -3737,7 +3737,7 @@ TEST_F(DiskCacheTest, MultipleInstances) {
   TestBackendResultCompletionCallback cb;
 
   const int kNumberOfCaches = 2;
-  std::unique_ptr<disk_cache::Backend> cache[kNumberOfCaches];
+  std::unique_ptr<disk_cache::Backend> caches[kNumberOfCaches];
 
   disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
       net::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, /*file_operations=*/nullptr,
@@ -3745,7 +3745,7 @@ TEST_F(DiskCacheTest, MultipleInstances) {
       /*net_log=*/nullptr, cb.callback());
   rv = cb.GetResult(std::move(rv));
   ASSERT_THAT(rv.net_error, IsOk());
-  cache[0] = std::move(rv.backend);
+  caches[0] = std::move(rv.backend);
   rv = disk_cache::CreateCacheBackend(
       net::GENERATED_BYTE_CODE_CACHE, net::CACHE_BACKEND_DEFAULT,
       /*file_operations=*/nullptr, store2.GetPath(), 0,
@@ -3753,15 +3753,14 @@ TEST_F(DiskCacheTest, MultipleInstances) {
       cb.callback());
   rv = cb.GetResult(std::move(rv));
   ASSERT_THAT(rv.net_error, IsOk());
-  cache[1] = std::move(rv.backend);
+  caches[1] = std::move(rv.backend);
 
-  ASSERT_TRUE(cache[0].get() != nullptr && cache[1].get() != nullptr);
+  ASSERT_TRUE(caches[0].get() != nullptr && caches[1].get() != nullptr);
 
   std::string key("the first key");
-  for (int i = 0; i < kNumberOfCaches; i++) {
+  for (auto& cache : caches) {
     TestEntryResultCompletionCallback cb2;
-    EntryResult result =
-        cache[i]->CreateEntry(key, net::HIGHEST, cb2.callback());
+    EntryResult result = cache->CreateEntry(key, net::HIGHEST, cb2.callback());
     result = cb2.GetResult(std::move(result));
     ASSERT_THAT(result.net_error(), IsOk());
     result.ReleaseEntry()->Close();
@@ -4641,8 +4640,8 @@ TEST_F(DiskCacheBackendTest, SimpleFdLimit) {
   histogram_tester.ExpectBucketCount("SimpleCache.FileDescriptorLimiterAction",
                                      disk_cache::FD_LIMIT_FAIL_REOPEN_FILE, 0);
 
-  for (int i = 0; i < kLargeNumEntries; ++i) {
-    entries[i]->Close();
+  for (auto* entry : entries) {
+    entry->Close();
     RunUntilIdle();
   }
   alt_entry->Close();

@@ -110,13 +110,12 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
 };
 
 bool ShouldUpdateHeader(base::StringPiece name) {
-  for (size_t i = 0; i < std::size(kNonUpdatedHeaders); ++i) {
-    if (base::EqualsCaseInsensitiveASCII(name, kNonUpdatedHeaders[i]))
+  for (const auto* header : kNonUpdatedHeaders) {
+    if (base::EqualsCaseInsensitiveASCII(name, header))
       return false;
   }
-  for (size_t i = 0; i < std::size(kNonUpdatedHeaderPrefixes); ++i) {
-    if (base::StartsWith(name, kNonUpdatedHeaderPrefixes[i],
-                         base::CompareCase::INSENSITIVE_ASCII))
+  for (const auto* prefix : kNonUpdatedHeaderPrefixes) {
+    if (base::StartsWith(name, prefix, base::CompareCase::INSENSITIVE_ASCII))
       return false;
   }
   return true;
@@ -887,18 +886,18 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
 }
 
 void HttpResponseHeaders::AddHopByHopHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kHopByHopResponseHeaders); ++i)
-    result->insert(std::string(kHopByHopResponseHeaders[i]));
+  for (const auto* header : kHopByHopResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddCookieHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kCookieResponseHeaders); ++i)
-    result->insert(std::string(kCookieResponseHeaders[i]));
+  for (const auto* header : kCookieResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddChallengeHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kChallengeResponseHeaders); ++i)
-    result->insert(std::string(kChallengeResponseHeaders[i]));
+  for (const auto* header : kChallengeResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
@@ -906,8 +905,8 @@ void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
 }
 
 void HttpResponseHeaders::AddSecurityStateHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kSecurityStateHeaders); ++i)
-    result->insert(std::string(kSecurityStateHeaders[i]));
+  for (const auto* header : kSecurityStateHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::GetMimeTypeAndCharset(std::string* mime_type,

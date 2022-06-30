@@ -368,9 +368,8 @@ void MockDiskEntry::StoreAndDeliverCallbacks(bool store,
     CallbackInfo c = {entry, std::move(callback)};
     callback_list.push_back(std::move(c));
   } else {
-    for (size_t i = 0; i < callback_list.size(); i++) {
-      CallbackInfo& c = callback_list[i];
-      c.entry->CallbackLater(std::move(c.callback));
+    for (auto& callback_info : callback_list) {
+      callback_info.entry->CallbackLater(std::move(callback_info.callback));
     }
     callback_list.clear();
   }

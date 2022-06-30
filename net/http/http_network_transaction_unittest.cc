@@ -1576,7 +1576,7 @@ TEST_F(HttpNetworkTransactionTest, ReuseConnection) {
     "hello", "world"
   };
 
-  for (int i = 0; i < 2; ++i) {
+  for (const auto* expected_response_data : kExpectedResponseData) {
     HttpRequestInfo request;
     request.method = "GET";
     request.url = GURL("http://www.example.org/");
@@ -1603,7 +1603,7 @@ TEST_F(HttpNetworkTransactionTest, ReuseConnection) {
     std::string response_data;
     rv = ReadTransaction(&trans, &response_data);
     EXPECT_THAT(rv, IsOk());
-    EXPECT_EQ(kExpectedResponseData[i], response_data);
+    EXPECT_EQ(expected_response_data, response_data);
   }
 }
 
@@ -12781,10 +12781,10 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
       },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
-            tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
@@ -12797,8 +12797,8 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(tests[i].url, session.get()));
-    EXPECT_EQ(tests[i].expected_group_id,
+              GroupIdTransactionHelper(test.url, session.get()));
+    EXPECT_EQ(test.expected_group_id,
               transport_conn_pool->last_group_id_received());
     EXPECT_TRUE(transport_conn_pool->socket_requested());
   }
@@ -12839,10 +12839,10 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
       },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
-            tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
@@ -12858,8 +12858,8 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(tests[i].url, session.get()));
-    EXPECT_EQ(tests[i].expected_group_id,
+              GroupIdTransactionHelper(test.url, session.get()));
+    EXPECT_EQ(test.expected_group_id,
               http_proxy_pool->last_group_id_received());
   }
 }
@@ -12917,17 +12917,17 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
       },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
-            tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
 
     ProxyServer proxy_server(
-        ProxyUriToProxyServer(tests[i].proxy_server, ProxyServer::SCHEME_HTTP));
+        ProxyUriToProxyServer(test.proxy_server, ProxyServer::SCHEME_HTTP));
     ASSERT_TRUE(proxy_server.is_valid());
     CaptureGroupIdTransportSocketPool* socks_conn_pool =
         new CaptureGroupIdTransportSocketPool(&dummy_connect_job_params_);
@@ -12939,8 +12939,8 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
     EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(tests[i].url, session.get()));
-    EXPECT_EQ(tests[i].expected_group_id,
+              GroupIdTransactionHelper(test.url, session.get()));
+    EXPECT_EQ(test.expected_group_id,
               socks_conn_pool->last_group_id_received());
   }
 }
@@ -16762,9 +16762,9 @@ TEST_F(HttpNetworkTransactionTest, SSLWriteCertError) {
     ERR_CERT_AUTHORITY_INVALID,
     ERR_CERT_DATE_INVALID,
   };
-  for (size_t i = 0; i < std::size(kErrors); i++) {
-    CheckErrorIsPassedBack(kErrors[i], ASYNC);
-    CheckErrorIsPassedBack(kErrors[i], SYNCHRONOUS);
+  for (int error : kErrors) {
+    CheckErrorIsPassedBack(error, ASYNC);
+    CheckErrorIsPassedBack(error, SYNCHRONOUS);
   }
 }
 

@@ -588,8 +588,8 @@ bool X509Certificate::GetPEMEncodedChain(
   if (!GetPEMEncoded(cert_buffer(), &pem_data))
     return false;
   encoded_chain.push_back(pem_data);
-  for (size_t i = 0; i < intermediate_ca_certs_.size(); ++i) {
-    if (!GetPEMEncoded(intermediate_ca_certs_[i].get(), &pem_data))
+  for (const auto& intermediate_ca_cert : intermediate_ca_certs_) {
+    if (!GetPEMEncoded(intermediate_ca_cert.get(), &pem_data))
       return false;
     encoded_chain.push_back(pem_data);
   }

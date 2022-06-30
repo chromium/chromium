@@ -493,8 +493,8 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
   EXPECT_FALSE(load_index_result.flush_required);
 
   EXPECT_EQ(kNumHashes, load_index_result.entries.size());
-  for (size_t i = 0; i < kNumHashes; ++i)
-    EXPECT_EQ(1U, load_index_result.entries.count(kHashes[i]));
+  for (uint64_t hash : kHashes)
+    EXPECT_EQ(1U, load_index_result.entries.count(hash));
 }
 
 TEST_F(SimpleIndexFileTest, LoadCorruptIndex) {

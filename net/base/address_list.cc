@@ -52,8 +52,8 @@ AddressList AddressList::CreateFromIPAddressList(
     const IPAddressList& addresses,
     std::vector<std::string> aliases) {
   AddressList list;
-  for (auto iter = addresses.begin(); iter != addresses.end(); ++iter) {
-    list.push_back(IPEndPoint(*iter, 0));
+  for (const auto& address : addresses) {
+    list.push_back(IPEndPoint(address, 0));
   }
   list.SetDnsAliases(std::move(aliases));
   return list;

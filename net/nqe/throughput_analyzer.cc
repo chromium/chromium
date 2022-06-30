@@ -356,8 +356,8 @@ void ThroughputAnalyzer::OnConnectionTypeChanged() {
   // computation are now spanning a connection change event. These requests
   // would now degrade the throughput computation accuracy. So, move them to
   // |accuracy_degrading_requests_|.
-  for (auto it = requests_.begin(); it != requests_.end(); ++it) {
-    accuracy_degrading_requests_.insert(it->first);
+  for (const auto& request : requests_) {
+    accuracy_degrading_requests_.insert(request.first);
   }
   requests_.clear();
   BoundRequestsSize();

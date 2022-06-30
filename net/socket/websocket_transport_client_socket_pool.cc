@@ -196,9 +196,9 @@ void WebSocketTransportClientSocketPool::FlushWithError(
         net_log_reason_utf8);
     it = pending_connects_.erase(it);
   }
-  for (auto it = stalled_request_queue_.begin();
-       it != stalled_request_queue_.end(); ++it) {
-    InvokeUserCallbackLater(it->handle, std::move(it->callback), error);
+  for (auto& stalled_request : stalled_request_queue_) {
+    InvokeUserCallbackLater(stalled_request.handle,
+                            std::move(stalled_request.callback), error);
   }
   stalled_request_map_.clear();
   stalled_request_queue_.clear();

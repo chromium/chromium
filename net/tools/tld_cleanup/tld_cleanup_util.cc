@@ -42,16 +42,16 @@ bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
               "};\n"
               "%%\n");
 
-  for (auto i = rules.begin(); i != rules.end(); ++i) {
-    data.append(i->first);
+  for (const auto& rule : rules) {
+    data.append(rule.first);
     data.append(", ");
     int type = 0;
-    if (i->second.exception) {
+    if (rule.second.exception) {
       type = kExceptionRule;
-    } else if (i->second.wildcard) {
+    } else if (rule.second.wildcard) {
       type = kWildcardRule;
     }
-    if (i->second.is_private) {
+    if (rule.second.is_private) {
       type += kPrivateRule;
     }
     data.append(base::NumberToString(type));

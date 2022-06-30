@@ -658,8 +658,8 @@ std::string SpdyTestUtil::ConstructSpdyReplyString(
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdySettings(
     const spdy::SettingsMap& settings) {
   spdy::SpdySettingsIR settings_ir;
-  for (auto it = settings.begin(); it != settings.end(); ++it) {
-    settings_ir.AddSetting(it->first, it->second);
+  for (const auto& setting : settings) {
+    settings_ir.AddSetting(setting.first, setting.second);
   }
   return spdy::SpdySerializedFrame(
       headerless_spdy_framer_.SerializeFrame(settings_ir));
@@ -985,12 +985,11 @@ spdy::SpdySerializedFrame SpdyTestUtil::SerializeFrame(
 }
 
 void SpdyTestUtil::UpdateWithStreamDestruction(int stream_id) {
-  for (auto priority_it = priority_to_stream_id_list_.begin();
-       priority_it != priority_to_stream_id_list_.end(); ++priority_it) {
-    for (auto stream_it = priority_it->second.begin();
-         stream_it != priority_it->second.end(); ++stream_it) {
+  for (auto& priority_it : priority_to_stream_id_list_) {
+    for (auto stream_it = priority_it.second.begin();
+         stream_it != priority_it.second.end(); ++stream_it) {
       if (*stream_it == stream_id) {
-        priority_it->second.erase(stream_it);
+        priority_it.second.erase(stream_it);
         return;
       }
     }

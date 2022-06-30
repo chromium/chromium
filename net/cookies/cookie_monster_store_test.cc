@@ -141,8 +141,10 @@ void MockSimplePersistentCookieStore::Load(
     const NetLogWithSource& /* net_log */) {
   std::vector<std::unique_ptr<CanonicalCookie>> out_cookies;
 
-  for (auto it = cookies_.begin(); it != cookies_.end(); it++)
-    out_cookies.push_back(std::make_unique<CanonicalCookie>(it->second));
+  for (const auto& cookie_map_it : cookies_) {
+    out_cookies.push_back(
+        std::make_unique<CanonicalCookie>(cookie_map_it.second));
+  }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

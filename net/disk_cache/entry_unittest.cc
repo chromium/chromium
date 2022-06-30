@@ -606,9 +606,9 @@ void DiskCacheEntryTest::StreamAccess() {
   const int kBufferSize = 1024;
   const int kNumStreams = 3;
   scoped_refptr<net::IOBuffer> reference_buffers[kNumStreams];
-  for (int i = 0; i < kNumStreams; i++) {
-    reference_buffers[i] = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
-    CacheTestFillBuffer(reference_buffers[i]->data(), kBufferSize, false);
+  for (auto& reference_buffer : reference_buffers) {
+    reference_buffer = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+    CacheTestFillBuffer(reference_buffer->data(), kBufferSize, false);
   }
   scoped_refptr<net::IOBuffer> buffer1 =
       base::MakeRefCounted<net::IOBuffer>(kBufferSize);
@@ -2633,8 +2633,8 @@ TEST_F(DiskCacheEntryTest, CleanupSparseEntry) {
       child_key[count++] = entry->GetKey();
     entry->Close();
   }
-  for (int i = 0; i < 2; i++) {
-    ASSERT_THAT(OpenEntry(child_key[i], &entry), IsOk());
+  for (const auto& key : child_key) {
+    ASSERT_THAT(OpenEntry(key, &entry), IsOk());
     // Overwrite the header's magic and signature.
     EXPECT_EQ(12, WriteData(entry, 2, 0, buf1.get(), 12, false));
     entry->Close();

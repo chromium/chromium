@@ -65,10 +65,10 @@ TEST(ProxyListTest, SetFromPacString) {
     },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     ProxyList list;
-    list.SetFromPacString(tests[i].pac_input);
-    EXPECT_EQ(tests[i].pac_output, list.ToPacString());
+    list.SetFromPacString(test.pac_input);
+    EXPECT_EQ(test.pac_output, list.ToPacString());
     EXPECT_FALSE(list.IsEmpty());
   }
 }
@@ -91,11 +91,11 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
     },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     ProxyList list;
-    list.SetFromPacString(tests[i].pac_input);
-    list.RemoveProxiesWithoutScheme(tests[i].filter);
-    EXPECT_EQ(tests[i].filtered_pac_output, list.ToPacString());
+    list.SetFromPacString(test.pac_input);
+    list.RemoveProxiesWithoutScheme(test.filter);
+    EXPECT_EQ(test.filtered_pac_output, list.ToPacString());
   }
 }
 

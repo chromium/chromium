@@ -509,20 +509,20 @@ TEST_F(UDPSocketTest, ClientGetLocalPeerAddresses) {
     {"2001:db8:0::42", "::1", true},
 #endif
   };
-  for (size_t i = 0; i < std::size(tests); i++) {
-    SCOPED_TRACE(std::string("Connecting from ") + tests[i].local_address +
-                 std::string(" to ") + tests[i].remote_address);
+  for (const auto& test : tests) {
+    SCOPED_TRACE(std::string("Connecting from ") + test.local_address +
+                 std::string(" to ") + test.remote_address);
 
     IPAddress ip_address;
-    EXPECT_TRUE(ip_address.AssignFromIPLiteral(tests[i].remote_address));
+    EXPECT_TRUE(ip_address.AssignFromIPLiteral(test.remote_address));
     IPEndPoint remote_address(ip_address, 80);
-    EXPECT_TRUE(ip_address.AssignFromIPLiteral(tests[i].local_address));
+    EXPECT_TRUE(ip_address.AssignFromIPLiteral(test.local_address));
     IPEndPoint local_address(ip_address, 80);
 
     UDPClientSocket client(DatagramSocket::DEFAULT_BIND, nullptr,
                            NetLogSource());
     int rv = client.Connect(remote_address);
-    if (tests[i].may_fail && rv == ERR_ADDRESS_UNREACHABLE) {
+    if (test.may_fail && rv == ERR_ADDRESS_UNREACHABLE) {
       // Connect() may return ERR_ADDRESS_UNREACHABLE for IPv6
       // addresses if IPv6 is not configured.
       continue;

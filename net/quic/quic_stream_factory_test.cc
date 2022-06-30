@@ -11291,11 +11291,11 @@ TEST_P(QuicStreamFactoryTest, SharedCryptoConfig) {
   cannoncial_suffixes.push_back(string(".c.youtube.com"));
   cannoncial_suffixes.push_back(string(".googlevideo.com"));
 
-  for (unsigned i = 0; i < cannoncial_suffixes.size(); ++i) {
+  for (const auto& cannoncial_suffix : cannoncial_suffixes) {
     string r1_host_name("r1");
     string r2_host_name("r2");
-    r1_host_name.append(cannoncial_suffixes[i]);
-    r2_host_name.append(cannoncial_suffixes[i]);
+    r1_host_name.append(cannoncial_suffix);
+    r2_host_name.append(cannoncial_suffix);
 
     url::SchemeHostPort scheme_host_port1(url::kHttpsScheme, r1_host_name, 80);
     // Need to hold onto this through the test, to keep the
@@ -11331,11 +11331,11 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigWhenProofIsInvalid) {
   cannoncial_suffixes.push_back(string(".c.youtube.com"));
   cannoncial_suffixes.push_back(string(".googlevideo.com"));
 
-  for (unsigned i = 0; i < cannoncial_suffixes.size(); ++i) {
+  for (const auto& cannoncial_suffix : cannoncial_suffixes) {
     string r3_host_name("r3");
     string r4_host_name("r4");
-    r3_host_name.append(cannoncial_suffixes[i]);
-    r4_host_name.append(cannoncial_suffixes[i]);
+    r3_host_name.append(cannoncial_suffix);
+    r4_host_name.append(cannoncial_suffix);
 
     url::SchemeHostPort scheme_host_port1(url::kHttpsScheme, r3_host_name, 80);
     // Need to hold onto this through the test, to keep the

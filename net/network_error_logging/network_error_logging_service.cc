@@ -128,12 +128,12 @@ const struct {
 void GetPhaseAndTypeFromNetError(Error error,
                                  std::string* phase_out,
                                  std::string* type_out) {
-  for (size_t i = 0; i < std::size(kErrorTypes); ++i) {
-    DCHECK(kErrorTypes[i].phase != nullptr);
-    DCHECK(kErrorTypes[i].type != nullptr);
-    if (kErrorTypes[i].error == error) {
-      *phase_out = kErrorTypes[i].phase;
-      *type_out = kErrorTypes[i].type;
+  for (const auto& error_type : kErrorTypes) {
+    DCHECK(error_type.phase != nullptr);
+    DCHECK(error_type.type != nullptr);
+    if (error_type.error == error) {
+      *phase_out = error_type.phase;
+      *type_out = error_type.type;
       return;
     }
   }

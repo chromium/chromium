@@ -334,8 +334,8 @@ void RunTestThreads(NetLog* net_log) {
 TEST(NetLogTest, NetLogEventThreads) {
   // Attach some observers.  They'll safely detach themselves on destruction.
   CountingObserver observers[3];
-  for (size_t i = 0; i < std::size(observers); ++i) {
-    NetLog::Get()->AddObserver(&observers[i], NetLogCaptureMode::kEverything);
+  for (auto& observer : observers) {
+    NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
   }
 
   // Run a bunch of threads to completion, each of which will emit events to
@@ -344,8 +344,8 @@ TEST(NetLogTest, NetLogEventThreads) {
 
   // Check that each observer saw the emitted events.
   const int kTotalEvents = kThreads * kEvents;
-  for (size_t i = 0; i < std::size(observers); ++i)
-    EXPECT_EQ(kTotalEvents, observers[i].count());
+  for (const auto& observer : observers)
+    EXPECT_EQ(kTotalEvents, observer.count());
 }
 
 // Test adding and removing a single observer.

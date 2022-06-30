@@ -47,11 +47,11 @@ const double kListenerRefreshRatio2 = 0.95;
 void MDnsSocketFactoryImpl::CreateSockets(
     std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) {
   InterfaceIndexFamilyList interfaces(GetMDnsInterfacesToBind());
-  for (size_t i = 0; i < interfaces.size(); ++i) {
-    DCHECK(interfaces[i].second == ADDRESS_FAMILY_IPV4 ||
-           interfaces[i].second == ADDRESS_FAMILY_IPV6);
-    std::unique_ptr<DatagramServerSocket> socket(CreateAndBindMDnsSocket(
-        interfaces[i].second, interfaces[i].first, net_log_));
+  for (const auto& interface : interfaces) {
+    DCHECK(interface.second == ADDRESS_FAMILY_IPV4 ||
+           interface.second == ADDRESS_FAMILY_IPV6);
+    std::unique_ptr<DatagramServerSocket> socket(
+        CreateAndBindMDnsSocket(interface.second, interface.first, net_log_));
     if (socket)
       sockets->push_back(std::move(socket));
   }
@@ -280,8 +280,8 @@ void MDnsClientImpl::Core::HandlePacket(DnsResponse* response,
     update_keys.insert(std::make_pair(update_key, update));
   }
 
-  for (auto i = update_keys.begin(); i != update_keys.end(); i++) {
-    const RecordParsed* record = cache_.LookupKey(i->first);
+  for (const auto& update_key : update_keys) {
+    const RecordParsed* record = cache_.LookupKey(update_key.first);
     if (!record)
       continue;
 
@@ -290,8 +290,8 @@ void MDnsClientImpl::Core::HandlePacket(DnsResponse* response,
       NotifyNsecRecord(record);
 #endif
     } else {
-      AlertListeners(i->second, ListenerKey(record->name(), record->type()),
-                     record);
+      AlertListeners(update_key.second,
+                     ListenerKey(record->name(), record->type()), record);
     }
   }
 }
@@ -306,12 +306,12 @@ void MDnsClientImpl::Core::NotifyNsecRecord(const RecordParsed* record) {
 
   cache_.FindDnsRecords(0, record->name(), &records_to_remove, clock_->Now());
 
-  for (auto i = records_to_remove.begin(); i != records_to_remove.end(); i++) {
-    if ((*i)->type() == dns_protocol::kTypeNSEC)
+  for (const auto* record : records_to_remove) {
+    if (record->type() == dns_protocol::kTypeNSEC)
       continue;
-    if (!rdata->GetBit((*i)->type())) {
+    if (!rdata->GetBit(record->type())) {
       std::unique_ptr<const RecordParsed> record_removed =
-          cache_.RemoveRecord((*i));
+          cache_.RemoveRecord(record);
       DCHECK(record_removed);
       OnRecordRemoved(record_removed.get());
     }

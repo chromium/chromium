@@ -275,12 +275,12 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
     std::vector<std::unique_ptr<URLRequest>> requests_not_local;
 
     std::vector<TestDelegate> not_local_test_delegates(num_requests);
-    for (size_t i = 0; i < num_requests; ++i) {
+    for (auto& delegate : not_local_test_delegates) {
       // We don't care about completion, except for the first one (see below).
-      not_local_test_delegates[i].set_on_complete(base::DoNothing());
+      delegate.set_on_complete(base::DoNothing());
       std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
-          GURL("http://example.com/echo.html"), DEFAULT_PRIORITY,
-          &not_local_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS));
+          GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS));
       request_not_local->Start();
       requests_not_local.push_back(std::move(request_not_local));
     }
@@ -288,16 +288,16 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
 
     EXPECT_EQ(0, throughput_analyzer.throughput_observations_received());
 
-    for (size_t i = 0; i < requests_not_local.size(); ++i) {
-      throughput_analyzer.NotifyStartTransaction(*requests_not_local.at(i));
+    for (const auto& request : requests_not_local) {
+      throughput_analyzer.NotifyStartTransaction(*request);
     }
 
     // Increment the bytes received count to emulate the bytes received for
     // |request_local| and |requests_not_local|.
     throughput_analyzer.IncrementBitsReceived(100 * 1000 * 8);
 
-    for (size_t i = 0; i < requests_not_local.size(); ++i) {
-      throughput_analyzer.NotifyRequestCompleted(*requests_not_local.at(i));
+    for (const auto& request : requests_not_local) {
+      throughput_analyzer.NotifyRequestCompleted(*request);
     }
     base::RunLoop().RunUntilIdle();
 
@@ -695,8 +695,8 @@ TEST_F(ThroughputAnalyzerTest,
     if (test.start_local_request)
       throughput_analyzer.NotifyStartTransaction(*request_local);
 
-    for (size_t i = 0; i < requests_not_local.size(); ++i) {
-      throughput_analyzer.NotifyStartTransaction(*requests_not_local.at(i));
+    for (const auto& request : requests_not_local) {
+      throughput_analyzer.NotifyStartTransaction(*request);
     }
 
     if (test.local_request_completes_first) {
@@ -708,8 +708,8 @@ TEST_F(ThroughputAnalyzerTest,
     // |request_local| and |requests_not_local|.
     throughput_analyzer.IncrementBitsReceived(100 * 1000 * 8);
 
-    for (size_t i = 0; i < requests_not_local.size(); ++i) {
-      throughput_analyzer.NotifyRequestCompleted(*requests_not_local.at(i));
+    for (const auto& request : requests_not_local) {
+      throughput_analyzer.NotifyRequestCompleted(*request);
     }
     if (test.start_local_request && !test.local_request_completes_first)
       throughput_analyzer.NotifyRequestCompleted(*request_local);

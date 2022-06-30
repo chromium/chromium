@@ -46,11 +46,10 @@ TEST(HttpUtilTest, IsSafeHeader) {
       "user-agent",
       "via",
   };
-  for (size_t i = 0; i < std::size(unsafe_headers); ++i) {
-    EXPECT_FALSE(HttpUtil::IsSafeHeader(unsafe_headers[i]))
-      << unsafe_headers[i];
-    EXPECT_FALSE(HttpUtil::IsSafeHeader(base::ToUpperASCII(unsafe_headers[i])))
-        << unsafe_headers[i];
+  for (const auto* unsafe_header : unsafe_headers) {
+    EXPECT_FALSE(HttpUtil::IsSafeHeader(unsafe_header)) << unsafe_header;
+    EXPECT_FALSE(HttpUtil::IsSafeHeader(base::ToUpperASCII(unsafe_header)))
+        << unsafe_header;
   }
   static const char* const safe_headers[] = {
       "foo",
@@ -93,10 +92,10 @@ TEST(HttpUtilTest, IsSafeHeader) {
       "user_agent",
       "viaa",
   };
-  for (size_t i = 0; i < std::size(safe_headers); ++i) {
-    EXPECT_TRUE(HttpUtil::IsSafeHeader(safe_headers[i])) << safe_headers[i];
-    EXPECT_TRUE(HttpUtil::IsSafeHeader(base::ToUpperASCII(safe_headers[i])))
-        << safe_headers[i];
+  for (const auto* safe_header : safe_headers) {
+    EXPECT_TRUE(HttpUtil::IsSafeHeader(safe_header)) << safe_header;
+    EXPECT_TRUE(HttpUtil::IsSafeHeader(base::ToUpperASCII(safe_header)))
+        << safe_header;
   }
 }
 
@@ -340,10 +339,10 @@ TEST(HttpUtilTest, LocateEndOfHeaders) {
       {"foo\nbar\n\r\njunk", 10},
       {"foo\nbar\r\n\njunk", 10},
   };
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    size_t input_len = strlen(tests[i].input);
-    size_t eoh = HttpUtil::LocateEndOfHeaders(tests[i].input, input_len);
-    EXPECT_EQ(tests[i].expected_result, eoh);
+  for (const auto& test : tests) {
+    size_t input_len = strlen(test.input);
+    size_t eoh = HttpUtil::LocateEndOfHeaders(test.input, input_len);
+    EXPECT_EQ(test.expected_result, eoh);
   }
 }
 
@@ -364,11 +363,10 @@ TEST(HttpUtilTest, LocateEndOfAdditionalHeaders) {
       {"foo\nbar\n\r\njunk", 10},
       {"foo\nbar\r\n\njunk", 10},
   };
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    size_t input_len = strlen(tests[i].input);
-    size_t eoh =
-        HttpUtil::LocateEndOfAdditionalHeaders(tests[i].input, input_len);
-    EXPECT_EQ(tests[i].expected_result, eoh);
+  for (const auto& test : tests) {
+    size_t input_len = strlen(test.input);
+    size_t eoh = HttpUtil::LocateEndOfAdditionalHeaders(test.input, input_len);
+    EXPECT_EQ(test.expected_result, eoh);
   }
 }
 TEST(HttpUtilTest, AssembleRawHeaders) {
@@ -687,12 +685,12 @@ TEST(HttpUtilTest, AssembleRawHeaders) {
     },
   };
   // clang-format on
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    std::string input = tests[i].input;
+  for (const auto& test : tests) {
+    std::string input = test.input;
     std::replace(input.begin(), input.end(), '|', '\0');
     std::string raw = HttpUtil::AssembleRawHeaders(input);
     std::replace(raw.begin(), raw.end(), '\0', '|');
-    EXPECT_EQ(tests[i].expected_result, raw);
+    EXPECT_EQ(test.expected_result, raw);
   }
 }
 
@@ -993,21 +991,21 @@ TEST(HttpUtilTest, ParseContentType) {
     // TODO(abarth): Add more interesting test cases.
   };
   // clang-format on
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     std::string mime_type;
     std::string charset;
     bool had_charset = false;
     std::string boundary;
-    HttpUtil::ParseContentType(tests[i].content_type, &mime_type, &charset,
+    HttpUtil::ParseContentType(test.content_type, &mime_type, &charset,
                                &had_charset, &boundary);
-    EXPECT_EQ(tests[i].expected_mime_type, mime_type)
-        << "content_type=" << tests[i].content_type;
-    EXPECT_EQ(tests[i].expected_charset, charset)
-        << "content_type=" << tests[i].content_type;
-    EXPECT_EQ(tests[i].expected_had_charset, had_charset)
-        << "content_type=" << tests[i].content_type;
-    EXPECT_EQ(tests[i].expected_boundary, boundary)
-        << "content_type=" << tests[i].content_type;
+    EXPECT_EQ(test.expected_mime_type, mime_type)
+        << "content_type=" << test.content_type;
+    EXPECT_EQ(test.expected_charset, charset)
+        << "content_type=" << test.content_type;
+    EXPECT_EQ(test.expected_had_charset, had_charset)
+        << "content_type=" << test.content_type;
+    EXPECT_EQ(test.expected_boundary, boundary)
+        << "content_type=" << test.content_type;
   }
 }
 
@@ -1633,8 +1631,8 @@ TEST(HttpUtilTest, ParseAcceptEncoding) {
       {"foo,\"bar\"", "INVALID"},
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    std::string value(tests[i].value);
+  for (const auto& test : tests) {
+    std::string value(test.value);
     std::string reformatted;
     std::set<std::string> allowed_encodings;
     if (!HttpUtil::ParseAcceptEncoding(value, &allowed_encodings)) {
@@ -1645,7 +1643,7 @@ TEST(HttpUtilTest, ParseAcceptEncoding) {
         encodings_list.push_back(encoding);
       reformatted = base::JoinString(encodings_list, "|");
     }
-    EXPECT_STREQ(tests[i].expected, reformatted.c_str())
+    EXPECT_STREQ(test.expected, reformatted.c_str())
         << "value=\"" << value << "\"";
   }
 }
@@ -1663,8 +1661,8 @@ TEST(HttpUtilTest, ParseContentEncoding) {
       {"foo,\"bar\"", "INVALID"},
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    std::string value(tests[i].value);
+  for (const auto& test : tests) {
+    std::string value(test.value);
     std::string reformatted;
     std::set<std::string> used_encodings;
     if (!HttpUtil::ParseContentEncoding(value, &used_encodings)) {
@@ -1675,7 +1673,7 @@ TEST(HttpUtilTest, ParseContentEncoding) {
         encodings_list.push_back(encoding);
       reformatted = base::JoinString(encodings_list, "|");
     }
-    EXPECT_STREQ(tests[i].expected, reformatted.c_str())
+    EXPECT_STREQ(test.expected, reformatted.c_str())
         << "value=\"" << value << "\"";
   }
 }

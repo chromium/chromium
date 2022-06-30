@@ -607,8 +607,8 @@ ChannelState WebSocketChannel::OnReadDone(bool synchronous, int result) {
       // with no data read, not an empty response.
       DCHECK(!read_frames_.empty())
           << "ReadFrames() returned OK, but nothing was read.";
-      for (size_t i = 0; i < read_frames_.size(); ++i) {
-        if (HandleFrame(std::move(read_frames_[i])) == CHANNEL_DELETED)
+      for (auto& read_frame : read_frames_) {
+        if (HandleFrame(std::move(read_frame)) == CHANNEL_DELETED)
           return CHANNEL_DELETED;
       }
       read_frames_.clear();

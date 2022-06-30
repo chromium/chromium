@@ -169,13 +169,13 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
   }
   void AddFramesToBeInput(
       const std::vector<std::unique_ptr<WebSocketFrame>>& frames) {
-    for (size_t i = 0; i < frames.size(); ++i)
-      AddFrameToBeInput(frames[i].get());
+    for (const auto& frame : frames)
+      AddFrameToBeInput(frame.get());
   }
   void VerifySentFrames(
       const std::vector<std::unique_ptr<WebSocketFrame>>& frames) {
-    for (size_t i = 0; i < frames.size(); ++i)
-      VerifySentFrame(frames[i].get());
+    for (const auto& frame : frames)
+      VerifySentFrame(frame.get());
   }
   // Call this method in order to disable checks in the destructor when
   // WriteFrames fails.

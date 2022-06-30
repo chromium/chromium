@@ -4134,7 +4134,6 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateBlockAsynchronously) {
       BlockingNetworkDelegate::ON_BEFORE_URL_REQUEST,
       BlockingNetworkDelegate::ON_BEFORE_SEND_HEADERS,
       BlockingNetworkDelegate::ON_HEADERS_RECEIVED};
-  static const size_t blocking_stages_length = std::size(blocking_stages);
 
   ASSERT_TRUE(http_test_server()->Start());
 
@@ -4155,10 +4154,9 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateBlockAsynchronously) {
         TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
-    for (size_t i = 0; i < blocking_stages_length; ++i) {
+    for (auto stage : blocking_stages) {
       network_delegate.RunUntilBlocked();
-      EXPECT_EQ(blocking_stages[i],
-                network_delegate.stage_blocked_for_callback());
+      EXPECT_EQ(stage, network_delegate.stage_blocked_for_callback());
       network_delegate.DoCallback(OK);
     }
     d.RunUntilComplete();
@@ -9006,15 +9004,15 @@ TEST_F(URLRequestTestHTTP, EmptyHttpUserAgentSettings) {
                {"/echoheader?Accept-Charset", "None"},
                {"/echoheader?User-Agent", ""}};
 
-  for (size_t i = 0; i < std::size(tests); i++) {
+  for (const auto& test : tests) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
-        http_test_server()->GetURL(tests[i].request), DEFAULT_PRIORITY, &d,
+        http_test_server()->GetURL(test.request), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(tests[i].expected_response, d.data_received())
-        << " Request = \"" << tests[i].request << "\"";
+    EXPECT_EQ(test.expected_response, d.data_received())
+        << " Request = \"" << test.request << "\"";
   }
 }
 

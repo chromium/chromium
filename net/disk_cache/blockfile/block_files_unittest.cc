@@ -47,8 +47,8 @@ TEST_F(DiskCacheTest, MAYBE_BlockFiles_Grow) {
   Addr address[kMaxSize];
 
   // Fill up the 32-byte block file (use three files).
-  for (int i = 0; i < kMaxSize; i++) {
-    EXPECT_TRUE(files.CreateBlock(RANKINGS, 4, &address[i]));
+  for (auto& addr : address) {
+    EXPECT_TRUE(files.CreateBlock(RANKINGS, 4, &addr));
   }
   EXPECT_EQ(6, NumberOfFiles(cache_path_));
 
@@ -73,13 +73,13 @@ TEST_F(DiskCacheTest, BlockFiles_Shrink) {
   Addr address[kMaxSize];
 
   // Fill up the 32-byte block file (use three files).
-  for (int i = 0; i < kMaxSize; i++) {
-    EXPECT_TRUE(files.CreateBlock(RANKINGS, 4, &address[i]));
+  for (auto& addr : address) {
+    EXPECT_TRUE(files.CreateBlock(RANKINGS, 4, &addr));
   }
 
   // Now delete all the blocks, so that we can delete the two extra files.
-  for (int i = 0; i < kMaxSize; i++) {
-    files.DeleteBlock(address[i], false);
+  for (const auto& addr : address) {
+    files.DeleteBlock(addr, false);
   }
   EXPECT_EQ(4, NumberOfFiles(cache_path_));
 }
@@ -97,11 +97,11 @@ TEST_F(DiskCacheTest, BlockFiles_Recover) {
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);
-  for (int i = 0; i < kNumEntries; i++) {
+  for (auto& entry : entries) {
     Addr address(0);
     int size = (rand() % 4) + 1;
     EXPECT_TRUE(files.CreateBlock(RANKINGS, size, &address));
-    entries[i] = address.value();
+    entry = address.value();
   }
 
   for (int i = 0; i < kNumEntries; i++) {

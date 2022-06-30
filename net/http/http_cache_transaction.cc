@@ -2581,9 +2581,9 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   if (request_->extra_headers.HasHeader(HttpRequestHeaders::kRange))
     range_found = true;
 
-  for (size_t i = 0; i < std::size(kSpecialHeaders); ++i) {
-    if (HeaderMatches(request_->extra_headers, kSpecialHeaders[i].search)) {
-      effective_load_flags_ |= kSpecialHeaders[i].load_flag;
+  for (const auto& special_header : kSpecialHeaders) {
+    if (HeaderMatches(request_->extra_headers, special_header.search)) {
+      effective_load_flags_ |= special_header.load_flag;
       special_headers = true;
       break;
     }

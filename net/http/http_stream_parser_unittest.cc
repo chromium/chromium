@@ -1663,8 +1663,8 @@ TEST(HttpStreamParser, ReceivedBytesMultipleReads) {
   }
 
   SimpleGetRunner get_runner;
-  for (std::vector<std::string>::size_type i = 0; i < blocks.size(); ++i)
-    get_runner.AddRead(blocks[i]);
+  for (const auto& block : blocks)
+    get_runner.AddRead(block);
   get_runner.SetupParserAndSendRequest();
   get_runner.ReadHeaders();
   int64_t headers_size = headers.size();

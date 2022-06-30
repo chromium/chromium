@@ -319,9 +319,6 @@ EntryImpl::EntryImpl(BackendImpl* backend, Addr address, bool read_only)
       backend_(backend->GetWeakPtr()),
       read_only_(read_only) {
   entry_.LazyInit(backend->File(address), address);
-  for (int i = 0; i < kNumStreams; i++) {
-    unreported_size_[i] = 0;
-  }
 }
 
 void EntryImpl::DoomImpl() {

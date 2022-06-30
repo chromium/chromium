@@ -211,8 +211,9 @@ void SpdyWriteQueue::Clear() {
   std::vector<std::unique_ptr<SpdyBufferProducer>> erased_buffer_producers;
 
   for (int i = MINIMUM_PRIORITY; i <= MAXIMUM_PRIORITY; ++i) {
-    for (auto it = queue_[i].begin(); it != queue_[i].end(); ++it) {
-      erased_buffer_producers.push_back(std::move(it->frame_producer));
+    for (auto& pending_write : queue_[i]) {
+      erased_buffer_producers.push_back(
+          std::move(pending_write.frame_producer));
     }
     queue_[i].clear();
   }

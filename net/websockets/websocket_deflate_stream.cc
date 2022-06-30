@@ -260,8 +260,7 @@ int WebSocketDeflateStream::AppendPossiblyCompressedMessage(
   if (original_payload_length <=
       static_cast<uint64_t>(compressed_payload->size())) {
     // Compression is not effective. Use the original frames.
-    for (size_t i = 0; i < frames->size(); ++i) {
-      std::unique_ptr<WebSocketFrame> frame = std::move((*frames)[i]);
+    for (auto& frame : *frames) {
       predictor_->RecordWrittenDataFrame(frame.get());
       frames_to_write->push_back(std::move(frame));
     }
@@ -286,9 +285,9 @@ int WebSocketDeflateStream::Inflate(
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
   std::vector<std::unique_ptr<WebSocketFrame>> frames_passed;
   frames->swap(frames_passed);
-  for (size_t i = 0; i < frames_passed.size(); ++i) {
-    std::unique_ptr<WebSocketFrame> frame(std::move(frames_passed[i]));
-    frames_passed[i] = nullptr;
+  for (auto& frame_passed : frames_passed) {
+    std::unique_ptr<WebSocketFrame> frame(std::move(frame_passed));
+    frame_passed = nullptr;
     DVLOG(3) << "Input frame: opcode=" << frame->header.opcode
              << " final=" << frame->header.final
              << " reserved1=" << frame->header.reserved1

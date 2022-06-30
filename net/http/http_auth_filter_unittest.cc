@@ -67,11 +67,11 @@ TEST(HttpAuthFilterTest, EmptyFilter) {
 TEST(HttpAuthFilterTest, NonEmptyFilter) {
   // Create an non-empty filter
   std::string server_allowlist_filter_string;
-  for (size_t i = 0; i < std::size(server_allowlist_array); ++i) {
+  for (const auto* server : server_allowlist_array) {
     if (!server_allowlist_filter_string.empty())
       server_allowlist_filter_string += ",";
     server_allowlist_filter_string += "*";
-    server_allowlist_filter_string += server_allowlist_array[i];
+    server_allowlist_filter_string += server;
   }
   HttpAuthFilterAllowlist filter(server_allowlist_filter_string);
   for (const auto& test_case : kTestCases) {

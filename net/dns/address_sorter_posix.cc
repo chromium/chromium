@@ -67,8 +67,7 @@ unsigned GetPolicyValue(const AddressSorterPosix::PolicyTable& table,
                         const IPAddress& address) {
   if (address.IsIPv4())
     return GetPolicyValue(table, ConvertIPv4ToIPv4MappedIPv6(address));
-  for (unsigned i = 0; i < table.size(); ++i) {
-    const AddressSorterPosix::PolicyEntry& entry = table[i];
+  for (const auto& entry : table) {
     IPAddress prefix(entry.prefix);
     if (IPAddressMatchesPrefix(address, prefix, entry.prefix_length))
       return entry.value;

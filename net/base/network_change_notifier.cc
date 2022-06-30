@@ -569,29 +569,29 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
     const NetworkInterfaceList& interfaces) {
   bool first = true;
   ConnectionType result = CONNECTION_NONE;
-  for (size_t i = 0; i < interfaces.size(); ++i) {
+  for (const auto& network_interface : interfaces) {
 #if BUILDFLAG(IS_WIN)
-    if (interfaces[i].friendly_name == "Teredo Tunneling Pseudo-Interface")
+    if (network_interface.friendly_name == "Teredo Tunneling Pseudo-Interface")
       continue;
 #endif
 #if BUILDFLAG(IS_APPLE)
     // Ignore link-local addresses as they aren't globally routable.
     // Mac assigns these to disconnected interfaces like tunnel interfaces
     // ("utun"), airdrop interfaces ("awdl"), and ethernet ports ("en").
-    if (interfaces[i].address.IsLinkLocal())
+    if (network_interface.address.IsLinkLocal())
       continue;
 #endif
 
     // Remove VMware network interfaces as they're internal and should not be
     // used to determine the network connection type.
-    if (base::ToLowerASCII(interfaces[i].friendly_name).find("vmnet") !=
+    if (base::ToLowerASCII(network_interface.friendly_name).find("vmnet") !=
         std::string::npos) {
       continue;
     }
     if (first) {
       first = false;
-      result = interfaces[i].type;
-    } else if (result != interfaces[i].type) {
+      result = network_interface.type;
+    } else if (result != network_interface.type) {
       return CONNECTION_UNKNOWN;
     }
   }

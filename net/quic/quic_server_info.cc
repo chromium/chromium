@@ -138,8 +138,8 @@ string QuicServerInfo::SerializeInner() const {
   p.WriteString(state_.server_config_sig);
   p.WriteUInt32(state_.certs.size());
 
-  for (size_t i = 0; i < state_.certs.size(); i++)
-    p.WriteString(state_.certs[i]);
+  for (const auto& cert : state_.certs)
+    p.WriteString(cert);
 
   return string(reinterpret_cast<const char*>(p.data()), p.size());
 }

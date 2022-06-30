@@ -376,9 +376,9 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                            const std::string& domain,
                            const std::string& name) {
     CookieList cookies = this->GetAllCookies(cm);
-    for (auto it = cookies.begin(); it != cookies.end(); ++it)
-      if (it->Domain() == domain && it->Name() == name)
-        return this->DeleteCanonicalCookie(cm, *it);
+    for (auto& cookie : cookies)
+      if (cookie.Domain() == domain && cookie.Name() == name)
+        return this->DeleteCanonicalCookie(cm, cookie);
     return false;
   }
 
@@ -979,16 +979,16 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
   }
 
   bool IsCookieInList(const CanonicalCookie& cookie, const CookieList& list) {
-    for (auto it = list.begin(); it != list.end(); ++it) {
-      if (it->Name() == cookie.Name() && it->Value() == cookie.Value() &&
-          it->Domain() == cookie.Domain() && it->Path() == cookie.Path() &&
-          it->CreationDate() == cookie.CreationDate() &&
-          it->ExpiryDate() == cookie.ExpiryDate() &&
-          it->LastAccessDate() == cookie.LastAccessDate() &&
-          it->LastUpdateDate() == cookie.LastUpdateDate() &&
-          it->IsSecure() == cookie.IsSecure() &&
-          it->IsHttpOnly() == cookie.IsHttpOnly() &&
-          it->Priority() == cookie.Priority()) {
+    for (const auto& c : list) {
+      if (c.Name() == cookie.Name() && c.Value() == cookie.Value() &&
+          c.Domain() == cookie.Domain() && c.Path() == cookie.Path() &&
+          c.CreationDate() == cookie.CreationDate() &&
+          c.ExpiryDate() == cookie.ExpiryDate() &&
+          c.LastAccessDate() == cookie.LastAccessDate() &&
+          c.LastUpdateDate() == cookie.LastUpdateDate() &&
+          c.IsSecure() == cookie.IsSecure() &&
+          c.IsHttpOnly() == cookie.IsHttpOnly() &&
+          c.Priority() == cookie.Priority()) {
         return true;
       }
     }
@@ -4463,7 +4463,7 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
   // This gets tested a few times with different deletion target, to make sure
   // that the implementation doesn't just happen to pick the right one because
   // of implementation details.
-  for (size_t run = 0; run < std::size(kNames); ++run) {
+  for (const auto* name : kNames) {
     CookieMonster cm(nullptr, nullptr, kFirstPartySetsDefault);
     Time now = Time::Now();
     GURL url("http://www.example.com");
@@ -4480,7 +4480,7 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
     ASSERT_EQ(all_cookies.size(), std::size(kNames));
     for (size_t i = 0; i < std::size(kNames); ++i) {
       const CanonicalCookie& cookie = all_cookies[i];
-      if (cookie.Name() == kNames[run]) {
+      if (cookie.Name() == name) {
         EXPECT_TRUE(DeleteCanonicalCookie(&cm, cookie));
       }
     }
@@ -4491,7 +4491,7 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
     ASSERT_EQ(all_cookies.size(), std::size(kNames) - 1);
     for (size_t i = 0; i < std::size(kNames) - 1; ++i) {
       const CanonicalCookie& cookie = all_cookies[i];
-      EXPECT_NE(cookie.Name(), kNames[run]);
+      EXPECT_NE(cookie.Name(), name);
     }
   }
 }

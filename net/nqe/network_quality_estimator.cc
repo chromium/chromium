@@ -471,8 +471,8 @@ void NetworkQualityEstimator::OnConnectionTypeChanged(
   // Clear the local state.
   last_connection_change_ = tick_clock_->NowTicks();
   http_downstream_throughput_kbps_observations_.Clear();
-  for (int i = 0; i < nqe::internal::OBSERVATION_CATEGORY_COUNT; ++i)
-    rtt_ms_observations_[i].Clear();
+  for (auto& rtt_ms_observation : rtt_ms_observations_)
+    rtt_ms_observation.Clear();
 
   current_network_id_.signal_strength = INT32_MIN;
   network_quality_ = nqe::internal::NetworkQuality();
@@ -1106,8 +1106,8 @@ void NetworkQualityEstimator::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tick_clock_ = tick_clock;
-  for (int i = 0; i < nqe::internal::OBSERVATION_CATEGORY_COUNT; ++i)
-    rtt_ms_observations_[i].SetTickClockForTesting(tick_clock_);
+  for (auto& rtt_ms_observation : rtt_ms_observations_)
+    rtt_ms_observation.SetTickClockForTesting(tick_clock_);  // IN-TEST
   http_downstream_throughput_kbps_observations_.SetTickClockForTesting(
       tick_clock_);
   throughput_analyzer_->SetTickClockForTesting(tick_clock_);

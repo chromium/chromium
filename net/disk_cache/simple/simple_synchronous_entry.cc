@@ -1067,8 +1067,8 @@ void SimpleSynchronousEntry::Close(
   base::ElapsedTimer close_time;
   DCHECK(stream_0_data);
 
-  for (auto it = crc32s_to_write->begin(); it != crc32s_to_write->end(); ++it) {
-    const int stream_index = it->index;
+  for (auto& crc_record : *crc32s_to_write) {
+    const int stream_index = crc_record.index;
     const int file_index = GetFileIndexFromStreamIndex(stream_index);
     if (empty_file_omitted_[file_index])
       continue;
@@ -1103,10 +1103,10 @@ void SimpleSynchronousEntry::Close(
       // Re-compute stream 0 CRC if the data got changed (we may be here even
       // if it didn't change if stream 0's position on disk got changed due to
       // stream 1 write).
-      if (!it->has_crc32) {
-        it->data_crc32 =
+      if (!crc_record.has_crc32) {
+        crc_record.data_crc32 =
             simple_util::Crc32(stream_0_data->data(), entry_stat.data_size(0));
-        it->has_crc32 = true;
+        crc_record.has_crc32 = true;
       }
 
       out_results->estimated_trailer_prefetch_size =
@@ -1117,11 +1117,11 @@ void SimpleSynchronousEntry::Close(
     eof_record.stream_size = entry_stat.data_size(stream_index);
     eof_record.final_magic_number = kSimpleFinalMagicNumber;
     eof_record.flags = 0;
-    if (it->has_crc32)
+    if (crc_record.has_crc32)
       eof_record.flags |= SimpleFileEOF::FLAG_HAS_CRC32;
     if (stream_index == 0)
       eof_record.flags |= SimpleFileEOF::FLAG_HAS_KEY_SHA256;
-    eof_record.data_crc32 = it->data_crc32;
+    eof_record.data_crc32 = crc_record.data_crc32;
     int eof_offset = entry_stat.GetEOFOffsetInFile(key_.size(), stream_index);
     // If stream 0 changed size, the file needs to be resized, otherwise the
     // next open will yield wrong stream sizes. On stream 1 and stream 2 proper
@@ -1179,8 +1179,9 @@ SimpleSynchronousEntry::SimpleSynchronousEntry(
       file_tracker_(file_tracker),
       unbound_file_operations_(std::move(unbound_file_operations)),
       trailer_prefetch_size_(trailer_prefetch_size) {
-  for (int i = 0; i < kSimpleEntryNormalFileCount; ++i)
-    empty_file_omitted_[i] = false;
+  for (bool& empty_file_omitted : empty_file_omitted_) {
+    empty_file_omitted = false;
+  }
 }
 
 SimpleSynchronousEntry::~SimpleSynchronousEntry() {

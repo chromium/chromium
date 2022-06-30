@@ -864,8 +864,7 @@ bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
     host_keys.push_back(smt.ColumnString(0));
 
   // Build a map of domain keys (always eTLD+1) to domains.
-  for (size_t idx = 0; idx < host_keys.size(); ++idx) {
-    const std::string& domain = host_keys[idx];
+  for (const auto& domain : host_keys) {
     std::string key = CookieMonster::GetKey(domain);
     keys_to_load_[key].insert(domain);
   }

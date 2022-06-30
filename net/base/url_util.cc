@@ -336,8 +336,7 @@ bool IsCanonicalizedHostCompliant(const std::string& host) {
   bool in_component = false;
   bool most_recent_component_started_alphanumeric = false;
 
-  for (std::string::const_iterator i(host.begin()); i != host.end(); ++i) {
-    const char c = *i;
+  for (char c : host) {
     if (!in_component) {
       most_recent_component_started_alphanumeric = IsHostCharAlphanumeric(c);
       if (!most_recent_component_started_alphanumeric && (c != '-') &&

@@ -1151,19 +1151,19 @@ void HttpServerProperties::OnServerInfoLoaded(
   // Attempt to find canonical servers. Canonical suffix only apply to HTTPS.
   const uint16_t kCanonicalPort = 443;
   const char* kCanonicalScheme = "https";
-  for (auto it = server_info_map_.begin(); it != server_info_map_.end(); ++it) {
-    if (!it->second.alternative_services ||
-        it->first.server.scheme() != kCanonicalScheme) {
+  for (const auto& it : server_info_map_) {
+    if (!it.second.alternative_services ||
+        it.first.server.scheme() != kCanonicalScheme) {
       continue;
     }
     const std::string* canonical_suffix =
-        GetCanonicalSuffix(it->first.server.host());
+        GetCanonicalSuffix(it.first.server.host());
     if (!canonical_suffix)
       continue;
     ServerInfoMapKey key = CreateServerInfoKey(
         url::SchemeHostPort(kCanonicalScheme, *canonical_suffix,
                             kCanonicalPort),
-        it->first.network_isolation_key);
+        it.first.network_isolation_key);
     // If we already have a valid canonical server, we're done.
     if (base::Contains(canonical_alt_svc_map_, key)) {
       auto key_it = server_info_map_.Peek(key);
@@ -1172,7 +1172,7 @@ void HttpServerProperties::OnServerInfoLoaded(
         continue;
       }
     }
-    canonical_alt_svc_map_[key] = it->first.server;
+    canonical_alt_svc_map_[key] = it.first.server;
   }
 }
 

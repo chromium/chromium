@@ -179,9 +179,9 @@ const MockTransaction* FindMockTransaction(const GURL& url) {
     return it->second;
 
   // look for builtins:
-  for (size_t i = 0; i < std::size(kBuiltinMockTransactions); ++i) {
-    if (url == GURL(kBuiltinMockTransactions[i]->url))
-      return kBuiltinMockTransactions[i];
+  for (const auto* transaction : kBuiltinMockTransactions) {
+    if (url == GURL(transaction->url))
+      return transaction;
   }
   return nullptr;
 }

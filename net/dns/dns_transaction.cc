@@ -1223,9 +1223,9 @@ class DnsTransactionImpl : public DnsTransaction,
     }
 
     std::string qname;
-    for (size_t i = 0; i < config.search.size(); ++i) {
+    for (const auto& suffix : config.search) {
       // Ignore invalid (too long) combinations.
-      if (!DNSDomainFromDot(hostname_ + "." + config.search[i], &qname))
+      if (!DNSDomainFromDot(hostname_ + "." + suffix, &qname))
         continue;
       if (qname.size() == labeled_hostname.size()) {
         if (had_hostname)

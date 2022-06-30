@@ -432,9 +432,9 @@ void SpdySessionPool::MakeSessionUnavailable(
   UnmapKey(available_session->spdy_session_key());
   RemoveAliases(available_session->spdy_session_key());
   const std::set<SpdySessionKey>& aliases = available_session->pooled_aliases();
-  for (auto it = aliases.begin(); it != aliases.end(); ++it) {
-    UnmapKey(*it);
-    RemoveAliases(*it);
+  for (const auto& alias : aliases) {
+    UnmapKey(alias);
+    RemoveAliases(alias);
   }
   DCHECK(!IsSessionAvailable(available_session));
 }
@@ -479,14 +479,14 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
     const {
   base::Value::List list;
 
-  for (auto it = available_sessions_.begin(); it != available_sessions_.end();
-       ++it) {
+  for (const auto& available_session : available_sessions_) {
     // Only add the session if the key in the map matches the main
     // host_port_proxy_pair (not an alias).
-    const SpdySessionKey& key = it->first;
-    const SpdySessionKey& session_key = it->second->spdy_session_key();
+    const SpdySessionKey& key = available_session.first;
+    const SpdySessionKey& session_key =
+        available_session.second->spdy_session_key();
     if (key == session_key)
-      list.Append(it->second->GetInfoAsValue());
+      list.Append(available_session.second->GetInfoAsValue());
   }
   return std::make_unique<base::Value>(std::move(list));
 }
@@ -574,9 +574,8 @@ SpdySessionPool::RequestInfoForKey::~RequestInfoForKey() = default;
 
 bool SpdySessionPool::IsSessionAvailable(
     const base::WeakPtr<SpdySession>& session) const {
-  for (auto it = available_sessions_.begin(); it != available_sessions_.end();
-       ++it) {
-    if (it->second.get() == session.get())
+  for (const auto& available_session : available_sessions_) {
+    if (available_session.second.get() == session.get())
       return true;
   }
   return false;
@@ -623,8 +622,8 @@ void SpdySessionPool::RemoveAliases(const SpdySessionKey& key) {
 
 SpdySessionPool::WeakSessionList SpdySessionPool::GetCurrentSessions() const {
   WeakSessionList current_sessions;
-  for (auto it = sessions_.begin(); it != sessions_.end(); ++it) {
-    current_sessions.push_back((*it)->GetWeakPtr());
+  for (auto* session : sessions_) {
+    current_sessions.push_back(session->GetWeakPtr());
   }
   return current_sessions;
 }

@@ -3804,12 +3804,11 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationNoMatch1) {
     EXPECT_EQ(LOAD_STATE_IDLE, context->trans->GetLoadState());
   }
 
-  for (size_t i = 0; i < context_list.size(); i++) {
-    if (context_list[i]->result == ERR_IO_PENDING)
-      context_list[i]->result = context_list[i]->callback.WaitForResult();
+  for (auto& context : context_list) {
+    if (context->result == ERR_IO_PENDING)
+      context->result = context->callback.WaitForResult();
 
-    ReadAndVerifyTransaction(context_list[i]->trans.get(),
-                             kSimpleGET_Transaction);
+    ReadAndVerifyTransaction(context->trans.get(), kSimpleGET_Transaction);
   }
 
   EXPECT_EQ(2, cache.network_layer()->transaction_count());

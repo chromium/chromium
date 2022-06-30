@@ -138,10 +138,10 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
   http_auth_handler_factory->SetHttpAuthPreferences(kNegotiateAuthScheme,
                                                     &http_auth_preferences);
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     // Make a HttpResponseHeaders object.
     std::string headers_with_status_line("HTTP/1.1 401 Unauthorized\n");
-    headers_with_status_line += tests[i].headers;
+    headers_with_status_line += test.headers;
     scoped_refptr<HttpResponseHeaders> headers =
         HeadersFromResponseText(headers_with_status_line);
 
@@ -153,11 +153,11 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
         disabled_schemes, NetLogWithSource(), host_resolver.get(), &handler);
 
     if (handler.get()) {
-      EXPECT_EQ(tests[i].challenge_scheme, handler->auth_scheme());
-      EXPECT_STREQ(tests[i].challenge_realm, handler->realm().c_str());
+      EXPECT_EQ(test.challenge_scheme, handler->auth_scheme());
+      EXPECT_STREQ(test.challenge_realm, handler->realm().c_str());
     } else {
-      EXPECT_EQ(HttpAuth::AUTH_SCHEME_MAX, tests[i].challenge_scheme);
-      EXPECT_STREQ("", tests[i].challenge_realm);
+      EXPECT_EQ(HttpAuth::AUTH_SCHEME_MAX, test.challenge_scheme);
+      EXPECT_STREQ("", test.challenge_realm);
     }
   }
 }

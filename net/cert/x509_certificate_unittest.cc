@@ -1324,13 +1324,13 @@ TEST_P(X509CertificateNameVerifyTest, VerifyHostname) {
         ip_addressses.push_back(std::move(bytes));
         ASSERT_EQ(16U, ip_addressses.back().size()) << i;
       } else {  // Decimal groups
-        std::vector<std::string> decimals_ascii = base::SplitString(
+        std::vector<std::string> decimals_ascii_list = base::SplitString(
             addr_ascii, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-        EXPECT_EQ(4U, decimals_ascii.size()) << i;
+        EXPECT_EQ(4U, decimals_ascii_list.size()) << i;
         std::string addr_bytes;
-        for (size_t j = 0; j < decimals_ascii.size(); ++j) {
+        for (const auto& decimals_ascii : decimals_ascii_list) {
           int decimal_value;
-          EXPECT_TRUE(base::StringToInt(decimals_ascii[j], &decimal_value));
+          EXPECT_TRUE(base::StringToInt(decimals_ascii, &decimal_value));
           EXPECT_GE(decimal_value, 0);
           EXPECT_LE(decimal_value, 255);
           addr_bytes.push_back(static_cast<char>(decimal_value));

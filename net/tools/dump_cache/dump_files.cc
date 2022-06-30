@@ -574,9 +574,9 @@ int DumpEntryAt(const base::FilePath& input_path, const std::string& at) {
     if (entry.long_key && CanDump(entry.long_key))
       dumper.HexDump(entry.long_key, &hex_dump);
 
-    for (int i = 0; i < 4; i++) {
-      if (entry.data_addr[i] && CanDump(entry.data_addr[i]))
-        dumper.HexDump(entry.data_addr[i], &hex_dump);
+    for (disk_cache::CacheAddr addr : entry.data_addr) {
+      if (addr && CanDump(addr))
+        dumper.HexDump(addr, &hex_dump);
     }
   }
 

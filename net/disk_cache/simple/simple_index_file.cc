@@ -518,9 +518,9 @@ std::unique_ptr<base::Pickle> SimpleIndexFile::Serialize(
   std::unique_ptr<base::Pickle> pickle = std::make_unique<SimpleIndexPickle>();
 
   index_metadata.Serialize(pickle.get());
-  for (auto it = entries.begin(); it != entries.end(); ++it) {
-    pickle->WriteUInt64(it->first);
-    it->second.Serialize(cache_type, pickle.get());
+  for (const auto& entry : entries) {
+    pickle->WriteUInt64(entry.first);
+    entry.second.Serialize(cache_type, pickle.get());
   }
   return pickle;
 }

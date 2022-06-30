@@ -49,11 +49,11 @@ InterfaceIndexFamilyList GetMDnsInterfacesToBind() {
   InterfaceIndexFamilyList interfaces;
   if (!GetNetworkList(&network_list, INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES))
     return interfaces;
-  for (size_t i = 0; i < network_list.size(); ++i) {
-    AddressFamily family = GetAddressFamily(network_list[i].address);
+  for (const auto& network_interface : network_list) {
+    AddressFamily family = GetAddressFamily(network_interface.address);
     if (family == ADDRESS_FAMILY_IPV4 || family == ADDRESS_FAMILY_IPV6) {
       interfaces.push_back(
-          std::make_pair(network_list[i].interface_index, family));
+          std::make_pair(network_interface.interface_index, family));
     }
   }
   std::sort(interfaces.begin(), interfaces.end());

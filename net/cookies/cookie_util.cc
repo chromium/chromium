@@ -613,12 +613,12 @@ void ParseRequestCookieLine(const std::string& header_value,
 std::string SerializeRequestCookieLine(
     const ParsedRequestCookies& parsed_cookies) {
   std::string buffer;
-  for (auto i = parsed_cookies.begin(); i != parsed_cookies.end(); ++i) {
+  for (const auto& parsed_cookie : parsed_cookies) {
     if (!buffer.empty())
       buffer.append("; ");
-    buffer.append(i->first.begin(), i->first.end());
+    buffer.append(parsed_cookie.first.begin(), parsed_cookie.first.end());
     buffer.push_back('=');
-    buffer.append(i->second.begin(), i->second.end());
+    buffer.append(parsed_cookie.second.begin(), parsed_cookie.second.end());
   }
   return buffer;
 }

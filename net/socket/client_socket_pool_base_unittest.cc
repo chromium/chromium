@@ -579,8 +579,8 @@ class TestConnectJobFactory : public ConnectJobFactory {
 namespace {
 
 void MockClientSocketFactory::SignalJobs() {
-  for (auto it = waiting_jobs_.begin(); it != waiting_jobs_.end(); ++it) {
-    (*it)->Signal();
+  for (auto* waiting_job : waiting_jobs_) {
+    waiting_job->Signal();
   }
   waiting_jobs_.clear();
 }
@@ -1267,20 +1267,20 @@ TEST_F(ClientSocketPoolBaseTest, StallAndThenCancelAndTriggerAvailableSocket) {
                   pool_.get(), NetLogWithSource()));
 
   ClientSocketHandle handles[4];
-  for (size_t i = 0; i < std::size(handles); ++i) {
-    EXPECT_EQ(ERR_IO_PENDING,
-              handles[i].Init(
-                  TestGroupId("b"), params_, absl::nullopt, DEFAULT_PRIORITY,
-                  SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                  pool_.get(), NetLogWithSource()));
+  for (auto& handle : handles) {
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        handle.Init(TestGroupId("b"), params_, absl::nullopt, DEFAULT_PRIORITY,
+                    SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                    callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                    pool_.get(), NetLogWithSource()));
   }
 
   // One will be stalled, cancel all the handles now.
   // This should hit the OnAvailableSocketSlot() code where we previously had
   // stalled groups, but no longer have any.
-  for (size_t i = 0; i < std::size(handles); ++i)
-    handles[i].Reset();
+  for (auto& handle : handles)
+    handle.Reset();
 }
 
 TEST_F(ClientSocketPoolBaseTest, CancelStalledSocketAtSocketLimit) {

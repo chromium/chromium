@@ -274,11 +274,10 @@ HttpCache::~HttpCache() {
   // done with said operations, or it will attempt to use deleted data.
   disk_cache_.reset();
 
-  for (auto pending_it = pending_ops_.begin(); pending_it != pending_ops_.end();
-       ++pending_it) {
+  for (auto& pending_it : pending_ops_) {
     // We are not notifying the transactions about the cache going away, even
     // though they are waiting for a callback that will never fire.
-    PendingOp* pending_op = pending_it->second;
+    PendingOp* pending_op = pending_it.second;
     pending_op->writer.reset();
     bool delete_pending_op = true;
     if (building_backend_ && pending_op->callback_will_delete) {

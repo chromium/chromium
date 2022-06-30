@@ -504,7 +504,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
 using HttpStreamFactoryTest = TestWithTaskEnvironment;
 
 TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
-  for (size_t i = 0; i < std::size(kTests); ++i) {
+  for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
     std::unique_ptr<HttpNetworkSession> session(
@@ -522,14 +522,14 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
     mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
                                      std::move(owned_transport_conn_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelper(kTests[i], session.get());
-    EXPECT_EQ(kTests[i].num_streams, transport_conn_pool->last_num_streams());
-    EXPECT_EQ(GetGroupId(kTests[i]), transport_conn_pool->last_group_id());
+    PreconnectHelper(test, session.get());
+    EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
+    EXPECT_EQ(GetGroupId(test), transport_conn_pool->last_group_id());
   }
 }
 
 TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
-  for (size_t i = 0; i < std::size(kTests); ++i) {
+  for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixed(
             "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -546,14 +546,14 @@ TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
     mock_pool_manager->SetSocketPool(proxy_server,
                                      base::WrapUnique(http_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelper(kTests[i], session.get());
-    EXPECT_EQ(kTests[i].num_streams, http_proxy_pool->last_num_streams());
-    EXPECT_EQ(GetGroupId(kTests[i]), http_proxy_pool->last_group_id());
+    PreconnectHelper(test, session.get());
+    EXPECT_EQ(test.num_streams, http_proxy_pool->last_num_streams());
+    EXPECT_EQ(GetGroupId(test), http_proxy_pool->last_group_id());
   }
 }
 
 TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
-  for (size_t i = 0; i < std::size(kTests); ++i) {
+  for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixed(
             "socks4://socks_proxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -570,14 +570,14 @@ TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
     mock_pool_manager->SetSocketPool(proxy_server,
                                      base::WrapUnique(socks_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelper(kTests[i], session.get());
-    EXPECT_EQ(kTests[i].num_streams, socks_proxy_pool->last_num_streams());
-    EXPECT_EQ(GetGroupId(kTests[i]), socks_proxy_pool->last_group_id());
+    PreconnectHelper(test, session.get());
+    EXPECT_EQ(test.num_streams, socks_proxy_pool->last_num_streams());
+    EXPECT_EQ(GetGroupId(test), socks_proxy_pool->last_group_id());
   }
 }
 
 TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
-  for (size_t i = 0; i < std::size(kTests); ++i) {
+  for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
     std::unique_ptr<HttpNetworkSession> session(
@@ -604,13 +604,13 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
     mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
                                      std::move(owned_transport_conn_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelper(kTests[i], session.get());
+    PreconnectHelper(test, session.get());
     // We shouldn't be preconnecting if we have an existing session, which is
     // the case for https://www.google.com.
-    if (kTests[i].ssl)
+    if (test.ssl)
       EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
     else
-      EXPECT_EQ(kTests[i].num_streams, transport_conn_pool->last_num_streams());
+      EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
   }
 }
 

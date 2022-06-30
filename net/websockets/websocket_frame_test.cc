@@ -24,24 +24,21 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
     uint64_t frame_length;
   };
   static const TestCase kTests[] = {
-    { "\x81\x00", 2, UINT64_C(0) },
-    { "\x81\x7D", 2, UINT64_C(125) },
-    { "\x81\x7E\x00\x7E", 4, UINT64_C(126) },
-    { "\x81\x7E\xFF\xFF", 4, UINT64_C(0xFFFF) },
-    { "\x81\x7F\x00\x00\x00\x00\x00\x01\x00\x00", 10, UINT64_C(0x10000) },
-    { "\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
-      UINT64_C(0x7FFFFFFFFFFFFFFF) }
-  };
-  static const int kNumTests = std::size(kTests);
+      {"\x81\x00", 2, UINT64_C(0)},
+      {"\x81\x7D", 2, UINT64_C(125)},
+      {"\x81\x7E\x00\x7E", 4, UINT64_C(126)},
+      {"\x81\x7E\xFF\xFF", 4, UINT64_C(0xFFFF)},
+      {"\x81\x7F\x00\x00\x00\x00\x00\x01\x00\x00", 10, UINT64_C(0x10000)},
+      {"\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
+       UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
-  for (int i = 0; i < kNumTests; ++i) {
+  for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
     header.final = true;
-    header.payload_length = kTests[i].frame_length;
+    header.payload_length = test.frame_length;
 
     std::vector<char> expected_output(
-        kTests[i].frame_header,
-        kTests[i].frame_header + kTests[i].frame_header_length);
+        test.frame_header, test.frame_header + test.frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
               WriteWebSocketFrameHeader(header, nullptr, output.data(),
@@ -62,31 +59,28 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
     uint64_t frame_length;
   };
   static const TestCase kTests[] = {
-    { "\x81\x80\xDE\xAD\xBE\xEF", 6, UINT64_C(0) },
-    { "\x81\xFD\xDE\xAD\xBE\xEF", 6, UINT64_C(125) },
-    { "\x81\xFE\x00\x7E\xDE\xAD\xBE\xEF", 8, UINT64_C(126) },
-    { "\x81\xFE\xFF\xFF\xDE\xAD\xBE\xEF", 8, UINT64_C(0xFFFF) },
-    { "\x81\xFF\x00\x00\x00\x00\x00\x01\x00\x00\xDE\xAD\xBE\xEF", 14,
-      UINT64_C(0x10000) },
-    { "\x81\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xDE\xAD\xBE\xEF", 14,
-      UINT64_C(0x7FFFFFFFFFFFFFFF) }
-  };
-  static const int kNumTests = std::size(kTests);
+      {"\x81\x80\xDE\xAD\xBE\xEF", 6, UINT64_C(0)},
+      {"\x81\xFD\xDE\xAD\xBE\xEF", 6, UINT64_C(125)},
+      {"\x81\xFE\x00\x7E\xDE\xAD\xBE\xEF", 8, UINT64_C(126)},
+      {"\x81\xFE\xFF\xFF\xDE\xAD\xBE\xEF", 8, UINT64_C(0xFFFF)},
+      {"\x81\xFF\x00\x00\x00\x00\x00\x01\x00\x00\xDE\xAD\xBE\xEF", 14,
+       UINT64_C(0x10000)},
+      {"\x81\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xDE\xAD\xBE\xEF", 14,
+       UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
   WebSocketMaskingKey masking_key;
   std::copy(kMaskingKey,
             kMaskingKey + WebSocketFrameHeader::kMaskingKeyLength,
             masking_key.key);
 
-  for (int i = 0; i < kNumTests; ++i) {
+  for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
     header.final = true;
     header.masked = true;
-    header.payload_length = kTests[i].frame_length;
+    header.payload_length = test.frame_length;
 
     std::vector<char> expected_output(
-        kTests[i].frame_header,
-        kTests[i].frame_header + kTests[i].frame_header_length);
+        test.frame_header, test.frame_header + test.frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
               WriteWebSocketFrameHeader(header, &masking_key, output.data(),
@@ -102,34 +96,31 @@ TEST(WebSocketFrameHeaderTest, FrameOpCodes) {
     WebSocketFrameHeader::OpCode opcode;
   };
   static const TestCase kTests[] = {
-    { "\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation },
-    { "\x81\x00", 2, WebSocketFrameHeader::kOpCodeText },
-    { "\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary },
-    { "\x88\x00", 2, WebSocketFrameHeader::kOpCodeClose },
-    { "\x89\x00", 2, WebSocketFrameHeader::kOpCodePing },
-    { "\x8A\x00", 2, WebSocketFrameHeader::kOpCodePong },
-    // These are undefined opcodes, but the builder should accept them anyway.
-    { "\x83\x00", 2, 0x3 },
-    { "\x84\x00", 2, 0x4 },
-    { "\x85\x00", 2, 0x5 },
-    { "\x86\x00", 2, 0x6 },
-    { "\x87\x00", 2, 0x7 },
-    { "\x8B\x00", 2, 0xB },
-    { "\x8C\x00", 2, 0xC },
-    { "\x8D\x00", 2, 0xD },
-    { "\x8E\x00", 2, 0xE },
-    { "\x8F\x00", 2, 0xF }
-  };
-  static const int kNumTests = std::size(kTests);
+      {"\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation},
+      {"\x81\x00", 2, WebSocketFrameHeader::kOpCodeText},
+      {"\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary},
+      {"\x88\x00", 2, WebSocketFrameHeader::kOpCodeClose},
+      {"\x89\x00", 2, WebSocketFrameHeader::kOpCodePing},
+      {"\x8A\x00", 2, WebSocketFrameHeader::kOpCodePong},
+      // These are undefined opcodes, but the builder should accept them anyway.
+      {"\x83\x00", 2, 0x3},
+      {"\x84\x00", 2, 0x4},
+      {"\x85\x00", 2, 0x5},
+      {"\x86\x00", 2, 0x6},
+      {"\x87\x00", 2, 0x7},
+      {"\x8B\x00", 2, 0xB},
+      {"\x8C\x00", 2, 0xC},
+      {"\x8D\x00", 2, 0xD},
+      {"\x8E\x00", 2, 0xE},
+      {"\x8F\x00", 2, 0xF}};
 
-  for (int i = 0; i < kNumTests; ++i) {
-    WebSocketFrameHeader header(kTests[i].opcode);
+  for (const auto& test : kTests) {
+    WebSocketFrameHeader header(test.opcode);
     header.final = true;
     header.payload_length = 0;
 
     std::vector<char> expected_output(
-        kTests[i].frame_header,
-        kTests[i].frame_header + kTests[i].frame_header_length);
+        test.frame_header, test.frame_header + test.frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
               WriteWebSocketFrameHeader(header, nullptr, output.data(),
@@ -147,28 +138,24 @@ TEST(WebSocketFrameHeaderTest, FinalBitAndReservedBits) {
     bool reserved2;
     bool reserved3;
   };
-  static const TestCase kTests[] = {
-    { "\x81\x00", 2, true, false, false, false },
-    { "\x01\x00", 2, false, false, false, false },
-    { "\xC1\x00", 2, true, true, false, false },
-    { "\xA1\x00", 2, true, false, true, false },
-    { "\x91\x00", 2, true, false, false, true },
-    { "\x71\x00", 2, false, true, true, true },
-    { "\xF1\x00", 2, true, true, true, true }
-  };
-  static const int kNumTests = std::size(kTests);
+  static const TestCase kTests[] = {{"\x81\x00", 2, true, false, false, false},
+                                    {"\x01\x00", 2, false, false, false, false},
+                                    {"\xC1\x00", 2, true, true, false, false},
+                                    {"\xA1\x00", 2, true, false, true, false},
+                                    {"\x91\x00", 2, true, false, false, true},
+                                    {"\x71\x00", 2, false, true, true, true},
+                                    {"\xF1\x00", 2, true, true, true, true}};
 
-  for (int i = 0; i < kNumTests; ++i) {
+  for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
-    header.final = kTests[i].final;
-    header.reserved1 = kTests[i].reserved1;
-    header.reserved2 = kTests[i].reserved2;
-    header.reserved3 = kTests[i].reserved3;
+    header.final = test.final;
+    header.reserved1 = test.reserved1;
+    header.reserved2 = test.reserved2;
+    header.reserved3 = test.reserved3;
     header.payload_length = 0;
 
     std::vector<char> expected_output(
-        kTests[i].frame_header,
-        kTests[i].frame_header + kTests[i].frame_header_length);
+        test.frame_header, test.frame_header + test.frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
               WriteWebSocketFrameHeader(header, nullptr, output.data(),
@@ -183,34 +170,31 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
     bool masked;
     size_t expected_header_size;
   };
-  static const TestCase kTests[] = {
-    { UINT64_C(0), false, 2u },
-    { UINT64_C(125), false, 2u },
-    { UINT64_C(126), false, 4u },
-    { UINT64_C(0xFFFF), false, 4u },
-    { UINT64_C(0x10000), false, 10u },
-    { UINT64_C(0x7FFFFFFFFFFFFFFF), false, 10u },
-    { UINT64_C(0), true, 6u },
-    { UINT64_C(125), true, 6u },
-    { UINT64_C(126), true, 8u },
-    { UINT64_C(0xFFFF), true, 8u },
-    { UINT64_C(0x10000), true, 14u },
-    { UINT64_C(0x7FFFFFFFFFFFFFFF), true, 14u }
-  };
-  static const int kNumTests = std::size(kTests);
+  static const TestCase kTests[] = {{UINT64_C(0), false, 2u},
+                                    {UINT64_C(125), false, 2u},
+                                    {UINT64_C(126), false, 4u},
+                                    {UINT64_C(0xFFFF), false, 4u},
+                                    {UINT64_C(0x10000), false, 10u},
+                                    {UINT64_C(0x7FFFFFFFFFFFFFFF), false, 10u},
+                                    {UINT64_C(0), true, 6u},
+                                    {UINT64_C(125), true, 6u},
+                                    {UINT64_C(126), true, 8u},
+                                    {UINT64_C(0xFFFF), true, 8u},
+                                    {UINT64_C(0x10000), true, 14u},
+                                    {UINT64_C(0x7FFFFFFFFFFFFFFF), true, 14u}};
 
-  for (int i = 0; i < kNumTests; ++i) {
+  for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
     header.final = true;
     header.opcode = WebSocketFrameHeader::kOpCodeText;
-    header.masked = kTests[i].masked;
-    header.payload_length = kTests[i].payload_length;
+    header.masked = test.masked;
+    header.payload_length = test.payload_length;
 
     char dummy_buffer[14];
     // Set an insufficient size to |buffer_size|.
     EXPECT_EQ(ERR_INVALID_ARGUMENT,
               WriteWebSocketFrameHeader(header, nullptr, dummy_buffer,
-                                        kTests[i].expected_header_size - 1));
+                                        test.expected_header_size - 1));
   }
 }
 
@@ -223,30 +207,28 @@ TEST(WebSocketFrameTest, MaskPayload) {
     size_t data_length;
   };
   static const TestCase kTests[] = {
-    { "\xDE\xAD\xBE\xEF", 0, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6 },
-    { "\xDE\xAD\xBE\xEF", 1, "FooBar", "\xEB\xD1\x80\x9C\xCC\xCC", 6 },
-    { "\xDE\xAD\xBE\xEF", 2, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6 },
-    { "\xDE\xAD\xBE\xEF", 3, "FooBar", "\xA9\xB1\xC2\xFC\x8E\xAC", 6 },
-    { "\xDE\xAD\xBE\xEF", 4, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6 },
-    { "\xDE\xAD\xBE\xEF", 42, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6 },
-    { "\xDE\xAD\xBE\xEF", 0, "", "", 0 },
-    { "\xDE\xAD\xBE\xEF", 0, "\xDE\xAD\xBE\xEF", "\x00\x00\x00\x00", 4 },
-    { "\xDE\xAD\xBE\xEF", 0, "\x00\x00\x00\x00", "\xDE\xAD\xBE\xEF", 4 },
-    { "\x00\x00\x00\x00", 0, "FooBar", "FooBar", 6 },
-    { "\xFF\xFF\xFF\xFF", 0, "FooBar", "\xB9\x90\x90\xBD\x9E\x8D", 6 },
+      {"\xDE\xAD\xBE\xEF", 0, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6},
+      {"\xDE\xAD\xBE\xEF", 1, "FooBar", "\xEB\xD1\x80\x9C\xCC\xCC", 6},
+      {"\xDE\xAD\xBE\xEF", 2, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6},
+      {"\xDE\xAD\xBE\xEF", 3, "FooBar", "\xA9\xB1\xC2\xFC\x8E\xAC", 6},
+      {"\xDE\xAD\xBE\xEF", 4, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6},
+      {"\xDE\xAD\xBE\xEF", 42, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6},
+      {"\xDE\xAD\xBE\xEF", 0, "", "", 0},
+      {"\xDE\xAD\xBE\xEF", 0, "\xDE\xAD\xBE\xEF", "\x00\x00\x00\x00", 4},
+      {"\xDE\xAD\xBE\xEF", 0, "\x00\x00\x00\x00", "\xDE\xAD\xBE\xEF", 4},
+      {"\x00\x00\x00\x00", 0, "FooBar", "FooBar", 6},
+      {"\xFF\xFF\xFF\xFF", 0, "FooBar", "\xB9\x90\x90\xBD\x9E\x8D", 6},
   };
-  static const int kNumTests = std::size(kTests);
 
-  for (int i = 0; i < kNumTests; ++i) {
+  for (const auto& test : kTests) {
     WebSocketMaskingKey masking_key;
-    std::copy(kTests[i].masking_key,
-              kTests[i].masking_key + WebSocketFrameHeader::kMaskingKeyLength,
+    std::copy(test.masking_key,
+              test.masking_key + WebSocketFrameHeader::kMaskingKeyLength,
               masking_key.key);
-    std::vector<char> frame_data(kTests[i].input,
-                                 kTests[i].input + kTests[i].data_length);
-    std::vector<char> expected_output(kTests[i].output,
-                                      kTests[i].output + kTests[i].data_length);
-    MaskWebSocketFramePayload(masking_key, kTests[i].frame_offset,
+    std::vector<char> frame_data(test.input, test.input + test.data_length);
+    std::vector<char> expected_output(test.output,
+                                      test.output + test.data_length);
+    MaskWebSocketFramePayload(masking_key, test.frame_offset,
                               frame_data.empty() ? nullptr : frame_data.data(),
                               frame_data.size());
     EXPECT_EQ(expected_output, frame_data);

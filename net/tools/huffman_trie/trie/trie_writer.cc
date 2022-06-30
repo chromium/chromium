@@ -128,8 +128,8 @@ bool TrieWriter::WriteDispatchTables(ReversedEntries::iterator start,
   writer.WriteSize(prefix.size());
 
   if (prefix.size()) {
-    for (size_t i = 0; i < prefix.size(); ++i) {
-      writer.WriteChar(prefix.at(i), huffman_table_, huffman_builder_);
+    for (uint8_t c : prefix) {
+      writer.WriteChar(c, huffman_table_, huffman_builder_);
     }
   }
 

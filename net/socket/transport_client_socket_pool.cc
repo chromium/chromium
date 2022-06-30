@@ -220,8 +220,8 @@ bool TransportClientSocketPool::IsStalled() const {
   // |max_sockets_per_group_|.  (If the number of sockets is equal to
   // |max_sockets_per_group_|, then the request is stalled on the group limit,
   // which does not count.)
-  for (auto it = group_map_.begin(); it != group_map_.end(); ++it) {
-    if (it->second->CanUseAdditionalSocketSlot(max_sockets_per_group_))
+  for (const auto& it : group_map_) {
+    if (it.second->CanUseAdditionalSocketSlot(max_sockets_per_group_))
       return true;
   }
   return false;
@@ -887,8 +887,8 @@ bool TransportClientSocketPool::CloseOneIdleConnectionInHigherLayeredPool() {
   // This pool doesn't have any idle sockets. It's possible that a pool at a
   // higher layer is holding one of this sockets active, but it's actually idle.
   // Query the higher layers.
-  for (auto it = higher_pools_.begin(); it != higher_pools_.end(); ++it) {
-    if ((*it)->CloseOneIdleConnection())
+  for (auto* higher_pool : higher_pools_) {
+    if (higher_pool->CloseOneIdleConnection())
       return true;
   }
   return false;
@@ -1060,8 +1060,8 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
   Group* top_group = nullptr;
   const GroupId* top_group_id = nullptr;
   bool has_stalled_group = false;
-  for (auto i = group_map_.begin(); i != group_map_.end(); ++i) {
-    Group* curr_group = i->second;
+  for (const auto& it : group_map_) {
+    Group* curr_group = it.second;
     if (!curr_group->has_unbound_requests())
       continue;
     if (curr_group->CanUseAdditionalSocketSlot(max_sockets_per_group_)) {
@@ -1073,7 +1073,7 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
           curr_group->TopPendingPriority() > top_group->TopPendingPriority();
       if (has_higher_priority) {
         top_group = curr_group;
-        top_group_id = &i->first;
+        top_group_id = &it.first;
       }
     }
   }
@@ -1775,11 +1775,10 @@ TransportClientSocketPool::Group::FindAndRemoveUnboundRequest(
 
 void TransportClientSocketPool::Group::SetPendingErrorForAllBoundRequests(
     int pending_error) {
-  for (auto bound_pair = bound_requests_.begin();
-       bound_pair != bound_requests_.end(); ++bound_pair) {
+  for (auto& bound_request : bound_requests_) {
     // Earlier errors take precedence.
-    if (bound_pair->pending_error == OK)
-      bound_pair->pending_error = pending_error;
+    if (bound_request.pending_error == OK)
+      bound_request.pending_error = pending_error;
   }
 }
 

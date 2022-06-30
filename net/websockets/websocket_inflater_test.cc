@@ -101,8 +101,8 @@ TEST(WebSocketInflaterTest, MultipleAddBytesCalls) {
   std::string input("\xf2\x48\xcd\xc9\xc9\x07\x00", 7);
   scoped_refptr<IOBufferWithSize> actual;
 
-  for (size_t i = 0; i < input.size(); ++i) {
-    ASSERT_TRUE(inflater.AddBytes(&input[i], 1));
+  for (char& c : input) {
+    ASSERT_TRUE(inflater.AddBytes(&c, 1));
   }
   ASSERT_TRUE(inflater.Finish());
   actual = inflater.GetOutput(5);

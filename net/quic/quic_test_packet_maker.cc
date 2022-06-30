@@ -790,8 +790,8 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
 
     std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                           spdy_headers_frame_length);
-    for (size_t i = 0; i < data_writes.size(); ++i) {
-      data += data_writes[i];
+    for (const auto& data_write : data_writes) {
+      data += data_write;
     }
     AddQuicStreamFrame(stream_id, fin, data);
 

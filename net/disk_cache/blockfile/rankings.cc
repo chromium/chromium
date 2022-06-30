@@ -212,8 +212,9 @@ Rankings::Iterator::Iterator() {
 
 void Rankings::Iterator::Reset() {
   if (my_rankings) {
-    for (int i = 0; i < 3; i++)
-      ScopedRankingsBlock(my_rankings, nodes[i]);
+    for (auto* node : nodes) {
+      ScopedRankingsBlock(my_rankings, node);
+    }
   }
   memset(this, 0, sizeof(Iterator));
 }
@@ -875,9 +876,9 @@ bool Rankings::IsTail(CacheAddr addr, List* list) const {
 // of cache iterators and update all that are pointing to the given node.
 void Rankings::UpdateIterators(CacheRankingsBlock* node) {
   CacheAddr address = node->address().value();
-  for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
-    if (it->first == address && it->second->HasData()) {
-      CacheRankingsBlock* other = it->second;
+  for (auto& iterator : iterators_) {
+    if (iterator.first == address && iterator.second->HasData()) {
+      CacheRankingsBlock* other = iterator.second;
       if (other != node)
         *other->Data() = *node->Data();
     }
@@ -887,10 +888,10 @@ void Rankings::UpdateIterators(CacheRankingsBlock* node) {
 void Rankings::UpdateIteratorsForRemoved(CacheAddr address,
                                          CacheRankingsBlock* next) {
   CacheAddr next_addr = next->address().value();
-  for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
-    if (it->first == address) {
-      it->first = next_addr;
-      it->second->CopyFrom(next);
+  for (auto& iterator : iterators_) {
+    if (iterator.first == address) {
+      iterator.first = next_addr;
+      iterator.second->CopyFrom(next);
     }
   }
 }

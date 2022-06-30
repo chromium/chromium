@@ -98,12 +98,12 @@ class DiscreteTimeSimulation {
     TimeTicks start_time = TimeTicks();
     TimeTicks now = start_time;
     while ((now - start_time) <= maximum_simulated_duration) {
-      for (auto it = actors_.begin(); it != actors_.end(); ++it) {
-        (*it)->AdvanceTime(now);
+      for (auto* actor : actors_) {
+        actor->AdvanceTime(now);
       }
 
-      for (auto it = actors_.begin(); it != actors_.end(); ++it) {
-        (*it)->PerformAction();
+      for (auto* actor : actors_) {
+        actor->PerformAction();
       }
 
       now += time_between_ticks;
@@ -699,17 +699,17 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
   // If things don't converge by the time we've done 100K trials, then
   // clearly one or more of the expected intervals are wrong.
   while (global_stats.num_runs < 100000) {
-    for (size_t i = 0; i < std::size(trials); ++i) {
+    for (auto& trial : trials) {
       ++global_stats.num_runs;
-      ++trials[i].stats.num_runs;
+      ++trial.stats.num_runs;
       double ratio_unprotected = SimulateDowntime(
-          trials[i].duration, trials[i].average_client_interval, false);
-      double ratio_protected = SimulateDowntime(
-          trials[i].duration, trials[i].average_client_interval, true);
+          trial.duration, trial.average_client_interval, false);
+      double ratio_protected =
+          SimulateDowntime(trial.duration, trial.average_client_interval, true);
       global_stats.total_ratio_unprotected += ratio_unprotected;
       global_stats.total_ratio_protected += ratio_protected;
-      trials[i].stats.total_ratio_unprotected += ratio_unprotected;
-      trials[i].stats.total_ratio_protected += ratio_protected;
+      trial.stats.total_ratio_unprotected += ratio_unprotected;
+      trial.stats.total_ratio_protected += ratio_protected;
     }
 
     double increase_ratio;
@@ -727,12 +727,12 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
 
   // Print individual trial results for optional manual evaluation.
   double max_increase_ratio = 0.0;
-  for (size_t i = 0; i < std::size(trials); ++i) {
+  for (auto& trial : trials) {
     double increase_ratio;
-    trials[i].stats.DidConverge(&increase_ratio);
+    trial.stats.DidConverge(&increase_ratio);
     max_increase_ratio = std::max(max_increase_ratio, increase_ratio);
-    trials[i].PrintTrialDescription();
-    trials[i].stats.ReportTrialResult(increase_ratio);
+    trial.PrintTrialDescription();
+    trial.stats.ReportTrialResult(increase_ratio);
   }
 
   VerboseOut("Average increase ratio was %.4f\n", average_increase_ratio);
