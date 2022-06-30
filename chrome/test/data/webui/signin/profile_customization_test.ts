@@ -25,7 +25,7 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
     const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_2';
     const WELCOME_TEXT_1 = 'Welcome, Bob';
     const WELCOME_TEXT_2 = 'Hi, Elisa';
-    const STATIC_TITLE = 'Customize your Chromium profile';
+    const STATIC_TITLE_PATTERN = /^Customize your (Chromium|Chrome) profile$/g;
 
     setup(function() {
       loadTimeData.overrideValues({
@@ -99,9 +99,11 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
     test('ProfileInfo', function() {
       const header = app.shadowRoot!.querySelector<HTMLElement>('#header')!;
       // Check initial info.
-      assertEquals(
-          app.$.title.innerText,
-          inDialogDesign ? STATIC_TITLE : WELCOME_TEXT_1);
+      if (inDialogDesign) {
+        assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+      } else {
+        assertEquals(app.$.title.innerText, WELCOME_TEXT_1);
+      }
       assertEquals('rgb(0, 255, 0)', getComputedStyle(header).backgroundColor);
       checkImageUrl('#avatar', AVATAR_URL_1);
       assertFalse(isChildVisible(app, '#badge'));
@@ -113,9 +115,11 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
         isManaged: true,
         welcomeTitle: WELCOME_TEXT_2,
       });
-      assertEquals(
-          app.$.title.innerText,
-          inDialogDesign ? STATIC_TITLE : WELCOME_TEXT_2);
+      if (inDialogDesign) {
+        assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+      } else {
+        assertEquals(app.$.title.innerText, WELCOME_TEXT_2);
+      }
       assertEquals(color2, getComputedStyle(header).backgroundColor);
       checkImageUrl('#avatar', AVATAR_URL_2);
       assertTrue(isChildVisible(app, '#badge'));
