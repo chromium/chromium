@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/media_app_ui/file_system_access_helpers.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -23,7 +24,6 @@
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/browser/web_ui_data_source.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -31,10 +31,6 @@ ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
 ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() {}
-
-base::WeakPtr<ash::MediaAppUIDelegate> ChromeMediaAppUIDelegate::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
 
 absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
@@ -64,10 +60,21 @@ void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
   }
 }
 
-void ChromeMediaAppUIDelegate::EditFileInPhotos(
-    absl::optional<storage::FileSystemURL> url,
+void ChromeMediaAppUIDelegate::EditInPhotos(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     const std::string& mime_type,
     base::OnceCallback<void()> edit_in_photos_callback) {
+  ash::ResolveTransferToken(
+      std::move(token), web_ui_->GetWebContents(),
+      base::BindOnce(&ChromeMediaAppUIDelegate::EditInPhotosImpl,
+                     weak_ptr_factory_.GetWeakPtr(), mime_type,
+                     std::move(edit_in_photos_callback)));
+}
+
+void ChromeMediaAppUIDelegate::EditInPhotosImpl(
+    const std::string& mime_type,
+    base::OnceCallback<void()> edit_in_photos_callback,
+    absl::optional<storage::FileSystemURL> url) {
   if (!url.has_value()) {
     std::move(edit_in_photos_callback).Run();
     return;
