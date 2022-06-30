@@ -9,6 +9,7 @@ import logging
 import os
 import subprocess
 import sys
+import tempfile
 import threading
 import typing
 import unittest
@@ -25,7 +26,6 @@ EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                                  'dawn', 'webgpu-cts', 'expectations.txt')
 LIST_SCRIPT = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                            'dawn', 'webgpu-cts', 'scripts', 'list.py')
-TYPESCRIPT_DIR = os.path.join(gpu_path_util.GPU_DIR, '.webgpu_typescript')
 
 MULTI_PAYLOAD_TIMEOUT = 0.5
 TEST_RUNS_BETWEEN_CLEANUP = 1000
@@ -109,6 +109,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   _build_dir = None
 
+  _typescript_tempdir = tempfile.TemporaryDirectory()
   _test_list = None
 
   total_tests_run = 0
@@ -182,6 +183,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls) -> None:
     super(WebGpuCtsIntegrationTest, cls).SetUpProcess()
+
     cls.SetUpWebsocketServer()
     browser_args = [
         '--enable-unsafe-webgpu',
@@ -244,10 +246,12 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     if cls._test_list is None:
-      p = subprocess.run(
-          [sys.executable, LIST_SCRIPT, '--js-out-dir', TYPESCRIPT_DIR],
-          stdout=subprocess.PIPE,
-          check=True)
+      p = subprocess.run([
+          sys.executable, LIST_SCRIPT, '--js-out-dir',
+          cls._typescript_tempdir.name
+      ],
+                         stdout=subprocess.PIPE,
+                         check=True)
       cls._test_list = p.stdout.decode('utf-8').splitlines()
     for line in cls._test_list:  # pylint:disable=not-an-iterable
       if not line:
