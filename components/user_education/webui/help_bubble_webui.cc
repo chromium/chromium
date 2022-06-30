@@ -11,8 +11,9 @@
 
 namespace user_education {
 
-HelpBubbleWebUI::HelpBubbleWebUI(HelpBubbleHandlerBase* handler)
-    : handler_(handler) {
+HelpBubbleWebUI::HelpBubbleWebUI(HelpBubbleHandlerBase* handler,
+                                 ui::ElementIdentifier anchor_id)
+    : handler_(handler), anchor_id_(anchor_id) {
   CHECK(handler_);
 }
 HelpBubbleWebUI::~HelpBubbleWebUI() {
@@ -20,11 +21,11 @@ HelpBubbleWebUI::~HelpBubbleWebUI() {
 }
 
 bool HelpBubbleWebUI::ToggleFocusForAccessibility() {
-  return handler_->ToggleHelpBubbleFocusForAccessibility();
+  return handler_->ToggleHelpBubbleFocusForAccessibility(anchor_id_);
 }
 
 gfx::Rect HelpBubbleWebUI::GetBoundsInScreen() const {
-  return handler_->GetHelpBubbleBoundsInScreen();
+  return handler_->GetHelpBubbleBoundsInScreen(anchor_id_);
 }
 
 ui::ElementContext HelpBubbleWebUI::GetContext() const {
@@ -32,7 +33,7 @@ ui::ElementContext HelpBubbleWebUI::GetContext() const {
 }
 
 void HelpBubbleWebUI::CloseBubbleImpl() {
-  handler_->OnHelpBubbleClosing();
+  handler_->OnHelpBubbleClosing(anchor_id_);
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleWebUI)
@@ -45,7 +46,7 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryWebUI::CreateBubble(
     HelpBubbleParams params) {
   HelpBubbleHandlerBase* const handler =
       element->AsA<TrackedElementWebUI>()->handler();
-  return handler->CreateHelpBubble(std::move(params));
+  return handler->CreateHelpBubble(element->identifier(), std::move(params));
 }
 
 bool HelpBubbleFactoryWebUI::CanBuildBubbleForTrackedElement(

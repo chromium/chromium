@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('CrComponentsHelpBubbleTest', () => {
   let helpBubble: HelpBubbleElement;
@@ -30,39 +31,56 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('bubble starts closed wth no anchor', () => {
-    assertFalse(helpBubble.open);
     assertEquals(null, helpBubble.getAnchorElement());
   });
+
+  const HELP_BUBBLE_BODY = 'help bubble body';
 
   test('help bubble shows and anchors correctly', () => {
     helpBubble.anchorId = 'p1';
     helpBubble.position = HelpBubblePosition.BELOW;
-    helpBubble.body = 'help bubble body';
+    helpBubble.body = HELP_BUBBLE_BODY;
     helpBubble.show();
 
-    assertTrue(helpBubble.open);
     assertEquals(
         document.querySelector<HTMLElement>('#p1'),
         helpBubble.getAnchorElement());
     assertEquals(
-        'help bubble body',
+        HELP_BUBBLE_BODY,
         helpBubble.shadowRoot!.querySelector<HTMLElement>(
                                   'div.body')!.textContent);
+    assertTrue(isVisible(helpBubble));
   });
 
   test('help bubble closes', () => {
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubblePosition.BELOW;
-    helpBubble.body = 'help bubble body';
+    helpBubble.body = HELP_BUBBLE_BODY;
     helpBubble.show();
 
-    assertTrue(helpBubble.open);
     assertEquals(
         document.querySelector<HTMLElement>('#title'),
         helpBubble.getAnchorElement());
 
     helpBubble.hide();
-    assertFalse(helpBubble.open);
     assertEquals(null, helpBubble.getAnchorElement());
+    assertFalse(isVisible(helpBubble));
+  });
+
+  test('help bubble open close open', () => {
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.body = HELP_BUBBLE_BODY;
+    helpBubble.show();
+    helpBubble.hide();
+    helpBubble.show();
+    assertEquals(
+        document.querySelector<HTMLElement>('#title'),
+        helpBubble.getAnchorElement());
+    assertEquals(
+        HELP_BUBBLE_BODY,
+        helpBubble.shadowRoot!.querySelector<HTMLElement>(
+                                  'div.body')!.textContent);
+    assertTrue(isVisible(helpBubble));
   });
 });

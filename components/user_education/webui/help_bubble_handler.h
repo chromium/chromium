@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_USER_EDUCATION_WEBUI_HELP_BUBBLE_HANDLER_H_
 #define COMPONENTS_USER_EDUCATION_WEBUI_HELP_BUBBLE_HANDLER_H_
 
+#include <map>
 #include <memory>
+#include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -30,6 +34,8 @@ class HelpBubbleWebUI;
 class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
  public:
   HelpBubbleHandlerBase(const HelpBubbleHandlerBase&) = delete;
+  HelpBubbleHandlerBase(const std::vector<ui::ElementIdentifier>& identifiers,
+                        ui::ElementContext context);
   ~HelpBubbleHandlerBase() override;
   void operator=(const HelpBubbleHandlerBase&) = delete;
 
@@ -54,32 +60,41 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   };
 
   HelpBubbleHandlerBase(std::unique_ptr<ClientProvider> client_provider,
-                        ui::ElementIdentifier identifier,
+                        const std::vector<ui::ElementIdentifier>& identifiers,
                         ui::ElementContext context);
 
   help_bubble::mojom::HelpBubbleClient* GetClient();
   ClientProvider* client_provider() { return client_provider_.get(); }
 
+  // Override to use mojo error handling; defaults to NOTREACHED().
+  virtual void ReportBadMessage(base::StringPiece error);
+
  private:
   friend class HelpBubbleFactoryWebUI;
   friend class HelpBubbleWebUI;
 
-  std::unique_ptr<HelpBubbleWebUI> CreateHelpBubble(HelpBubbleParams params);
-  void OnHelpBubbleClosing();
-  bool ToggleHelpBubbleFocusForAccessibility();
-  gfx::Rect GetHelpBubbleBoundsInScreen() const;
+  struct ElementData;
+
+  std::unique_ptr<HelpBubbleWebUI> CreateHelpBubble(
+      ui::ElementIdentifier target,
+      HelpBubbleParams params);
+  void OnHelpBubbleClosing(ui::ElementIdentifier anchor_id);
+  bool ToggleHelpBubbleFocusForAccessibility(ui::ElementIdentifier anchor_id);
+  gfx::Rect GetHelpBubbleBoundsInScreen(ui::ElementIdentifier anchor_id) const;
 
   // mojom::HelpBubbleHandler:
-  void HelpBubbleHostVisibilityChanged(bool visible) final;
-  void HelpBubbleButtonPressed(int8_t button) final;
-  void HelpBubbleClosed(bool by_user) final;
+  void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,
+                                         bool visible) final;
+  void HelpBubbleButtonPressed(const std::string& identifier_name,
+                               uint8_t button) final;
+  void HelpBubbleClosed(const std::string& identifier_name, bool by_user) final;
+
+  ElementData* GetDataByName(const std::string& identifier_name,
+                             ui::ElementIdentifier* found_identifier = nullptr);
 
   std::unique_ptr<ClientProvider> client_provider_;
   const ui::ElementContext context_;
-  bool closing_ = false;
-  base::raw_ptr<HelpBubbleWebUI> current_help_bubble_ = nullptr;
-  std::unique_ptr<HelpBubbleParams> current_help_bubble_params_;
-  std::unique_ptr<TrackedElementWebUI> element_;
+  std::map<ui::ElementIdentifier, ElementData> element_data_;
   base::WeakPtrFactory<HelpBubbleHandlerBase> weak_ptr_factory_{this};
 };
 
@@ -105,7 +120,7 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
           pending_handler,
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
       content::WebContents* web_contents,
-      ui::ElementIdentifier identifier);
+      const std::vector<ui::ElementIdentifier>& identifiers);
   ~HelpBubbleHandler() override;
 
  private:
@@ -121,6 +136,8 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
    private:
     mojo::Remote<help_bubble::mojom::HelpBubbleClient> remote_client_;
   };
+
+  void ReportBadMessage(base::StringPiece error) override;
 
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandler> receiver_;
 };

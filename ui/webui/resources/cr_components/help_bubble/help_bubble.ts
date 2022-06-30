@@ -1,22 +1,21 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
- * @fileoverview A bubble for displaying in-product help. This is a WIP, do not
- * use.
+ * @fileoverview A bubble for displaying in-product help. These are created
+ * dynamically by HelpBubbleMixin, and their API should be considered an
+ * implementation detail and subject to change (you should not add them to your
+ * components directly).
  */
-import {assertNotReached} from '//resources/js/assert_ts.js';
+
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './help_bubble.html.js';
 import {HelpBubblePosition} from './help_bubble.mojom-webui.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
-
-export interface HelpBubbleElement {
-  open: boolean;
-  _setOpen(open: boolean): void;
-}
 
 export class HelpBubbleElement extends PolymerElement {
   static get is() {
@@ -29,13 +28,9 @@ export class HelpBubbleElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * Readonly variable tracking whether the bubble is currently displayed.
-       */
-      open: {
-        readOnly: true,
-        type: Boolean,
-        value: false,
+      anchorId: {
+        type: String,
+        value: '',
         reflectToAttribute: true,
       },
     };
@@ -48,26 +43,25 @@ export class HelpBubbleElement extends PolymerElement {
   /**
    * HTMLElement corresponding to |this.anchorId|.
    */
-  private anchorElement_: HTMLElement|null;
+  private anchorElement_: HTMLElement|null = null;
 
   /**
    * Shows the bubble.
    */
   show() {
-    if (!this.anchorElement_) {
-      this.anchorElement_ = this.findAnchorElement_();
-      if (!this.anchorElement_) {
-        assertNotReached(
-            'Tried to show a help bubble but couldn\'t find element with id ' +
+    this.anchorElement_ =
+        this.parentElement!.querySelector<HTMLElement>(`#${this.anchorId}`)!;
+    assert(
+        this.anchorElement_,
+        'Tried to show a help bubble but couldn\'t find element with id ' +
             this.anchorId);
-      }
-    }
+
     // Reset the aria-hidden attribute as screen readers need to access the
     // contents of an opened bubble.
+    this.style.display = 'block';
     this.removeAttribute('aria-hidden');
     this.updatePosition_();
     this.setAnchorHighlight_(true);
-    this._setOpen(true);
   }
 
   /**
@@ -75,9 +69,10 @@ export class HelpBubbleElement extends PolymerElement {
    * while hidden.
    */
   hide() {
+    this.style.display = 'none';
     this.setAttribute('aria-hidden', 'true');
     this.setAnchorHighlight_(false);
-    this._setOpen(false);
+    this.anchorElement_ = null;
   }
 
   /**
@@ -85,19 +80,7 @@ export class HelpBubbleElement extends PolymerElement {
    * otherwise null.
    */
   getAnchorElement(): HTMLElement|null {
-    return this.open ? this.anchorElement_ : null;
-  }
-
-  /**
-   * Returns the element that this help is anchored to. It is either the element
-   * given by |this.anchorId|, or the immediate parent of the help.
-   */
-  private findAnchorElement_(): HTMLElement|null {
-    const parentElement: HTMLElement|null = this.parentElement;
-    if (!this.anchorId || !parentElement) {
-      return null;
-    }
-    return parentElement.querySelector<HTMLElement>(`#${this.anchorId}`)!;
+    return this.anchorElement_;
   }
 
   /**
@@ -105,9 +88,8 @@ export class HelpBubbleElement extends PolymerElement {
    * |this.position|.
    */
   private updatePosition_() {
-    if (!this.anchorElement_) {
-      return;
-    }
+    assert(this.anchorElement_);
+
     // Inclusive of 8px visible arrow and 8px margin.
     const offset = 16;
     const parentRect = this.offsetParent!.getBoundingClientRect();
@@ -162,9 +144,7 @@ export class HelpBubbleElement extends PolymerElement {
    * or removes the highlight.
    */
   private setAnchorHighlight_(highlight: boolean) {
-    if (!this.anchorElement_) {
-      return;
-    }
+    assert(this.anchorElement_);
     this.anchorElement_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
   }
 }

@@ -8,6 +8,15 @@ Allows a WebUI page to support Polymer-based, blue material design ("Navi")
 [Feature Promo](../common/feature_promo_controller.h) or
 [Tutorial](../common/tutorial.h).
 
+This is done by associating HTML elements in a component with an
+[ElementIdentifier](/ui/base/interaction/element_identifier.h) so they can be
+referenced by a Tutorial step or a `FeaturePromoSpecification`.
+
+Once elements are linked in this way, their visibility is reported via
+[ElementTracker](/ui/base/interaction/element_tracker.h) and can be referenced
+for any of the usual purposes (e.g. in tests or "hidden" Tutorial steps) and
+not just for the purpose of anchoring a help bubble.
+
 ## Usage
 
  * Implement
@@ -18,23 +27,21 @@ Allows a WebUI page to support Polymer-based, blue material design ("Navi")
    [chrome_browser_interface_binders.cc](/chrome/browser/chrome_browser_interface_binders.cc).
 
  * Implement the `CreateHelpBubbleHandler()` method to manufacture a
-   [HelpBubbleHandler](./help_bubble_handler.h). Assign a unique `identifier` to
-   the handler that will be used when determining when your WebUI is visible and
-   where to display help bubbles.
+   [HelpBubbleHandler](./help_bubble_handler.h).
+   
+   * Assign one or more unique `identifiers` that will correspond to the
+     element(s) your bubble(s) will attach to. Each will be mapped to an HTML
+     element by your WebUI component.
 
    * For chrome browser, it is considered good practice to declare your
      identifiers in
      [browser_element_identifiers.[h|cc]](/chrome/browser/ui/browser_element_identifiers.h)
 
-   * Note that currently, there can only be one identifier and therefore one
-     bubble _per WebUI page_ (not per component); this will be expanded in the
-     near future.
-
  * Implement the frontend by following the directions in
    [the relevant documentation](/ui/webui/resources/cr_components/help_bubble/README.md).
 
- * Create your User Education journey referencing the `identifier` you used
-   above.
+ * Create your User Education journey referencing one or more of the
+   `identifiers` you specified above.
    
    * Note that you will need to specify "in any context" for any IPH or tutorial
      steps referencing WebUI. Since WebUI can move between windows, they are
@@ -46,13 +53,7 @@ Allows a WebUI page to support Polymer-based, blue material design ("Navi")
 
 ## Limitations
 
-As described above, we currently only support a single help bubble-bearing
-component (that is, a single component that implements
-[HelpBubbleMixin](/ui/webui/resources/cr_components/help_bubble/help_bubble_mixin.ts))
-per WebUI page, as there is only a single `ElementIdentifier` that maps between
-the front- and backend. We will be easing this constraint in the future.
-
-Also, as described above, the context of the `TrackedElement` that is created by
+As, as described above, the context of the `TrackedElement` that is created by
 the handler will not match that of the browser it is currently embedded in, as
 `WebContents` may migrate between primary application (e.g. browser, PWA)
 windows. We will be looking at ways to mitigate this complication in the future.
