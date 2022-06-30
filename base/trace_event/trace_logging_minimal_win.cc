@@ -157,7 +157,6 @@ ULONG TlmProvider::Register(const char* provider_name,
       status = event_set_information_ptr(reg_handle_, EventProviderSetTraits,
                                          provider_metadata_,
                                          provider_metadata_size_);
-      DCHECK_EQ(status, ULONG{ERROR_SUCCESS});
     }
 
     FreeLibrary(eventing_lib);
