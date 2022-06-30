@@ -258,8 +258,6 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     if (matches_.size() >= max_matches_)
       break;
   }
-
-  NotifyListeners(true);
 }
 
 void LocalHistoryZeroSuggestProvider::OnHistoryQueryResults(
