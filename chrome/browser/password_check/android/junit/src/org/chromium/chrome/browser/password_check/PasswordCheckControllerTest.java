@@ -82,6 +82,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
             new CompromisedCredential("https://m.a.xyz/signin", mock(GURL.class), "Ana", "m.a.xyz",

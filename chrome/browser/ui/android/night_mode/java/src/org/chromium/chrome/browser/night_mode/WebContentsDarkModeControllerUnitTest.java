@@ -38,6 +38,7 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link WebContentsDarkModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowColorUtils.class})
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class WebContentsDarkModeControllerUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();

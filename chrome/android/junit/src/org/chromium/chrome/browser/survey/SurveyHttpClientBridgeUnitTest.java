@@ -33,6 +33,7 @@ import java.util.Map;
 
 /** Unit test for {@link SurveyHttpClientBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class SurveyHttpClientBridgeUnitTest {
     private static final long FAKE_NATIVE_POINTER = 123456789L;
 

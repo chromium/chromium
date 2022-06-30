@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 /**
  * Utility class for holding a Tab and relevant objects for media notification tests.
  */
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class MediaNotificationTestTabHolder {
     @Mock
     UrlFormatter.Natives mUrlFormatterJniMock;

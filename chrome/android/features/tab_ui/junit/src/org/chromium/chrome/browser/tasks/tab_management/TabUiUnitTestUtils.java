@@ -20,7 +20,7 @@ import org.chromium.url.GURL;
  * This is a util class for TabUi unit tests.
  */
 // TODO(crbug.com/1023701): Generalize all prepareTab method from tab_ui/junit directory.
-@SuppressWarnings("ResultOfMethodCallIgnored")
+@SuppressWarnings({"DoNotMock", "ResultOfMethodCallIgnored"}) // Mocks GURL
 public class TabUiUnitTestUtils {
     public static TabImpl prepareTab() {
         TabImpl tab = mock(TabImpl.class);

@@ -30,11 +30,13 @@ import org.chromium.components.commerce.core.ShoppingService.MerchantInfoCallbac
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
+
 /**
  * Tests for {@link MerchantTrustSignalsDataProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustSignalsDataProviderTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

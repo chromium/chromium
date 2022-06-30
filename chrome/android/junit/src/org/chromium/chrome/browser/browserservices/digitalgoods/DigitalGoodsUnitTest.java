@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class DigitalGoodsUnitTest {
     private final DigitalGoodsImpl.Delegate mDelegate = () -> {
         GURL url = Mockito.mock(GURL.class);

@@ -66,6 +66,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustBottomSheetMediatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

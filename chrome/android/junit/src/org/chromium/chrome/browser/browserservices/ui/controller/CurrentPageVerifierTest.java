@@ -45,6 +45,7 @@ import java.util.Collections;
  * Tests for {@link CurrentPageVerifier}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class CurrentPageVerifierTest {
     private static final Origin TRUSTED_ORIGIN = Origin.create("https://www.origin1.com/");
     private static final Origin OTHER_TRUSTED_ORIGIN = Origin.create("https://www.origin2.com/");

@@ -19,6 +19,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link AutofillSuggestion} */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class AutofillSuggestionTest {
     @Test
     @SmallTest

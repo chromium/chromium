@@ -68,6 +68,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class HistoryClustersCoordinatorTest {
     private static final String INCOGNITO_EXTRA = "IN_INCOGNITO";
     private static final String NEW_TAB_EXTRA = "IN_NEW_TAB";

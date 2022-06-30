@@ -68,6 +68,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustSignalsCoordinatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

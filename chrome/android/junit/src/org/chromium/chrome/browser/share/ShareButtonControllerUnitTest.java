@@ -55,6 +55,7 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link ShareButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 

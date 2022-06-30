@@ -51,6 +51,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class SearchResumptionModuleMediatorUnitTest {
     // The search suggestions are meant to be shown on any website.
     private static final String URL_TO_TRACK = "/foo.com";

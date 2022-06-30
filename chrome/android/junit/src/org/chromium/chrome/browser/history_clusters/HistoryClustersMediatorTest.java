@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class, ShadowGURL.class})
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class HistoryClustersMediatorTest {
     private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
 

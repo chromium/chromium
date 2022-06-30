@@ -54,6 +54,7 @@ import java.util.Map;
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {VoiceToolbarButtonControllerUnitTest.ShadowChromeFeatureList.class})
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public final class VoiceToolbarButtonControllerUnitTest {
     // TODO(crbug.com/1199025): Remove this shadow.
     @Implements(ChromeFeatureList.class)
