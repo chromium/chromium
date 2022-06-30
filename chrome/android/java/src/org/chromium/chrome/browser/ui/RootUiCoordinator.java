@@ -806,8 +806,22 @@ public class RootUiCoordinator
                         showTabSwitcherRunnable);
         mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                 mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier, mProfileSupplier,
-                incognitoReauthCoordinatorFactory);
+                incognitoReauthCoordinatorFactory, getBackPressRunnableForFullScreenReauth());
         mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
+    }
+
+    private Runnable getBackPressRunnableForFullScreenReauth() {
+        if (mActivityType == ActivityType.TABBED) {
+            return () -> {
+                // Show the regular overview mode.
+                mTabModelSelectorSupplier.get().selectModel(/*incognito=*/false);
+                mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
+            };
+        } else {
+            // TODO(crbug.com/1227656): Here we need to create an intent and
+            // launch the ChromeTabbedActivity and close the iCCT.
+            return () -> {};
+        }
     }
 
     private void initHistoryClustersCoordinator(Profile profile) {

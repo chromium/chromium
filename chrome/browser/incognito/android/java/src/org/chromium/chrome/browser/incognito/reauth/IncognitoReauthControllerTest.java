@@ -79,6 +79,8 @@ public class IncognitoReauthControllerTest {
     private UserPrefs.Natives mUserPrefsJniMock;
     @Mock
     private PrefService mPrefServiceMock;
+    @Mock
+    private Runnable mBackPressInReauthFullScreenRunnableMock;
 
     @Captor
     ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -150,11 +152,11 @@ public class IncognitoReauthControllerTest {
         mLayoutStateProviderOneshotSupplier = new OneshotSupplierImpl<>();
         mLayoutStateProviderOneshotSupplier.set(mLayoutStateProviderMock);
         mProfileObservableSupplier = new ObservableSupplierImpl<>();
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
 
         mIncognitoReauthController = new IncognitoReauthController(mTabModelSelectorMock,
                 mActivityLifecycleDispatcherMock, mLayoutStateProviderOneshotSupplier,
-                mProfileObservableSupplier, mIncognitoReauthCoordinatorFactoryMock);
+                mProfileObservableSupplier, mIncognitoReauthCoordinatorFactoryMock,
+                mBackPressInReauthFullScreenRunnableMock);
         mProfileObservableSupplier.set(mProfileMock);
     }
 
