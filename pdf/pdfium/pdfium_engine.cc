@@ -914,8 +914,8 @@ bool PDFiumEngine::IsValidLink(const std::string& url) {
   return client_->IsValidLink(url);
 }
 
-void PDFiumEngine::ContinueFind(int32_t result) {
-  StartFind(current_find_text_, result != 0);
+void PDFiumEngine::ContinueFind(bool case_sensitive) {
+  StartFind(current_find_text_, case_sensitive);
 }
 
 bool PDFiumEngine::HandleInputEvent(const blink::WebInputEvent& event) {
@@ -1727,8 +1727,8 @@ bool PDFiumEngine::OnChar(const blink::WebKeyboardEvent& event) {
 
 void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
   // If the caller asks StartFind() to search for no text, then this is an
-  // error on the part of the caller. The PPAPI Find_Private interface
-  // guarantees it is not empty, so this should never happen.
+  // error on the part of the caller. The `blink::FindInPage` code guarantees it
+  // is not empty, so this should never happen.
   DCHECK(!text.empty());
 
   // If StartFind() gets called before we have any page information (i.e.
@@ -1805,15 +1805,15 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
     return;
   }
 
-  // In unit tests, PPAPI is not initialized, so just call ContinueFind()
-  // directly.
+  // In unit tests, just call ContinueFind() directly for simplicity and reduce
+  // the need to use RunLoops.
   if (doc_loader_set_for_testing_) {
-    ContinueFind(case_sensitive ? 1 : 0);
+    ContinueFind(case_sensitive);
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&PDFiumEngine::ContinueFind,
-                                  find_weak_factory_.GetWeakPtr(),
-                                  case_sensitive ? 1 : 0));
+        FROM_HERE,
+        base::BindOnce(&PDFiumEngine::ContinueFind,
+                       find_weak_factory_.GetWeakPtr(), case_sensitive));
   }
 }
 

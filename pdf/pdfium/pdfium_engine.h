@@ -391,7 +391,7 @@ class PDFiumEngine : public PDFEngine,
   void UpdateTickMarks();
 
   // Called to continue searching so we don't block the main thread.
-  void ContinueFind(int32_t result);
+  void ContinueFind(bool case_sensitive);
 
   // Inserts a find result into `find_results_`, which is sorted.
   void AddFindResult(const PDFiumRange& result);
