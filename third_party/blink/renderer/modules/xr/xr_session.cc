@@ -232,6 +232,7 @@ constexpr char XRSession::kPlanesFeatureNotSupported[];
 constexpr char XRSession::kDepthSensingFeatureNotSupported[];
 constexpr char XRSession::kRawCameraAccessFeatureNotSupported[];
 constexpr char XRSession::kCannotCancelHitTestSource[];
+constexpr char XRSession::kCannotReportPoses[];
 
 class XRSession::XRSessionResizeObserverDelegate final
     : public ResizeObserver::Delegate {

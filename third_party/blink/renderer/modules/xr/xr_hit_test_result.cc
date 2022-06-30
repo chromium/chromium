@@ -25,9 +25,18 @@ XRHitTestResult::XRHitTestResult(
                     ? absl::optional<uint64_t>(hit_result.plane_id)
                     : absl::nullopt) {}
 
-XRPose* XRHitTestResult::getPose(XRSpace* other) {
+XRPose* XRHitTestResult::getPose(XRSpace* other,
+                                 ExceptionState& exception_state) {
+  if (!session_->CanReportPoses()) {
+    DVLOG(3) << __func__ << ": cannot report poses";
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
+    return nullptr;
+  }
+
   auto maybe_other_space_native_from_mojo = other->NativeFromMojo();
-  DCHECK(maybe_other_space_native_from_mojo);
+  if (!maybe_other_space_native_from_mojo) {
+    return nullptr;
+  }
 
   auto mojo_from_this = TransformationMatrix(mojo_from_this_.ToTransform());
 

@@ -27,9 +27,6 @@ const char kInvalidView[] =
 
 const char kSessionMismatch[] = "XRSpace and XRFrame sessions do not match.";
 
-const char kCannotReportPoses[] =
-    "Poses cannot be given out for the current state.";
-
 const char kHitTestSourceUnavailable[] =
     "Unable to obtain hit test results for specified hit test source. Ensure "
     "that it was not already canceled.";
@@ -86,7 +83,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return nullptr;
   }
 
@@ -237,7 +234,7 @@ XRPose* XRFrame::getPose(XRSpace* space,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return nullptr;
   }
 
@@ -455,7 +452,7 @@ XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return nullptr;
   }
 
@@ -533,7 +530,7 @@ bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return false;
   }
 
