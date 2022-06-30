@@ -27,6 +27,11 @@ struct MachTaskPortPolicy {
   // Return value and errno of a csr_check() for allowing kernel debugging.
   int csr_kernel_debugger_retval = 0;
   int csr_kernel_debugger_errno = 0;
+
+  // Returns true if `amfi_status` indicates that the "allow everything" bit is
+  // set, which corresponds to the `amfi_get_out_of_my_way` kernel boot
+  // argument.
+  bool AmfiIsAllowEverything() const;
 };
 
 // Gets the current MachTaskPortPolicy.

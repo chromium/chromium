@@ -17,13 +17,30 @@ int __sandbox_ms(const char* policy, int op, void* arg);
 
 namespace content {
 
+namespace {
+
+// From AppleMobileFileIntegrity.kext`policy_syscall() on macOS 12.4 21F79.
+enum AmfiStatusFlags {
+  // Boot arg: `amfi_unrestrict_task_for_pid`.
+  kAmfiOverrideUnrestrictedDebugging = 1 << 0,
+  // Boot arg: `amfi_allow_any_signature`.
+  kAmfiAllowInvalidSignatures = 1 << 1,
+  // Boot arg: `amfi_get_out_of_my_way`.
+  kAmfiAllowEverything = 1 << 2,
+};
+
+}  // namespace
+
+bool MachTaskPortPolicy::AmfiIsAllowEverything() const {
+  return amfi_status_retval == 0 && (amfi_status & kAmfiAllowEverything) != 0;
+}
+
 MachTaskPortPolicy GetMachTaskPortPolicy() {
   MachTaskPortPolicy policy;
 
   // Undocumented MACF system call to Apple Mobile File Integrity.kext. In
   // macOS 12.4 21F79 (and at least back to macOS 12.0), this returns a
-  // bitmask containing the AMFI status flags. A value of 7 indicates
-  // "allowEverything" (corresponding to amfi_get_out_of_my_way).
+  // bitmask containing the AMFI status flags.
   policy.amfi_status_retval = __sandbox_ms("AMFI", 0x60, &policy.amfi_status);
 
   size_t capacity = 0;

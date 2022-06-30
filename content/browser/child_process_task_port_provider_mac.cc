@@ -6,12 +6,14 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/child_process.mojom.h"
+#include "content/common/mac/task_port_policy.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace content {
@@ -24,6 +26,9 @@ ChildProcessTaskPortProvider* ChildProcessTaskPortProvider::GetInstance() {
 void ChildProcessTaskPortProvider::OnChildProcessLaunched(
     base::ProcessHandle pid,
     mojom::ChildProcess* child_process) {
+  if (!ShouldRequestTaskPorts())
+    return;
+
   child_process->GetTaskPort(
       base::BindOnce(&ChildProcessTaskPortProvider::OnTaskPortReceived,
                      base::Unretained(this), pid));
@@ -39,6 +44,12 @@ mach_port_t ChildProcessTaskPortProvider::TaskForPid(
 }
 
 ChildProcessTaskPortProvider::ChildProcessTaskPortProvider() {
+  if (!ShouldRequestTaskPorts()) {
+    LOG(WARNING) << "AppleMobileFileIntegrity is disabled. The browser will "
+                    "not collect child process task ports.";
+    return;
+  }
+
   CHECK(base::mac::CreateMachPort(&notification_port_, nullptr));
 
   const std::string dispatch_name = base::StringPrintf(
@@ -52,9 +63,29 @@ ChildProcessTaskPortProvider::ChildProcessTaskPortProvider() {
 
 ChildProcessTaskPortProvider::~ChildProcessTaskPortProvider() {}
 
+bool ChildProcessTaskPortProvider::ShouldRequestTaskPorts() const {
+  // Set a crash key for the lifetime of the browser process to help debug
+  // other failures.
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "amfi-status", base::debug::CrashKeySize::Size64);
+  static const bool should_request_task_ports =
+      [](base::debug::CrashKeyString* crash_key) -> bool {
+    const MachTaskPortPolicy task_port_policy(GetMachTaskPortPolicy());
+    bool allow_everything = task_port_policy.AmfiIsAllowEverything();
+    base::debug::SetCrashKeyString(
+        crash_key,
+        base::StringPrintf("rv=%d status=0x%llx allow_everything=%d",
+                           task_port_policy.amfi_status_retval,
+                           task_port_policy.amfi_status, allow_everything));
+    return !allow_everything;
+  }(crash_key);
+  return should_request_task_ports;
+}
+
 void ChildProcessTaskPortProvider::OnTaskPortReceived(
     base::ProcessHandle pid,
     mojo::PlatformHandle task_port) {
+  DCHECK(ShouldRequestTaskPorts());
   if (!task_port.is_mach_send()) {
     DLOG(ERROR) << "Invalid handle received as task port for pid " << pid;
     return;
@@ -97,6 +128,8 @@ void ChildProcessTaskPortProvider::OnTaskPortReceived(
 }
 
 void ChildProcessTaskPortProvider::OnTaskPortDied() {
+  DCHECK(ShouldRequestTaskPorts());
+
   mach_dead_name_notification_t notification{};
   kern_return_t kr =
       mach_msg(&notification.not_header, MACH_RCV_MSG | MACH_RCV_TIMEOUT, 0,
