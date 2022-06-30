@@ -19,7 +19,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_installer_errors.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
@@ -83,7 +82,7 @@ void LogCustomUninstall(absl::optional<bool> result) {}
 void FinishCustomUninstallOnUIThread(const std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  chromeos::DBusThreadManager::Get()->GetImageLoaderClient()->UnmountComponent(
+  chromeos::ImageLoaderClient::Get()->UnmountComponent(
       name, base::BindOnce(&LogCustomUninstall));
 }
 
@@ -473,13 +472,11 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
 
   const base::FilePath path = GetCompatiblePath(name);
   DCHECK(!path.empty());
-  chromeos::DBusThreadManager::Get()
-      ->GetImageLoaderClient()
-      ->LoadComponentAtPath(
-          name, path,
-          base::BindOnce(&CrOSComponentInstaller::FinishLoad,
-                         base::Unretained(this), std::move(load_callback),
-                         base::TimeTicks::Now(), name));
+  chromeos::ImageLoaderClient::Get()->LoadComponentAtPath(
+      name, path,
+      base::BindOnce(&CrOSComponentInstaller::FinishLoad,
+                     base::Unretained(this), std::move(load_callback),
+                     base::TimeTicks::Now(), name));
 }
 
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,

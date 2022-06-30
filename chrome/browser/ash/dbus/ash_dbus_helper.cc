@@ -62,6 +62,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -145,6 +146,7 @@ void InitializeDBus() {
 #if BUILDFLAG(ENABLE_HIBERNATE)
   InitializeDBusClient<HibermanClient>(bus);
 #endif
+  InitializeDBusClient<chromeos::ImageLoaderClient>(bus);
   InitializeDBusClient<InstallAttributesClient>(bus);
   InitializeDBusClient<IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
@@ -264,6 +266,7 @@ void ShutdownDBus() {
   KerberosClient::Shutdown();
   IpPeripheralServiceClient::Shutdown();
   InstallAttributesClient::Shutdown();
+  chromeos::ImageLoaderClient::Shutdown();
 #if BUILDFLAG(ENABLE_HIBERNATE)
   HibermanClient::Shutdown();
 #endif

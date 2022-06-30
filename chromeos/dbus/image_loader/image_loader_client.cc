@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chromeos/dbus/image_loader/fake_image_loader_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -18,6 +19,8 @@
 namespace chromeos {
 
 namespace {
+
+ImageLoaderClient* g_instance = nullptr;
 
 class ImageLoaderClientImpl : public ImageLoaderClient {
  public:
@@ -102,7 +105,6 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
                                       std::move(callback)));
   }
 
- protected:
   // DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
@@ -164,13 +166,36 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
 
 }  // namespace
 
-ImageLoaderClient::ImageLoaderClient() = default;
-
-ImageLoaderClient::~ImageLoaderClient() = default;
+// static
+ImageLoaderClient* ImageLoaderClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<ImageLoaderClient> ImageLoaderClient::Create() {
-  return std::make_unique<ImageLoaderClientImpl>();
+void ImageLoaderClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ImageLoaderClientImpl())->Init(bus);
+}
+
+// static
+void ImageLoaderClient::InitializeFake() {
+  (new FakeImageLoaderClient())->Init(nullptr);
+}
+
+// static
+void ImageLoaderClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ImageLoaderClient::ImageLoaderClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ImageLoaderClient::~ImageLoaderClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

@@ -30,8 +30,6 @@
 #include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/image_burner/fake_image_burner_client.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
-#include "chromeos/dbus/image_loader/fake_image_loader_client.h"
-#include "chromeos/dbus/image_loader/image_loader_client.h"
 
 namespace chromeos {
 
@@ -64,8 +62,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
   gnubby_client_ = CREATE_DBUS_CLIENT(GnubbyClient, use_real_clients);
   image_burner_client_ =
       CREATE_DBUS_CLIENT(ImageBurnerClient, use_real_clients);
-  image_loader_client_ =
-      CREATE_DBUS_CLIENT(ImageLoaderClient, use_real_clients);
 }
 
 DBusClientsBrowser::~DBusClientsBrowser() = default;
@@ -84,7 +80,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   fwupd_client_->Init(system_bus);
   gnubby_client_->Init(system_bus);
   image_burner_client_->Init(system_bus);
-  image_loader_client_->Init(system_bus);
 }
 
 }  // namespace chromeos

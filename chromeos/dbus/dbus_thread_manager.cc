@@ -22,7 +22,6 @@
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
-#include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
 namespace chromeos {
@@ -88,10 +87,6 @@ GnubbyClient* DBusThreadManager::GetGnubbyClient() {
 
 ImageBurnerClient* DBusThreadManager::GetImageBurnerClient() {
   RETURN_DBUS_CLIENT(image_burner_client_);
-}
-
-ImageLoaderClient* DBusThreadManager::GetImageLoaderClient() {
-  RETURN_DBUS_CLIENT(image_loader_client_);
 }
 
 #undef RETURN_DBUS_CLIENT
@@ -179,11 +174,6 @@ void DBusThreadManagerSetter::SetGnubbyClient(
 void DBusThreadManagerSetter::SetImageBurnerClient(
     std::unique_ptr<ImageBurnerClient> client) {
   image_burner_client_ = std::move(client);
-}
-
-void DBusThreadManagerSetter::SetImageLoaderClient(
-    std::unique_ptr<ImageLoaderClient> client) {
-  image_loader_client_ = std::move(client);
 }
 
 }  // namespace chromeos
