@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/policy/policy_export.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -90,6 +91,7 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_for_testing_ =
       nullptr;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  base::CancelableOnceCallback<void(const std::string&)> cancelable_callback_;
 };
 
 }  //  namespace policy
