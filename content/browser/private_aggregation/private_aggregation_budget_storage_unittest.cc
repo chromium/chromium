@@ -225,7 +225,7 @@ TEST_F(PrivateAggregationBudgetStorageTest,
     ASSERT_TRUE(meta.Init(&raw_db, /*version=*/1, /*compatible_version=*/1));
 
     meta.SetVersionNumber(meta.GetVersionNumber() + 1);
-    meta.SetCompatibleVersionNumber(meta.GetCompatibleVersionNumber() + 1);
+    meta.SetCompatibleVersionNumber(meta.GetVersionNumber() + 1);
   }
 
   OpenDatabaseAndWait();
