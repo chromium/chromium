@@ -2125,7 +2125,7 @@
   {
     "name": "enable-fake-keyboard-heuristic",
     "owners": ["wmahon", "chromeos-tango@google.com"],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
       "name": "enable-favicon-passwords",
