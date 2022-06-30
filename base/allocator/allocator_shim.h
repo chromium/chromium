@@ -192,7 +192,7 @@ BASE_EXPORT void ConfigurePartitions(
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
 #if defined(PA_ALLOW_PCSCAN)
-BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);
+BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

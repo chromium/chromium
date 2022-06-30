@@ -281,10 +281,4 @@ inline PCScanScheduler& PCScan::scheduler() {
 }  // namespace internal
 }  // namespace partition_alloc
 
-// TODO(crbug.com/1288247): Remove this when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::PCScan;
-
-}  // namespace base::internal
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_H_

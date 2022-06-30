@@ -245,11 +245,4 @@ inline StatsCollector::MetadataString StatsCollector::ToUMAString(
 }  // namespace internal
 }  // namespace partition_alloc
 
-// TODO(crbug.com/1151236): Remove this when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::StatsCollector;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STATS_COLLECTOR_H_

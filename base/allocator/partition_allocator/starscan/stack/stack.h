@@ -45,14 +45,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Stack final {
 
 }  // namespace partition_alloc::internal
 
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::GetStackPointer;
-using ::partition_alloc::internal::GetStackTop;
-using ::partition_alloc::internal::Stack;
-using ::partition_alloc::internal::StackVisitor;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STACK_STACK_H_

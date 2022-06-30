@@ -224,11 +224,4 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
 
 }  // namespace partition_alloc::internal
 
-// TODO(crbug.com/1288247): Remove this when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::ScanLoop;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_SCAN_LOOP_H_

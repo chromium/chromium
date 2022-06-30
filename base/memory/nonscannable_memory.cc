@@ -53,7 +53,8 @@ void NonScannableAllocatorImpl<Quarantinable>::Free(void* ptr) {
 
 template <bool Quarantinable>
 void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
-  allocator_.reset(MakePCScanMetadata<partition_alloc::PartitionAllocator>());
+  allocator_.reset(partition_alloc::internal::MakePCScanMetadata<
+                   partition_alloc::PartitionAllocator>());
   allocator_->init({
       partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
       partition_alloc::PartitionOptions::ThreadCache::kDisabled,
@@ -66,7 +67,8 @@ void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
       partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
   });
   if (Quarantinable)
-    PCScan::RegisterNonScannableRoot(allocator_->root());
+    partition_alloc::internal::PCScan::RegisterNonScannableRoot(
+        allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);
 }
 

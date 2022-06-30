@@ -158,13 +158,14 @@ bool Partitions::InitializeOnce() {
 
 #if defined(PA_ALLOW_PCSCAN)
   if (scan_is_enabled_) {
-    if (!base::internal::PCScan::IsInitialized()) {
-      base::internal::PCScan::Initialize(
-          {base::internal::PCScan::InitConfig::WantedWriteProtectionMode::
-               kDisabled,
-           base::internal::PCScan::InitConfig::SafepointMode::kDisabled});
+    if (!partition_alloc::internal::PCScan::IsInitialized()) {
+      partition_alloc::internal::PCScan::Initialize(
+          {partition_alloc::internal::PCScan::InitConfig::
+               WantedWriteProtectionMode::kDisabled,
+           partition_alloc::internal::PCScan::InitConfig::SafepointMode::
+               kDisabled});
     }
-    base::internal::PCScan::RegisterScannableRoot(fast_malloc_root_);
+    partition_alloc::internal::PCScan::RegisterScannableRoot(fast_malloc_root_);
     // Ignore other partitions for now.
   }
 #endif  // defined(PA_ALLOW_PCSCAN)
@@ -213,7 +214,8 @@ void Partitions::InitializeArrayBufferPartition() {
   // PCScan relies on the fact that quarantinable allocations go to PA's
   // giga-cage. This is not the case if configurable pool is available.
   if (scan_is_enabled_ && !array_buffer_root_->uses_configurable_pool()) {
-    base::internal::PCScan::RegisterNonScannableRoot(array_buffer_root_);
+    partition_alloc::internal::PCScan::RegisterNonScannableRoot(
+        array_buffer_root_);
   }
 #endif  // defined(PA_ALLOW_PCSCAN)
   if (!base::FeatureList::IsEnabled(

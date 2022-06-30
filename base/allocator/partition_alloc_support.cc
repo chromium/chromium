@@ -50,33 +50,33 @@ namespace {
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 constexpr const char* ScannerIdToTracingString(
-    internal::StatsCollector::ScannerId id) {
+    partition_alloc::internal::StatsCollector::ScannerId id) {
   switch (id) {
-    case internal::StatsCollector::ScannerId::kClear:
+    case partition_alloc::internal::StatsCollector::ScannerId::kClear:
       return "PCScan.Scanner.Clear";
-    case internal::StatsCollector::ScannerId::kScan:
+    case partition_alloc::internal::StatsCollector::ScannerId::kScan:
       return "PCScan.Scanner.Scan";
-    case internal::StatsCollector::ScannerId::kSweep:
+    case partition_alloc::internal::StatsCollector::ScannerId::kSweep:
       return "PCScan.Scanner.Sweep";
-    case internal::StatsCollector::ScannerId::kOverall:
+    case partition_alloc::internal::StatsCollector::ScannerId::kOverall:
       return "PCScan.Scanner";
-    case internal::StatsCollector::ScannerId::kNumIds:
+    case partition_alloc::internal::StatsCollector::ScannerId::kNumIds:
       __builtin_unreachable();
   }
 }
 
 constexpr const char* MutatorIdToTracingString(
-    internal::StatsCollector::MutatorId id) {
+    partition_alloc::internal::StatsCollector::MutatorId id) {
   switch (id) {
-    case internal::StatsCollector::MutatorId::kClear:
+    case partition_alloc::internal::StatsCollector::MutatorId::kClear:
       return "PCScan.Mutator.Clear";
-    case internal::StatsCollector::MutatorId::kScanStack:
+    case partition_alloc::internal::StatsCollector::MutatorId::kScanStack:
       return "PCScan.Mutator.ScanStack";
-    case internal::StatsCollector::MutatorId::kScan:
+    case partition_alloc::internal::StatsCollector::MutatorId::kScan:
       return "PCScan.Mutator.Scan";
-    case internal::StatsCollector::MutatorId::kOverall:
+    case partition_alloc::internal::StatsCollector::MutatorId::kOverall:
       return "PCScan.Mutator";
-    case internal::StatsCollector::MutatorId::kNumIds:
+    case partition_alloc::internal::StatsCollector::MutatorId::kNumIds:
       __builtin_unreachable();
   }
 }
@@ -85,7 +85,7 @@ constexpr const char* MutatorIdToTracingString(
 // Inject TRACE_EVENT_BEGIN/END, TRACE_COUNTER1, and UmaHistogramTimes.
 class StatsReporterImpl final : public partition_alloc::StatsReporter {
  public:
-  void ReportTraceEvent(internal::StatsCollector::ScannerId id,
+  void ReportTraceEvent(partition_alloc::internal::StatsCollector::ScannerId id,
                         [[maybe_unused]] uint32_t tid,
                         int64_t start_time_ticks_internal_value,
                         int64_t end_time_ticks_internal_value) override {
@@ -104,7 +104,7 @@ class StatsReporterImpl final : public partition_alloc::StatsReporter {
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
   }
 
-  void ReportTraceEvent(internal::StatsCollector::MutatorId id,
+  void ReportTraceEvent(partition_alloc::internal::StatsCollector::MutatorId id,
                         [[maybe_unused]] uint32_t tid,
                         int64_t start_time_ticks_internal_value,
                         int64_t end_time_ticks_internal_value) override {
@@ -156,7 +156,7 @@ void RegisterPCScanStatsReporter() {
 
   DCHECK(!registered);
 
-  internal::PCScan::RegisterStatsReporter(&s_reporter);
+  partition_alloc::internal::PCScan::RegisterStatsReporter(&s_reporter);
   registered = true;
 }
 #endif  // defined(PA_ALLOW_PCSCAN)

@@ -20,10 +20,7 @@
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
 #include "base/allocator/partition_allocator/starscan/write_protector.h"
 
-// TODO(crbug.com/1288247): Remove this when migration is complete.
 namespace partition_alloc::internal {
-
-class StarScanSnapshot;
 
 class PCScanTask;
 
@@ -111,7 +108,7 @@ class PCScanInternal final {
 
  private:
   friend internal::base::NoDestructor<PCScanInternal>;
-  friend class partition_alloc::internal::StarScanSnapshot;
+  friend class StarScanSnapshot;
 
   using StackTops = std::unordered_map<
       internal::base::PlatformThreadId,
@@ -148,12 +145,5 @@ class PCScanInternal final {
 };
 
 }  // namespace partition_alloc::internal
-
-// TODO(crbug.com/1288247): Remove this when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::PCScanInternal;
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_INTERNAL_H_

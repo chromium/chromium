@@ -57,13 +57,13 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   }();
 
   if (name) {
-    base::internal::PCScan::SetProcessName(name);
+    partition_alloc::internal::PCScan::SetProcessName(name);
   }
 }
 
 bool EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  using Config = base::internal::PCScan::InitConfig;
+  using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
     base::allocator::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
@@ -77,7 +77,7 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
 
 bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  using Config = base::internal::PCScan::InitConfig;
+  using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {
@@ -99,7 +99,7 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 
 bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  using Config = base::internal::PCScan::InitConfig;
+  using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanRendererOnly)) {
@@ -332,20 +332,20 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanStackScanning)) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        base::internal::PCScan::EnableStackScanning();
+        partition_alloc::internal::PCScan::EnableStackScanning();
         // Notify PCScan about the main thread.
-        base::internal::PCScan::NotifyThreadCreated(
-            base::internal::GetStackTop());
+        partition_alloc::internal::PCScan::NotifyThreadCreated(
+            partition_alloc::internal::GetStackTop());
 #endif
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanImmediateFreeing)) {
-        base::internal::PCScan::EnableImmediateFreeing();
+        partition_alloc::internal::PCScan::EnableImmediateFreeing();
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanEagerClearing)) {
-        base::internal::PCScan::SetClearType(
-            base::internal::PCScan::ClearType::kEager);
+        partition_alloc::internal::PCScan::SetClearType(
+            partition_alloc::internal::PCScan::ClearType::kEager);
       }
       SetProcessNameForPCScan(process_type);
     }
@@ -433,11 +433,12 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanMUAwareScheduler)) {
     // Assign PCScan a task-based scheduling backend.
-    static base::NoDestructor<base::internal::MUAwareTaskBasedBackend>
+    static base::NoDestructor<
+        partition_alloc::internal::MUAwareTaskBasedBackend>
         mu_aware_task_based_backend{
-            base::internal::PCScan::scheduler(),
-            &base::internal::PCScan::PerformDelayedScan};
-    base::internal::PCScan::scheduler().SetNewSchedulingBackend(
+            partition_alloc::internal::PCScan::scheduler(),
+            &partition_alloc::internal::PCScan::PerformDelayedScan};
+    partition_alloc::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
   }
 

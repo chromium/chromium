@@ -663,16 +663,18 @@ void ConfigurePartitions(
 }
 
 #if defined(PA_ALLOW_PCSCAN)
-void EnablePCScan(base::internal::PCScan::InitConfig config) {
+void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
       &::base::PlatformThread::SetName);
-  internal::PCScan::Initialize(config);
+  partition_alloc::internal::PCScan::Initialize(config);
 
-  internal::PCScan::RegisterScannableRoot(Allocator());
+  partition_alloc::internal::PCScan::RegisterScannableRoot(Allocator());
   if (OriginalAllocator() != nullptr)
-    internal::PCScan::RegisterScannableRoot(OriginalAllocator());
+    partition_alloc::internal::PCScan::RegisterScannableRoot(
+        OriginalAllocator());
   if (Allocator() != AlignedAllocator())
-    internal::PCScan::RegisterScannableRoot(AlignedAllocator());
+    partition_alloc::internal::PCScan::RegisterScannableRoot(
+        AlignedAllocator());
 
   internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
   internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();

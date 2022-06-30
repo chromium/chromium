@@ -91,11 +91,4 @@ StarScanSnapshot::UnprotectingView::UnprotectingView(StarScanSnapshot& snapshot)
 
 }  // namespace partition_alloc::internal
 
-// TODO(crbug.com/1288247): Remove this when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::StarScanSnapshot;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_SNAPSHOT_H_

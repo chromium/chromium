@@ -139,9 +139,4 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 
 }  // namespace partition_alloc::internal
 
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base::internal {
-using ::partition_alloc::internal::RacefulWorklist;
-}
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_RACEFUL_WORKLIST_H_

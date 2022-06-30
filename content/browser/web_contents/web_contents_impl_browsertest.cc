@@ -109,6 +109,7 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -5672,7 +5673,7 @@ namespace {
 class PCScanFeature {
  public:
   PCScanFeature() {
-    using PCScan = base::internal::PCScan;
+    using PCScan = partition_alloc::internal::PCScan;
     if (!PCScan::IsInitialized())
       PCScan::Initialize(
           {PCScan::InitConfig::WantedWriteProtectionMode::kDisabled,
@@ -5697,19 +5698,19 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanBrowserTest,
   shell()->LoadURL(url);
 
   // Check that PCScan is initially enabled.
-  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+  EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 
   // Start request and check that PCScan is still enabled.
   EXPECT_TRUE(navigation_manager.WaitForRequestStart());
-  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+  EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 
   // Wait for navigation to finish and check that PCScan is disabled.
   navigation_manager.WaitForNavigationFinished();
-  EXPECT_FALSE(base::internal::PCScan::IsEnabled());
+  EXPECT_FALSE(partition_alloc::internal::PCScan::IsEnabled());
 
   // Complete load and check that PCScan is enabled again.
   WaitForLoadStop(shell()->web_contents());
-  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+  EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 }
 
 namespace {
@@ -5720,7 +5721,7 @@ class PCScanReadyToCommitObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents) {}
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
-    was_enabled_ = base::internal::PCScan::IsEnabled();
+    was_enabled_ = partition_alloc::internal::PCScan::IsEnabled();
     run_loop_.Quit();
   }
 
@@ -5762,7 +5763,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
   // Check that PCScan is initially enabled.
-  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+  EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 
   // Wait for the prerendering navigation to finish and check that PCScan is
   // still enabled.
@@ -5787,7 +5788,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
 
   // Complete load and check that PCScan is enabled again.
   WaitForLoadStop(shell()->web_contents());
-  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+  EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)

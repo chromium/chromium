@@ -803,7 +803,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
                           PageAccessibilityConfiguration::kReadWrite,
                           PageAccessibilityDisposition::kRequireUpdate);
     }
-    ::base::internal::PCScan::RegisterNewSuperPage(root, super_page);
+    PCScan::RegisterNewSuperPage(root, super_page);
   }
 
   return payload;
