@@ -8669,7 +8669,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableFIDOProgressDialog)},
 #endif  // BUILDFLAG(IS_ANDROID)
-        //
+
     {"enable-perfetto-system-tracing",
      flag_descriptions::kEnablePerfettoSystemTracingName,
      flag_descriptions::kEnablePerfettoSystemTracingDescription, kOsAndroid,
@@ -8680,6 +8680,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAndroidGamepadVibrationName,
      flag_descriptions::kEnableAndroidGamepadVibrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kEnableAndroidGamepadVibration)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"request-desktop-site-additions",
+     flag_descriptions::kRequestDesktopSiteAdditionsName,
+     flag_descriptions::kRequestDesktopSiteAdditionsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kRequestDesktopSiteAdditions)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

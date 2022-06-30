@@ -55897,6 +55897,8 @@ from previous Chrome versions.
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
+  <int value="-1598785167" label="RequestDesktopSiteAdditions:disabled"/>
+  <int value="-1597088741" label="RequestDesktopSiteAdditions:enabled"/>
   <int value="-1597053083" label="RelatedSearchesInBar:enabled"/>
   <int value="-1596859081" label="WebAuthenticationPINSupport:enabled"/>
   <int value="-1596559650" label="max-tiles-for-interest-area"/>

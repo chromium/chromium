@@ -1191,6 +1191,11 @@ const base::Feature kCoalesceIndependentBeginFrame{
 const base::Feature kOnDemandAccessibilityEvents{
     "OnDemandAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Request Desktop Site secondary settings for Android; including display
+// setting and peripheral setting.
+const base::Feature kRequestDesktopSiteAdditions{
+    "RequestDesktopSiteAdditions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Request Desktop Site per-site setting for Android.
 // Refer to the launch bug (https://crbug.com/1244979) for more information.
 const base::Feature kRequestDesktopSiteExceptions{

@@ -78,6 +78,8 @@ public class ContentFeatureList {
     public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =
             "ProcessSharingWithStrictSiteInstances";
 
+    public static final String REQUEST_DESKTOP_SITE_ADDITIONS = "RequestDesktopSiteAdditions";
+
     public static final String REQUEST_DESKTOP_SITE_EXCEPTIONS = "RequestDesktopSiteExceptions";
 
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
