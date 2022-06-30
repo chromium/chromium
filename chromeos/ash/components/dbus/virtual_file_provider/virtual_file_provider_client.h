@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
-#define CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
 
 #include <stdint.h>
 
@@ -16,15 +16,15 @@
 #include "chromeos/dbus/common/dbus_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // VirtualFileProviderClient is used to communicate with the VirtualFileProvider
 // service. The VirtualFileProvider service provides file descriptors which
 // forward read requests to Chrome. From the reading process's perspective, the
 // file descriptor behaves like a regular file descriptor (unlike a pipe, it
 // supports seek), while actually there is no real file associated with it.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER)
-    VirtualFileProviderClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_VIRTUAL_FILE_PROVIDER) VirtualFileProviderClient
+    : public DBusClient {
  public:
   using GenerateVirtualFileIdCallback =
       base::OnceCallback<void(const absl::optional<std::string>& id)>;
@@ -59,6 +59,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER)
   ~VirtualFileProviderClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_

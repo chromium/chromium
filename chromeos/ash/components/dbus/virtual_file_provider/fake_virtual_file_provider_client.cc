@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeVirtualFileProviderClient::FakeVirtualFileProviderClient() = default;
 FakeVirtualFileProviderClient::~FakeVirtualFileProviderClient() = default;
@@ -42,4 +42,4 @@ void FakeVirtualFileProviderClient::OpenFileById(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(fd)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

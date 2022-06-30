@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 
 #include <utility>
 
@@ -10,13 +10,13 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -139,4 +139,4 @@ VirtualFileProviderClient::~VirtualFileProviderClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

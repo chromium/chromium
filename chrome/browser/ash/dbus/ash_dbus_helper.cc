@@ -47,6 +47,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
@@ -73,7 +74,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
-#include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -172,7 +172,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::UpdateEngineClient>(bus);
   InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
-  InitializeDBusClient<chromeos::VirtualFileProviderClient>(bus);
+  InitializeDBusClient<VirtualFileProviderClient>(bus);
   InitializeDBusClient<VmPluginDispatcherClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
@@ -230,7 +230,7 @@ void ShutdownDBus() {
   }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   VmPluginDispatcherClient::Shutdown();
-  chromeos::VirtualFileProviderClient::Shutdown();
+  VirtualFileProviderClient::Shutdown();
   UpstartClient::Shutdown();
   UserDataAuthClient::Shutdown();
   chromeos::UpdateEngineClient::Shutdown();

@@ -32,7 +32,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -400,7 +400,7 @@ void ArcFileSystemBridge::GenerateVirtualFileId(
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  chromeos::VirtualFileProviderClient::Get()->GenerateVirtualFileId(
+  ash::VirtualFileProviderClient::Get()->GenerateVirtualFileId(
       size, base::BindOnce(&ArcFileSystemBridge::OnGenerateVirtualFileId,
                            weak_ptr_factory_.GetWeakPtr(), url_decoded,
                            std::move(callback)));
@@ -428,7 +428,7 @@ void ArcFileSystemBridge::OpenFileById(const GURL& url_decoded,
     return;
   }
 
-  chromeos::VirtualFileProviderClient::Get()->OpenFileById(
+  ash::VirtualFileProviderClient::Get()->OpenFileById(
       id.value(), base::BindOnce(&ArcFileSystemBridge::OnOpenFileById,
                                  weak_ptr_factory_.GetWeakPtr(), url_decoded,
                                  std::move(callback), id.value()));
