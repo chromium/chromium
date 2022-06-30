@@ -301,6 +301,8 @@ extern const char kChromeUILockScreenNetworkHost[];
 extern const char kChromeUILockScreenNetworkURL[];
 extern const char kChromeUILockScreenStartReauthHost[];
 extern const char kChromeUILockScreenStartReauthURL[];
+extern const char kChromeUIManageMirrorSyncHost[];
+extern const char kChromeUIManageMirrorSyncURL[];
 extern const char kChromeUIMobileSetupHost[];
 extern const char kChromeUIMobileSetupURL[];
 extern const char kChromeUIMultiDeviceInternalsHost[];
