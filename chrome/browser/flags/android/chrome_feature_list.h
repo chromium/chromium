@@ -110,6 +110,7 @@ extern const base::Feature kMostRecentTabOnBackgroundCloseTab;
 extern const base::Feature kNewInstanceFromDraggedLink;
 extern const base::Feature kNewWindowAppMenu;
 extern const base::Feature kNotificationPermissionVariant;
+extern const base::Feature kOmniboxModernizeVisualUpdate;
 extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kBookmarksImprovedSaveFlow;
 extern const base::Feature kBookmarksRefresh;

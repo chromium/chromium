@@ -4644,6 +4644,11 @@
     "expiry_milestone" : 113
   },
   {
+    "name": "omnibox-modernize-visual-update",
+    "owners": [ "gangwu", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-most-visited-tiles",
     "owners": [ "fgorski", "ender", "stkhapugin", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 110
