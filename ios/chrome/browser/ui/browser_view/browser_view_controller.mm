@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -429,6 +430,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for popup menu commands
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 
+// Command handler for snackbar commands
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
+
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -530,6 +534,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.textZoomHandler = dependencies.textZoomHandler;
     self.helpHandler = dependencies.helpHandler;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
+    self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
 
     // TODO(crbug.com/1329090): Have BrowserCoordinator set up dispatch to the
     // BVC for these commands.
@@ -558,9 +563,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public Properties
 
-// TODO(crbug.com/1323778): This uses SnackbarCommands via inclusion in
-// BrowserCommands. Instead a a dedicated id<SnackbarCommands> property should
-// be injected.
 - (id<ApplicationCommands,
       BrowserCommands,
       BrowserCoordinatorCommands,
@@ -2488,9 +2490,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   message.duration = 2.0;
   message.category = kBrowserViewControllerSnackbarCategory;
 
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.dispatcher showSnackbarMessage:message];
+  [self.snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 - (void)addURLToReadingList:(const GURL&)URL withTitle:(NSString*)title {

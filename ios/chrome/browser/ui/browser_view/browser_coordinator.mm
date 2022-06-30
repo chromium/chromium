@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
@@ -339,6 +340,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   id<TextZoomCommands> _textZoomHandler;
   id<HelpCommands> _helpHandler;
   id<PopupMenuCommands> _popupMenuCommandsHandler;
+  id<SnackbarCommands> _snackbarCommandsHandler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -605,6 +607,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   // after PopupMenuCoordinator is moved out of BVC.
   _popupMenuCommandsHandler = static_cast<id<PopupMenuCommands>>(_dispatcher);
 
+  // SnackbarCoordinator is not created yet and therefore not dispatching
+  // SnackbarCommands.
+  _snackbarCommandsHandler = static_cast<id<SnackbarCommands>>(_dispatcher);
+
   _viewControllerDependencies.prerenderService = _prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
   _viewControllerDependencies.downloadManagerCoordinator =
@@ -625,6 +631,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.helpHandler = _helpHandler;
   _viewControllerDependencies.popupMenuCommandsHandler =
       _popupMenuCommandsHandler;
+  _viewControllerDependencies.snackbarCommandsHandler =
+      _snackbarCommandsHandler;
 }
 
 - (void)updateViewControllerDependencies {

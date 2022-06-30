@@ -21,10 +21,7 @@
 
 // Protocol for commands that will generally be handled by the "current tab",
 // which in practice is the BrowserViewController instance displaying the tab.
-@protocol BrowserCommands <NSObject,
-                           // TODO(crbug.com/1323778): Remove SnackbarCommands
-                           // conformance.
-                           SnackbarCommands>
+@protocol BrowserCommands <NSObject>
 
 // Closes the current tab.
 // TODO(crbug.com/1272498): Refactor this command away; call sites should close

@@ -12,12 +12,14 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@protocol ApplicationCommands;
 @class BookmarkHomeViewController;
 class Browser;
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 class GURL;
+@protocol SnackbarCommands;
 
 @protocol BookmarkHomeViewControllerDelegate
 // The view controller wants to be dismissed. If `urls` is not empty, then
@@ -44,6 +46,12 @@ class GURL;
 // in case of handset, and not tablet. In the future it will be used by both
 // cases.
 @property(nonatomic, weak) id<BookmarkHomeViewControllerDelegate> homeDelegate;
+
+// Handler for Application Commands.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// Handler for Snackbar Commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Initializers.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;

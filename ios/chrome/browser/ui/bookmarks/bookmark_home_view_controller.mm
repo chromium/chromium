@@ -190,10 +190,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // This is so that the cache code is called only once in loadBookmarkViews.
 @property(nonatomic, assign) BOOL isReconstructingFromCache;
 
-// Handler for commands.
-@property(nonatomic, readonly, weak) id<ApplicationCommands, BrowserCommands>
-    handler;
-
 // The current search term.  Set to the empty string when no search is active.
 @property(nonatomic, copy) NSString* searchTerm;
 
@@ -249,10 +245,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     _browser = browser;
     _browserState =
         _browser->GetBrowserState()->GetOriginalChromeBrowserState();
-    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-    // clean up.
-    _handler = static_cast<id<ApplicationCommands, BrowserCommands>>(
-        _browser->GetCommandDispatcher());
     _webStateList = _browser->GetWebStateList();
 
     _faviconLoader =
@@ -638,8 +630,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  [self.handler showSignin:command
-        baseViewController:self.navigationController];
+  [self.applicationCommandsHandler showSignin:command
+                           baseViewController:self.navigationController];
 }
 
 - (void)configureSigninPromoWithConfigurator:
@@ -673,6 +665,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                                    selectedFolder:selectedFolder
                                                           browser:self.browser];
   self.folderSelector.delegate = self;
+  self.folderSelector.snackbarCommandsHandler = self.snackbarCommandsHandler;
   UINavigationController* navController = [[BookmarkNavigationController alloc]
       initWithRootViewController:self.folderSelector];
   [navController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -682,9 +675,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Deletes the current node.
 - (void)deleteNodes:(const std::set<const BookmarkNode*>&)nodes {
   DCHECK_GE(nodes.size(), 1u);
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.handler
+  [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               nodes, self.bookmarks, self.browserState)];
   [self setTableViewEditing:NO];
@@ -880,9 +871,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)handleMoveNode:(const bookmarks::BookmarkNode*)node
             toPosition:(int)position {
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.handler
+  [self.snackbarCommandsHandler
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
               node, _rootNode, position, self.bookmarks, self.browserState)];
@@ -922,9 +911,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK(!folder->is_url());
   DCHECK_GE(folderPicker.editedNodes.size(), 1u);
 
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.handler
+  [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                               folderPicker.editedNodes, self.bookmarks, folder,
                               self.browserState)];
@@ -1206,6 +1193,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [[BookmarkHomeViewController alloc] initWithBrowser:self.browser];
   [controller setRootNode:folder];
   controller.homeDelegate = self.homeDelegate;
+  controller.applicationCommandsHandler = self.applicationCommandsHandler;
+  controller.snackbarCommandsHandler = self.snackbarCommandsHandler;
+
   return controller;
 }
 
@@ -1860,12 +1850,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   if (base::ios::IsMultipleScenesSupported()) {
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
-    id<ApplicationCommands> windowOpener = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
     auto action = ^{
-      [windowOpener openNewWindowWithActivity:ActivityToLoadURL(
-                                                  WindowActivityBookmarksOrigin,
-                                                  nodeURL)];
+      [weakSelf.applicationCommandsHandler
+          openNewWindowWithActivity:ActivityToLoadURL(
+                                        WindowActivityBookmarksOrigin,
+                                        nodeURL)];
     };
     [coordinator addItemWithTitle:titleString
                            action:action
@@ -2527,12 +2516,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       atIndexPath:(NSIndexPath*)indexPath {
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
 
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.handler showSnackbarMessage:
-                    bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
-                        base::SysUTF8ToNSString(URL.spec()), URL, _rootNode,
-                        index, self.bookmarks, self.browserState)];
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:
+          bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
+              base::SysUTF8ToNSString(URL.spec()), URL, _rootNode, index,
+              self.bookmarks, self.browserState)];
 }
 
 @end

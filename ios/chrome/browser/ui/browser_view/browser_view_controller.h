@@ -42,6 +42,7 @@ class PrerenderService;
 @class PrimaryToolbarCoordinator;
 @class SecondaryToolbarCoordinator;
 @class SideSwipeController;
+@protocol SnackbarCommands;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
 @protocol TextZoomCommands;
@@ -67,6 +68,7 @@ typedef struct {
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
+  id<SnackbarCommands> snackbarCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

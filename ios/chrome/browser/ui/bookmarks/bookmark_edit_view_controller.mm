@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
@@ -109,9 +109,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 @property(nonatomic, assign) Browser* browser;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
-
-// Dispatcher for sending commands.
-@property(nonatomic, readonly, weak) id<BrowserCommands> dispatcher;
 
 // Cancel button item in navigation bar.
 @property(nonatomic, strong) UIBarButtonItem* cancelItem;
@@ -205,11 +202,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     // Set up the bookmark model oberver.
     _modelBridge.reset(
         new bookmarks::BookmarkModelBridge(self, _bookmarkModel));
-
-    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-    // clean up.
-    _dispatcher =
-        static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
   }
   return self;
 }
@@ -332,12 +324,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     [self.delegate bookmarkEditorWillCommitTitleOrUrlChange:self];
   }
 
-  // TODO(crbug.com/906662): This will need to be called on the SnackbarCommands
-  // handler.
-  [self.dispatcher showSnackbarMessage:
-                       bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
-                           self.bookmark, [self inputBookmarkName], url,
-                           self.folder, self.bookmarkModel, self.browserState)];
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:
+          bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
+              self.bookmark, [self inputBookmarkName], url, self.folder,
+              self.bookmarkModel, self.browserState)];
 }
 
 - (void)changeFolder:(const BookmarkNode*)folder {
@@ -442,9 +433,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       nodes.insert(self.bookmark);
     }
 
-    // TODO(crbug.com/1323778): This will need to be called on the
-    // SnackbarCommands handler.
-    [self.dispatcher
+    [self.snackbarCommandsHandler
         showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                                 nodes, self.bookmarkModel, self.browserState)];
     self.bookmark = nil;
@@ -467,6 +456,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                  selectedFolder:self.folder
                         browser:_browser];
   folderViewController.delegate = self;
+  folderViewController.snackbarCommandsHandler = self.snackbarCommandsHandler;
   self.folderViewController = folderViewController;
   self.folderViewController.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;

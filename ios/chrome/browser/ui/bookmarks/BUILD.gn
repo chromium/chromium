@@ -234,10 +234,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock:ocmock",
   ]
 }
 

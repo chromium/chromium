@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -91,9 +91,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // allows deletion.
 - (void)addToolbar;
 
-// Dispatcher for this ViewController.
-@property(nonatomic, weak) id<BrowserCommands> dispatcher;
-
 @end
 
 @implementation BookmarkFolderEditorViewController
@@ -123,10 +120,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   folderCreator.folder = NULL;
   folderCreator.browser = browser;
   folderCreator.editingExistingFolder = NO;
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  folderCreator.dispatcher =
-      static_cast<id<BrowserCommands>>(browser->GetCommandDispatcher());
   return folderCreator;
 }
 
@@ -145,10 +138,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   folderEditor.browserState =
       browser->GetBrowserState()->GetOriginalChromeBrowserState();
   folderEditor.editingExistingFolder = YES;
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  folderEditor.dispatcher =
-      static_cast<id<BrowserCommands>>(browser->GetCommandDispatcher());
   return folderEditor;
 }
 
@@ -247,9 +236,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(self.folder);
   std::set<const BookmarkNode*> editedNodes;
   editedNodes.insert(self.folder);
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.dispatcher
+  [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               editedNodes, self.bookmarkModel,
                               self.browserState)];
@@ -275,9 +262,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
       std::set<const BookmarkNode*> editedNodes;
       editedNodes.insert(self.folder);
-      // TODO(crbug.com/1323778): This will need to be called on the
-      // SnackbarCommands handler.
-      [self.dispatcher
+      [self.snackbarCommandsHandler
           showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                                   editedNodes, self.bookmarkModel,
                                   self.parentFolder, self.browserState)];
@@ -304,6 +289,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                  selectedFolder:self.parentFolder
                         browser:_browser];
   folderViewController.delegate = self;
+  folderViewController.snackbarCommandsHandler = self.snackbarCommandsHandler;
+
   self.folderViewController = folderViewController;
 
   [self.navigationController pushViewController:folderViewController

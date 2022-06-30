@@ -10,6 +10,7 @@
 
 @class BookmarkFolderEditorViewController;
 class Browser;
+@protocol SnackbarCommands;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -43,8 +44,8 @@ class BookmarkNode;
 @property(nonatomic, weak) id<BookmarkFolderEditorViewControllerDelegate>
     delegate;
 
-// TODO(crbug.com/1323778): This class needs to have an explicit
-// id<SnacbarCommands> handler property.
+// Snackbar commands handler for this ViewController.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Designated factory methods.
 

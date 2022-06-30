@@ -153,6 +153,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(QRScannerCommands));
     [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
                              forProtocol:@protocol(QRScannerCommands)];
+    id mockSnackbarCommandHandler =
+        OCMProtocolMock(@protocol(SnackbarCommands));
+    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+                             forProtocol:@protocol(SnackbarCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched

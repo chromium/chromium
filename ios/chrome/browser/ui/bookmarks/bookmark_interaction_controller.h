@@ -8,9 +8,7 @@
 
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 
-@protocol ApplicationCommands;
 class Browser;
-@protocol BrowserCommands;
 @protocol BookmarkInteractionControllerDelegate;
 
 namespace bookmarks {

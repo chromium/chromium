@@ -12,6 +12,8 @@
 
 @class BookmarkFolderViewController;
 class Browser;
+@protocol SnackbarCommands;
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
@@ -38,6 +40,9 @@ class BookmarkNode;
     : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, weak) id<BookmarkFolderViewControllerDelegate> delegate;
+
+// Handler for Snackbar Commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // The current nodes (bookmarks or folders) that are considered for a move.
 @property(nonatomic, assign, readonly)

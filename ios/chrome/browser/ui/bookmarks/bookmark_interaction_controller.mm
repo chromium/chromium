@@ -33,8 +33,8 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
@@ -127,16 +127,18 @@ enum class PresentedState {
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
-// TODO(crbug.com/1323778): This should use an explicit (separate)
-// SnackbarCommands handler. This can be set from the `browser` used on init,
-// although ideally it would be injected by the owning coordinator.
-@property(nonatomic, readonly, weak) id<ApplicationCommands, BrowserCommands>
-    handler;
-
 // The transitioning delegate that is used when presenting
 // `self.bookmarkBrowser`.
 @property(nonatomic, strong)
     BookmarkTransitioningDelegate* bookmarkTransitioningDelegate;
+
+// Handler for Application Commands.
+@property(nonatomic, readonly, weak) id<ApplicationCommands>
+    applicationCommandsHandler;
+
+// Handler for Snackbar Commands.
+@property(nonatomic, readonly, weak) id<SnackbarCommands>
+    snackbarCommandsHandler;
 
 // Dismisses the bookmark browser.  If `urlsToOpen` is not empty, then the user
 // has selected to navigate to those URLs with specified tab mode.
@@ -154,6 +156,8 @@ enum class PresentedState {
 @end
 
 @implementation BookmarkInteractionController
+@synthesize applicationCommandsHandler = _applicationCommandsHandler;
+@synthesize snackbarCommandsHandler = _snackbarCommandsHandler;
 @synthesize bookmarkBrowser = _bookmarkBrowser;
 @synthesize bookmarkEditor = _bookmarkEditor;
 @synthesize bookmarkModel = _bookmarkModel;
@@ -163,7 +167,6 @@ enum class PresentedState {
 @synthesize bookmarkTransitioningDelegate = _bookmarkTransitioningDelegate;
 @synthesize currentPresentedState = _currentPresentedState;
 @synthesize delegate = _delegate;
-@synthesize handler = _handler;
 @synthesize folderEditor = _folderEditor;
 @synthesize mediator = _mediator;
 
@@ -175,10 +178,6 @@ enum class PresentedState {
     // incognito mode.
     _currentBrowserState = browser->GetBrowserState();
     _browserState = _currentBrowserState->GetOriginalChromeBrowserState();
-    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-    // clean up.
-    _handler = static_cast<id<ApplicationCommands, BrowserCommands>>(
-        browser->GetCommandDispatcher());
     _webStateList = browser->GetWebStateList();
     _bookmarkModel =
         ios::BookmarkModelFactory::GetForBrowserState(_browserState);
@@ -205,6 +204,26 @@ enum class PresentedState {
   _bookmarkEditor = nil;
 }
 
+- (id<ApplicationCommands>)applicationCommandsHandler {
+  // Using lazy loading here to avoid potential crashes with ApplicationCommands
+  // not being yet dispatched.
+  if (!_applicationCommandsHandler) {
+    _applicationCommandsHandler = HandlerForProtocol(
+        _browser->GetCommandDispatcher(), ApplicationCommands);
+  }
+  return _applicationCommandsHandler;
+}
+
+- (id<SnackbarCommands>)snackbarCommandsHandler {
+  // Using lazy loading here to avoid potential crashes with SnackbarCommands
+  // not being yet dispatched.
+  if (!_snackbarCommandsHandler) {
+    _snackbarCommandsHandler =
+        HandlerForProtocol(_browser->GetCommandDispatcher(), SnackbarCommands);
+  }
+  return _snackbarCommandsHandler;
+}
+
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
   if (!self.bookmarkModel->loaded())
     return;
@@ -216,9 +235,7 @@ enum class PresentedState {
     [weakSelf presentBookmarkEditorForURL:bookmarkedURL];
   };
 
-  // TODO(crbug.com/1323778): This will need to be called on the
-  // SnackbarCommands handler.
-  [self.handler
+  [self.snackbarCommandsHandler
       showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
                                                           URL:bookmarkedURL
                                                    editAction:editAction]];
@@ -242,6 +259,9 @@ enum class PresentedState {
   self.bookmarkBrowser =
       [[BookmarkHomeViewController alloc] initWithBrowser:_browser];
   self.bookmarkBrowser.homeDelegate = self;
+  self.bookmarkBrowser.applicationCommandsHandler =
+      self.applicationCommandsHandler;
+  self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   NSArray<BookmarkHomeViewController*>* replacementViewControllers = nil;
   if (self.bookmarkModel->loaded()) {
@@ -277,6 +297,7 @@ enum class PresentedState {
              selectedFolder:nil
                     browser:_browser];
   self.folderSelector.delegate = self;
+  self.folderSelector.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   [self presentTableViewController:self.folderSelector
       withReplacementViewControllers:nil];
@@ -303,8 +324,9 @@ enum class PresentedState {
     BookmarkEditViewController* bookmarkEditor =
         [[BookmarkEditViewController alloc] initWithBookmark:node
                                                      browser:_browser];
+    bookmarkEditor.delegate = self;
+    bookmarkEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
     self.bookmarkEditor = bookmarkEditor;
-    self.bookmarkEditor.delegate = self;
     editorController = bookmarkEditor;
   } else if (node->type() == BookmarkNode::FOLDER) {
     self.currentPresentedState = PresentedState::FOLDER_EDITOR;
@@ -314,6 +336,7 @@ enum class PresentedState {
                                    folder:node
                                   browser:_browser];
     folderEditor.delegate = self;
+    folderEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
     self.folderEditor = folderEditor;
     editorController = folderEditor;
   } else {
@@ -614,9 +637,7 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
             const bookmarks::BookmarkNode* folder) {
     BookmarkInteractionController* strongSelf = weakSelf;
     if (folder && strongSelf) {
-      // TODO(crbug.com/1323778): This will need to be called on the
-      // SnackbarCommands handler.
-      [strongSelf.handler
+      [strongSelf.snackbarCommandsHandler
           showSnackbarMessage:[strongSelf.mediator addBookmarks:command.URLs
                                                        toFolder:folder]];
     }

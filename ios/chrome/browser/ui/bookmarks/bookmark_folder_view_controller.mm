@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -442,6 +443,7 @@ using bookmarks::BookmarkNode;
                             parentFolder:self.selectedFolder
                                  browser:self.browser];
   folderCreator.delegate = self;
+  folderCreator.snackbarCommandsHandler = self.snackbarCommandsHandler;
   [self.navigationController pushViewController:folderCreator animated:YES];
   self.folderAddController = folderCreator;
 }
