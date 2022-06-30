@@ -206,6 +206,7 @@ enum Setting {
   kSnoopingProtection = 1114,
   kQuickDim = 1115,
   kCameraOnOff = 1116,
+  kMicrophoneOnOff = 1117,
 
   // Languages and Input section.
   kAddLanguage = 1200,

@@ -84,6 +84,7 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
         type: Object,
         value: () => new Set([
           chromeos.settings.mojom.Setting.kCameraOnOff,
+          chromeos.settings.mojom.Setting.kMicrophoneOnOff,
         ]),
       },
 

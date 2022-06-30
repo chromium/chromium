@@ -76,6 +76,22 @@ suite('PrivacyHubSubpageTests', function() {
         'Camera toggle should be focused for settingId=1116.');
   });
 
+  test('Deep link to microphone toggle on privacy hub', async () => {
+    const params = new URLSearchParams();
+    params.append('settingId', '1117');
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
+
+    flush();
+
+    const deepLinkElement =
+        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Microphone toggle should be focused for settingId=1117.');
+  });
+
   test('Update camera setting sub-label', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1116');

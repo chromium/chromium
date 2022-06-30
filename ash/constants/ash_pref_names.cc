@@ -721,6 +721,9 @@ const char kSystemTrayExpanded[] = "ash.system_tray.expanded";
 // A boolean pref indicating whether the camera is allowed to be used.
 const char kUserCameraAllowed[] = "ash.user.camera_allowed";
 
+// A boolean pref indicating whether the microphone is allowed to be used.
+const char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
+
 // A boolean pref which determines whether tap-dragging is enabled.
 const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
 

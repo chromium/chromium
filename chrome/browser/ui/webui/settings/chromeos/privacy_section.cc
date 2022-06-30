@@ -328,6 +328,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"cameraToggleTitle", IDS_OS_SETTINGS_CAMERA_TOGGLE_TITLE},
       {"cameraToggleSublabelActive",
        IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT},
+      {"microphoneToggleTitle", IDS_OS_SETTINGS_MICROPHONE_TOGGLE_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -470,8 +471,10 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_OS_SETTINGS_PRIVACY_HUB_TITLE, mojom::Subpage::kPrivacyHub,
       mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
       mojom::kPrivacyHubSubpagePath);
-  RegisterNestedSettingBulk(mojom::Subpage::kPrivacyHub,
-                            {{mojom::Setting::kCameraOnOff}}, generator);
+  RegisterNestedSettingBulk(
+      mojom::Subpage::kPrivacyHub,
+      {{mojom::Setting::kCameraOnOff, mojom::Setting::kMicrophoneOnOff}},
+      generator);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {
