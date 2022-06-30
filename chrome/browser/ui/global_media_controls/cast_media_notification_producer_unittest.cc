@@ -35,20 +35,13 @@ MediaRoute CreateRoute(const std::string& route_id,
   return route;
 }
 
-class MockClosure {
- public:
-  MOCK_METHOD0(Run, void());
-};
-
 }  // namespace
 
 class CastMediaNotificationProducerTest : public testing::Test {
  public:
   void SetUp() override {
     notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
-        &profile_, &router_, &item_manager_,
-        base::BindRepeating(&MockClosure::Run,
-                            base::Unretained(&items_changed_callback_)));
+        &profile_, &router_, &item_manager_);
   }
 
   void TearDown() override { notification_producer_.reset(); }
@@ -61,22 +54,21 @@ class CastMediaNotificationProducerTest : public testing::Test {
   std::unique_ptr<CastMediaNotificationProducer> notification_producer_;
   NiceMock<global_media_controls::test::MockMediaItemManager> item_manager_;
   NiceMock<media_router::MockMediaRouter> router_;
-  NiceMock<MockClosure> items_changed_callback_;
 };
 
 TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
   const std::string route_id = "route-id-1";
   MediaRoute route = CreateRoute(route_id);
 
-  EXPECT_CALL(items_changed_callback_, Run());
+  EXPECT_CALL(item_manager_, OnItemsChanged());
   notification_producer_->OnRoutesUpdated({route});
-  testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
+  testing::Mock::VerifyAndClearExpectations(&item_manager_);
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
   EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id));
 
-  EXPECT_CALL(items_changed_callback_, Run());
+  EXPECT_CALL(item_manager_, OnItemsChanged());
   notification_producer_->OnRoutesUpdated({});
-  testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
+  testing::Mock::VerifyAndClearExpectations(&item_manager_);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
 

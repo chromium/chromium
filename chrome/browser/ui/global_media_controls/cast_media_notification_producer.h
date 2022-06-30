@@ -33,13 +33,11 @@ class CastMediaNotificationProducer
  public:
   CastMediaNotificationProducer(
       Profile* profile,
-      global_media_controls::MediaItemManager* item_manager,
-      base::RepeatingClosure items_changed_callback);
+      global_media_controls::MediaItemManager* item_manager);
   CastMediaNotificationProducer(
       Profile* profile,
       media_router::MediaRouter* router,
-      global_media_controls::MediaItemManager* item_manager,
-      base::RepeatingClosure items_changed_callback_);
+      global_media_controls::MediaItemManager* item_manager);
   CastMediaNotificationProducer(const CastMediaNotificationProducer&) = delete;
   CastMediaNotificationProducer& operator=(
       const CastMediaNotificationProducer&) = delete;
@@ -74,10 +72,6 @@ class CastMediaNotificationProducer
 
   // Maps from notification item IDs to items.
   std::map<std::string, CastMediaNotificationItem> items_;
-
-  // Called when the number of items changes from zero to positive or vice
-  // versa.
-  base::RepeatingClosure items_changed_callback_;
 
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_;
 };
