@@ -61,14 +61,14 @@ class DirReaderLinux {
     if (offset_ != size_)
       return true;
 
-    const int r = syscall(__NR_getdents64, fd_, buf_, sizeof(buf_));
+    const long r = syscall(__NR_getdents64, fd_, buf_, sizeof(buf_));
     if (r == 0)
       return false;
-    if (r == -1) {
+    if (r < 0) {
       DPLOG(FATAL) << "getdents64 failed";
       return false;
     }
-    size_ = r;
+    size_ = static_cast<size_t>(r);
     offset_ = 0;
     return true;
   }

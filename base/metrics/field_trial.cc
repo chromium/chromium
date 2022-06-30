@@ -763,7 +763,7 @@ bool FieldTrialList::CreateTrialsFromString(const std::string& trials_string) {
 
 // static
 void FieldTrialList::CreateTrialsFromCommandLine(const CommandLine& cmd_line,
-                                                 int fd_key) {
+                                                 uint32_t fd_key) {
   global_->create_trials_from_command_line_called_ = true;
 
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
@@ -1268,7 +1268,7 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
 // static
 bool FieldTrialList::CreateTrialsFromSwitchValue(
     const std::string& switch_value,
-    int fd_key) {
+    uint32_t fd_key) {
   int fd = -1;
 #if BUILDFLAG(IS_POSIX)
   fd = GlobalDescriptors::GetInstance()->MaybeGet(fd_key);

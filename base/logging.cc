@@ -292,8 +292,8 @@ uint64_t TickCount() {
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
 
-  uint64_t absolute_micro = static_cast<int64_t>(ts.tv_sec) * 1000000 +
-                            static_cast<int64_t>(ts.tv_nsec) / 1000;
+  uint64_t absolute_micro = static_cast<uint64_t>(ts.tv_sec) * 1000000 +
+                            static_cast<uint64_t>(ts.tv_nsec) / 1000;
 
   return absolute_micro;
 #endif
@@ -450,7 +450,7 @@ inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
 
 void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;
-  int rv;
+  long rv;
   while (bytes_written < length) {
     rv = HANDLE_EINTR(write(fd, data + bytes_written, length - bytes_written));
     if (rv < 0) {
@@ -1127,7 +1127,7 @@ void RawLog(int level, const char* message) {
     WriteToFd(STDERR_FILENO, message, message_len);
 
     if (message_len > 0 && message[message_len - 1] != '\n') {
-      int rv;
+      long rv;
       do {
         rv = HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
         if (rv < 0) {

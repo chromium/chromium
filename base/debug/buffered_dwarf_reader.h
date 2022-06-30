@@ -34,6 +34,7 @@ class BufferedDwarfReader {
     unconsumed_amount_ = 0;
   }
 
+  bool ReadChar(char& value) { return ReadInt(value); }
   bool ReadInt8(uint8_t& value) { return ReadInt(value); }
   bool ReadInt8(int8_t& value) { return ReadInt(value); }
   bool ReadInt16(uint16_t& value) { return ReadInt(value); }
@@ -106,7 +107,7 @@ class BufferedDwarfReader {
   // The buffer and counters
   char buf_[256];
   size_t unconsumed_amount_ = 0;
-  int cursor_in_buffer_ = 0;
+  size_t cursor_in_buffer_ = 0;
 
   // The file descriptor for the file being read.
   const int fd_;

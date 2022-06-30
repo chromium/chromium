@@ -349,7 +349,7 @@ bool MessagePumpGlib::HandleCheck() {
   // shouldn't block.
   if (wakeup_gpollfd_->revents & G_IO_IN) {
     char msg[2];
-    const int num_bytes = HANDLE_EINTR(read(wakeup_pipe_read_, msg, 2));
+    const long num_bytes = HANDLE_EINTR(read(wakeup_pipe_read_, msg, 2));
     if (num_bytes < 1) {
       NOTREACHED() << "Error reading from the wakeup pipe.";
     }

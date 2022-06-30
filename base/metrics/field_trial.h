@@ -560,7 +560,7 @@ class BASE_EXPORT FieldTrialList {
   // to contain the shared memory handle that contains the field trial
   // allocator.
   static void CreateTrialsFromCommandLine(const CommandLine& cmd_line,
-                                          int fd_key);
+                                          uint32_t fd_key);
 
   // Creates base::Feature overrides from the command line by first trying to
   // use shared memory and then falling back to the command line if it fails.
@@ -698,7 +698,7 @@ class BASE_EXPORT FieldTrialList {
   // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
   // down to the child process for the shared memory region.
   static bool CreateTrialsFromSwitchValue(const std::string& switch_value,
-                                          int fd_key);
+                                          uint32_t fd_key);
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size

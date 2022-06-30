@@ -215,7 +215,7 @@ TimeDelta GetUserCpuTimeSinceBoot() {
   return ClockTicksToTimeDelta(user + nice);
 }
 
-TimeDelta ClockTicksToTimeDelta(int clock_ticks) {
+TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
   // This queries the /proc-specific scaling factor which is
   // conceptually the system hertz.  To dump this value on another
   // system, try
