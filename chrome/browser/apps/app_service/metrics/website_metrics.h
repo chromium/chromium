@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -31,6 +32,17 @@ namespace apps {
 
 class WebsiteMetricsBrowserTest;
 class TestWebsiteMetrics;
+
+// This is used for logging, so do not remove or reorder existing entries.
+enum class UrlContent {
+  kUnknown = 0,
+  kFullUrl = 1,
+  kScope = 2,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kScope,
+};
 
 // WebsiteMetrics monitors creation/deletion of Browser and its
 // TabStripModel to record the website usage time metrics.
@@ -105,6 +117,14 @@ class WebsiteMetrics : public BrowserListObserver,
         app_banner_manager_observer_{this};
   };
 
+  struct UrlInfo {
+    base::TimeTicks start_time;
+    base::TimeDelta running_time;
+    UrlContent url_content = UrlContent::kUnknown;
+    bool is_activated = false;
+    bool promotable = false;
+  };
+
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Insert& insert,
                                    const TabStripSelectionChange& selection);
@@ -120,8 +140,32 @@ class WebsiteMetrics : public BrowserListObserver,
   void OnTabClosed(content::WebContents* web_contents);
 
   // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
-  virtual void OnWebContentsUpdated(content::WebContents* contents);
-  virtual void OnInstallableWebAppStatusUpdated(content::WebContents* contents);
+  virtual void OnWebContentsUpdated(content::WebContents* web_contents);
+  virtual void OnInstallableWebAppStatusUpdated(
+      content::WebContents* web_contents);
+
+  // Adds the url info to `url_infos_`.
+  void AddUrlInfo(const GURL& url,
+                  const base::TimeTicks& start_time,
+                  UrlContent url_content,
+                  bool is_activated,
+                  bool promotable);
+
+  // Modifies `old_url` to `new_url` in `url_infos_`, when the website manifest
+  // is updated.
+  void UpdateUrlInfo(const GURL& old_url,
+                     const GURL& new_url,
+                     UrlContent url_content,
+                     bool is_activated,
+                     bool promotable);
+
+  void SetWindowActivated(aura::Window* window);
+
+  void SetWindowInActivated(aura::Window* window);
+
+  void SetTabActivated(content::WebContents* web_contents);
+
+  void SetTabInActivated(content::WebContents* web_contents);
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
@@ -141,6 +185,10 @@ class WebsiteMetrics : public BrowserListObserver,
   // If the website has a manifest, we might use the scope or the start url as
   // the ukm key url. Otherwise, the visible url is used as the ukm key url.
   std::map<content::WebContents*, GURL> webcontents_to_ukm_key_;
+
+  // Saves the usage info for the activated urls in activated windows for the
+  // UKM records. `url_infos_` is cleared after recording the UKM each 2 hours.
+  std::map<GURL, UrlInfo> url_infos_;
 
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,
