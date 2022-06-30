@@ -138,7 +138,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1715293566947629045">Deaktiverer profil. Vent i noen minutter.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Direkteteksting er på.</translation>
-<translation id="1720011244392820496">Slå på Wi-Fi-synkronisering</translation>
+<translation id="1720011244392820496">Slå på wifi-synkronisering</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» er synlig for Bluetooth-enheter.</translation>
 <translation id="1743570585616704562">Ikke gjenkjent</translation>
 <translation id="1746730358044914197">Inndatametoder konfigureres av administratoren din.</translation>
@@ -287,7 +287,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2706462751667573066">Opp</translation>
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2718395828230677721">Nattlys</translation>
-<translation id="2726420622004325180">Telefonen må ha mobildata for å kunne tilby en Wi-Fi-sone</translation>
+<translation id="2726420622004325180">Telefonen må ha mobildata for å kunne tilby en wifi-sone</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilkoblet laveffektslader. Batteriladingen kan være upålitelig.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" /> – <ph name="PRICE" /></translation>
@@ -433,7 +433,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3552189655002856821">Wi-Fi er slått av</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
 <translation id="3560866052109807830">Markørtegneverktøy</translation>
-<translation id="3563775809269155755">Slå på Wi-Fi-sone</translation>
+<translation id="3563775809269155755">Slå på wifi-sone</translation>
 <translation id="3566240529365775567">Åpnet nå nettopp</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3573179567135747900">Endre tilbake til <ph name="FROM_LOCALE" /> (krever omstart)</translation>
@@ -505,7 +505,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="394485226368336402">Lydinnstillinger</translation>
 <translation id="3945319193631853098">Trykk for å fullføre konfigureringen</translation>
-<translation id="3945867833895287237">Kobler til Wi-Fi-sone …</translation>
+<translation id="3945867833895287237">Kobler til wifi-sone …</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3969043077941541451">Av</translation>
@@ -936,7 +936,7 @@ Nylig installert</translation>
 <translation id="6650933572246256093">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne tilgangskoden på den aktuelle enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6665545700722362599">gi nettsteder, apper og utvidelser tillatelse til å bruke posisjonstjenester, enhetens mikrofon, kamera eller andre funksjoner</translation>
-<translation id="6667908387435388584">Koble til telefonens Wi-Fi-sone, demp og finn enheten, og se nylige Chrome-faner som er åpne på telefonen</translation>
+<translation id="6667908387435388584">Koble til telefonens wifi-sone, demp og finn enheten, og se nylige Chrome-faner som er åpne på telefonen</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
 <translation id="6671495933530132209">Kopiér bildet</translation>
 <translation id="6671661918848783005">Kan ikke låse opp Chromebooken</translation>

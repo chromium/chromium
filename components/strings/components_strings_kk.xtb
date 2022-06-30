@@ -425,7 +425,7 @@
 <translation id="2053553514270667976">Пошта индексі</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ұсыныс}other{# ұсыныс}}</translation>
 <translation id="2068528718802935086">Нәрестелер мен сәбилер</translation>
-<translation id="2071156619270205202">Бұл нөмір виртуалды карта нөмірі үшін жарамсыз.</translation>
+<translation id="2071156619270205202">Бұл нөмір виртуалдық карта нөмірі үшін жарамсыз.</translation>
 <translation id="2071692954027939183">Сіз әдетте хабарландыруларға рұқсат бермейтін болғандықтан, олар автоматты түрде бөгелді.</translation>
 <translation id="2072275792380684364">Сән және стиль</translation>
 <translation id="2079545284768500474">Қайтару</translation>
@@ -701,7 +701,7 @@
 <translation id="2854764410992194509">Интернет провайдерлері</translation>
 <translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар ақпаратыңызды (мысалы, құпия сөздер, хабарлар немесе несиелік карталар) ұрлауға әрекет етуі мүмкін.<ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі.</translation>
-<translation id="286512204874376891">Виртуалды карта қолданыстағы картаны алаяқтықтан қорғауға көмектеседі. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="286512204874376891">Виртуалдық карта қолданыстағы картаны алаяқтықтан қорғауға көмектеседі. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Ақ ниетті</translation>
 <translation id="28761159517501904">Фильмдер</translation>
 <translation id="2876489322757410363">Сыртқы қолданба арқылы төлеу үшін инкогнито режимінен шығасыз. Жалғастыру керек пе?</translation>
@@ -841,7 +841,7 @@
 <translation id="3252266817569339921">француз</translation>
 <translation id="3256863843508922226">Зейнетке шығу және зейнетақы</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-да жылдам жаңа іс-шара жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
-<translation id="3261488570342242926">Виртуалды карта туралы толығырақ</translation>
+<translation id="3261488570342242926">Виртуалдық карта туралы толығырақ</translation>
 <translation id="3264837738038045344">Chrome параметрлерін басқару түймесі, Chrome параметрлеріне өту үшін Enter пернесін басыңыз.</translation>
 <translation id="3266793032086590337">Мән (қарама-қайшы)</translation>
 <translation id="3268451620468152448">Ашық қойындылар</translation>
@@ -864,7 +864,7 @@
 <translation id="3320021301628644560">Төлем мекенжайын қосу</translation>
 <translation id="3324983252691184275">Қызыл күрең</translation>
 <translation id="3329013043687509092">Қанықтық</translation>
-<translation id="3333762389743153920">Виртуалды карта үшін жарамсыз</translation>
+<translation id="3333762389743153920">Виртуалдық карта үшін жарамсыз</translation>
 <translation id="3338095232262050444">Қауіпсіз</translation>
 <translation id="3339440062908617027">Жүгіру және жүру</translation>
 <translation id="3339446062576134663">Бұлт (Ash)</translation>
@@ -875,7 +875,7 @@
 <translation id="3360103848165129075">Төлем өңдегіш парағы</translation>
 <translation id="3360313521703038580">Экология және қоршаған орта</translation>
 <translation id="3362968246557010467">Бұл саясат ескі <ph name="OLD_POLICY" /> саясатынан автоматты түрде көшірілді. Орнына осы саясатты пайдаланғаныңыз жөн.</translation>
-<translation id="3364869320075768271">Сайт (<ph name="URL" />) виртуалды шындық құрылғысын және деректерді пайдалануға рұқсат сұрайды.</translation>
+<translation id="3364869320075768271">Сайт (<ph name="URL" />) виртуалдық шындық құрылғысын және деректерді пайдалануға рұқсат сұрайды.</translation>
 <translation id="3366477098757335611">Карталарды көру</translation>
 <translation id="3369192424181595722">Сағат қатесі</translation>
 <translation id="3369459162151165748">Автобөлшектер мен керек-жарақтар</translation>
@@ -922,7 +922,7 @@
 <translation id="3454555520521576458">Өлшемін өзгертуге болады</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> беті буферге көшірілген мәтін мен кескіндерді көргісі келеді</translation>
-<translation id="3461824795358126837">Бөлектеу құралы</translation>
+<translation id="3461824795358126837">Ерекшелеу құралы</translation>
 <translation id="3462200631372590220">Кеңейтілген мәліметті жасыру</translation>
 <translation id="346601286295919445">Химия</translation>
 <translation id="3467763166455606212">Карта иесінің аты қажет</translation>
@@ -967,7 +967,7 @@
 <translation id="3603507503523709">Қолданбаны әкімші бөгеген</translation>
 <translation id="3608932978122581043">Беру бағыты</translation>
 <translation id="3611317423880285981">Үйге арналған тауарлар</translation>
-<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> виртуалды картасы</translation>
+<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> виртуалдық картасы</translation>
 <translation id="3614103345592970299">Өлшемі: 2</translation>
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" тізім жазбасы: тіл белгісіз немесе оған қолдау көрсетілмейді.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінен қауіпсіздік тексерісін іске қосу үшін Tab, сосын Enter пернесін басыңыз.</translation>
@@ -1174,7 +1174,7 @@
     <ph name="SITE" /> сайты үшін сұрауыңызды орындай алмайды. Сайттың қауіпсіздік параметрлері мен
     басқа сипаттарын конфигурациялау үшін сайт операторлары түпнұсқа саясаттарын қолдануы мүмкін.</translation>
 <translation id="4210602799576081649">Растау кодының мерзімі өткен, жаңа код сұраңыз.</translation>
-<translation id="421066178035138955">Виртуалды шындық құрылғыларын және деректерді пайдалану</translation>
+<translation id="421066178035138955">Виртуалдық шындық құрылғыларын және деректерді пайдалану</translation>
 <translation id="4213305257324635756">Анимациялық фильмдер</translation>
 <translation id="4213500579045346575">Бодибилдинг</translation>
 <translation id="4214357935346142455">кіру экраны профилі</translation>
@@ -1206,7 +1206,7 @@
 <translation id="4250680216510889253">Жоқ</translation>
 <translation id="4253168017788158739">Ескертпе</translation>
 <translation id="425582637250725228">Енгізілген өзгертулер сақталмауы мүмкін.</translation>
-<translation id="425869179292622354">Қауіпсіздік виртуалды картамен күшейтілсін бе?</translation>
+<translation id="425869179292622354">Қауіпсіздік виртуалдық картамен күшейтілсін бе?</translation>
 <translation id="4258748452823770588">Қолтаңба жарамсыз</translation>
 <translation id="4261046003697461417">Қорғалған құжаттарға аннотация қосу мүмкін емес.</translation>
 <translation id="4265872034478892965">Әкімші рұқсат берген</translation>
@@ -1348,13 +1348,13 @@
 <translation id="4660567771874403130">Қуат және коммуналдық кәсіпорындар</translation>
 <translation id="4666114623408286498">Фармацевтика және биотехнология</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4670064810192446073">Виртуалды шындық</translation>
+<translation id="4670064810192446073">Виртуалдық шындық</translation>
 <translation id="4673460618347856347">Динозавр ойыны, ойнау</translation>
 <translation id="467662567472608290">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатында қателер бар. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> арнайы мүмкіндіктер оқиғаларына жауап бергісі келеді</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4682496302933121474">Бет аударылсын ба?</translation>
-<translation id="468314109939257734">Виртуалды карта нөмірін көру</translation>
+<translation id="468314109939257734">Виртуалдық карта нөмірін көру</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1374,7 +1374,7 @@
 <translation id="4733082559415072992"><ph name="URL" /> құрылғыңыздың орналасқан жер деректерін пайдаланғысы келеді</translation>
 <translation id="4736491186715342415">Моторлы көліктер</translation>
 <translation id="4736825316280949806">Chromium браузерін қайта іске қосу</translation>
-<translation id="4736934858538408121">Виртуалды карта</translation>
+<translation id="4736934858538408121">Виртуалдық карта</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4738601419177586157">Ұсынылатын сұрау: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Құпия сөздерді басқару...</translation>
@@ -1518,7 +1518,7 @@
 <translation id="5109892411553231226">Төлеу әдістерін басқару</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">18-науа</translation>
-<translation id="5114987907971894280">виртуалды шындық</translation>
+<translation id="5114987907971894280">виртуалдық шындық</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Шектелген басқарылатын қонақ сеансын қайта анықтау</translation>
 <translation id="5115563688576182185">(64 биттік)</translation>
@@ -1531,7 +1531,7 @@
 <translation id="5127934926273826089">Гүлдер</translation>
 <translation id="5135404736266831032">Мекенжайларды басқару...</translation>
 <translation id="5136841603454277753">Дұрыс код енгізіңіз.</translation>
-<translation id="5138014172396933048">Қазір виртуалды карта қолжетімсіз. Банкіңізге хабарласыңыз.</translation>
+<translation id="5138014172396933048">Қазір виртуалдық карта қолжетімсіз. Банкіңізге хабарласыңыз.</translation>
 <translation id="5138227688689900538">Жию</translation>
 <translation id="5145883236150621069">Қате коды саясат жауабында көрсетіледі</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> сайты үшін хабарландырулар бөгелді</translation>
@@ -1746,13 +1746,13 @@
 <translation id="5743638595296120378">Көлік сатып алу</translation>
 <translation id="5743898850056428078">Мотоцикл жарысы</translation>
 <translation id="5745733273847572235">Орналасқан жеріңізді сұрай алады</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Осы карта үшін виртуалды нөмірді пайдаланыңыз}other{Картаны таңдаңыз}}</translation>
+<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Осы карта үшін виртуалдық нөмірді пайдаланыңыз}other{Картаны таңдаңыз}}</translation>
 <translation id="5752552348183096912">Антиперспиранттар, дезодоранттар және денеге арналған спрейлер</translation>
 <translation id="5754400531489347219">Үй жануарлары мен аңдар</translation>
 <translation id="5759751709240058861">Камераны пайдалану және жылжыту</translation>
 <translation id="5763042198335101085">Дұрыс электрондық пошта мекенжайын енгізіңіз</translation>
 <translation id="5765072501007116331">Жеткізу әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
-<translation id="57689295674415555">Виртуалды карта нөмірі толтырылмаған ба?</translation>
+<translation id="57689295674415555">Виртуалдық карта нөмірі толтырылмаған ба?</translation>
 <translation id="5776313857861697733">Басымдық</translation>
 <translation id="5781136890105823427">Эксперимент қосылды.</translation>
 <translation id="578305955206182703">Қою сары</translation>
@@ -1806,7 +1806,7 @@
 <translation id="5928444777041341328">Үй және бақша</translation>
 <translation id="5932224571077948991">Сайтта мазалайтын не жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="5937560539988385583">Бет аударылды.</translation>
-<translation id="5938153366081463283">Виртуалды карта қосыңыз.</translation>
+<translation id="5938153366081463283">Виртуалдық карта қосыңыз.</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ашылуда…</translation>
 <translation id="5951495562196540101">Тұтынушының аккаунтымен тіркеу мүмкін емес (лицензия пакеті бар).</translation>
@@ -1821,7 +1821,7 @@
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Камераның ылғалдылығы</translation>
-<translation id="5984712050237025014">Кеңейтілген және виртуалды шындық</translation>
+<translation id="5984712050237025014">Кеңейтілген және виртуалдық шындық</translation>
 <translation id="598637245381783098">Төлем қолданбасы ашылмайды</translation>
 <translation id="5989320800837274978">Бекітілген прокси серверлері де, .pac сценарий URL мекенжайы да көрсетілмеген.</translation>
 <translation id="5992691462791905444">Z тәрізді етіп жиі бүктеу</translation>
@@ -2057,7 +2057,7 @@
 <translation id="6687335167692595844">Қаріп өлшемі сұралды</translation>
 <translation id="6687696737818665306">Актерлік шеберлік және театр</translation>
 <translation id="6688743156324860098">Жаңарту…</translation>
-<translation id="6688775486821967877">Қазір виртуалды карта қолжетімсіз. Кейінірек қайталап көріңіз.</translation>
+<translation id="6688775486821967877">Қазір виртуалдық карта қолжетімсіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="6689249931105087298">Қара нүктені сығуға қатысты</translation>
 <translation id="6689271823431384964">Сіз аккаунтқа кіргендіктен, Chrome браузері карталарыңызды Google аккаунтына сақтауды ұсынып отыр. Мұны "Параметрлер" бөлімінен өзгертуіңізге болады. Карта иесінің аты-жөнін аккаунтыңыздан алынады.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтында құрылғыңызды табу үшін Tab, сосын Enter пернесін басыңыз.</translation>
@@ -2105,7 +2105,7 @@
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6833752742582340615">Қауіпсіз әрі жылдамырақ төлеу үшін карта мен төлем туралы ақпаратты Google аккаунтына сақтаңыз</translation>
 <translation id="6839929833149231406">Аудан</translation>
-<translation id="6846340164947227603">Виртуалды карта нөмірін пайдалану...</translation>
+<translation id="6846340164947227603">Виртуалдық карта нөмірін пайдалану...</translation>
 <translation id="6852204201400771460">Қолданба қайта жүктелсін бе?</translation>
 <translation id="686485648936420384">Тұтыну ресурстары</translation>
 <translation id="6865412394715372076">Бұл картаны дәл қазір растау мүмкін емес</translation>
@@ -2119,7 +2119,7 @@
 <translation id="6888584790432772780">Chrome бұл режимде беттің оқылуын жеңілдетті. Chrome браузерінде бастапқы бет қорғалмаған байланыс арқылы алынды.</translation>
 <translation id="6890443033788248019">Локацияны пайдалануға рұқсат берілсін бе?</translation>
 <translation id="6891596781022320156">Саясат деңгейіне қолдау көрсетілмеген.</translation>
-<translation id="6895143722905299846">Виртуалды нөмір:</translation>
+<translation id="6895143722905299846">Виртуалдық нөмір:</translation>
 <translation id="6895330447102777224">Картаңыз расталды</translation>
 <translation id="6897140037006041989">Пайдаланушы агенті</translation>
 <translation id="6898699227549475383">Ұйым (O)</translation>
@@ -2278,7 +2278,7 @@
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
 <translation id="7335157162773372339">Камераңызды қолдануға рұқсат сұрай алады</translation>
 <translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
-<translation id="7337418456231055214">Виртуалды карта нөмірі толтырылмаған ба? Көшірілетін карта мәліметтерін басыңыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="7337418456231055214">Виртуалдық карта нөмірі толтырылмаған ба? Көшірілетін карта мәліметтерін басыңыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Сіздің платформаңызда қолжетімді емес.</translation>
 <translation id="733923710415886693">Сервер сертификаты Сертификат айқындығы саясатымен ашылмады.</translation>
 <translation id="7341357280245177602">Жүрілген көліктер</translation>
@@ -2535,7 +2535,7 @@
 <translation id="7977894662897852582">Edp</translation>
 <translation id="7981129096182302364">Биге арналған және электрондық музыка</translation>
 <translation id="7981260203882740562">Келесімен байланыстырылды:</translation>
-<translation id="798134797138789862">Виртуалды шындық құрылғыларын және деректерді пайдалануға рұқсат сұрай алады.</translation>
+<translation id="798134797138789862">Виртуалдық шындық құрылғыларын және деректерді пайдалануға рұқсат сұрай алады.</translation>
 <translation id="7983008347525536475">Кроссоверлер</translation>
 <translation id="7984945080620862648">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб-сайт Chrome өңдей алмайтын шифрланған есептік деректерді жіберді. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2666,7 +2666,7 @@
 <translation id="831997045666694187">Кеш</translation>
 <translation id="8321476692217554900">хабарландырулар</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кіруге тыйым салынған</translation>
-<translation id="833262891116910667">Бөлектеу</translation>
+<translation id="833262891116910667">Ерекшелеу</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Қауіп-қатерлерді түсінсеңіз, зиянды бағдарламалар жойылмай жатып, <ph name="BEGIN_LINK" />осы сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
@@ -2740,7 +2740,7 @@
 <translation id="8564985650692024650">Chromium басқа сайттарда пайдаланылған <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> құпия сөзін қайта орнатуды ұсынады.</translation>
 <translation id="8574899947864779331">Карталарыңызды жылдам растау үшін Touch ID пайдаланыңыз.</translation>
 <translation id="8576310925653847813">Үй кинотеатры жүйелері</translation>
-<translation id="8577348305244205642">Виртуалды карта қолжетімсіз</translation>
+<translation id="8577348305244205642">Виртуалдық карта қолжетімсіз</translation>
 <translation id="858637041960032120">Телефон нөмірін қосу</translation>
 <translation id="8589998999637048520">Ең жақсы сапа</translation>
 <translation id="8600271352425265729">Тек осы жолы</translation>
@@ -2817,7 +2817,7 @@
 <translation id="883848425547221593">Басқа бетбелгілер</translation>
 <translation id="884264119367021077">Жөнелту мекенжайы</translation>
 <translation id="884923133447025588">Қайтарып алу механизмі табылмады.</translation>
-<translation id="8849262850971482943">Қауіпсіздікті арттыру үшін виртуалды картаны пайдаланыңыз.</translation>
+<translation id="8849262850971482943">Қауіпсіздікті арттыру үшін виртуалдық картаны пайдаланыңыз.</translation>
 <translation id="8852567725116633427">Микроавтомобильдер және екі есікті шағын автомобильдер</translation>
 <translation id="885306012106043620">Теннис</translation>
 <translation id="8855742650226305367">Би</translation>
