@@ -442,8 +442,6 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
             "top-level-crop-success");
 }
 
-// TODO(crbug.com/1336323): Re-enable.
-#if 0
 // The Promise resolves when it's guaranteed that no additional frames will
 // be issued with an earlier crop version. That an actual frame be issued
 // at all, let alone with the new crop version, is not actually required,
@@ -461,7 +459,6 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   EXPECT_EQ(tab.CropTo(crop_target, Frame::kTopLevelDocument),
             "top-level-crop-success");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
   SetUpTest(Frame::kNone, /*self_capture=*/false);
