@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -42,6 +43,8 @@ class FuseBoxServiceProvider
                dbus::ExportedObject::ResponseSender sender);
   void Stat(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
+
+  fusebox::Server server_;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<FuseBoxServiceProvider> weak_ptr_factory_{this};
