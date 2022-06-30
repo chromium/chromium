@@ -161,6 +161,15 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     return InstallWebApp(start_url, web_app::UserDisplayMode::kStandalone);
   }
 
+  void VerifyUrlInfo(const GURL& url,
+                     UrlContent url_content,
+                     bool is_activated,
+                     bool promotable) {
+    EXPECT_EQ(url_content, url_infos()[url].url_content);
+    EXPECT_EQ(is_activated, url_infos()[url].is_activated);
+    EXPECT_EQ(promotable, url_infos()[url].promotable);
+  }
+
   WebsiteMetrics* website_metrics() {
     DCHECK(app_platform_metrics_service_);
     return app_platform_metrics_service_->website_metrics_.get();
@@ -179,6 +188,10 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
 
   std::map<content::WebContents*, GURL>& webcontents_to_ukm_key() {
     return website_metrics()->webcontents_to_ukm_key_;
+  }
+
+  std::map<GURL, WebsiteMetrics::UrlInfo>& url_infos() {
+    return website_metrics()->url_infos_;
   }
 
  protected:
@@ -200,6 +213,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+  EXPECT_TRUE(url_infos().empty());
 
   // Open a second tab in foreground with no app.
   auto* tab_app1 = InsertForegroundTab(browser, "https://b.example.org");
@@ -210,6 +224,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://b.example.org"));
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Open two more tabs in foreground and close them.
   auto* tab_app3 = InsertForegroundTab(browser, "https://c.example.org");
@@ -224,6 +240,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   EXPECT_EQ(3u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app3], GURL("https://c.example.org"));
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app4], GURL("https://d.example.org"));
+  VerifyUrlInfo(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Close in reverse order.
   int i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app4);
@@ -231,6 +251,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
       i, TabStripModel::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app4));
+  VerifyUrlInfo(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app3);
   browser->tab_strip_model()->CloseWebContentsAt(
@@ -242,11 +264,20 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app3));
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   browser->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(window_to_web_contents().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+  EXPECT_EQ(3u, url_infos().size());
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+
+  // Simulate recording the UKMs to clear the local usage time records.
+  website_metrics()->OnTwoHours();
+  EXPECT_TRUE(url_infos().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
@@ -263,6 +294,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
             GURL("https://a.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app], GURL("https://a.example.org"));
+  VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Navigate the foreground tab to a different url.
   NavigateActiveTab(browser, "https://b.example.org");
@@ -275,11 +308,23 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app], GURL("https://b.example.org"));
+  VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   browser->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(window_to_web_contents().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+  VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+
+  // Simulate recording the UKMs to clear the local usage time records.
+  website_metrics()->OnTwoHours();
+  EXPECT_TRUE(url_infos().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
@@ -294,33 +339,48 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   EXPECT_EQ(1u, window_to_web_contents().size());
 
   // Open a tab in foreground.
-  GURL url =
+  GURL url1 =
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
-  auto* tab_app = InsertForegroundTab(browser, url.spec());
+  auto* tab_app = InsertForegroundTab(browser, url1.spec());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window]));
-  EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url);
+  EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url1);
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
-  EXPECT_EQ(webcontents_to_ukm_key()[tab_app], url);
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app], url1);
+  VerifyUrlInfo(url1, UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Navigate the foreground tab to a url with a manifest.
-  url = embedded_test_server()->GetURL("/banners/manifest_test_page.html");
-  auto ukm_key = url.GetWithoutFilename();
-  NavigateActiveTab(browser, url.spec());
+  GURL url2 =
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  auto ukm_key = url2.GetWithoutFilename();
+  NavigateActiveTab(browser, url2.spec());
   metrics->AwaitForInstallableWebAppCheck(ukm_key);
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window]));
-  EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url);
+  EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url2);
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app], ukm_key);
+  VerifyUrlInfo(url1, UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(ukm_key, UrlContent::kScope,
+                /*is_activated=*/true, /*promotable=*/true);
 
   browser->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(window_to_web_contents().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+  VerifyUrlInfo(url1, UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(ukm_key, UrlContent::kScope,
+                /*is_activated=*/false, /*promotable=*/true);
+
+  // Simulate recording the UKMs to clear the local usage time records.
+  website_metrics()->OnTwoHours();
+  EXPECT_TRUE(url_infos().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
@@ -339,6 +399,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+  VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   auto* browser2 = CreateBrowser();
   auto* window2 = browser2->window()->GetNativeWindow();
@@ -354,6 +418,12 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_EQ(4u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app3], GURL("https://c.example.org"));
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app4], GURL("https://d.example.org"));
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Close tabs.
   int i = browser1->tab_strip_model()->GetIndexOfWebContents(tab_app1);
@@ -365,6 +435,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
             GURL("https://b.example.org"));
   EXPECT_EQ(3u, webcontents_to_ukm_key().size());
   EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app1));
+  VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   i = browser2->tab_strip_model()->GetIndexOfWebContents(tab_app3);
   browser2->tab_strip_model()->CloseWebContentsAt(
@@ -375,24 +447,45 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
             GURL("https://d.example.org"));
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app3));
+  VerifyUrlInfo(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   i = browser2->tab_strip_model()->GetIndexOfWebContents(tab_app4);
   browser2->tab_strip_model()->CloseWebContentsAt(
       i, TabStripModel::CLOSE_USER_GESTURE);
+  // Simulate the window's activated status is switched from `window2` to
+  // `window1`.
+  website_metrics()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      window1, window2);
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window1]));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app4));
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
 
   i = browser1->tab_strip_model()->GetIndexOfWebContents(tab_app2);
   browser1->tab_strip_model()->CloseWebContentsAt(
       i, TabStripModel::CLOSE_USER_GESTURE);
+  VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
 
   EXPECT_TRUE(window_to_web_contents().empty());
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+
+  // Simulate recording the UKMs to clear the local usage time records.
+  website_metrics()->OnTwoHours();
+  EXPECT_TRUE(url_infos().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
@@ -406,6 +499,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
   EXPECT_TRUE(window_to_web_contents().empty());
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+  EXPECT_TRUE(url_infos().empty());
 
   // Close the browser.
   browser->tab_strip_model()->CloseAllTabs();
@@ -438,6 +532,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+  VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Simulate OnURLsDeleted is called.
   website_metrics()->OnURLsDeleted(nullptr,
@@ -445,6 +543,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
+  EXPECT_TRUE(url_infos().empty());
 
   // Create 2 tabs for the 2 browsers separately.
   auto* tab_app3 = InsertForegroundTab(browser1, "https://c.example.org");
@@ -459,6 +558,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app3], GURL("https://c.example.org"));
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app4], GURL("https://d.example.org"));
+  VerifyUrlInfo(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                /*is_activated=*/true, /*promotable=*/false);
 
   // Close the browsers.
   browser1->tab_strip_model()->CloseAllTabs();
