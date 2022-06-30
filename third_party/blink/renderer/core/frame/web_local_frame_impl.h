@@ -514,6 +514,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       const blink::ContextMenuData& data,
       const absl::optional<gfx::Point>& host_context_menu_location);
 
+  sk_sp<cc::PaintRecord> GetPaintRecord() const override;
+
   virtual void Trace(Visitor*) const;
 
  protected:

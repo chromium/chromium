@@ -201,24 +201,12 @@ void PhishingClassifier::ExtractVisualFeatures() {
   TRACE_EVENT0("safe_browsing", "ExtractVisualFeatures");
 
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
-  gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
-  gfx::Rect bounds = ToEnclosingRect(gfx::RectF(viewport_size));
-
-  auto tracker = std::make_unique<paint_preview::PaintPreviewTracker>(
-      base::UnguessableToken::Create(), frame->GetEmbeddingToken(),
-      /*is_main_frame=*/true);
-  cc::PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(bounds.width(), bounds.height());
-  canvas->SetPaintPreviewTracker(tracker.get());
-
-  if (!frame->CapturePaintPreview(bounds, canvas,
-                                  /*include_linked_destinations=*/false,
-                                  /*skip_accelerated_content=*/true)) {
+  sk_sp<cc::PaintRecord> paint_record = frame->GetPaintRecord();
+  if (!paint_record) {
     VisualExtractionFinished(/*success=*/false);
   }
-
-  sk_sp<cc::PaintRecord> paint_record = recorder.finishRecordingAsPicture();
+  gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
+  gfx::Rect bounds = ToEnclosingRect(gfx::RectF(viewport_size));
 
   base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime",
                           base::TimeTicks::Now() - start_time);

@@ -2978,4 +2978,8 @@ void WebLocalFrameImpl::ResetHasScrolledFocusedEditableIntoView() {
   has_scrolled_focused_editable_node_into_rect_ = false;
 }
 
+sk_sp<cc::PaintRecord> WebLocalFrameImpl::GetPaintRecord() const {
+  return GetFrame()->View()->GetPaintRecord();
+}
+
 }  // namespace blink
