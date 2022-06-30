@@ -2,60 +2,74 @@
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that navigating from a OOPIF to in-process iframe sets the right sessionId.\n`);
 
+  async function enableNetwork(network) {
+    await network.clearBrowserCache();
+    await network.setCacheDisabled({cacheDisabled: true});
+    await network.enable();
+  }
+
+  const NETWORK_REQUEST_EVENTS = [
+    'RequestWillBeSent',
+    'RequestWillBeSentExtraInfo',
+    'ResponseReceived',
+    'ResponseReceivedExtraInfo',
+  ];
+
+  function getEventName(event) {
+    const name = event.method.split('.')[1];
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  function networkRequestEvents(network, label, expected) {
+    return new Promise((resolve) => {
+      for (const eventName of NETWORK_REQUEST_EVENTS) {
+        network['on' + eventName]((event) => {
+          const eventName = getEventName(event);
+          let index = expected.indexOf(eventName);
+          if (index == -1)  {
+            testRunner.log(`Unexpected ${label} event: ${eventName}`);
+          } else {
+            expected.splice(index, 1);
+            if (!expected.length) resolve();
+          }
+        });
+      }
+    });
+  }
+
   await dp.Page.enable();
-  await dp.Page.setLifecycleEventsEnabled({ enabled: true });
-  let numberOfLoads = 0;
-  dp.Page.onLifecycleEvent(onLifecycleEvent);
-
-  await dp.Network.clearBrowserCache();
-  await dp.Network.setCacheDisabled({cacheDisabled: true});
-  await dp.Network.enable();
-
+  await enableNetwork(dp.Network);
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
-  const iFrameEvents = [];
-  const mainEvents = [];
+  const expectedIframeEvents = [];
+  let iframeEvents = null;
 
-  function hook(network, events) {
-    network.onRequestWillBeSent(() => events.push("onRequestWillBeSent"));
-    network.onRequestWillBeSentExtraInfo(() => events.push("onRequestWillBeSentExtraInfo"));
-    network.onResponseReceivedExtraInfo(() => events.push("onResponseReceivedExtraInfo"));
-    network.onResponseReceived(() => events.push("onResponseReceived"));
-  }
+  session.navigate('resources/page-out.html');
+  await Promise.all([
+    dp.Target.onceAttachedToTarget().then(async (event) => {
+      const dp2 = session.createChild(event.params.sessionId).protocol;
+      await dp2.Page.enable();
+      await enableNetwork(dp2.Network);
+      await dp2.Runtime.runIfWaitingForDebugger();
+      iframeEvents =
+          networkRequestEvents(dp2.Network, 'iframe', expectedIframeEvents);
+    }),
+    networkRequestEvents(
+        dp.Network, 'main',
+        [
+          ...NETWORK_REQUEST_EVENTS,  // main frame
+          ...NETWORK_REQUEST_EVENTS   // iframe
+        ])
+  ]);
 
-  dp.Target.onAttachedToTarget(async event => {
-   const dp2 = session.createChild(event.params.sessionId).protocol;
-   await dp2.Page.enable();
-   await dp2.Page.setLifecycleEventsEnabled({ enabled: true });
-   dp2.Page.onLifecycleEvent(onLifecycleEvent);
-   await dp2.Network.clearBrowserCache();
-   await dp2.Network.setCacheDisabled({cacheDisabled: true});
-   await dp2.Network.enable();
-   // None of these should fire.
-   hook(dp2.Network, iFrameEvents);
-   await dp2.Runtime.runIfWaitingForDebugger();
-  });
+  testRunner.log(
+      'Loaded page-out with OOPIF, setting iframe src to in-process URL.');
 
-  await session.navigate('resources/page-out.html');
+  expectedIframeEvents.push(...NETWORK_REQUEST_EVENTS);
+  session.evaluate(`document.getElementById('page-iframe').src =
+      'http://127.0.0.1:8000/inspector-protocol/network/resources/inner-iframe.html'`);
+  await iframeEvents;
+  testRunner.log('Got expected iframe events');
 
-  async function onLifecycleEvent(event) {
-    if (event.params.name != "load") return;
-    numberOfLoads++;
-    if (numberOfLoads == 4) {
-      // There are two load events fired, one for the OOPIF frame, and one for page-out after
-      // setting the src property on the iframe.
-      testRunner.log(`Events received on iframe: [${iFrameEvents.sort()}]`);
-      testRunner.log(`Events received on main frame: [${mainEvents.sort()}]`);
-      testRunner.completeTest();
-    }
-    if (numberOfLoads == 2) {
-      testRunner.log("Loaded page-out with OOPIF, setting iframe src to in-process URL.");
-
-      hook(dp.Network, mainEvents);
-
-      const iFrameId = 'page-iframe';
-      const url = 'http://127.0.0.1:8000/inspector-protocol/network/resources/inner-iframe.html';
-      await session.evaluate(`document.getElementById('${iFrameId}').src = '${url}'`);
-    }
-  }
+  testRunner.completeTest();
 })
