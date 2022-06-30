@@ -35,7 +35,7 @@ const CGFloat kLabelSize = 14;
   _tabCount = tabCount;
   // Update the text shown in the title of this button. Note that
   // the button's title may be empty or contain an easter egg, but the
-  // accessibility value will always be equal to |tabCount|.
+  // accessibility value will always be equal to `tabCount`.
   NSString* tabStripButtonValue = [NSString stringWithFormat:@"%d", tabCount];
   self.tabCountLabel.text = TextForTabCount(tabCount);
   [self setAccessibilityValue:tabStripButtonValue];

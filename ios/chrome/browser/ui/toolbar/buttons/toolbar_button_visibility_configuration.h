@@ -14,7 +14,7 @@
 // button.
 @interface ToolbarButtonVisibilityConfiguration : NSObject
 
-// Init the toolbar configuration with the desired |type|.
+// Init the toolbar configuration with the desired `type`.
 - (instancetype)initWithType:(ToolbarType)type NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

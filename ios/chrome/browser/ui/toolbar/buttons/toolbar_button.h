@@ -39,7 +39,7 @@
 // changed to have a lower alpha.
 @property(nonatomic, assign) BOOL dimmed;
 
-// Returns a ToolbarButton with a type system, using the |image| as image for
+// Returns a ToolbarButton with a type system, using the `image` as image for
 // normal state.
 + (instancetype)toolbarButtonWithImage:(UIImage*)image;
 

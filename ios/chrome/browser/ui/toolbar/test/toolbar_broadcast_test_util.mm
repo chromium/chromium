@@ -48,7 +48,7 @@ void VerifyToolbarUIBroadcast(ToolbarUIState* toolbar_ui,
                               bool should_broadcast) {
   ASSERT_TRUE(toolbar_ui);
   ASSERT_TRUE(broadcaster);
-  // Create an observer and modifier for |ui_state|.
+  // Create an observer and modifier for `ui_state`.
   TestToolbarUIObserver* observer = [[TestToolbarUIObserver alloc] init];
   observer.broadcaster = broadcaster;
   TestToolbarUIStateModifier modifier(toolbar_ui);
@@ -64,6 +64,6 @@ void VerifyToolbarUIBroadcast(ToolbarUIState* toolbar_ui,
     EXPECT_TRUE(AreCGFloatsEqual(observer.expandedHeight,
                                  modifier.original_expanded_height()));
   }
-  // Stop observing |broadcaster|.
+  // Stop observing `broadcaster`.
   observer.broadcaster = nil;
 }

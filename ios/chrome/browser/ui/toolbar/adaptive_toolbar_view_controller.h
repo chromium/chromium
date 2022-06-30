@@ -47,11 +47,11 @@
 - (ToolbarToolsMenuButton*)toolsMenuButton;
 
 // Updates the view so a snapshot can be taken. It needs to be adapted,
-// depending on if it is a snapshot displayed |onNTP| or not.
+// depending on if it is a snapshot displayed `onNTP` or not.
 - (void)updateForSideSwipeSnapshotOnNTP:(BOOL)onNTP;
 // Resets the view after taking a snapshot for a side swipe.
 - (void)resetAfterSideSwipeSnapshot;
-// Sets the toolbar location bar alpha and vertical offset based on |progress|.
+// Sets the toolbar location bar alpha and vertical offset based on `progress`.
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress;
 
 @end

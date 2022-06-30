@@ -127,7 +127,7 @@ id<GREYMatcher> VisibleInSecondaryToolbar() {
       grey_sufficientlyVisible(), nil);
 }
 
-// Checks that the element designated by |matcher| is |visible| in the primary
+// Checks that the element designated by `matcher` is `visible` in the primary
 // toolbar.
 void CheckVisibleInPrimaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
   id<GREYMatcher> assertionMatcher = visible ? grey_notNil() : grey_nil();
@@ -137,7 +137,7 @@ void CheckVisibleInPrimaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
       assertWithMatcher:assertionMatcher];
 }
 
-// Checks that the element designed by |matcher| is |visible| in the secondary
+// Checks that the element designed by `matcher` is `visible` in the secondary
 // toolbar.
 void CheckVisibleInSecondaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
   id<GREYMatcher> assertionMatcher = visible ? grey_notNil() : grey_nil();
@@ -167,8 +167,8 @@ UITraitCollection* RotateOrChangeTraitCollection(
   }
 }
 
-// Checks that the element associated with |matcher| is visible in the toolbar
-// defined by |visibility|.
+// Checks that the element associated with `matcher` is visible in the toolbar
+// defined by `visibility`.
 void CheckVisibilityInToolbar(id<GREYMatcher> matcher,
                               ButtonVisibility visibility) {
   CheckVisibleInPrimaryToolbar(matcher, visibility == ButtonVisibilityPrimary);
@@ -273,7 +273,7 @@ void CheckButtonsVisibilityIPad() {
 }
 
 // Check that the button displayed are the ones which should be displayed in the
-// environment described by |traitCollection| and with |omniboxFocused|.
+// environment described by `traitCollection` and with `omniboxFocused`.
 void CheckToolbarButtonVisibility(UITraitCollection* traitCollection,
                                   BOOL omniboxFocused) {
   CheckOmniboxVisibility(omniboxFocused);

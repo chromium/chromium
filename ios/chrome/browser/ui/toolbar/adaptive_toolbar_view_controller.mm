@@ -385,7 +385,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   }
 }
 
-// Adds a LongPressGesture to the |view|, with target on -|handleLongPress:|.
+// Adds a LongPressGesture to the `view`, with target on -`handleLongPress:`.
 - (void)addLongPressGestureToView:(UIView*)view {
   ForceTouchLongPressGestureRecognizer* gestureRecognizer =
       [[ForceTouchLongPressGestureRecognizer alloc]
@@ -429,8 +429,8 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   }
 }
 
-// Configures |button| with the menu provider, making sure that the items are
-// updated when the menu is presented. The |buttonType| is passed to the menu
+// Configures `button` with the menu provider, making sure that the items are
+// updated when the menu is presented. The `buttonType` is passed to the menu
 // provider.
 - (void)configureMenuProviderForButton:(UIButton*)button
                             buttonType:(AdaptiveToolbarButtonType)buttonType {

@@ -15,7 +15,7 @@ class WebState;
 @protocol SideSwipeToolbarSnapshotProviding
 
 // Returns a snapshot of the toolbar with the controls visibility adapted to
-// |webState|.
+// `webState`.
 - (UIImage*)toolbarSideSwipeSnapshotForWebState:(web::WebState*)webState;
 
 @end

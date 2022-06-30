@@ -10,7 +10,7 @@
 // Protocol used by SideSwipe to interact with the toolbar.
 @protocol SideSwipeToolbarInteracting
 
-// Returns whether the |point| is inside a toolbar's frame. The |point| must be
+// Returns whether the `point` is inside a toolbar's frame. The `point` must be
 // in the window coordinates.
 - (BOOL)isInsideToolbar:(CGPoint)point;
 

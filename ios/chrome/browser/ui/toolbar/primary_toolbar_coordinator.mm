@@ -36,7 +36,7 @@
 #endif
 
 @interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate> {
-  // Observer that updates |toolbarViewController| for fullscreen events.
+  // Observer that updates `toolbarViewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 

@@ -45,7 +45,7 @@ class WebStateList;
 // Action factory.
 @property(nonatomic, strong) BrowserActionFactory* actionFactory;
 
-// Updates the consumer to conforms to |webState|.
+// Updates the consumer to conforms to `webState`.
 - (void)updateConsumerForWebState:(web::WebState*)webState;
 
 // Stops observing all objects.

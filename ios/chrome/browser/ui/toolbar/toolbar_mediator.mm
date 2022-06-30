@@ -330,7 +330,7 @@
 
 #pragma mark - Private
 
-// Returns a menu for the |navigationItems|.
+// Returns a menu for the `navigationItems`.
 - (UIMenu*)menuForNavigationItems:
     (const std::vector<web::NavigationItem*>)navigationItems {
   NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
@@ -368,7 +368,7 @@
 }
 
 // Returns YES if incognito NTP title and image should be used for back/forward
-// item associated with |URL|.
+// item associated with `URL`.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
   return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
          self.isIncognito &&
@@ -443,7 +443,7 @@
   return nil;
 }
 
-// Navigates to the page associated with |item|.
+// Navigates to the page associated with `item`.
 - (void)navigateToPageForItem:(web::NavigationItem*)item {
   if (!self.webState)
     return;

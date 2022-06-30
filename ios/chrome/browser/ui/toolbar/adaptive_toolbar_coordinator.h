@@ -20,7 +20,7 @@ class Browser;
 @interface AdaptiveToolbarCoordinator
     : ChromeCoordinator<SideSwipeToolbarSnapshotProviding, ToolbarCoordinatee>
 
-// Initializes this Coordinator with its |browser| and a nil base view
+// Initializes this Coordinator with its `browser` and a nil base view
 // controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 

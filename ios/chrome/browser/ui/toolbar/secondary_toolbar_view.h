@@ -15,7 +15,7 @@
 // containing the controls displayed only on specific size classes.
 @interface SecondaryToolbarView : UIView<AdaptiveToolbarView>
 
-// Initialize this View with the button |factory|.
+// Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
 

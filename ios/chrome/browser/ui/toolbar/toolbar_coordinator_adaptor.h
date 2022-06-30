@@ -19,7 +19,7 @@
 
 - (instancetype)initWithDispatcher:(CommandDispatcher*)dispatcher;
 
-// Adds a |toolbarCoordinator| to the set of coordinators this object is
+// Adds a `toolbarCoordinator` to the set of coordinators this object is
 // interfacing with.
 - (void)addToolbarCoordinator:(id<ToolbarCoordinatee>)toolbarCoordinator;
 

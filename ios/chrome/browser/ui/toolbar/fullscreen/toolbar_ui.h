@@ -11,15 +11,15 @@
 @protocol ToolbarUI<NSObject>
 
 // The minimum height of the toolbar relative to the browser content area.
-// This should be broadcast using |-broadcastCollapsedToolbarHeight:|.
+// This should be broadcast using `-broadcastCollapsedToolbarHeight:`.
 @property(nonatomic, readonly) CGFloat collapsedHeight;
 
 // The minimum height of the toolbar relative to the browser content area.
-// This should be broadcast using |-broadcastExpandedToolbarHeight:|.
+// This should be broadcast using `-broadcastExpandedToolbarHeight:`.
 @property(nonatomic, readonly) CGFloat expandedHeight;
 
 // The height of the bottom toolbar relative to the browser content area.
-// This should be broadcast using |-broadcastBottomToolbarHeight:|.
+// This should be broadcast using `-broadcastBottomToolbarHeight:`.
 @property(nonatomic, readonly) CGFloat bottomToolbarHeight;
 
 @end
