@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_manager/fusebox_moniker.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace file_manager {
+namespace fusebox {
 
 // static
-FuseBoxMonikerMap::ExtractTokenResult FuseBoxMonikerMap::ExtractToken(
+MonikerMap::ExtractTokenResult MonikerMap::ExtractToken(
     const std::string& fs_url_as_string) {
   if (!base::StartsWith(fs_url_as_string, fusebox::kMonikerFileSystemURL)) {
     ExtractTokenResult result;
@@ -43,22 +43,22 @@ FuseBoxMonikerMap::ExtractTokenResult FuseBoxMonikerMap::ExtractToken(
 }
 
 // static
-std::string FuseBoxMonikerMap::GetFilename(const FuseBoxMoniker& moniker) {
+std::string MonikerMap::GetFilename(const Moniker& moniker) {
   return fusebox::kMonikerFilenamePrefixWithTrailingSlash + moniker.ToString();
 }
 
-FuseBoxMonikerMap::FuseBoxMonikerMap() = default;
-FuseBoxMonikerMap::~FuseBoxMonikerMap() = default;
+MonikerMap::MonikerMap() = default;
+MonikerMap::~MonikerMap() = default;
 
-FuseBoxMoniker FuseBoxMonikerMap::CreateMoniker(storage::FileSystemURL target) {
+Moniker MonikerMap::CreateMoniker(storage::FileSystemURL target) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  FuseBoxMoniker moniker = base::Token::CreateRandom();
+  Moniker moniker = base::Token::CreateRandom();
   map_.insert({moniker, std::move(target)});
   return moniker;
 }
 
-void FuseBoxMonikerMap::DestroyMoniker(const FuseBoxMoniker& moniker) {
+void MonikerMap::DestroyMoniker(const Moniker& moniker) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto iter = map_.find(moniker);
@@ -67,8 +67,7 @@ void FuseBoxMonikerMap::DestroyMoniker(const FuseBoxMoniker& moniker) {
   }
 }
 
-storage::FileSystemURL FuseBoxMonikerMap::Resolve(
-    const FuseBoxMoniker& moniker) {
+storage::FileSystemURL MonikerMap::Resolve(const Moniker& moniker) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto iter = map_.find(moniker);
@@ -78,4 +77,4 @@ storage::FileSystemURL FuseBoxMonikerMap::Resolve(
   return storage::FileSystemURL();
 }
 
-}  // namespace file_manager
+}  // namespace fusebox

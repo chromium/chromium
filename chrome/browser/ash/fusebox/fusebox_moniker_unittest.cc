@@ -2,45 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_manager/fusebox_moniker.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace file_manager {
+namespace fusebox {
 
-TEST(FuseBoxMonikerMapTest, ExtractTokenResult) {
-  using ResultType = FuseBoxMonikerMap::ExtractTokenResult::ResultType;
+TEST(MonikerMapTest, ExtractTokenResult) {
+  using ResultType = MonikerMap::ExtractTokenResult::ResultType;
 
   {
-    auto result = FuseBoxMonikerMap::ExtractToken("foo://bar");
+    auto result = MonikerMap::ExtractToken("foo://bar");
     EXPECT_EQ(result.result_type, ResultType::NOT_A_MONIKER_FS_URL);
   }
 
   {
-    auto result = FuseBoxMonikerMap::ExtractToken(
+    auto result = MonikerMap::ExtractToken(
         "dummy://something_else/0123456789ABCDEF0000111122223333");
     EXPECT_EQ(result.result_type, ResultType::NOT_A_MONIKER_FS_URL);
   }
 
   {
-    auto result = FuseBoxMonikerMap::ExtractToken("dummy://moniker");
+    auto result = MonikerMap::ExtractToken("dummy://moniker");
     EXPECT_EQ(result.result_type, ResultType::MONIKER_FS_URL_BUT_ONLY_ROOT);
   }
 
   {
-    auto result = FuseBoxMonikerMap::ExtractToken("dummy://moniker/");
+    auto result = MonikerMap::ExtractToken("dummy://moniker/");
     EXPECT_EQ(result.result_type,
               ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED);
   }
 
   {
-    auto result = FuseBoxMonikerMap::ExtractToken("dummy://moniker/0123");
+    auto result = MonikerMap::ExtractToken("dummy://moniker/0123");
     EXPECT_EQ(result.result_type,
               ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED);
   }
 
   {
-    auto result = FuseBoxMonikerMap::ExtractToken(
+    auto result = MonikerMap::ExtractToken(
         "dummy://moniker/0123456789ABCDEF0000111122223333");
     EXPECT_EQ(result.result_type, ResultType::OK);
     EXPECT_EQ(result.token,
@@ -48,4 +48,4 @@ TEST(FuseBoxMonikerMapTest, ExtractTokenResult) {
   }
 }
 
-}  // namespace file_manager
+}  // namespace fusebox

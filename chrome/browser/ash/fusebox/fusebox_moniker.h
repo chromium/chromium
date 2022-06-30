@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MONIKER_H_
-#define CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MONIKER_H_
+#ifndef CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_MONIKER_H_
+#define CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_MONIKER_H_
 
 #include <map>
 
 #include "base/token.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace file_manager {
+namespace fusebox {
 
 // A moniker is an alternative name (an alias or symbolic link, of sorts) for a
 // FileSystemURL (a C++ object). That name is a filename on the Linux file
@@ -31,9 +31,9 @@ namespace file_manager {
 // Second, the LINK_NAME is unguessable (essentially a randomly generated
 // 128-bit base::Token) and "ls /media/fuse/fusebox/moniker/" will show an
 // empty directory. Only the CreateMoniker caller (and whoever it shares the
-// resultant FuseBoxMoniker with, in C++ object, base::Token or string filename
-// form) has the capability to ask the FuseBox FUSE server to resolve the
-// LINK_NAME to read the original TARGET.
+// resultant Moniker with, in C++ object, base::Token or string filename form)
+// has the capability to ask the FuseBox FUSE server to resolve the LINK_NAME
+// to read the original TARGET.
 //
 // Third, monikers always target individual files, never directories.
 //
@@ -49,12 +49,12 @@ namespace file_manager {
 // base::UnguessableToken.
 //
 // See also the crrev.com/c/3645173 code review discussion.
-using FuseBoxMoniker = base::Token;
+using Moniker = base::Token;
 
-// Maps from FuseBoxMoniker to storage::FileSystemURL target.
+// Maps from Moniker to storage::FileSystemURL target.
 //
 // All non-static methods must only be called on the main (UI) thread.
-class FuseBoxMonikerMap {
+class MonikerMap {
  public:
   struct ExtractTokenResult {
     enum class ResultType {
@@ -85,32 +85,32 @@ class FuseBoxMonikerMap {
   static ExtractTokenResult ExtractToken(const std::string& fs_url_as_string);
 
   // Returns the moniker's "/media/fuse/fusebox/moniker/1234etc" filename.
-  static std::string GetFilename(const FuseBoxMoniker& moniker);
+  static std::string GetFilename(const Moniker& moniker);
 
-  FuseBoxMonikerMap();
-  FuseBoxMonikerMap(const FuseBoxMonikerMap&) = delete;
-  FuseBoxMonikerMap& operator=(const FuseBoxMonikerMap&) = delete;
-  ~FuseBoxMonikerMap();
+  MonikerMap();
+  MonikerMap(const MonikerMap&) = delete;
+  MonikerMap& operator=(const MonikerMap&) = delete;
+  ~MonikerMap();
 
   // Creates a randomly generated link name (available in both base::Token and
   // string form) for the target. It is the caller's responsibility to call
   // DestroyMoniker when the moniker is no longer required but also to keep the
   // FileSystemURL's backing content alive until that DestroyMoniker call.
-  FuseBoxMoniker CreateMoniker(storage::FileSystemURL target);
+  Moniker CreateMoniker(storage::FileSystemURL target);
 
   // Tears down the link, so that Resolve will return invalid FileSystemURL
   // values.
-  void DestroyMoniker(const FuseBoxMoniker& moniker);
+  void DestroyMoniker(const Moniker& moniker);
 
   // Returns the target for the previously created moniker, as identified by
   // its base::Token. The return value's is_valid() will be false if there was
   // no such moniker or if it was destroyed.
-  storage::FileSystemURL Resolve(const FuseBoxMoniker& moniker);
+  storage::FileSystemURL Resolve(const Moniker& moniker);
 
  private:
   std::map<base::Token, storage::FileSystemURL> map_;
 };
 
-}  // namespace file_manager
+}  // namespace fusebox
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MONIKER_H_
+#endif  // CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_MONIKER_H_

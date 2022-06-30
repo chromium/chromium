@@ -69,7 +69,7 @@ ParseResult::~ParseResult() = default;
 // All of the Server methods' arguments start with a FileSystemURL (as a
 // string). This function parses that first argument as well as finding the
 // FileSystemContext we will need to serve those methods.
-ParseResult ParseFileSystemURL(file_manager::FuseBoxMonikerMap& moniker_map,
+ParseResult ParseFileSystemURL(fusebox::MonikerMap& moniker_map,
                                std::string fs_url_as_string) {
   scoped_refptr<storage::FileSystemContext> fs_context =
       file_manager::util::GetFileManagerFileSystemContext(
@@ -85,10 +85,9 @@ ParseResult ParseFileSystemURL(file_manager::FuseBoxMonikerMap& moniker_map,
   storage::FileSystemURL fs_url;
 
   // Intercept any moniker names and replace them by their linked target.
-  using ResultType =
-      file_manager::FuseBoxMonikerMap::ExtractTokenResult::ResultType;
+  using ResultType = fusebox::MonikerMap::ExtractTokenResult::ResultType;
   auto extract_token_result =
-      file_manager::FuseBoxMonikerMap::ExtractToken(fs_url_as_string);
+      fusebox::MonikerMap::ExtractToken(fs_url_as_string);
   switch (extract_token_result.result_type) {
     case ResultType::OK:
       fs_url = moniker_map.Resolve(extract_token_result.token);
@@ -246,14 +245,13 @@ Server::~Server() {
   g_server_instance = nullptr;
 }
 
-file_manager::FuseBoxMoniker Server::CreateMoniker(
-    storage::FileSystemURL target) {
+fusebox::Moniker Server::CreateMoniker(storage::FileSystemURL target) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return moniker_map_.CreateMoniker(target);
 }
 
-void Server::DestroyMoniker(file_manager::FuseBoxMoniker moniker) {
+void Server::DestroyMoniker(fusebox::Moniker moniker) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   moniker_map_.DestroyMoniker(moniker);

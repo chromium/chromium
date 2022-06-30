@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
-#include "chrome/browser/ash/file_manager/fusebox_moniker.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
 
 namespace fusebox {
@@ -24,9 +24,9 @@ class Server {
   Server& operator=(const Server&) = delete;
   ~Server();
 
-  // Manages monikers in the context of the Server's FuseBoxMonikerMap.
-  file_manager::FuseBoxMoniker CreateMoniker(storage::FileSystemURL target);
-  void DestroyMoniker(file_manager::FuseBoxMoniker moniker);
+  // Manages monikers in the context of the Server's MonikerMap.
+  fusebox::Moniker CreateMoniker(storage::FileSystemURL target);
+  void DestroyMoniker(fusebox::Moniker moniker);
 
   // These methods map 1:1 to the D-Bus methods implemented by
   // fusebox_service_provider.cc.
@@ -77,7 +77,7 @@ class Server {
   void Stat(std::string fs_url_as_string, StatCallback callback);
 
  private:
-  file_manager::FuseBoxMonikerMap moniker_map_;
+  fusebox::MonikerMap moniker_map_;
 };
 
 }  // namespace fusebox
