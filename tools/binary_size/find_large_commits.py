@@ -37,6 +37,9 @@ def _FindBigDeltas(revs_and_sizes, increase_threshold, decrease_threshold):
 def _LookupCommitInfo(rev):
   sha1 = subprocess.check_output(
       ['git', 'crrev-parse', str(rev)], encoding="utf-8").strip()
+  if not sha1:
+    raise Exception(f'git crrev-parse for {rev} failed. Probably need to '
+                    f'"git fetch origin main"')
   desc = subprocess.check_output(['git', 'log', '-n1', sha1], encoding="utf-8")
   author = re.search(r'Author: .*?<(.*?)>', desc).group(1)
   day, year = re.search(r'Date:\s+\w+\s+(\w+ \d+)\s+.*?\s+(\d+)', desc).groups()
