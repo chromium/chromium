@@ -243,6 +243,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
+  bool IsReadyForTesting() override;
 
   // SuggestionHandlerInterface overrides.
   bool DismissSuggestion(int context_id, std::string* error) override;

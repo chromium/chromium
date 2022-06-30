@@ -68,6 +68,7 @@ class NativeInputMethodEngine
                   const char* extension_id,
                   Profile* profile) override;
   void CandidateClicked(uint32_t index) override;
+  bool IsReadyForTesting() override;
 
   // ChromeKeyboardControllerClient:
   void OnKeyboardEnabledChanged(bool enabled) override;

@@ -1608,6 +1608,18 @@ class AutotestPrivateGetAccessTokenFunction : public ExtensionFunction {
   base::OneShotTimer timeout_timer_;
 };
 
+class AutotestPrivateIsInputMethodReadyForTestingFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateIsInputMethodReadyForTestingFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.isInputMethodReadyForTesting",
+                             AUTOTESTPRIVATE_ISINPUTMETHODREADYFORTESTING)
+
+ private:
+  ~AutotestPrivateIsInputMethodReadyForTestingFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

@@ -48,6 +48,7 @@ class MockInputMethodEngine : public ui::IMEEngineHandlerInterface {
   void CandidateClicked(uint32_t index) override;
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
+  bool IsReadyForTesting() override;
 
   const std::string& GetActiveComponentId() const;
 

@@ -166,6 +166,11 @@ void RuleBasedEngine::OnQuickSettingsUpdated(
   NOTREACHED();
 }
 
+void RuleBasedEngine::IsReadyForTesting(IsReadyForTestingCallback callback) {
+  // Rule-based engines load instantly, so they are always ready.
+  std::move(callback).Run(true);
+}
+
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
     mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,

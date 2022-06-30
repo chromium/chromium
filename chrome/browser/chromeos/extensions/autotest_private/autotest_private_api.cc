@@ -199,6 +199,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -5867,6 +5868,24 @@ void AutotestPrivateGetAccessTokenFunction::OnAccessToken(
       base::Int64ToValue((token_info.expiration_time - base::Time::UnixEpoch())
                              .InMilliseconds()));
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(token_dict))));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateIsInputMethodReadyForTestingFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateIsInputMethodReadyForTestingFunction::
+    AutotestPrivateIsInputMethodReadyForTestingFunction() = default;
+
+AutotestPrivateIsInputMethodReadyForTestingFunction::
+    ~AutotestPrivateIsInputMethodReadyForTestingFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateIsInputMethodReadyForTestingFunction::Run() {
+  ui::IMEEngineHandlerInterface* engine =
+      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  return RespondNow(OneArgument(
+      base::Value(engine ? engine->IsReadyForTesting() : false)));  // IN-TEST
 }
 
 ///////////////////////////////////////////////////////////////////////////////

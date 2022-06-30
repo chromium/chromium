@@ -730,6 +730,12 @@ ui::VirtualKeyboardController* InputMethodEngine::GetVirtualKeyboardController()
   return keyboard::KeyboardUIController::Get()->virtual_keyboard_controller();
 }
 
+bool InputMethodEngine::IsReadyForTesting() {
+  // For extension-based IMEs, we cannot tell if they are ready or not, so just
+  // return false.
+  return false;
+}
+
 void InputMethodEngine::OnSuggestionsChanged(
     const std::vector<std::string>& suggestions) {
   observer_->OnSuggestionsChanged(suggestions);

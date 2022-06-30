@@ -120,6 +120,8 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnSuggestionsGathered(RequestSuggestionsCallback request_callback,
                              ime::mojom::SuggestionsResponsePtr response);
 
+  bool IsReadyForTesting();
+
   // Flush all relevant Mojo pipes.
   void FlushForTesting();
 

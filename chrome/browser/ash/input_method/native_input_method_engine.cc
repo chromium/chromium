@@ -127,6 +127,13 @@ void NativeInputMethodEngine::CandidateClicked(uint32_t index) {
   }
 }
 
+bool NativeInputMethodEngine::IsReadyForTesting() {
+  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+    return GetNativeObserver()->IsReadyForTesting();  // IN-TEST
+  }
+  return InputMethodEngine::IsReadyForTesting();
+}
+
 void NativeInputMethodEngine::OnKeyboardEnabledChanged(bool enabled) {
   // Re-activate the engine whenever the virtual keyboard is enabled or disabled
   // so that the native or extension state is reset correctly.

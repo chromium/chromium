@@ -1002,6 +1002,16 @@ void NativeInputMethodEngineObserver::OnSuggestionsGathered(
   std::move(callback).Run(std::move(response));
 }
 
+bool NativeInputMethodEngineObserver::IsReadyForTesting() {
+  if (input_method_.is_bound() && input_method_.is_connected()) {
+    bool is_ready = false;
+    const bool successful =
+        input_method_->IsReadyForTesting(&is_ready);  // IN-TEST
+    return successful && is_ready;
+  }
+  return false;
+}
+
 void NativeInputMethodEngineObserver::OnSuggestionsChanged(
     const std::vector<std::string>& suggestions) {
   ime_base_observer_->OnSuggestionsChanged(suggestions);

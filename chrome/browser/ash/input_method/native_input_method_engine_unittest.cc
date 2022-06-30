@@ -110,6 +110,10 @@ class MockInputMethod : public ime::mojom::InputMethod {
               OnQuickSettingsUpdated,
               (ime::mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
+  MOCK_METHOD(void,
+              IsReadyForTesting,
+              (IsReadyForTestingCallback callback),
+              (override));
 
   mojo::AssociatedRemote<ime::mojom::InputMethodHost> host;
 

@@ -60,6 +60,10 @@ void MockInputMethodEngine::SetMirroringEnabled(bool mirroring_enabled) {}
 
 void MockInputMethodEngine::SetCastingEnabled(bool casting_enabled) {}
 
+bool MockInputMethodEngine::IsReadyForTesting() {
+  return true;
+}
+
 const std::string& MockInputMethodEngine::GetActiveComponentId() const {
   return active_component_id_;
 }

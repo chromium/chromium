@@ -85,6 +85,10 @@ void MockIMEEngineHandler::SetMirroringEnabled(bool mirroring_enabled) {}
 
 void MockIMEEngineHandler::SetCastingEnabled(bool casting_enabled) {}
 
+bool MockIMEEngineHandler::IsReadyForTesting() {
+  return true;
+}
+
 const std::string& MockIMEEngineHandler::GetActiveComponentId() const {
   return active_component_id_;
 }
