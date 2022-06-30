@@ -173,7 +173,7 @@ class PosixStubWriterUnittest(unittest.TestCase):
     self.signatures = [sig[1] for sig in SIMPLE_SIGNATURES]
     self.out_dir = 'out_dir'
     self.writer = gs.PosixStubWriter(self.module_name, '', self.signatures,
-                                     'VLOG(1)', 'base/logging.h')
+                                     'VLOG(1)')
 
   def testEnumName(self):
     self.assertEqual('kModuleMy_module1',
@@ -300,6 +300,21 @@ int  ferda(char **argv[]) {
       decl = gs.PosixStubWriter.UninitializeModuleName(name)
       self.assertTrue(contents.find(decl) != -1,
                       msg='Expected "%s" in %s' % (decl, contents))
+
+  def testWriteImplementationPreamble(self):
+    # Data for header generation.
+    module_names = ['oneModule', 'twoModule']
+
+    # Make the header.
+    outfile = io.StringIO()
+    self.writer.WriteImplementationPreamble(module_names, outfile,
+                                            "base/logging.h",
+                                            "my/compiler_specific.h")
+    contents = outfile.getvalue()
+
+    # Verify includes are included correctly.
+    self.assertTrue(contents.find('#include "base/logging.h"') != -1)
+    self.assertTrue(contents.find('#include "my/compiler_specific.h"') != -1)
 
   def testWriteUmbrellaInitializer(self):
     # Data for header generation.
