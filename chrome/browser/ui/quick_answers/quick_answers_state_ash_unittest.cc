@@ -7,7 +7,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
@@ -218,6 +220,29 @@ TEST_F(QuickAnswersStateAshTest, LocaleEligible) {
   EXPECT_TRUE(observer()->is_eligible());
 }
 
+TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersForMoreLocales);
+
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "pt");
+  SimulateUserLogin(kTestUser);
+  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(observer()->is_eligible());
+
+  ClearLogin();
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "en");
+  SimulateUserLogin(kTestUser);
+  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(observer()->is_eligible());
+}
+
 TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
   QuickAnswersState::Get()->AddObserver(observer());
 
@@ -228,6 +253,29 @@ TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
   icu::Locale::setDefault(icu::Locale(ULOC_CHINESE), error_code);
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
 
+  SimulateUserLogin(kTestUser);
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+}
+
+TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersForMoreLocales);
+
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "zh");
+  SimulateUserLogin(kTestUser);
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
+  ClearLogin();
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "ja");
   SimulateUserLogin(kTestUser);
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());

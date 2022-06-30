@@ -77,16 +77,19 @@ void SpellChecker::OnStateUpdated() {
     return;
   }
 
+  // Add application language.
   std::set<std::string> languages;
   languages.insert(l10n_util::GetLanguage(application_locale_.value()));
 
-  // Add preferred languages.
+  // Add preferred languages if supported.
   if (chromeos::features::IsQuickAnswersForMoreLocalesEnabled()) {
     auto preferred_languages_list =
         base::SplitString(preferred_languages_.value(), ",",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const std::string& locale : preferred_languages_list) {
-      languages.insert(l10n_util::GetLanguage(locale));
+      auto language = l10n_util::GetLanguage(locale);
+      if (QuickAnswersState::Get()->IsSupportedLanguage(language))
+        languages.insert(language);
     }
   }
 
