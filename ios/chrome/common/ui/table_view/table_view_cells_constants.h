@@ -73,4 +73,8 @@ extern NSString* const kTableViewURLCellFaviconBadgeViewID;
 // Returns a padding according to the width of the current device.
 extern CGFloat HorizontalPadding();
 
+// Accessibility identifier for UMA checkbox in the FRE and in Google services
+// settings.
+extern NSString* const kImproveChromeItemAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_COMMON_UI_TABLE_VIEW_TABLE_VIEW_CELLS_CONSTANTS_H_
