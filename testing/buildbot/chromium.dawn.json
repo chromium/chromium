@@ -298,7 +298,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -306,12 +307,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -629,7 +624,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -637,12 +633,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -672,7 +662,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -680,12 +671,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1003,7 +988,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -1011,12 +997,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1334,7 +1314,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -1342,12 +1323,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1377,7 +1352,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -1385,12 +1361,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1732,7 +1702,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -1740,12 +1711,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2068,7 +2033,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2076,12 +2042,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2112,7 +2072,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2120,12 +2081,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2476,7 +2431,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2484,12 +2440,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2523,7 +2473,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2531,12 +2482,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2870,7 +2815,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2878,12 +2824,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2915,7 +2855,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2923,12 +2864,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3270,7 +3205,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -3278,12 +3214,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3606,7 +3536,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -3614,12 +3545,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3650,7 +3575,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -3658,12 +3584,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3952,7 +3872,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -3960,12 +3881,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4282,7 +4197,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4290,12 +4206,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4605,7 +4515,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4613,12 +4524,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4648,7 +4553,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4656,12 +4562,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4971,7 +4871,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4979,12 +4880,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5294,7 +5189,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -5302,12 +5198,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5337,7 +5227,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -5345,12 +5236,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5633,7 +5518,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -5641,12 +5527,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5954,7 +5834,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -5962,12 +5843,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5997,7 +5872,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -6005,12 +5881,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6291,7 +6161,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -6299,12 +6170,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6612,7 +6477,8 @@
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -6620,12 +6486,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6655,7 +6515,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enable-dawn-backend-validation",
-          "--retry-limit=3"
+          "--retry-limit=3",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -6663,12 +6524,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_with_validation_tests",
-        "non_precommit_args": [
-          "--jobs=4"
-        ],
-        "precommit_args": [
-          "--jobs=1"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
