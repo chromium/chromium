@@ -926,9 +926,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     cert_verifier_.SetUpCommandLine(command_line);
     // Needed to allow input before commit on various builders.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load pages from "a.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // TODO(crbug.com/1258185): Migrate to a better mechanism for testing around
     // language detection.
     command_line->AppendSwitch(switches::kOverrideLanguageDetection);
@@ -942,16 +939,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   void TearDownInProcessBrowserTestFixture() override {
     cert_verifier_.TearDownInProcessBrowserTestFixture();
     AutofillUiTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  // Skips AutofillUiTest::TearDownOnMainThread() and instead calls the
-  // grandparent's TearDownOnMainThread(). The reason is:
-  // After autofilling a credit card, there is a delayed task of recording its
-  // use on the db. If we reenable the services, the config would be deleted and
-  // we won't be able to encrypt the cc number. There will be a crash while
-  // encrypting the cc number.
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(
