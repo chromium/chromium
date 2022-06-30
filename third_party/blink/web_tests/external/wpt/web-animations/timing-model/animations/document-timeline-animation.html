@@ -50,10 +50,12 @@
     ];
     const effect =
         new KeyframeEffect(elem, keyframes,
-                           {iterations: 1, duration: 500, fill: 'forwards'});
+                           {iterations: 1, duration: 10000, fill: 'forwards'});
     const timeline = new DocumentTimeline();
     const animation = new Animation(effect, timeline);
     animation.play();
+    await animation.ready;
+    animation.finish();
     await animation.finished;
     await waitForAnimationFrames(2);
     takeScreenshot();
