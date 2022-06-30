@@ -14,7 +14,6 @@
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "fuchsia_web/webengine/common/cast_streaming.h"
 #include "fuchsia_web/webengine/features.h"
 #include "fuchsia_web/webengine/renderer/web_engine_media_renderer_factory.h"

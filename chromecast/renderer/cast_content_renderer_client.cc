@@ -31,7 +31,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media.h"
 #include "media/remoting/receiver_controller.h"

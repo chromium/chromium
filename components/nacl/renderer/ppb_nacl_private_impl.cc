@@ -50,7 +50,6 @@
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/data_url.h"
