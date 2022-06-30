@@ -1790,9 +1790,6 @@ std::unique_ptr<ListValue> ListValue::From(std::unique_ptr<Value> value) {
 }
 
 ListValue::ListValue() : Value(Type::LIST) {}
-ListValue::ListValue(span<const Value> in_list) : Value(in_list) {}
-ListValue::ListValue(ListStorage&& in_list) noexcept
-    : Value(std::move(in_list)) {}
 
 bool ListValue::GetDictionary(size_t index,
                               const DictionaryValue** out_value) const {

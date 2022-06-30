@@ -1436,8 +1436,6 @@ class BASE_EXPORT ListValue : public Value {
   static std::unique_ptr<ListValue> From(std::unique_ptr<Value> value);
 
   ListValue();
-  explicit ListValue(span<const Value> in_list);
-  explicit ListValue(ListStorage&& in_list) noexcept;
 
   // Convenience forms of `Get()`.  Modifies `out_value` (and returns true)
   // only if the index is valid and the Value at that index can be returned

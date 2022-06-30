@@ -84,9 +84,6 @@ TEST(ValuesTest, TestNothrow) {
       "IsNothrowMoveConstructibleFromList");
   static_assert(std::is_nothrow_move_assignable<Value>::value,
                 "IsNothrowMoveAssignable");
-  static_assert(
-      std::is_nothrow_constructible<ListValue, Value::ListStorage&&>::value,
-      "ListIsNothrowMoveConstructibleFromList");
 }
 
 TEST(ValuesTest, EmptyValue) {
@@ -220,24 +217,24 @@ TEST(ValuesTest, ConstructList) {
   EXPECT_EQ(Value::Type::LIST, value.type());
 }
 
-TEST(ValuesTest, ConstructListFromStorage) {
-  Value::ListStorage storage;
-  storage.emplace_back("foo");
+TEST(ValuesTest, ConstructListFromValueList) {
+  Value::List list;
+  list.Append("foo");
   {
-    ListValue value(storage);
+    Value value(list.Clone());
     EXPECT_EQ(Value::Type::LIST, value.type());
-    EXPECT_EQ(1u, value.GetListDeprecated().size());
-    EXPECT_EQ(Value::Type::STRING, value.GetListDeprecated()[0].type());
-    EXPECT_EQ("foo", value.GetListDeprecated()[0].GetString());
+    EXPECT_EQ(1u, value.GetList().size());
+    EXPECT_EQ(Value::Type::STRING, value.GetList()[0].type());
+    EXPECT_EQ("foo", value.GetList()[0].GetString());
   }
 
-  storage.back() = base::Value("bar");
+  list.back() = base::Value("bar");
   {
-    ListValue value(std::move(storage));
+    Value value(std::move(list));
     EXPECT_EQ(Value::Type::LIST, value.type());
-    EXPECT_EQ(1u, value.GetListDeprecated().size());
-    EXPECT_EQ(Value::Type::STRING, value.GetListDeprecated()[0].type());
-    EXPECT_EQ("bar", value.GetListDeprecated()[0].GetString());
+    EXPECT_EQ(1u, value.GetList().size());
+    EXPECT_EQ(Value::Type::STRING, value.GetList()[0].type());
+    EXPECT_EQ("bar", value.GetList()[0].GetString());
   }
 }
 
