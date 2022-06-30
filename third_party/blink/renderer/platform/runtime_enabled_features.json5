@@ -772,12 +772,6 @@
       name: "CSSStyleQueries",
       status: "test"
     },
-    // Make system color keywords compute to themselves.
-    // https://github.com/w3c/csswg-drafts/issues/3847
-    {
-      name: "CSSSystemColorComputeToSelf",
-      status: "experimental",
-    },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
       name: "CSSToggles",

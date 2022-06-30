@@ -49,11 +49,9 @@ class CORE_EXPORT StyleColor {
   explicit StyleColor(RGBA32 color)
       : color_(color), color_keyword_(CSSValueID::kInvalid) {}
   explicit StyleColor(CSSValueID keyword) : color_keyword_(keyword) {}
-  // TODO(1081945): We need to store the color and keyword for system colors
-  // to allow forced colors mode to access system color keywords while the
-  // CSSSystemColorComputeToSelf feature is under development. Once
-  // CSSSystemColorComputeToSelf is enabled, we can remove this ctr and
-  // EffectiveColorKeyword() and use color_keyword_ directly, instead.
+  // We need to store the color and keyword for system colors to be able to
+  // distinguish system colors from a normal color. System colors won't be
+  // overridden by forced colors mode, even if forced-color-adjust is 'auto'.
   StyleColor(Color color, CSSValueID keyword)
       : color_(color), color_keyword_(keyword) {}
   static StyleColor CurrentColor() { return StyleColor(); }
@@ -66,10 +64,9 @@ class CORE_EXPORT StyleColor {
   }
   bool IsSystemColor() const { return IsSystemColor(color_keyword_); }
   Color GetColor() const {
-    // TODO(1081945): System colors will fail the IsNumeric check, as they store
-    // a keyword, but they also have a stored color that may need to be accessed
-    // directly. For example in FilterEffectBuilder::BuildFilterEffect for
-    // shadow colors.
+    // System colors will fail the IsNumeric check, as they store a keyword, but
+    // they also have a stored color that may need to be accessed directly. For
+    // example in FilterEffectBuilder::BuildFilterEffect for shadow colors.
     DCHECK(IsNumeric() || IsSystemColorIncludingDeprecated());
     return color_;
   }
@@ -78,16 +75,12 @@ class CORE_EXPORT StyleColor {
     return color_keyword_;
   }
 
-  // TODO(1081945):  Once CSSSystemColorComputeToSelf is enabled, we can remove
-  // |is_forced_color|.
   Color Resolve(Color current_color,
                 mojom::blink::ColorScheme color_scheme,
                 bool is_forced_color = false) const;
 
   // Resolve and override the resolved color's alpha channel as specified by
   // |alpha|.
-  // TODO(1081945):  Once CSSSystemColorComputeToSelf is enabled, we can remove
-  // |is_forced_color|.
   Color ResolveWithAlpha(Color current_color,
                          mojom::blink::ColorScheme color_scheme,
                          int alpha,

@@ -97,12 +97,8 @@ bool StyleColor::IsSystemColor(CSSValueID id) {
 }
 
 CSSValueID StyleColor::EffectiveColorKeyword() const {
-  if (!RuntimeEnabledFeatures::CSSSystemColorComputeToSelfEnabled()) {
-    return IsSystemColorIncludingDeprecated(color_keyword_)
-               ? CSSValueID::kInvalid
-               : color_keyword_;
-  }
-  return color_keyword_;
+  return IsSystemColorIncludingDeprecated(color_keyword_) ? CSSValueID::kInvalid
+                                                          : color_keyword_;
 }
 
 }  // namespace blink

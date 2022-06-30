@@ -57,7 +57,6 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/rest
 crbug.com/626703 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-margin-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/inline-box-orthogonal-child-with-margins.html [ Failure ]
-crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/oklch-008.html [ Failure ]
 crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]

@@ -1661,20 +1661,6 @@ scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
   return array;
 }
 
-void StyleBuilderConverter::CountSystemColorComputeToSelfUsage(
-    const StyleResolverState& state) {
-  // Count cases where a system color keyword is used on an element whose
-  // color-scheme is different from its parent.
-  // This is a superset of when the feature will change the resolved color
-  // (inheriting the keyword is also required) but it should be a reasonable
-  // approximation for use counting purposes.
-  if (state.Style()->UsedColorScheme() !=
-      state.ParentStyle()->UsedColorScheme()) {
-    UseCounter::Count(state.GetDocument(),
-                      WebFeature::kCSSSystemColorComputeToSelf);
-  }
-}
-
 AtomicString StyleBuilderConverter::ConvertPageTransitionTag(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -1695,7 +1681,6 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
     if (value_id == CSSValueID::kCurrentcolor)
       return StyleColor::CurrentColor();
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
-      CountSystemColorComputeToSelfUsage(state);
       return StyleColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
               value, Color(), state.Style()->UsedColorScheme(),
@@ -1718,7 +1703,6 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
     if (value_id == CSSValueID::kAuto)
       return StyleAutoColor::AutoColor();
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
-      CountSystemColorComputeToSelfUsage(state);
       return StyleAutoColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
               value, Color(), state.Style()->UsedColorScheme(),

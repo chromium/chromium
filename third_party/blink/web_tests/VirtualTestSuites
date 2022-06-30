@@ -601,12 +601,6 @@
              "--enable-blink-features=ForcedColors,ForcedColorsPreserveParentColor"]
   },
   {
-    "prefix": "system-color-compute",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/css/css-color"],
-    "args": ["--enable-blink-features=CSSSystemColorComputeToSelf"]
-  },
-  {
     "prefix": "dark-color-scheme",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-color/system-color-consistency.html",

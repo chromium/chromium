@@ -308,9 +308,6 @@ class StyleBuilderConverter {
       const StyleResolverState&,
       const CSSValue&);
 
-  static void CountSystemColorComputeToSelfUsage(
-      const StyleResolverState& state);
-
   static AtomicString ConvertPageTransitionTag(StyleResolverState&,
                                                const CSSValue&);
 

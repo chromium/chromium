@@ -110,7 +110,6 @@ virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-u
 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-noscroll-body-xhidden.html [ Skip ]
 virtual/scroll-unification/fast/forms/select-popup/popup-menu-appearance-texttransform.html [ Skip ]
-virtual/system-color-compute/external/wpt/css/css-color/t425-hsla-onscreen-b.xht [ Skip ]
 virtual/text-antialias/sub-pixel/text-scaling-pixel.html [ Skip ]
 virtual/threaded/external/wpt/css/css-backgrounds/background-repeat-space-3.html [ Skip ]
 virtual/threaded/external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Skip ]

@@ -3494,26 +3494,6 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   EXPECT_EQ("selector(#scroller3)", rule3->GetSource()->CssText());
 }
 
-TEST_F(StyleEngineTest, SystemColorComputeToSelfUseCount) {
-  // Don't count system color use by itself - only in conjunction with
-  // color-scheme.
-  GetDocument().body()->setInnerHTML(
-      "<style>div { color: MenuText; }</style><div></div>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kCSSSystemColorComputeToSelf));
-
-  // Count system color use when used on an element with a different
-  // color-scheme from its parent.
-  GetDocument().body()->setInnerHTML(
-      "<style>"
-      "div { color: MenuText; color-scheme: dark; }"
-      "</style><div></div>");
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kCSSSystemColorComputeToSelf));
-}
-
 // https://crbug.com/1050564
 TEST_F(StyleEngineTest, MediaAttributeChangeUpdatesFontCacheVersion) {
   GetDocument().body()->setInnerHTML(R"HTML(

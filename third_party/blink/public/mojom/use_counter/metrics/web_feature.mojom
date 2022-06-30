@@ -2667,7 +2667,7 @@ enum WebFeature {
   kOBSOLETE_MainFrameCSPViaOriginPolicy = 3361,
   kHtmlClipboardApiRead = 3362,
   kHtmlClipboardApiWrite = 3363,
-  kCSSSystemColorComputeToSelf = 3364,
+  kOBSOLETE_CSSSystemColorComputeToSelf = 3364,
   kConversionAPIAll = 3365,
   kImpressionRegistration = 3366,
   kConversionRegistration = 3367,
