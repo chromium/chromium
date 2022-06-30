@@ -89,17 +89,33 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
     LayoutUnit table_inline_size,
     const NGConstraintSpace& caption_constraint_space,
     const NGBlockNode& caption,
+    NGBoxStrut margins,
     const NGBlockBreakToken* break_token = nullptr) {
   const NGLayoutResult* layout_result =
       caption.Layout(caption_constraint_space, break_token);
   NGFragment fragment(table_constraint_space.GetWritingDirection(),
                       layout_result->PhysicalFragment());
-  NGBoxStrut margins = ComputeMarginsFor(
-      caption_constraint_space, caption.Style(), table_constraint_space);
   ResolveInlineMargins(caption.Style(), table_style, table_inline_size,
                        fragment.InlineSize(), &margins);
 
   return {caption, layout_result, margins};
+}
+
+// Compute the margins of a caption as best as we can before layout (we need to
+// lay out before we can resolve auto inline-margins). Remember that captions
+// aren't actually inside the table, so its the *border-box* size of the table
+// that matters here (not the content-box) when it comes to resolving
+// percentages.
+NGBoxStrut ComputeCaptionMargins(
+    const NGConstraintSpace& table_constraint_space,
+    const NGBlockNode& caption,
+    LayoutUnit table_border_box_inline_size,
+    const NGBlockBreakToken* caption_break_token = nullptr) {
+  NGBoxStrut margins =
+      ComputeMarginsFor(caption.Style(), table_border_box_inline_size,
+                        table_constraint_space.GetWritingDirection());
+  AdjustMarginsForFragmentation(caption_break_token, &margins);
+  return margins;
 }
 
 void ComputeCaptionFragments(
@@ -111,6 +127,8 @@ void ComputeCaptionFragments(
     LayoutUnit& captions_block_size) {
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
+    NGBoxStrut margins = ComputeCaptionMargins(table_constraint_space, caption,
+                                               table_inline_size);
     NGConstraintSpace caption_constraint_space = CreateCaptionConstraintSpace(
         table_constraint_space, table_style, caption, available_size);
 
@@ -129,7 +147,7 @@ void ComputeCaptionFragments(
 
     NGTableLayoutAlgorithm::CaptionResult caption_result =
         LayoutCaption(table_constraint_space, table_style, table_inline_size,
-                      caption_constraint_space, caption);
+                      caption_constraint_space, caption, margins);
     NGFragment fragment(table_constraint_space.GetWritingDirection(),
                         caption_result.layout_result->PhysicalFragment());
     captions_block_size +=
@@ -1053,6 +1071,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
     const NGLayoutResult* child_result;
     LayoutUnit child_inline_offset;
+    LayoutUnit child_block_end_margin;  // Captions allow margins.
     absl::optional<TableBoxExtent> new_table_box_extent;
     bool is_repeated_section = false;
     if (child.IsTableCaption()) {
@@ -1089,14 +1108,19 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
       LogicalSize available_size(container_builder_.InlineSize(),
                                  kIndefiniteSize);
+      NGBoxStrut margins = ComputeCaptionMargins(
+          ConstraintSpace(), child, container_builder_.InlineSize(),
+          child_break_token);
+      child_block_offset += margins.block_start;
+      child_block_end_margin = margins.block_end;
+
       NGConstraintSpace child_space =
           CreateCaptionConstraintSpace(ConstraintSpace(), Style(), child,
                                        available_size, child_block_offset);
       CaptionResult caption = LayoutCaption(
           ConstraintSpace(), Style(), container_builder_.InlineSize(),
-          child_space, child, child_break_token);
+          child_space, child, margins, child_break_token);
       child_result = caption.layout_result;
-      child_block_offset += caption.margins.block_start;
       child_inline_offset = caption.margins.inline_start;
     } else {
       DCHECK(child.IsTableSection());
@@ -1220,7 +1244,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
     container_builder_.AddResult(
         *child_result, LogicalOffset(child_inline_offset, child_block_offset));
-    child_block_offset += fragment.BlockSize();
+    child_block_offset += fragment.BlockSize() + child_block_end_margin;
 
     if (child.IsTableSection()) {
       // Update the "table box" extent, now that we're past one section.
