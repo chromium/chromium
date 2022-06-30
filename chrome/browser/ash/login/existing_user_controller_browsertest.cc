@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
@@ -1310,9 +1311,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
   EXPECT_TRUE(user->force_online_signin());
 }
 
-// TODO(crbug.com/1324677): Re-enable this test
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
-                       DISABLED_TpmError) {
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, TpmError) {
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::TPM_ERROR);
 
   OobeScreenWaiter(TpmErrorView::kScreenId).Wait();
@@ -1320,7 +1319,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
-  test::OobeJS().ClickOnPath({"tpm-error-message", "restartButton"});
+  test::TapOnPathAndWaitForOobeToBeDestroyed(
+      {"tpm-error-message", "restartButton"});
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
 }
