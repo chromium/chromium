@@ -182,6 +182,7 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PurgeExtensionRecordings);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebApkSourceUrl);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PaymentAppScopeUrl);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebIdentityScopeUrl);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, ObserverNotifiedOnNewEntry);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, AddRemoveObserver);
 
@@ -218,6 +219,9 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   };
 
   using MetricAggregateMap = std::map<uint64_t, MetricAggregate>;
+
+  // Marks for deletion if the |source_id| is of a certain type.
+  void MaybeMarkForDeletion(SourceId source_id);
 
   // Returns the result whether |sanitized_url| should be recorded.
   ShouldRecordUrlResult ShouldRecordUrl(SourceId source_id,

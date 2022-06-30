@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
 #define CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
 
+#include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace base {
@@ -54,17 +55,20 @@ enum class FedCmRequestIdTokenStatus {
 // Records the time from when a call to the API was made to when the accounts
 // dialog is shown.
 void RecordShowAccountsDialogTime(base::TimeDelta duration,
-                                  ukm::SourceId source_id);
+                                  ukm::SourceId source_id,
+                                  const GURL& provider);
 
 // Records the time from when the accounts dialog is shown to when the user
 // presses the Continue button.
 void RecordContinueOnDialogTime(base::TimeDelta duration,
-                                ukm::SourceId source_id);
+                                ukm::SourceId source_id,
+                                const GURL& provider);
 
 // Records the time from when the accounts dialog is shown to when the user
 // closes the dialog without selecting any account.
 void RecordCancelOnDialogTime(base::TimeDelta duration,
-                              ukm::SourceId source_id);
+                              ukm::SourceId source_id,
+                              const GURL& provider);
 
 // Records the time from when the user presses the Continue button to when the
 // idtoken response is received. Also records the overall time from when the API
@@ -72,11 +76,13 @@ void RecordCancelOnDialogTime(base::TimeDelta duration,
 void RecordIdTokenResponseAndTurnaroundTime(
     base::TimeDelta id_token_response_time,
     base::TimeDelta turnaround_time,
-    ukm::SourceId source_id);
+    ukm::SourceId source_id,
+    const GURL& provider);
 
 // Records the status of the |RequestIdToken| call.
 void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
-                                ukm::SourceId source_id);
+                                ukm::SourceId source_id,
+                                const GURL& provider);
 
 // Records whether the user selected account is for sign-in or not.
 void RecordIsSignInUser(bool is_sign_in);

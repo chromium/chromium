@@ -3031,6 +3031,54 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.FedCmIdp">
+  <owner>npm@chromium.org</owner>
+  <owner>webid-core@google.com</owner>
+  <summary>
+    Records performance metrics for FedCM (Federated Credential Management) API.
+    Recorded when the web developer calls the FedCM API. Individual metrics are
+    recorded eagerly, whenever the value has been computed.
+
+    This event uses the specific WEB_IDENTITY ukm_source_id which is generated
+    from the identity provider's origin.
+  </summary>
+  <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
+    <summary>
+      Records the status of a request id token call to the FedCM API.
+    </summary>
+  </metric>
+  <metric name="Timing.CancelOnDialog">
+    <summary>
+      Records the time (in milliseconds) from when the accounts dialog is shown
+      to when the user closes the dialog without selecting any account.
+    </summary>
+  </metric>
+  <metric name="Timing.ContinueOnDialog">
+    <summary>
+      Records the time (in milliseconds) from when the accounts dialog is shown
+      to when the user presses the Continue button.
+    </summary>
+  </metric>
+  <metric name="Timing.IdTokenResponse">
+    <summary>
+      Records the time (in milliseconds) from when the user presses the Continue
+      button to when the id token response is received.
+    </summary>
+  </metric>
+  <metric name="Timing.ShowAccountsDialog">
+    <summary>
+      Records the time (in milliseconds) from when a call to the API was made to
+      when the accounts dialog is shown.
+    </summary>
+  </metric>
+  <metric name="Timing.TurnaroundTime">
+    <summary>
+      Records the overall time (in milliseconds) from when the API is called to
+      when the id token response is received.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.FindInPage" singular="True">
   <owner>vmpstr@chromium.org</owner>
   <owner>chrishtr@chromium.org</owner>

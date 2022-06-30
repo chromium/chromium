@@ -48,7 +48,8 @@ using blink::mojom::RequestIdTokenStatus;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using Entry = ukm::builders::Blink_FedCm;
+using FedCmEntry = ukm::builders::Blink_FedCm;
+using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using IdTokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -726,7 +727,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
   void ExpectRequestIdTokenStatusUKM(IdTokenStatus status) {
-    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+    ExpectRequestIdTokenStatusUKMInternal(status, FedCmEntry::kEntryName);
+    ExpectRequestIdTokenStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
+  }
+
+  void ExpectRequestIdTokenStatusUKMInternal(IdTokenStatus status,
+                                             const char* entry_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     if (entries.empty())
       FAIL() << "No RequestIdTokenStatus was recorded";
@@ -744,7 +751,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ExpectTimingUKM(const std::string& metric_name) {
-    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+    ExpectTimingUKMInternal(metric_name, FedCmEntry::kEntryName);
+    ExpectTimingUKMInternal(metric_name, FedCmIdpEntry::kEntryName);
+  }
+
+  void ExpectTimingUKMInternal(const std::string& metric_name,
+                               const char* entry_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty());
 
@@ -758,7 +771,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ExpectNoTimingUKM(const std::string& metric_name) {
-    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+    ExpectNoTimingUKMInternal(metric_name, FedCmEntry::kEntryName);
+    ExpectNoTimingUKMInternal(metric_name, FedCmIdpEntry::kEntryName);
+  }
+
+  void ExpectNoTimingUKMInternal(const std::string& metric_name,
+                                 const char* entry_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty());
 
@@ -1271,7 +1290,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
       .WillOnce(Return(true));
 
   base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -1322,7 +1341,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
           }));
 
   base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
   EXPECT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1606,7 +1625,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
           }));
 
   base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
   MockConfiguration configuration = kConfigurationValid;

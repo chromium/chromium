@@ -57,6 +57,8 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::DESKTOP_WEB_APP_ID;
     case SourceIdType::WORKER_ID:
       return SourceType::WORKER_ID;
+    case SourceIdType::WEB_IDENTITY_ID:
+      return SourceType::WEB_IDENTITY_ID;
     default:
       NOTREACHED();
       return SourceType::DEFAULT;

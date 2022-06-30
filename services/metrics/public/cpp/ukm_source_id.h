@@ -71,8 +71,19 @@ class METRICS_EXPORT SourceIdObj {
     // specific URL. Metrics with this type will be whitelisted and always
     // recorded. A source ID of this type can be obtained with NoURLSourceId().
     NO_URL_ID = 8,
+    // Source ID for server (HTTP) redirects. A new source of this type and
+    // associated events are expected to be recorded within the same report
+    // interval; it will not be kept in memory between different reports.
+    REDIRECT_ID = 9,
+    // Source ID type for Identity Providers used by the FedCM API. A new source
+    // of this type and associated events are expected to be recorded within the
+    // same report interval; it will not be kept in memory between different
+    // reports. The URLs are provided by the developer when they call the FedCM
+    // API, and hence do not follow a specific pattern. See
+    // https://fedidcg.github.io/FedCM/#examples for examples.
+    WEB_IDENTITY_ID = 10,
 
-    kMaxValue = NO_URL_ID,
+    kMaxValue = WEB_IDENTITY_ID,
   };
 
   // Default constructor has the invalid value.
