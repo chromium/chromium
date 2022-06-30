@@ -1872,10 +1872,6 @@ source_set("chromeos") {
       "../ash/printing/cups_proxy_service_manager_factory.cc",
       "../ash/printing/cups_proxy_service_manager_factory.h",
       "../ash/printing/printer_info_cups.cc",
-      "extensions/printing_metrics/printing_metrics_api.cc",
-      "extensions/printing_metrics/printing_metrics_api.h",
-      "extensions/printing_metrics/printing_metrics_service.cc",
-      "extensions/printing_metrics/printing_metrics_service.h",
     ]
   } else {
     sources += [

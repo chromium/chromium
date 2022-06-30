@@ -208,6 +208,10 @@
 #include "chrome/browser/web_applications/adjustments/web_app_adjustments.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/extensions/chromeos_browser_context_keyed_service_factories.h"
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -278,6 +282,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   chrome_apps::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   chrome_apps::api::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   chrome_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+#endif
   extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)

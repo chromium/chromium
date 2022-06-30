@@ -226,6 +226,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
   void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
+  void BindPrintingMetrics(
+      mojo::PendingReceiver<mojom::PrintingMetrics> receiver) override;
   void BindRemoteAppsLacrosBridge(
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)

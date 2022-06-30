@@ -84,6 +84,7 @@
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/crosapi/mojom/printing_metrics.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
@@ -168,6 +169,14 @@ absl::optional<policy::ComponentPolicyMap> GetDeviceAccountComponentPolicy(
   return policy::CopyComponentPolicyMap(map);
 }
 
+bool GetUseCupsForPrinting() {
+#if defined(USE_CUPS)
+  return true;
+#else
+  return false;
+#endif  // defined(USE_CUPS)
+}
+
 // Returns the device specific data needed for Lacros.
 mojom::DevicePropertiesPtr GetDeviceProperties() {
   mojom::DevicePropertiesPtr result = mojom::DeviceProperties::New();
@@ -216,7 +225,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 85,
+static_assert(crosapi::mojom::Crosapi::Version_ == 86,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -281,6 +290,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::PolicyService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::PrintingMetrics>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Remoting>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ResourceManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
@@ -519,6 +529,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
 
   params->ash_chrome_version = version_info::GetVersionNumber();
+  params->use_cups_for_printing = GetUseCupsForPrinting();
 
   return params;
 }

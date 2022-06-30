@@ -3,16 +3,46 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
-#include "base/logging.h"
+
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Only main profile should be allowed to access the API.
+bool IsContextForMainProfile(content::BrowserContext* context) {
+  return Profile::FromBrowserContext(context)->IsMainProfile();
+}
+
+crosapi::mojom::PrintingMetrics* GetPrintingMetrics() {
+  auto* service = chromeos::LacrosService::Get();
+  if (!service->IsRegistered<crosapi::mojom::PrintingMetrics>() ||
+      !service->IsAvailable<crosapi::mojom::PrintingMetrics>()) {
+    LOG(ERROR) << "chrome.printingMetrics is not available in Lacros";
+    return nullptr;
+  }
+  return service->GetRemote<crosapi::mojom::PrintingMetrics>().get();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 namespace extensions {
 
@@ -28,6 +58,11 @@ PrintingMetricsService::GetFactoryInstance() {
 // static
 PrintingMetricsService* PrintingMetricsService::Get(
     content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!IsContextForMainProfile(context) || !GetPrintingMetrics()) {
+    return nullptr;
+  }
+#endif  // BUIDLFLAG(IS_CHROMEOS_LACROS)
   return BrowserContextKeyedAPIFactory<PrintingMetricsService>::Get(context);
 }
 
@@ -76,6 +111,7 @@ void PrintingMetricsService::EnsureInit() {
   }
   initialized_ = true;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::PrintingMetricsAsh* printing_metrics_ash =
       crosapi::CrosapiManager::Get()->crosapi_ash()->printing_metrics_ash();
 
@@ -83,6 +119,13 @@ void PrintingMetricsService::EnsureInit() {
       Profile::FromBrowserContext(context_),
       remote_.BindNewPipeAndPassReceiver(),
       receiver_.BindNewPipeAndPassRemote());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  GetPrintingMetrics()->RegisterForMainProfile(
+      remote_.BindNewPipeAndPassReceiver(),
+      receiver_.BindNewPipeAndPassRemote());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace extensions

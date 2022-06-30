@@ -366,6 +366,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PrefWatcher",
     "PreferenceAPI",
     "PrimaryAccountPolicyManager",
+  #if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+    "PrintingMetricsService",
+  #endif // BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
     "PrivacyMetricsService",
     "PrivacySandboxService",
     "PrivacySandboxSettings",

@@ -65,6 +65,7 @@
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/crosapi/mojom/printing_metrics.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
@@ -379,6 +380,12 @@ LacrosService::LacrosService()
 
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
+  if (BrowserInitParams::Get()->use_cups_for_printing) {
+    ConstructRemote<
+        crosapi::mojom::PrintingMetrics,
+        &crosapi::mojom::Crosapi::BindPrintingMetrics,
+        Crosapi::MethodMinVersions::kBindPrintingMetricsMinVersion>();
+  }
   ConstructRemote<
       crosapi::mojom::NetworkSettingsService,
       &crosapi::mojom::Crosapi::BindNetworkSettingsService,

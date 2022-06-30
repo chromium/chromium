@@ -133,9 +133,11 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, IsRestrictedToPolicyExtension) {
       extensions::ExtensionRegistry::Get(profile());
   const extensions::Extension* extension =
       GetExtensionByPath(registry->enabled_extensions(), extension_path);
-  ASSERT_FALSE(extension->install_warnings().empty());
-  EXPECT_EQ("'printingMetrics' is not allowed for specified install location.",
-            extension->install_warnings()[0].message);
+  EXPECT_THAT(
+      extension->install_warnings(),
+      testing::Contains(testing::Field(
+          &extensions::InstallWarning::message,
+          "'printingMetrics' is not allowed for specified install location.")));
 }
 
 }  // namespace extensions

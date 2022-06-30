@@ -97,7 +97,10 @@ if (is_chromeos) {
   ]
 
   if (use_cups) {
-    schema_sources_ += [ "printing.idl" ]
+    schema_sources_ += [
+      "printing.idl",
+      "printing_metrics.idl",
+    ]
   }
 }
 
@@ -116,9 +119,6 @@ if (is_chromeos_ash) {
     "wallpaper_private.json",
     "wm_desks_private.idl",
   ]
-  if (use_cups) {
-    schema_sources_ += [ "printing_metrics.idl" ]
-  }
 } else if (is_linux || is_chromeos || is_win) {
   schema_sources_ += [ "input_ime.json" ]
 }

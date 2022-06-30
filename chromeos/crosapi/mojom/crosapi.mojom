@@ -117,8 +117,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 86
-// Next method id: 89
+// Next version: 87
+// Next method id: 91
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -483,6 +483,10 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=35] BindPower@40(pending_receiver<Power> receiver);
 
+  // Binds the PrintingMetrics interface for chrome.printingMetrics API.
+  [MinVersion=86] BindPrintingMetrics@90(
+      pending_receiver<PrintingMetrics> receiver);
+
   // Binds the Resource Manager interface for querying resource status.
   // Added in M93.
   [MinVersion=36] BindResourceManager@41(
@@ -826,8 +830,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 44
-// Next id: 44
+// Next version: 46
+// Next id: 46
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1107,6 +1111,11 @@ struct BrowserInitParams {
   // Example: 105.0.5124.0
   [MinVersion=44]
   string? ash_chrome_version@44;
+
+  // Tells lacros whether ash uses CUPS (Common Unix Printing System) for
+  // printing. This corresponds to the USE_CUPS flag being enabled in ash.
+  [MinVersion=45]
+  bool use_cups_for_printing@45;
 };
 
 // Parameters to specify OpenUrl behavior.

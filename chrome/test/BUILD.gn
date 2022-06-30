@@ -3972,6 +3972,7 @@ if (!is_android) {
           "../browser/extensions/api/printing/printing_apitest.cc",
         ]
         deps += [
+          "//chrome/browser/chromeos/extensions/printing_metrics",
           "//chromeos/printing",
           "//printing:test_support",
         ]

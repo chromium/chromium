@@ -653,6 +653,13 @@ void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
   prefs_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindPrintingMetrics(
+    mojo::PendingReceiver<mojom::PrintingMetrics> receiver) {
+#if defined(USE_CUPS)
+  printing_metrics_ash_->BindReceiver(std::move(receiver));
+#endif  // defined(USE_CUPS)
+}
+
 void CrosapiAsh::BindRemoteAppsLacrosBridge(
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
         receiver) {

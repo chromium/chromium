@@ -14,9 +14,17 @@ PrintingMetricsGetPrintJobsFunction::~PrintingMetricsGetPrintJobsFunction() =
     default;
 
 ExtensionFunction::ResponseAction PrintingMetricsGetPrintJobsFunction::Run() {
-  PrintingMetricsService::Get(browser_context())
-      ->GetPrintJobs(base::BindOnce(
-          &PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved, this));
+  auto* service = PrintingMetricsService::Get(browser_context());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!service) {
+    return RespondNow(Error("API is not accessible."));
+  }
+#else
+  DCHECK(service);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  service->GetPrintJobs(base::BindOnce(
+      &PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved, this));
 
   return RespondLater();
 }

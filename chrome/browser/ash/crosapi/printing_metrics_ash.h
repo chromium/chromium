@@ -72,8 +72,13 @@ class PrintingMetricsAsh : public crosapi::mojom::PrintingMetrics {
       mojo::PendingReceiver<crosapi::mojom::PrintingMetricsForProfile> receiver,
       mojo::PendingRemote<crosapi::mojom::PrintJobObserverForProfile> observer);
 
+  void BindReceiver(
+      mojo::PendingReceiver<crosapi::mojom::PrintingMetrics> receiver);
+
  private:
   mojo::UniqueReceiverSet<crosapi::mojom::PrintingMetricsForProfile> receivers_;
+
+  mojo::ReceiverSet<crosapi::mojom::PrintingMetrics> crosapi_receivers_;
 };
 
 }  // namespace crosapi

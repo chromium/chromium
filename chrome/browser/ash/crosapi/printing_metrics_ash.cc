@@ -89,4 +89,9 @@ void PrintingMetricsAsh::RegisterForProfile(
   receivers_.Add(std::move(service), std::move(receiver));
 }
 
+void PrintingMetricsAsh::BindReceiver(
+    mojo::PendingReceiver<crosapi::mojom::PrintingMetrics> receiver) {
+  crosapi_receivers_.Add(this, std::move(receiver));
+}
+
 }  // namespace crosapi

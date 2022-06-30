@@ -44,7 +44,6 @@
 
 #if defined(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_proxy_service_manager_factory.h"
-#include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
 
@@ -72,7 +71,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::MediaPlayerAPI::GetFactoryInstance();
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
-  extensions::PrintingMetricsService::GetFactoryInstance();
 #endif
   FileChangeServiceFactory::GetInstance();
   file_manager::EventRouterFactory::GetInstance();
