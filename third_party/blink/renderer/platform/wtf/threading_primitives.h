@@ -36,7 +36,6 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -49,8 +48,6 @@ class DeferredTaskHandler;
 }
 
 namespace WTF {
-
-class ThreadCondition;
 
 // Note: Prefer base::Lock to WTF::Mutex. The implementation is the same, this
 // will be removed. crbug.com/1290281.
@@ -69,8 +66,6 @@ class LOCKABLE WTF_EXPORT Mutex {
 
  private:
   base::Lock lock_;
-
-  friend class ThreadCondition;
 };
 
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
@@ -143,29 +138,11 @@ class MutexTryLocker final {
   bool locked_;
 };
 
-class WTF_EXPORT ThreadCondition final {
-  USING_FAST_MALLOC(ThreadCondition);  // Only HeapTest.cpp requires.
-
- public:
-  explicit ThreadCondition(Mutex& mutex) : cv_(&mutex.lock_) {}
-  ThreadCondition(const ThreadCondition&) = delete;
-  ThreadCondition& operator=(const ThreadCondition&) = delete;
-  ~ThreadCondition() = default;
-
-  void Wait() { cv_.Wait(); }
-  void Signal() { cv_.Signal(); }
-  void Broadcast() { cv_.Broadcast(); }
-
- private:
-  base::ConditionVariable cv_;
-};
-
 }  // namespace WTF
 
 using WTF::Mutex;
 using WTF::MutexLocker;
 using WTF::MutexTryLocker;
 using WTF::RecursiveMutex;
-using WTF::ThreadCondition;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
