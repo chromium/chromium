@@ -3803,7 +3803,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_RootDomain) {
 DnsConfig CreateValidDnsConfig() {
   IPAddress dns_ip(192, 168, 1, 0);
   DnsConfig config;
-  config.nameservers.push_back(IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
+  config.nameservers.emplace_back(dns_ip, dns_protocol::kDefaultPort);
   config.doh_config =
       *DnsOverHttpsConfig::FromString("https://dns.example.com/");
   config.secure_dns_mode = SecureDnsMode::kOff;

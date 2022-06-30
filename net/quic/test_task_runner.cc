@@ -31,8 +31,8 @@ bool TestTaskRunner::PostDelayedTask(const base::Location& from_here,
                                      base::OnceClosure task,
                                      base::TimeDelta delay) {
   EXPECT_GE(delay, base::TimeDelta());
-  tasks_.push_back(PostedTask(from_here, std::move(task), NowInTicks(*clock_),
-                              delay, base::TestPendingTask::NESTABLE));
+  tasks_.emplace_back(from_here, std::move(task), NowInTicks(*clock_), delay,
+                      base::TestPendingTask::NESTABLE);
   return true;
 }
 

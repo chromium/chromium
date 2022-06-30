@@ -183,10 +183,9 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     // connection preface, initial settings, and window update.
 
     // HTTP/2 connection preface.
-    frames_.push_back(spdy::SpdySerializedFrame(
-        const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
-        spdy::kHttp2ConnectionHeaderPrefixSize,
-        /* owns_buffer = */ false));
+    frames_.emplace_back(const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
+                         spdy::kHttp2ConnectionHeaderPrefixSize,
+                         /* owns_buffer = */ false);
     AddWrite(&frames_.back());
 
     // Server advertises WebSockets over HTTP/2 support.
@@ -284,7 +283,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     }
 
     // EOF.
-    reads_.push_back(MockRead(ASYNC, 0, sequence_number_++));
+    reads_.emplace_back(ASYNC, 0, sequence_number_++);
 
     auto socket_data = std::make_unique<SequencedSocketData>(reads_, writes_);
     socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
@@ -377,13 +376,13 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
  private:
   void AddWrite(const spdy::SpdySerializedFrame* frame) {
-    writes_.push_back(
-        MockWrite(ASYNC, frame->data(), frame->size(), sequence_number_++));
+    writes_.emplace_back(ASYNC, frame->data(), frame->size(),
+                         sequence_number_++);
   }
 
   void AddRead(const spdy::SpdySerializedFrame* frame) {
-    reads_.push_back(
-        MockRead(ASYNC, frame->data(), frame->size(), sequence_number_++));
+    reads_.emplace_back(ASYNC, frame->data(), frame->size(),
+                        sequence_number_++);
   }
 
  protected:

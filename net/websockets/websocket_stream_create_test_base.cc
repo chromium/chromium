@@ -122,7 +122,7 @@ WebSocketStreamCreateTestBase::RequestHeadersToVector(
   HttpRequestHeaders::Iterator it(headers);
   std::vector<HeaderKeyValuePair> result;
   while (it.GetNext())
-    result.push_back(HeaderKeyValuePair(it.name(), it.value()));
+    result.emplace_back(it.name(), it.value());
   return result;
 }
 
@@ -133,7 +133,7 @@ WebSocketStreamCreateTestBase::ResponseHeadersToVector(
   std::string name, value;
   std::vector<HeaderKeyValuePair> result;
   while (headers.EnumerateHeaderLines(&iter, &name, &value))
-    result.push_back(HeaderKeyValuePair(name, value));
+    result.emplace_back(name, value);
   return result;
 }
 

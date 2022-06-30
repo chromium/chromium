@@ -632,9 +632,9 @@ void SSLClientSocketImpl::GetSSLCertRequestInfo(
   const STACK_OF(CRYPTO_BUFFER)* authorities =
       SSL_get0_server_requested_CAs(ssl_.get());
   for (const CRYPTO_BUFFER* ca_name : authorities) {
-    cert_request_info->cert_authorities.push_back(
-        std::string(reinterpret_cast<const char*>(CRYPTO_BUFFER_data(ca_name)),
-                    CRYPTO_BUFFER_len(ca_name)));
+    cert_request_info->cert_authorities.emplace_back(
+        reinterpret_cast<const char*>(CRYPTO_BUFFER_data(ca_name)),
+        CRYPTO_BUFFER_len(ca_name));
   }
 
   cert_request_info->cert_key_types.clear();

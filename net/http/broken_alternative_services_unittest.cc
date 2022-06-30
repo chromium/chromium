@@ -42,9 +42,9 @@ class BrokenAlternativeServicesTest
   void OnExpireBrokenAlternativeService(
       const AlternativeService& expired_alternative_service,
       const NetworkIsolationKey& network_isolation_key) override {
-    expired_alt_svcs_.push_back(BrokenAlternativeService(
-        expired_alternative_service, network_isolation_key,
-        true /* use_network_isolation_key */));
+    expired_alt_svcs_.emplace_back(expired_alternative_service,
+                                   network_isolation_key,
+                                   true /* use_network_isolation_key */);
   }
 
   void TestExponentialBackoff(base::TimeDelta initial_delay,

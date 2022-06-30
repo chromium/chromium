@@ -1249,12 +1249,12 @@ class SimpleGetRunner {
   // The data used to back |string_piece| must stay alive until all mock data
   // has been read.
   void AddRead(base::StringPiece string_piece) {
-    reads_.push_back(MockRead(SYNCHRONOUS, string_piece.data(),
-                              string_piece.length(), sequence_number_++));
+    reads_.emplace_back(SYNCHRONOUS, string_piece.data(), string_piece.length(),
+                        sequence_number_++);
   }
 
   void SetupParserAndSendRequest() {
-    reads_.push_back(MockRead(SYNCHRONOUS, 0, sequence_number_++));  // EOF
+    reads_.emplace_back(SYNCHRONOUS, 0, sequence_number_++);  // EOF
 
     data_ = std::make_unique<SequencedSocketData>(reads_, writes_);
     stream_socket_ = CreateConnectedSocket(data_.get());

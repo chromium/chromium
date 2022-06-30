@@ -6617,7 +6617,7 @@ class AltSvcFrameTest : public SpdySessionTest {
   void AddSocketData(const spdy::SpdyAltSvcIR& altsvc_ir) {
     altsvc_frame_ = spdy_util_.SerializeFrame(altsvc_ir);
     reads_.push_back(CreateMockRead(altsvc_frame_, 0));
-    reads_.push_back(MockRead(ASYNC, 0, 1));
+    reads_.emplace_back(ASYNC, 0, 1);
 
     data_ =
         std::make_unique<SequencedSocketData>(reads_, base::span<MockWrite>());

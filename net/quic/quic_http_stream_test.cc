@@ -308,12 +308,10 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   // Adds a packet to the list of expected writes.
   void AddWrite(std::unique_ptr<quic::QuicReceivedPacket> packet) {
-    writes_.push_back(PacketToWrite(SYNCHRONOUS, packet.release()));
+    writes_.emplace_back(SYNCHRONOUS, packet.release());
   }
 
-  void AddWrite(IoMode mode, int rv) {
-    writes_.push_back(PacketToWrite(mode, rv));
-  }
+  void AddWrite(IoMode mode, int rv) { writes_.emplace_back(mode, rv); }
 
   // Returns the packet to be written at position |pos|.
   quic::QuicReceivedPacket* GetWrite(size_t pos) { return writes_[pos].packet; }

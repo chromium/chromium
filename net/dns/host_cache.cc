@@ -1066,9 +1066,9 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
                 (*host_ports_list)[i].GetInt())) {
           return false;
         }
-        hostname_records.value().push_back(HostPortPair(
+        hostname_records.value().emplace_back(
             (*hostname_records_list)[i].GetString(),
-            base::checked_cast<uint16_t>((*host_ports_list)[i].GetInt())));
+            base::checked_cast<uint16_t>((*host_ports_list)[i].GetInt()));
       }
     }
 

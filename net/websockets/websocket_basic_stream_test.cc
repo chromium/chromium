@@ -233,7 +233,7 @@ class WebSocketBasicStreamSocketChunkedReadTest
           static_cast<int>(data + data_size - start) < len) {
         len = static_cast<int>(data + data_size - start);
       }
-      reads_.push_back(MockRead(mode, start, len));
+      reads_.emplace_back(mode, start, len);
       start += len;
     }
     CreateStream(reads_, base::span<MockWrite>());

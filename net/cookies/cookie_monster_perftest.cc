@@ -220,7 +220,7 @@ TEST_F(CookieMonsterTest, TestAddCookieOnManyHosts) {
   std::string cookie(kCookieLine);
   std::vector<GURL> gurls;  // just wanna have ffffuunnn
   for (int i = 0; i < kNumCookies; ++i) {
-    gurls.push_back(GURL(base::StringPrintf("https://a%04d.izzle", i)));
+    gurls.emplace_back(base::StringPrintf("https://a%04d.izzle", i));
   }
 
   SetCookieCallback setCookieCallback;

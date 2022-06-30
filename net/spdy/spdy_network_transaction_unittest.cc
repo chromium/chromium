@@ -6364,7 +6364,7 @@ class SpdyNetworkTransactionPushHeaderTest
         spdy_util_.ConstructSpdyPriority(2, 1, IDLE, true));
     writes.push_back(CreateMockWrite(priority, seq++));
 
-    reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, seq++));
+    reads.emplace_back(ASYNC, ERR_IO_PENDING, seq++);
 
     spdy::Http2HeaderBlock pushed_response_headers;
     pushed_response_headers[spdy::kHttp2StatusHeader] =
@@ -6413,9 +6413,9 @@ class SpdyNetworkTransactionPushHeaderTest
       reads.push_back(CreateMockRead(body2, seq++));
     }
 
-    reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, seq++));
+    reads.emplace_back(ASYNC, ERR_IO_PENDING, seq++);
 
-    reads.push_back(MockRead(ASYNC, 0, seq++));
+    reads.emplace_back(ASYNC, 0, seq++);
 
     SequencedSocketData data(reads, writes);
 
@@ -7504,8 +7504,7 @@ TEST_F(SpdyNetworkTransactionTest, WindowUpdateSent) {
     remaining -= frame_size;
   }
   // Yield.
-  reads.push_back(
-      MockRead(SYNCHRONOUS, ERR_IO_PENDING, writes.size() + reads.size()));
+  reads.emplace_back(SYNCHRONOUS, ERR_IO_PENDING, writes.size() + reads.size());
 
   spdy::SpdySerializedFrame session_window_update(
       spdy_util_.ConstructSpdyWindowUpdate(0, session_window_update_delta));
@@ -7699,7 +7698,7 @@ TEST_F(SpdyNetworkTransactionTest, SessionMaxQueuedCappedFramesExceeded) {
         CreateMockWrite(ping_frames.back(), writes.size() + reads.size()));
   }
   // Stop reading.
-  reads.push_back(MockRead(ASYNC, 0, writes.size() + reads.size()));
+  reads.emplace_back(ASYNC, 0, writes.size() + reads.size());
 
   SequencedSocketData data(reads, writes);
   auto session_deps = std::make_unique<SpdySessionDependencies>();
@@ -7798,7 +7797,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResume) {
   // Fill in mock reads.
   std::vector<MockRead> reads;
   // Force a pause.
-  reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, i++));
+  reads.emplace_back(ASYNC, ERR_IO_PENDING, i++);
   // Construct read frame for window updates that gives enough space to upload
   // the rest of the data.
   spdy::SpdySerializedFrame session_window_update(
@@ -7820,7 +7819,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResume) {
   reads.push_back(CreateMockRead(reply, i++));
   reads.push_back(CreateMockRead(body2, i++));
   reads.push_back(CreateMockRead(body5, i++));
-  reads.push_back(MockRead(ASYNC, 0, i++));  // EOF
+  reads.emplace_back(ASYNC, 0, i++);  // EOF
 
   SequencedSocketData data(reads, writes);
 
@@ -7947,7 +7946,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   // Fill in mock reads.
   std::vector<MockRead> reads;
   // Force a pause.
-  reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, i++));
+  reads.emplace_back(ASYNC, ERR_IO_PENDING, i++);
 
   // Construct read frame for SETTINGS that gives enough space to upload the
   // rest of the data.
@@ -7976,7 +7975,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   reads.push_back(CreateMockRead(reply, i++));
   reads.push_back(CreateMockRead(body2, i++));
   reads.push_back(CreateMockRead(body5, i++));
-  reads.push_back(MockRead(ASYNC, 0, i++));  // EOF
+  reads.emplace_back(ASYNC, 0, i++);  // EOF
 
   // Force all writes to happen before any read, last write will not
   // actually queue a frame, due to window size being 0.
@@ -8108,7 +8107,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   // Fill in mock reads.
   std::vector<MockRead> reads;
   // Force a pause.
-  reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, i++));
+  reads.emplace_back(ASYNC, ERR_IO_PENDING, i++);
   // Construct read frame for SETTINGS that makes the send_window_size
   // negative.
   spdy::SettingsMap new_settings;
@@ -8139,7 +8138,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   reads.push_back(CreateMockRead(reply, i++));
   reads.push_back(CreateMockRead(body2, i++));
   reads.push_back(CreateMockRead(body5, i++));
-  reads.push_back(MockRead(ASYNC, 0, i++));  // EOF
+  reads.emplace_back(ASYNC, 0, i++);  // EOF
 
   // Force all writes to happen before any read, last write will not
   // actually queue a frame, due to window size being 0.

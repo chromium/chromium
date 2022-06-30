@@ -11808,7 +11808,7 @@ HttpCacheHugeResourceTest::GetTestModes() {
 
   for (const auto phase : kTransactionPhases)
     for (const auto initializer : kInitializers)
-      test_modes.push_back(std::make_pair(phase, initializer));
+      test_modes.emplace_back(phase, initializer);
 
   return test_modes;
 }

@@ -120,17 +120,13 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
     reads_.push_back(std::move(read));
   }
 
-  void AddReadEOF() {
-    reads_.push_back(MockRead(ASYNC, 0, offset_++));
-  }
+  void AddReadEOF() { reads_.emplace_back(ASYNC, 0, offset_++); }
 
   void AddWritePause() {
-    writes_.push_back(MockWrite(ASYNC, ERR_IO_PENDING, offset_++));
+    writes_.emplace_back(ASYNC, ERR_IO_PENDING, offset_++);
   }
 
-  void AddReadPause() {
-    reads_.push_back(MockRead(ASYNC, ERR_IO_PENDING, offset_++));
-  }
+  void AddReadPause() { reads_.emplace_back(ASYNC, ERR_IO_PENDING, offset_++); }
 
   base::span<const MockRead> GetReads() { return reads_; }
   base::span<const MockWrite> GetWrites() { return writes_; }

@@ -448,8 +448,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     static const uint8_t kClientCertCAName[] = {
         0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55,
         0x04, 0x03, 0x0c, 0x04, 0x42, 0x20, 0x43, 0x41};
-    server_ssl_config_.cert_authorities.push_back(std::string(
-        std::begin(kClientCertCAName), std::end(kClientCertCAName)));
+    server_ssl_config_.cert_authorities.emplace_back(
+        std::begin(kClientCertCAName), std::end(kClientCertCAName));
 
     scoped_refptr<X509Certificate> expected_client_cert(
         ImportCertFromFile(GetTestCertsDirectory(), kClientCertFileName));

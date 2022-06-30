@@ -326,7 +326,7 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
           reader.ReadPiece(&opt_data, opt_data_size))) {
       return nullptr;
     }
-    rdata->opts_.push_back(Opt(opt_code, opt_data));
+    rdata->opts_.emplace_back(opt_code, opt_data);
   }
 
   return rdata;

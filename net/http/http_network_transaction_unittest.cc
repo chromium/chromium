@@ -2086,7 +2086,7 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
   if (write_failure) {
     ASSERT_FALSE(read_failure);
     data1_writes.push_back(*write_failure);
-    data1_reads.push_back(MockRead(ASYNC, OK));
+    data1_reads.emplace_back(ASYNC, OK);
   } else {
     ASSERT_TRUE(read_failure);
     if (use_spdy) {
@@ -2094,10 +2094,10 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
       if (chunked_upload)
         data1_writes.push_back(CreateMockWrite(spdy_request_body));
     } else {
-      data1_writes.push_back(MockWrite(kHttpRequest));
+      data1_writes.emplace_back(kHttpRequest);
       if (chunked_upload) {
-        data1_writes.push_back(MockWrite("6\r\nfoobar\r\n"));
-        data1_writes.push_back(MockWrite("0\r\n\r\n"));
+        data1_writes.emplace_back("6\r\nfoobar\r\n");
+        data1_writes.emplace_back("0\r\n\r\n");
       }
     }
     data1_reads.push_back(*read_failure);
@@ -2116,19 +2116,18 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
       data2_writes.push_back(CreateMockWrite(spdy_request_body, seq++, ASYNC));
     data2_reads.push_back(CreateMockRead(spdy_response, seq++, ASYNC));
     data2_reads.push_back(CreateMockRead(spdy_data, seq++, ASYNC));
-    data2_reads.push_back(MockRead(ASYNC, OK, seq++));
+    data2_reads.emplace_back(ASYNC, OK, seq++);
   } else {
     int seq = 0;
-    data2_writes.push_back(
-        MockWrite(ASYNC, kHttpRequest, strlen(kHttpRequest), seq++));
+    data2_writes.emplace_back(ASYNC, kHttpRequest, strlen(kHttpRequest), seq++);
     if (chunked_upload) {
-      data2_writes.push_back(MockWrite(ASYNC, "6\r\nfoobar\r\n", 11, seq++));
-      data2_writes.push_back(MockWrite(ASYNC, "0\r\n\r\n", 5, seq++));
+      data2_writes.emplace_back(ASYNC, "6\r\nfoobar\r\n", 11, seq++);
+      data2_writes.emplace_back(ASYNC, "0\r\n\r\n", 5, seq++);
     }
-    data2_reads.push_back(
-        MockRead(ASYNC, kHttpResponse, strlen(kHttpResponse), seq++));
-    data2_reads.push_back(MockRead(ASYNC, kHttpData, strlen(kHttpData), seq++));
-    data2_reads.push_back(MockRead(ASYNC, OK, seq++));
+    data2_reads.emplace_back(ASYNC, kHttpResponse, strlen(kHttpResponse),
+                             seq++);
+    data2_reads.emplace_back(ASYNC, kHttpData, strlen(kHttpData), seq++);
+    data2_reads.emplace_back(ASYNC, OK, seq++);
   }
   SequencedSocketData data2(data2_reads, data2_writes);
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
@@ -15929,8 +15928,8 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       // kProxyChallenge uses Proxy-Connection: close which means that the
       // socket is closed and a new one will be created for the next request.
       if (read_write_round.read.data == kProxyChallenge.data) {
-        mock_reads.push_back(std::vector<MockRead>());
-        mock_writes.push_back(std::vector<MockWrite>());
+        mock_reads.emplace_back();
+        mock_writes.emplace_back();
       }
 
       if (read_write_round.extra_read) {

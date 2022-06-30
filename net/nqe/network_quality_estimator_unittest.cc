@@ -159,7 +159,7 @@ class TestRTTObserver : public NetworkQualityEstimator::RTTObserver {
   void OnRTTObservation(int32_t rtt_ms,
                         const base::TimeTicks& timestamp,
                         NetworkQualityObservationSource source) override {
-    observations_.push_back(Observation(rtt_ms, timestamp, source));
+    observations_.emplace_back(rtt_ms, timestamp, source);
   }
 
   // Returns the last received RTT observation that has source set to |source|.
@@ -195,7 +195,7 @@ class TestThroughputObserver
       int32_t throughput_kbps,
       const base::TimeTicks& timestamp,
       NetworkQualityObservationSource source) override {
-    observations_.push_back(Observation(throughput_kbps, timestamp, source));
+    observations_.emplace_back(throughput_kbps, timestamp, source);
   }
 
  private:

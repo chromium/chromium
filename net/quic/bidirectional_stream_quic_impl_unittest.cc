@@ -482,13 +482,11 @@ class BidirectionalStreamQuicImplTest
 
   // Adds a packet to the list of expected writes.
   void AddWrite(std::unique_ptr<quic::QuicReceivedPacket> packet) {
-    writes_.push_back(PacketToWrite(SYNCHRONOUS, packet.release()));
+    writes_.emplace_back(SYNCHRONOUS, packet.release());
   }
 
   // Adds a write error to the list of expected writes.
-  void AddWriteError(IoMode mode, int rv) {
-    writes_.push_back(PacketToWrite(mode, rv));
-  }
+  void AddWriteError(IoMode mode, int rv) { writes_.emplace_back(mode, rv); }
 
   void ProcessPacket(std::unique_ptr<quic::QuicReceivedPacket> packet) {
     connection_->ProcessUdpPacket(ToQuicSocketAddress(self_addr_),

@@ -952,18 +952,18 @@ class MockQuicData {
   ~MockQuicData() = default;
 
   void AddRead(std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-    reads_.push_back(
-        MockRead(ASYNC, packet->data(), packet->length(), packet_number_++));
+    reads_.emplace_back(ASYNC, packet->data(), packet->length(),
+                        packet_number_++);
     packets_.push_back(std::move(packet));
   }
 
   void AddRead(IoMode mode, int rv) {
-    reads_.push_back(MockRead(mode, rv, packet_number_++));
+    reads_.emplace_back(mode, rv, packet_number_++);
   }
 
   void AddWrite(std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-    writes_.push_back(MockWrite(SYNCHRONOUS, packet->data(), packet->length(),
-                                packet_number_++));
+    writes_.emplace_back(SYNCHRONOUS, packet->data(), packet->length(),
+                         packet_number_++);
     packets_.push_back(std::move(packet));
   }
 

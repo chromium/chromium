@@ -97,8 +97,7 @@ class DnsConfigServiceTest : public TestWithTaskEnvironment {
   // Generate a config using the given seed..
   DnsConfig MakeConfig(unsigned seed) {
     DnsConfig config;
-    config.nameservers.push_back(
-        IPEndPoint(IPAddress(1, 2, 3, 4), seed & 0xFFFF));
+    config.nameservers.emplace_back(IPAddress(1, 2, 3, 4), seed & 0xFFFF);
     EXPECT_TRUE(config.IsValid());
     return config;
   }

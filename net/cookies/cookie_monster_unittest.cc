@@ -557,7 +557,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                                CookiePriorityToString(priority).c_str(),
                                is_secure ? "secure" : "");
         EXPECT_TRUE(SetCookie(cm, https_www_foo_.url(), cookie));
-        cookie_data.push_back(std::make_pair(is_secure, priority));
+        cookie_data.emplace_back(is_secure, priority);
         id_list[is_secure][priority].push_back(next_cookie_id);
       }
     }

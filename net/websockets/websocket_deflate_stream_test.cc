@@ -1192,8 +1192,7 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
     ASSERT_THAT(deflate_stream_->WriteFrames(&frames, CompletionOnceCallback()),
                 IsOk());
     for (auto& frame : *stub.frames()) {
-      buffers.push_back(
-          std::string(frame->payload, frame->header.payload_length));
+      buffers.emplace_back(frame->payload, frame->header.payload_length);
       frame->payload = (buffers.end() - 1)->data();
     }
     total_compressed_frames.insert(

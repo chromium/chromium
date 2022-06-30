@@ -11288,8 +11288,8 @@ TEST_P(QuicStreamFactoryTest, SharedCryptoConfig) {
   Initialize();
 
   std::vector<string> cannoncial_suffixes;
-  cannoncial_suffixes.push_back(string(".c.youtube.com"));
-  cannoncial_suffixes.push_back(string(".googlevideo.com"));
+  cannoncial_suffixes.emplace_back(".c.youtube.com");
+  cannoncial_suffixes.emplace_back(".googlevideo.com");
 
   for (const auto& cannoncial_suffix : cannoncial_suffixes) {
     string r1_host_name("r1");
@@ -11328,8 +11328,8 @@ TEST_P(QuicStreamFactoryTest, SharedCryptoConfig) {
 TEST_P(QuicStreamFactoryTest, CryptoConfigWhenProofIsInvalid) {
   Initialize();
   std::vector<string> cannoncial_suffixes;
-  cannoncial_suffixes.push_back(string(".c.youtube.com"));
-  cannoncial_suffixes.push_back(string(".googlevideo.com"));
+  cannoncial_suffixes.emplace_back(".c.youtube.com");
+  cannoncial_suffixes.emplace_back(".googlevideo.com");
 
   for (const auto& cannoncial_suffix : cannoncial_suffixes) {
     string r3_host_name("r3");
@@ -11695,7 +11695,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkIsolationKey) {
   std::vector<NetworkIsolationKey> network_isolation_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_isolation_keys.push_back(NetworkIsolationKey(site, site));
+    network_isolation_keys.emplace_back(site, site);
 
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -11764,7 +11764,7 @@ TEST_P(QuicStreamFactoryTest,
   std::vector<NetworkIsolationKey> network_isolation_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_isolation_keys.push_back(NetworkIsolationKey(site, site));
+    network_isolation_keys.emplace_back(site, site);
   }
 
   const quic::QuicServerId kQuicServerId(

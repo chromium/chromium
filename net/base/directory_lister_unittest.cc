@@ -135,7 +135,7 @@ class DirectoryListerTest : public PlatformTest, public WithTaskEnvironment {
     // directory.
     std::list<std::pair<base::FilePath, int> > directories;
     ASSERT_TRUE(temp_root_dir_.CreateUniqueTempDir());
-    directories.push_back(std::make_pair(temp_root_dir_.GetPath(), 0));
+    directories.emplace_back(temp_root_dir_.GetPath(), 0);
     while (!directories.empty()) {
       std::pair<base::FilePath, int> dir_data = directories.front();
       directories.pop_front();
@@ -157,7 +157,7 @@ class DirectoryListerTest : public PlatformTest, public WithTaskEnvironment {
           ++total_created_file_system_objects_in_temp_root_dir_;
           if (dir_data.first == temp_root_dir_.GetPath())
             ++created_file_system_objects_in_temp_root_dir_;
-          directories.push_back(std::make_pair(dir_path, dir_data.second + 1));
+          directories.emplace_back(dir_path, dir_data.second + 1);
         }
       }
     }

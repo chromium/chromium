@@ -206,11 +206,11 @@ void WebSocketMockClientSocketFactoryMaker::SetExpectations(
   // detail into account if |return_to_read| is big enough.
   for (size_t place = 0; place < detail_->return_to_read.size();
        place += kHttpStreamParserBufferSize) {
-    detail_->reads.push_back(
-        MockRead(SYNCHRONOUS, detail_->return_to_read.data() + place,
-                 std::min(detail_->return_to_read.size() - place,
-                          kHttpStreamParserBufferSize),
-                 sequence++));
+    detail_->reads.emplace_back(SYNCHRONOUS,
+                                detail_->return_to_read.data() + place,
+                                std::min(detail_->return_to_read.size() - place,
+                                         kHttpStreamParserBufferSize),
+                                sequence++);
   }
   auto socket_data = std::make_unique<SequencedSocketData>(
       detail_->reads, base::make_span(&detail_->write, 1));

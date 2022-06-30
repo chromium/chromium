@@ -80,8 +80,7 @@ class ContextHostResolverTest : public ::testing::Test,
   void SetMockDnsRules(MockDnsClientRuleList rules) {
     IPAddress dns_ip(192, 168, 1, 0);
     DnsConfig config;
-    config.nameservers.push_back(
-        IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
+    config.nameservers.emplace_back(dns_ip, dns_protocol::kDefaultPort);
     config.doh_config = *DnsOverHttpsConfig::FromString("https://example.com");
     EXPECT_TRUE(config.IsValid());
 

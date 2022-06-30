@@ -2748,10 +2748,10 @@ TEST_P(SSLClientSocketCertRequestInfoTest, TwoAuthorities) {
 
   SSLServerConfig config = GetServerConfig();
   config.client_cert_type = SSLServerConfig::OPTIONAL_CLIENT_CERT;
-  config.cert_authorities.push_back(
-      std::string(std::begin(kThawteDN), std::end(kThawteDN)));
-  config.cert_authorities.push_back(
-      std::string(std::begin(kDiginotarDN), std::end(kDiginotarDN)));
+  config.cert_authorities.emplace_back(std::begin(kThawteDN),
+                                       std::end(kThawteDN));
+  config.cert_authorities.emplace_back(std::begin(kDiginotarDN),
+                                       std::end(kDiginotarDN));
   ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
   scoped_refptr<SSLCertRequestInfo> request_info = GetCertRequest();
   ASSERT_TRUE(request_info.get());

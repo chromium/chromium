@@ -18,29 +18,29 @@ void MockQuicData::AddConnect(IoMode mode, int rv) {
 
 void MockQuicData::AddRead(IoMode mode,
                            std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-  reads_.push_back(
-      MockRead(mode, packet->data(), packet->length(), sequence_number_++));
+  reads_.emplace_back(mode, packet->data(), packet->length(),
+                      sequence_number_++);
   packets_.push_back(std::move(packet));
 }
 void MockQuicData::AddRead(IoMode mode, int rv) {
-  reads_.push_back(MockRead(mode, rv, sequence_number_++));
+  reads_.emplace_back(mode, rv, sequence_number_++);
 }
 
 void MockQuicData::AddWrite(IoMode mode,
                             std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-  writes_.push_back(
-      MockWrite(mode, packet->data(), packet->length(), sequence_number_++));
+  writes_.emplace_back(mode, packet->data(), packet->length(),
+                       sequence_number_++);
   packets_.push_back(std::move(packet));
 }
 
 void MockQuicData::AddWrite(IoMode mode, int rv) {
-  writes_.push_back(MockWrite(mode, rv, sequence_number_++));
+  writes_.emplace_back(mode, rv, sequence_number_++);
 }
 
 void MockQuicData::AddWrite(IoMode mode,
                             int rv,
                             std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-  writes_.push_back(MockWrite(mode, rv, sequence_number_++));
+  writes_.emplace_back(mode, rv, sequence_number_++);
   packets_.push_back(std::move(packet));
 }
 

@@ -120,14 +120,12 @@ class DnsSocketData {
     if (Transport::TCP == transport_) {
       std::unique_ptr<uint16_t> length(new uint16_t);
       *length = base::HostToNet16(query_->io_buffer()->size());
-      writes_.push_back(MockWrite(mode,
-                                  reinterpret_cast<const char*>(length.get()),
-                                  sizeof(uint16_t), num_reads_and_writes()));
+      writes_.emplace_back(mode, reinterpret_cast<const char*>(length.get()),
+                           sizeof(uint16_t), num_reads_and_writes());
       lengths_.push_back(std::move(length));
     }
-    writes_.push_back(MockWrite(mode, query_->io_buffer()->data(),
-                                query_->io_buffer()->size(),
-                                num_reads_and_writes()));
+    writes_.emplace_back(mode, query_->io_buffer()->data(),
+                         query_->io_buffer()->size(), num_reads_and_writes());
   }
 
   DnsSocketData(const DnsSocketData&) = delete;
@@ -145,14 +143,12 @@ class DnsSocketData {
     if (Transport::TCP == transport_) {
       std::unique_ptr<uint16_t> length(new uint16_t);
       *length = base::HostToNet16(tcp_length);
-      reads_.push_back(MockRead(mode,
-                                reinterpret_cast<const char*>(length.get()),
-                                sizeof(uint16_t), num_reads_and_writes()));
+      reads_.emplace_back(mode, reinterpret_cast<const char*>(length.get()),
+                          sizeof(uint16_t), num_reads_and_writes());
       lengths_.push_back(std::move(length));
     }
-    reads_.push_back(MockRead(mode, response->io_buffer()->data(),
-                              response->io_buffer_size(),
-                              num_reads_and_writes()));
+    reads_.emplace_back(mode, response->io_buffer()->data(),
+                        response->io_buffer_size(), num_reads_and_writes());
     responses_.push_back(std::move(response));
   }
 
@@ -194,7 +190,7 @@ class DnsSocketData {
 
   // Add error response.
   void AddReadError(int error, IoMode mode) {
-    reads_.push_back(MockRead(mode, error, num_reads_and_writes()));
+    reads_.emplace_back(mode, error, num_reads_and_writes());
   }
 
   // Build, if needed, and return the SocketDataProvider. No new responses
@@ -205,8 +201,8 @@ class DnsSocketData {
     // Terminate the reads with ERR_IO_PENDING to prevent overrun and default to
     // timeout.
     if (transport_ != Transport::HTTPS) {
-      reads_.push_back(MockRead(SYNCHRONOUS, ERR_IO_PENDING,
-                                writes_.size() + reads_.size()));
+      reads_.emplace_back(SYNCHRONOUS, ERR_IO_PENDING,
+                          writes_.size() + reads_.size());
     }
     provider_ = std::make_unique<SequencedSocketData>(reads_, writes_);
     if (Transport::TCP == transport_ || Transport::HTTPS == transport_) {
@@ -608,8 +604,8 @@ class DnsTransactionTestBase : public testing::Test {
     CHECK_LE(num_servers, 255u);
     config_.nameservers.clear();
     for (size_t i = 0; i < num_servers; ++i) {
-      config_.nameservers.push_back(
-          IPEndPoint(IPAddress(192, 168, 1, i), dns_protocol::kDefaultPort));
+      config_.nameservers.emplace_back(IPAddress(192, 168, 1, i),
+                                       dns_protocol::kDefaultPort);
     }
   }
 

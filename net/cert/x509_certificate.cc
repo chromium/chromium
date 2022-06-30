@@ -215,7 +215,7 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromPickleUnsafeOptions(
   for (size_t i = 0; i < chain_length; ++i) {
     if (!pickle_iter->ReadData(&data, &data_length))
       return nullptr;
-    cert_chain.push_back(base::StringPiece(data, data_length));
+    cert_chain.emplace_back(data, data_length);
   }
   return CreateFromDERCertChainUnsafeOptions(cert_chain, options);
 }

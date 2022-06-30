@@ -67,8 +67,8 @@ void BackendCleanupTracker::AddPostCleanupCallback(base::OnceClosure cb) {
 }
 
 void BackendCleanupTracker::AddPostCleanupCallbackImpl(base::OnceClosure cb) {
-  post_cleanup_cbs_.push_back(
-      std::make_pair(base::SequencedTaskRunnerHandle::Get(), std::move(cb)));
+  post_cleanup_cbs_.emplace_back(base::SequencedTaskRunnerHandle::Get(),
+                                 std::move(cb));
 }
 
 BackendCleanupTracker::BackendCleanupTracker(const base::FilePath& path)
