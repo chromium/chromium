@@ -39,7 +39,7 @@ _COMMAND_LINE_PARAMETER = 'cmdlinearg-parameter'
 _DEFAULT_ANNOTATIONS = [
     'SmallTest', 'MediumTest', 'LargeTest', 'EnormousTest', 'IntegrationTest']
 # This annotation is for disabled tests that should not be run in Test Reviver.
-_DO_NOT_REVIVE_ANNOTATIONS = ['DoNotRevive']
+_DO_NOT_REVIVE_ANNOTATIONS = ['DoNotRevive', 'Manual']
 _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS = [
     'DisabledTest', 'FlakyTest', 'Manual']
 _VALID_ANNOTATIONS = set(_DEFAULT_ANNOTATIONS + _DO_NOT_REVIVE_ANNOTATIONS +

@@ -632,6 +632,27 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
                 'method': 'testMethod1',
             },
         ],
+    }, {
+        'annotations': {
+            'Feature': {
+                'value': ['Baz']
+            }
+        },
+        'class':
+        'org.chromium.test.SampleTest3',
+        'superclass':
+        'junit.framework.TestCase',
+        'methods': [
+            {
+                'annotations': {
+                    'FlakyTest': None,
+                    'Manual': {
+                        'message': 'sample message'
+                    },
+                },
+                'method': 'testMethod1',
+            },
+        ],
     }]
 
     expected_tests = [
@@ -648,7 +669,7 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
         },
     ]
 
-    o._excluded_annotations = [('DoNotRevive', None)]
+    o._excluded_annotations = [('DoNotRevive', None), ('Manual', None)]
     o._test_jar = 'path/to/test.jar'
     o._junit4_runner_class = 'J4Runner'
     actual_tests = o.ProcessRawTests(raw_tests)
