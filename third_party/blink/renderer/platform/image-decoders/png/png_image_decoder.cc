@@ -203,6 +203,9 @@ static std::unique_ptr<ColorProfile> ParseCicpChunk(
 
   sk_sp<SkColorSpace> sk_color_space =
       color_space.ToGfxColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+  if (!sk_color_space)
+    return nullptr;
+
   skcms_ICCProfile profile;
   sk_color_space->toProfile(&profile);
 

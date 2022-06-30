@@ -857,8 +857,14 @@ bool AVIFImageDecoder::UpdateDemuxer() {
                container->transferCharacteristics !=
                    AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED) {
       gfx::ColorSpace frame_cs = GetColorSpace(container);
+
       sk_sp<SkColorSpace> sk_color_space =
           frame_cs.GetAsFullRangeRGB().ToSkColorSpace();
+      if (!sk_color_space) {
+        DVLOG(1) << "Image contains an unsupported color space";
+        return false;
+      }
+
       skcms_ICCProfile profile;
       sk_color_space->toProfile(&profile);
       SetEmbeddedColorProfile(std::make_unique<ColorProfile>(profile));
