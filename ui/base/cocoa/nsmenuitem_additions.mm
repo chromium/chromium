@@ -31,8 +31,10 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
       NSEventModifierFlagCommand | NSEventModifierFlagControl |
       NSEventModifierFlagOption | NSEventModifierFlagShift;
 
-  // If `event` isn't a function key press we can simply return the mask.
-  if (([event modifierFlags] & NSEventModifierFlagFunction) == 0)
+  // If `event` isn't a function key press or it's not a character key press
+  // (e.g. it's a flags change), we can simply return the mask.
+  if (([event modifierFlags] & NSEventModifierFlagFunction) == 0 ||
+      [event type] != NSEventTypeKeyDown)
     return eventModifierMask;
 
   // "Up arrow", home, and other "function" key events include
