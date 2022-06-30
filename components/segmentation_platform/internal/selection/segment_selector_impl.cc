@@ -233,6 +233,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
       options->segment_id = needed_segment;
       options->segmentation_key = config_->segmentation_key;
       options->ignore_db_scores = config_->on_demand_execution;
+      options->input_context = input_context;
       options->callback =
           base::BindOnce(&SegmentSelectorImpl::OnGetResultForSegmentSelection,
                          weak_ptr_factory_.GetWeakPtr(), std::move(ranks),

@@ -271,6 +271,7 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
   // The pointer is kept alive by the `request_state`.
   request->segment_info = segment_info;
   request->record_metrics_for_default = true;
+  request->input_context = request_state->options->input_context;
   request->callback =
       base::BindOnce(&SegmentResultProviderImpl::OnModelExecuted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
