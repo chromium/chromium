@@ -6143,19 +6143,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gaia.BadRequestTypeForOAuth2AccessToken"
-    enum="OAuth2BadRequestError" expires_after="never">
-<!-- expires-never: Used to monitor OAuth code health and debug issues. -->
-
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Detailed error type in bad requests for OAuth2 access tokens. Recorded when
-    a HTTP 400 is received in response to a access token request.
-  </summary>
-</histogram>
-
 <histogram name="Gaia.ResponseCodesForOAuth2AccessToken"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="never">
 <!-- expires-never: Used to monitor OAuth code health and debug issues. -->
@@ -6167,6 +6154,20 @@ chromium-metrics-reviews@google.com.
     URLFetcher response codes for OAuth2AccessToken. Positive values are HTTP
     status codes, negative values are network error codes. Recorded on responses
     to OAuth access token requests.
+  </summary>
+</histogram>
+
+<histogram name="Gaia.ResponseForOAuth2AccessToken" enum="OAuth2Response"
+    expires_after="never">
+<!-- expires-never: Used to monitor OAuth code health and debug issues. -->
+
+  <owner>msarda@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of the Oauth2 access token request when a response is
+    received from the LSO server except in net failure cases. In error cases, it
+    records the error code in the response body.
   </summary>
 </histogram>
 

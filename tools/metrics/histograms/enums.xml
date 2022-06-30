@@ -70376,16 +70376,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
 </enum>
 
-<enum name="OAuth2BadRequestError">
-  <int value="0" label="invalid_request"/>
-  <int value="1" label="invalid_client"/>
-  <int value="2" label="invalid_grant"/>
-  <int value="3" label="unauthorized_client"/>
-  <int value="4" label="unsupported_grant_type"/>
-  <int value="5" label="invalid_scope"/>
-  <int value="6" label="unknown error"/>
-</enum>
-
 <enum name="OAuth2LoginAccountRevokedMigrationState">
   <int value="0" label="Account ID migration not started"/>
   <int value="1" label="Account ID migration in progress"/>
@@ -70413,6 +70403,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Parse remote consent failure"/>
   <int value="10"
       label="Mint token success with fallback scopes (deprecated 02/2021)"/>
+</enum>
+
+<enum name="OAuth2Response">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="200 OK"/>
+  <int value="2" label="200 OK unexpected format"/>
+  <int value="3" label="Error unexpected format"/>
+  <int value="4" label="Invalid request"/>
+  <int value="5" label="Invalid client"/>
+  <int value="6" label="Invalid grant"/>
+  <int value="7" label="Unauthorized client"/>
+  <int value="8" label="Unsupported grant type"/>
+  <int value="9" label="Invalid scope"/>
+  <int value="10" label="Restricted client"/>
+  <int value="11" label="Rate Limit Exceeded"/>
+  <int value="12" label="Internal Failure"/>
 </enum>
 
 <enum name="OAuthMultiloginResponseStatus">

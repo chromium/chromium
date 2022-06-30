@@ -23,6 +23,9 @@ class SharedURLLoaderFactory;
 // https://developers.google.com/identity/protocols/oauth2/web-server?csw=1#obtainingaccesstokens
 class GaiaAccessTokenFetcher : public OAuth2AccessTokenFetcherImpl {
  public:
+  static const char kOAuth2NetResponseCodeHistogramName[];
+  static const char kOAuth2ResponseHistogramName[];
+
   static std::unique_ptr<GaiaAccessTokenFetcher>
   CreateExchangeRefreshTokenForAccessTokenInstance(
       OAuth2AccessTokenConsumer* consumer,
@@ -45,8 +48,7 @@ class GaiaAccessTokenFetcher : public OAuth2AccessTokenFetcherImpl {
 
   // OAuth2AccessTokenFetcherImpl:
   void RecordResponseCodeUma(int error_value) const override;
-  void RecordBadRequestTypeUma(
-      OAuth2ErrorCodesForHistogram access_error) const override;
+  void RecordOAuth2Response(OAuth2Response response) const override;
   GURL GetAccessTokenURL() const override;
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override;
 };

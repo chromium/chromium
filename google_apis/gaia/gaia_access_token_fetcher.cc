@@ -14,6 +14,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
+const char GaiaAccessTokenFetcher::kOAuth2NetResponseCodeHistogramName[] =
+    "Gaia.ResponseCodesForOAuth2AccessToken";
+
+// static
+const char GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName[] =
+    "Gaia.ResponseForOAuth2AccessToken";
+
+// static
 std::unique_ptr<GaiaAccessTokenFetcher>
 GaiaAccessTokenFetcher::CreateExchangeRefreshTokenForAccessTokenInstance(
     OAuth2AccessTokenConsumer* consumer,
@@ -48,14 +56,12 @@ GaiaAccessTokenFetcher::GaiaAccessTokenFetcher(
 GaiaAccessTokenFetcher::~GaiaAccessTokenFetcher() = default;
 
 void GaiaAccessTokenFetcher::RecordResponseCodeUma(int error_value) const {
-  base::UmaHistogramSparse("Gaia.ResponseCodesForOAuth2AccessToken",
-                           error_value);
+  base::UmaHistogramSparse(kOAuth2NetResponseCodeHistogramName, error_value);
 }
 
-void GaiaAccessTokenFetcher::RecordBadRequestTypeUma(
-    OAuth2ErrorCodesForHistogram access_error) const {
-  UMA_HISTOGRAM_ENUMERATION("Gaia.BadRequestTypeForOAuth2AccessToken",
-                            access_error, OAUTH2_ACCESS_ERROR_COUNT);
+void GaiaAccessTokenFetcher::RecordOAuth2Response(
+    OAuth2Response response) const {
+  base::UmaHistogramEnumeration(kOAuth2ResponseHistogramName, response);
 }
 
 GURL GaiaAccessTokenFetcher::GetAccessTokenURL() const {

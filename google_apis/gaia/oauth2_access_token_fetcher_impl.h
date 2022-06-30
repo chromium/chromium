@@ -41,17 +41,24 @@ class SharedURLLoaderFactory;
 // while talking to Google's OAuth servers.
 class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
  public:
-  // Enumerated constants for logging server responses on 400 errors, matching
-  // RFC 6749.
-  enum OAuth2ErrorCodesForHistogram {
-    OAUTH2_ACCESS_ERROR_INVALID_REQUEST = 0,
-    OAUTH2_ACCESS_ERROR_INVALID_CLIENT,
-    OAUTH2_ACCESS_ERROR_INVALID_GRANT,
-    OAUTH2_ACCESS_ERROR_UNAUTHORIZED_CLIENT,
-    OAUTH2_ACCESS_ERROR_UNSUPPORTED_GRANT_TYPE,
-    OAUTH2_ACCESS_ERROR_INVALID_SCOPE,
-    OAUTH2_ACCESS_ERROR_UNKNOWN,
-    OAUTH2_ACCESS_ERROR_COUNT,
+  // Enumerated constants of server responses, matching RFC 6749.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum OAuth2Response {
+    kUnknownError = 0,
+    kOk = 1,
+    kOkUnexpectedFormat = 2,
+    kErrorUnexpectedFormat = 3,
+    kInvalidRequest = 4,
+    kInvalidClient = 5,
+    kInvalidGrant = 6,
+    kUnauthorizedClient = 7,
+    kUnsuportedGrantType = 8,
+    kInvalidScope = 9,
+    kRestrictedClient = 10,
+    kRateLimitExceeded = 11,
+    kInternalFailure = 12,
+    kMaxValue = kInternalFailure,
   };
 
   OAuth2AccessTokenFetcherImpl(
@@ -84,8 +91,7 @@ class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
 
   // Derived classes override these methods to record UMA histograms if needed.
   virtual void RecordResponseCodeUma(int error_value) const {}
-  virtual void RecordBadRequestTypeUma(
-      OAuth2ErrorCodesForHistogram access_error) const {}
+  virtual void RecordOAuth2Response(OAuth2Response response) const {}
 
   // Derived class must specify the GetAccessToken base URL to use.
   virtual GURL GetAccessTokenURL() const = 0;
@@ -112,11 +118,11 @@ class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
       const std::vector<std::string>& scopes);
 
   static bool ParseGetAccessTokenSuccessResponse(
-      std::unique_ptr<std::string> response_body,
+      const std::string& response_body,
       OAuth2AccessTokenConsumer::TokenResponse* token_response);
 
   static bool ParseGetAccessTokenFailureResponse(
-      std::unique_ptr<std::string> response_body,
+      const std::string& response_body,
       std::string* error);
 
   // State that is set during construction.
