@@ -1,7 +1,7 @@
-From d9c11b79d8963d74c240a44d905c4f0a0ee90e99 Mon Sep 17 00:00:00 2001
+From 37e783712e971b38f092e4c56b636857ddbd3805 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Thu, 20 Jan 2022 16:29:40 -0500
-Subject: [PATCH 2/4] Disable line number optimization
+Subject: [PATCH 2/3] Disable line number optimization
 
 ---
  src/main/java/com/android/tools/r8/D8Command.java | 3 +++
@@ -9,11 +9,11 @@ Subject: [PATCH 2/4] Disable line number optimization
  2 files changed, 5 insertions(+)
 
 diff --git a/src/main/java/com/android/tools/r8/D8Command.java b/src/main/java/com/android/tools/r8/D8Command.java
-index 203b1d6032..e12b0c7aeb 100644
+index 76c2966450..f05d307ff3 100644
 --- a/src/main/java/com/android/tools/r8/D8Command.java
 +++ b/src/main/java/com/android/tools/r8/D8Command.java
-@@ -662,6 +662,9 @@ public final class D8Command extends BaseCompilerCommand {
-     internal.setDumpInputFlags(getDumpInputFlags(), skipDump);
+@@ -657,6 +657,9 @@ public final class D8Command extends BaseCompilerCommand {
+     internal.setDumpInputFlags(getDumpInputFlags());
      internal.dumpOptions = dumpOptions();
  
 +    // Added where it hopefully won't have merge conflicts.
@@ -23,10 +23,10 @@ index 203b1d6032..e12b0c7aeb 100644
    }
  
 diff --git a/src/main/java/com/android/tools/r8/R8Command.java b/src/main/java/com/android/tools/r8/R8Command.java
-index 309a475a42..7eb7ec0142 100644
+index 7498045d2c..d545f8348f 100644
 --- a/src/main/java/com/android/tools/r8/R8Command.java
 +++ b/src/main/java/com/android/tools/r8/R8Command.java
-@@ -982,6 +982,8 @@ public final class R8Command extends BaseCompilerCommand {
+@@ -972,6 +972,8 @@ public final class R8Command extends BaseCompilerCommand {
      internal.mainDexKeptGraphConsumer = mainDexKeptGraphConsumer;
  
      internal.dataResourceConsumer = internal.programConsumer.getDataResourceConsumer();
@@ -36,5 +36,5 @@ index 309a475a42..7eb7ec0142 100644
      internal.featureSplitConfiguration = featureSplitConfiguration;
  
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.37.0.rc0.161.g10f37bed90-goog
 

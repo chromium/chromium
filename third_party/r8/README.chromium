@@ -70,10 +70,8 @@ cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d
 * If patching fails:
 git clone https://r8.googlesource.com/r8
 cd r8
-  * Find latest tag:
-git fetch origin --tags
-git tag -l  # Often unnecessary as output from the fetch includes recent tags.
-git checkout $TAG  # e.g. 3.0.25-dev, whichever tag failed patching.
+  * Pull the latest code:
+git pull
   * Apply patches:
 git checkout -b my_branch
 git am $CHROMIUM_SRC/third_party/r8/3pp/patches/*.patch
