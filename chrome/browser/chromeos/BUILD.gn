@@ -1468,6 +1468,8 @@ source_set("chromeos") {
     "../ash/system_logs/traffic_counters_log_source.h",
     "../ash/system_logs/ui_hierarchy_log_source.cc",
     "../ash/system_logs/ui_hierarchy_log_source.h",
+    "../ash/system_logs/virtual_keyboard_log_source.cc",
+    "../ash/system_logs/virtual_keyboard_log_source.h",
     "../ash/system_token_cert_db_initializer.cc",
     "../ash/system_token_cert_db_initializer.h",
     "../ash/tether/fake_tether_service.cc",

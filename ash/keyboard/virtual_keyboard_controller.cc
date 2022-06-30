@@ -25,7 +25,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/events/devices/touchscreen_device.h"
 
 namespace ash {
 namespace {
@@ -47,10 +46,9 @@ void ResetVirtualKeyboard() {
 }  // namespace
 
 VirtualKeyboardController::VirtualKeyboardController()
-    : has_external_keyboard_(false),
-      has_internal_keyboard_(false),
-      has_touchscreen_(false),
-      ignore_external_keyboard_(false) {
+    : has_internal_keyboard_(false),
+      ignore_external_keyboard_(false),
+      ignore_internal_keyboard_(false) {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
@@ -109,16 +107,12 @@ void VirtualKeyboardController::UpdateDevices() {
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
 
-  // Checks for touchscreens.
-  has_touchscreen_ = device_data_manager->GetTouchscreenDevices().size() > 0;
-
+  touchscreens_ = device_data_manager->GetTouchscreenDevices();
   // Checks for keyboards.
-  has_external_keyboard_ = false;
+  external_keyboards_.clear();
   has_internal_keyboard_ = false;
   for (const ui::InputDevice& device :
        device_data_manager->GetKeyboardDevices()) {
-    if (has_internal_keyboard_ && has_external_keyboard_)
-      break;
     ui::InputDeviceType type = device.type;
     if (type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
       has_internal_keyboard_ = true;
@@ -126,7 +120,7 @@ void VirtualKeyboardController::UpdateDevices() {
          (type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
           bluetooth_devices_observer_->IsConnectedBluetoothDevice(device))) &&
         !device.suspected_imposter) {
-      has_external_keyboard_ = true;
+      external_keyboards_.push_back(device);
     }
   }
   // Update keyboard state.
@@ -134,17 +128,17 @@ void VirtualKeyboardController::UpdateDevices() {
 }
 
 void VirtualKeyboardController::UpdateKeyboardEnabled() {
-  bool ignore_internal_keyboard = Shell::Get()
-                                      ->tablet_mode_controller()
-                                      ->AreInternalInputDeviceEventsBlocked();
+  bool ignore_internal_keyboard_ = Shell::Get()
+                                       ->tablet_mode_controller()
+                                       ->AreInternalInputDeviceEventsBlocked();
   bool is_internal_keyboard_active =
-      has_internal_keyboard_ && !ignore_internal_keyboard;
+      has_internal_keyboard_ && !ignore_internal_keyboard_;
   keyboard::SetTouchKeyboardEnabled(
-      !is_internal_keyboard_active && has_touchscreen_ &&
-      (!has_external_keyboard_ || ignore_external_keyboard_));
+      !is_internal_keyboard_active && !touchscreens_.empty() &&
+      (external_keyboards_.empty() || ignore_external_keyboard_));
   Shell::Get()->system_tray_notifier()->NotifyVirtualKeyboardSuppressionChanged(
-      !is_internal_keyboard_active && has_touchscreen_ &&
-      has_external_keyboard_);
+      !is_internal_keyboard_active && !touchscreens_.empty() &&
+      !external_keyboards_.empty());
 }
 
 void VirtualKeyboardController::ForceShowKeyboard() {
@@ -196,6 +190,28 @@ void VirtualKeyboardController::OnBluetoothAdapterOrDeviceChanged(
           device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO) {
     UpdateDevices();
   }
+}
+
+bool VirtualKeyboardController::HasInternalKeyboard() const {
+  return has_internal_keyboard_;
+}
+
+const std::vector<ui::InputDevice>&
+VirtualKeyboardController::GetExternalKeyboards() const {
+  return external_keyboards_;
+}
+
+const std::vector<ui::TouchscreenDevice>&
+VirtualKeyboardController::GetTouchscreens() const {
+  return touchscreens_;
+}
+
+bool VirtualKeyboardController::IsInternalKeyboardIgnored() const {
+  return ignore_internal_keyboard_;
+}
+
+bool VirtualKeyboardController::IsExternalKeyboardIgnored() const {
+  return ignore_external_keyboard_;
 }
 
 }  // namespace ash
