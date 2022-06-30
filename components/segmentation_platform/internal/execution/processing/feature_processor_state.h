@@ -86,6 +86,12 @@ class FeatureProcessorState {
   // Update the input tensor vector.
   void AppendTensor(const std::vector<ProcessedValue>& data, bool is_input);
 
+  // For testing only.
+  void set_input_context_for_testing(
+      scoped_refptr<InputContext> input_context) {
+    input_context_ = input_context;
+  }
+
  private:
   const base::Time prediction_time_;
   const base::TimeDelta bucket_duration_;

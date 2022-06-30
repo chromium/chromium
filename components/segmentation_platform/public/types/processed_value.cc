@@ -18,7 +18,7 @@ ProcessedValue::ProcessedValue(base::Time val)
 ProcessedValue::ProcessedValue(int64_t val)
     : type(Type::INT64), int64_val(val) {}
 ProcessedValue::ProcessedValue(const GURL& val)
-    : url(std::make_unique<GURL>(val)) {}
+    : type(Type::URL), url(std::make_unique<GURL>(val)) {}
 
 ProcessedValue::ProcessedValue(const ProcessedValue& other) {
   *this = other;
@@ -52,7 +52,7 @@ ProcessedValue& ProcessedValue::operator=(const ProcessedValue& other) {
       int64_val = other.int64_val;
       return *this;
     case Type::URL:
-      url = std::make_unique<GURL>(*url);
+      url = std::make_unique<GURL>(*other.url);
       return *this;
   }
 }

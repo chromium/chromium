@@ -2255,6 +2255,7 @@ static_library("browser") {
     "//components/security_interstitials/core",
     "//components/security_state/content",
     "//components/security_state/core",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",

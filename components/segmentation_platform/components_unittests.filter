@@ -12,6 +12,7 @@ ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
 ModelExecutorTest.*
 OptimizationGuideSegmentationModelProviderTest.*
+PriceTrackingInputDelegateTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformDummyUkmManagerTest.*
 SegmentationPlatformServiceImplEmptyConfigTest.*
