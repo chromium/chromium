@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -32,8 +33,7 @@ class RenderFrameHost;
 // WebContentsVideoCaptureDevice |device| class any time the frame sink or
 // main render frame's view changes.
 class CONTENT_EXPORT WebContentsFrameTracker final
-    : public WebContentsObserver,
-      public base::SupportsWeakPtr<WebContentsFrameTracker> {
+    : public WebContentsObserver {
  public:
   // We generally retrieve certain properties by accessing fields on the
   // WebContents object, however these properties may come from a different
@@ -61,11 +61,15 @@ class CONTENT_EXPORT WebContentsFrameTracker final
     virtual float GetScaleOverrideForCapture() const = 0;
   };
 
-  // NOTE on lifetime: |device| should outlive the WebContentsFrameTracker. The
-  // |device| will be exclusively accessed on the sequence that is used to
-  // construct |this| (which must not be the UI thread).
-  WebContentsFrameTracker(base::WeakPtr<WebContentsVideoCaptureDevice> device,
-                          MouseCursorOverlayController* cursor_controller);
+  // The |device| weak pointer will be used to post tasks back to the device via
+  // |device_task_runner|.
+  //
+  // See the cursor_controller_ member comments for cursor_controller lifetime
+  // documentation.
+  WebContentsFrameTracker(
+      scoped_refptr<base::SequencedTaskRunner> device_task_runner,
+      base::WeakPtr<WebContentsVideoCaptureDevice> device,
+      MouseCursorOverlayController* cursor_controller);
 
   WebContentsFrameTracker(WebContentsFrameTracker&&) = delete;
   WebContentsFrameTracker(const WebContentsFrameTracker&) = delete;
@@ -117,7 +121,9 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // By including it in frame's metadata, Viz informs Blink what was the
   // latest invocation of cropTo() before a given frame was produced.
   //
-  // The callback reports success/failure.
+  // The callback reports success/failure. The callback may be called on an
+  // arbitrary sequence, so the caller is responsible for re-posting it
+  // to the desired target sequence as necessary.
   void Crop(const base::Token& crop_id,
             uint32_t crop_version,
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
@@ -193,6 +199,8 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // so the |current_content_size| passed into |CalculatePreferredScaleFactor|
   // may differ from this value.
   gfx::Size capture_size_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

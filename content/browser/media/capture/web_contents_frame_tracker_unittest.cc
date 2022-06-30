@@ -81,7 +81,6 @@ class SimpleContext : public WebContentsFrameTracker::Context {
 class MockCaptureDevice : public WebContentsVideoCaptureDevice,
                           public base::SupportsWeakPtr<MockCaptureDevice> {
  public:
-  using WebContentsVideoCaptureDevice::AsWeakPtr;
   MOCK_METHOD2(OnTargetChanged,
                void(const absl::optional<viz::VideoCaptureTarget>&, uint32_t));
   MOCK_METHOD0(OnTargetPermanentlyLost, void());
@@ -98,6 +97,12 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
+    // The tests assume that they are running on the main thread (which is
+    // equivalent to the browser's UI thread) so that they can make calls on the
+    // tracker object synchronously.
+    ASSERT_TRUE(
+        content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
     // Views in the web context are incredibly fragile and prone to
     // non-deterministic test failures, so we use TestWebContents here.
     web_contents_ = TestWebContents::Create(browser_context(), nullptr);
@@ -106,19 +111,24 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     // All tests should call target changed as part of initialization.
     EXPECT_CALL(*device_, OnTargetChanged(_, _)).Times(1);
 
-    tracker_ = std::make_unique<WebContentsFrameTracker>(device_->AsWeakPtr(),
-                                                         controller());
-
+    // This PostTask technically isn't necessary since we're already on the main
+    // thread which is equivalent to the browser's UI thread, but it's a bit
+    // cleaner to do so in case we want to switch to a different threading model
+    // for the tests in the future.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&WebContentsFrameTrackerTest::SetUpOnUIThread,
-                                  base::Unretained(this)));
+                                  base::Unretained(this),
+                                  base::ThreadTaskRunnerHandle::Get()));
     RunAllTasksUntilIdle();
   }
 
-  void SetUpOnUIThread() {
+  void SetUpOnUIThread(
+      const scoped_refptr<base::SequencedTaskRunner> device_task_runner) {
     auto context = std::make_unique<SimpleContext>();
     raw_context_ = context.get();
     SetScreenSize(kSize1080p);
+    tracker_ = std::make_unique<WebContentsFrameTracker>(
+        device_task_runner, device_->AsWeakPtr(), controller());
     tracker_->SetWebContentsAndContextForTesting(web_contents_.get(),
                                                  std::move(context));
   }
@@ -147,17 +157,21 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   }
 
   void StartTrackerOnUIThread(const gfx::Size& capture_size) {
+    // Using base::Unretained for the tracker is presumed safe due to using
+    // RunAllTasksUntilIdle in TearDown.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsFrameTracker::WillStartCapturingWebContents,
-                       tracker_->AsWeakPtr(), capture_size));
+                       base::Unretained(tracker_.get()), capture_size));
   }
 
   void StopTrackerOnUIThread() {
+    // Using base::Unretained for the tracker is presumed safe due to using
+    // RunAllTasksUntilIdle in TearDown.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsFrameTracker::DidStopCapturingWebContents,
-                       tracker_->AsWeakPtr()));
+                       base::Unretained(tracker_.get())));
   }
 
   // The controller is ignored on Android, and must be initialized on all
