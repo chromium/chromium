@@ -6725,6 +6725,7 @@ test("unit_tests") {
       "../browser/usb/usb_tab_helper_unittest.cc",
       "../browser/usb/web_usb_detector_unittest.cc",
       "../browser/usb/web_usb_service_impl_unittest.cc",
+      "../browser/user_notes/user_note_service_delegate_impl_unittest.cc",
       "../browser/user_notes/user_notes_tab_helper_unittest.cc",
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
