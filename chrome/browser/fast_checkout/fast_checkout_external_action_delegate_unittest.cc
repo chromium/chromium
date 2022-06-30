@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/fast_checkout/proto/fast_checkout.pb.h"
-#include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+#include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -32,13 +32,18 @@ autofill_assistant::external::Action CreateShowBottomsheetAction() {
   return action;
 }
 
-class MockFastCheckoutControllerImpl : public FastCheckoutControllerImpl {
+class MockFastCheckoutController : public FastCheckoutController {
  public:
-  MockFastCheckoutControllerImpl()
-      : FastCheckoutControllerImpl(nullptr, nullptr) {}
-  ~MockFastCheckoutControllerImpl() override = default;
+  MockFastCheckoutController() : FastCheckoutController() {}
+  ~MockFastCheckoutController() override = default;
 
   MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void,
+              OnOptionsSelected,
+              (std::unique_ptr<autofill::AutofillProfile> profile,
+               std::unique_ptr<autofill::CreditCard> credit_card),
+              (override));
+  MOCK_METHOD(void, OnDismiss, (), (override));
 };
 
 class FastCheckoutExternalActionDelegateTest
@@ -49,7 +54,7 @@ class FastCheckoutExternalActionDelegateTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    auto mock_controller = std::make_unique<MockFastCheckoutControllerImpl>();
+    auto mock_controller = std::make_unique<MockFastCheckoutController>();
     mock_controller_ = mock_controller.get();
     external_action_delegate_ =
         std::make_unique<FastCheckoutExternalActionDelegate>(web_contents());
@@ -61,14 +66,11 @@ class FastCheckoutExternalActionDelegateTest
     return external_action_delegate_.get();
   }
 
-  MockFastCheckoutControllerImpl* controller() {
-    return mock_controller_.get();
-  }
+  MockFastCheckoutController* controller() { return mock_controller_.get(); }
 
  private:
   std::unique_ptr<FastCheckoutExternalActionDelegate> external_action_delegate_;
-
-  raw_ptr<MockFastCheckoutControllerImpl> mock_controller_;
+  raw_ptr<MockFastCheckoutController> mock_controller_;
 };
 
 TEST_F(FastCheckoutExternalActionDelegateTest,

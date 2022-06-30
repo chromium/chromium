@@ -22,23 +22,22 @@ void FastCheckoutExternalActionDelegate::OnActionRequested(
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const autofill_assistant::external::Result&)>
         end_action_callback) {
-  end_action_callback_ = std::move(end_action_callback);
-
   FastCheckoutAction fast_checkout_action;
   if (!fast_checkout_action.ParseFromString(action.info().action_payload())) {
     DLOG(ERROR) << "unable to parse FastCheckoutAction";
-    EndAction(false);
+    CancelInvalidActionRequest(std::move(end_action_callback));
     return;
   }
 
   switch (fast_checkout_action.action_case()) {
     case FastCheckoutAction::ActionCase::kShowBottomSheet:
       // Show bottomsheet UI.
+      end_show_bottomsheet_action_callback_ = std::move(end_action_callback);
       fast_checkout_controller_->Show();
       break;
     case FastCheckoutAction::ActionCase::ACTION_NOT_SET:
       DLOG(ERROR) << "unknown fast checkout action";
-      EndAction(false);
+      CancelInvalidActionRequest(std::move(end_action_callback));
       break;
   }
 }
@@ -82,5 +81,13 @@ void FastCheckoutExternalActionDelegate::EndAction(
   // TODO(crbug.com/1339793): Implement setting `selected_profile` and
   // `selected_credit_card` on `result` if not `nullptr`.
 
-  std::move(end_action_callback_).Run(std::move(result));
+  std::move(end_show_bottomsheet_action_callback_).Run(std::move(result));
+}
+
+void FastCheckoutExternalActionDelegate::CancelInvalidActionRequest(
+    base::OnceCallback<void(const autofill_assistant::external::Result&)>
+        end_action_callback) {
+  autofill_assistant::external::Result result;
+  result.set_success(false);
+  std::move(end_action_callback).Run(std::move(result));
 }

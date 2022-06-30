@@ -58,9 +58,15 @@ class FastCheckoutExternalActionDelegate
       std::unique_ptr<autofill::AutofillProfile> selected_profile = nullptr,
       std::unique_ptr<autofill::CreditCard> selected_credit_card = nullptr);
 
+  // Ends the current action request because the action was not recognized by
+  // `this`.
+  void CancelInvalidActionRequest(
+      base::OnceCallback<void(const autofill_assistant::external::Result&)>
+          end_action_callback);
+
   // The callback that terminates the current action.
   base::OnceCallback<void(const autofill_assistant::external::Result& result)>
-      end_action_callback_;
+      end_show_bottomsheet_action_callback_;
 
   // Fast Checkout bottom sheet UI controller.
   std::unique_ptr<FastCheckoutController> fast_checkout_controller_;
