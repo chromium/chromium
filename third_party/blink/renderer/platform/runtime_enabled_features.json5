@@ -365,7 +365,7 @@
     },
     {
       name: "checkVisibility",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ClickPointerEvent",

@@ -1866,6 +1866,7 @@ interface Element : Node
     method append
     method attachShadow
     method before
+    method checkVisibility
     method closest
     method computedStyleMap
     method constructor
