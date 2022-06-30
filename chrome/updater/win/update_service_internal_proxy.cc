@@ -76,13 +76,13 @@ class UpdaterInternalCallback
 
 IFACEMETHODIMP UpdaterInternalCallback::Run(LONG result) {
   DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-  DVLOG(2) << __func__ << " result " << result << ".";
+  VLOG(2) << __func__ << " result " << result << ".";
   return S_OK;
 }
 
 base::OnceClosure UpdaterInternalCallback::Disconnect() {
   DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-  DVLOG(2) << __func__;
+  VLOG(2) << __func__;
   updater_internal_ = nullptr;
   return std::move(callback_);
 }
@@ -110,6 +110,7 @@ void UpdateServiceInternalProxy::Uninitialize() {
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
 
   com_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UpdateServiceInternalProxy::RunOnSTA, this,
@@ -175,6 +176,7 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
 void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
 
   com_task_runner_->PostTask(
       FROM_HERE,

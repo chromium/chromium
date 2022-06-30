@@ -107,6 +107,7 @@ UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
@@ -119,6 +120,7 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
 void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {

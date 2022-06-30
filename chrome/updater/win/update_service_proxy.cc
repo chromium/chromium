@@ -358,6 +358,7 @@ UpdateServiceProxy::~UpdateServiceProxy() = default;
 void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -369,6 +370,7 @@ void UpdateServiceProxy::GetVersion(
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
                                      RegisterAppCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -380,6 +382,7 @@ void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
 void UpdateServiceProxy::GetAppStates(
     base::OnceCallback<void(const std::vector<AppState>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -390,6 +393,7 @@ void UpdateServiceProxy::GetAppStates(
 
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -401,6 +405,7 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                                    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
 
   // Reposts the call to the COM task runner. Adapts `callback` so that
   // the callback runs on the main sequence.
@@ -421,6 +426,7 @@ void UpdateServiceProxy::Update(
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
 
   // Reposts the call to the COM task runner. Adapts `callback` so that
   // the callback runs on the main sequence.
@@ -442,6 +448,7 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                                       StateChangeCallback state_update,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
 
   // Reposts the call to the COM task runner. Adapts `callback` so that
   // the callback runs on the main sequence.

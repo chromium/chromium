@@ -220,7 +220,7 @@ void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(2) << __func__ << " with timeout " << get_version_timeout_;
+  VLOG(1) << __func__ << " with timeout " << get_version_timeout_;
   auto timeout_callback = std::make_unique<base::CancelableOnceClosure>(
       base::BindOnce(&UpdateServiceProxy::Reset, base::Unretained(this)));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -242,6 +242,7 @@ void UpdateServiceProxy::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
   __block base::OnceCallback<void(const RegistrationResponse&)> block_callback =
       std::move(callback);
 
@@ -267,6 +268,7 @@ void UpdateServiceProxy::GetAppStates(
     base::OnceCallback<
         void(const std::vector<updater::UpdateService::AppState>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
   __block base::OnceCallback<void(
       const std::vector<updater::UpdateService::AppState>&)>
       block_callback = std::move(callback);
@@ -280,6 +282,7 @@ void UpdateServiceProxy::GetAppStates(
 
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
     callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
@@ -290,6 +293,7 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                                    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceCallback<void(UpdateService::Result)> block_callback =
       std::move(callback);
@@ -314,6 +318,7 @@ void UpdateServiceProxy::Update(
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceCallback<void(UpdateService::Result)> block_callback =
       std::move(callback);
@@ -349,6 +354,7 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                                       StateChangeCallback state_update,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceCallback<void(UpdateService::Result)> block_callback =
       std::move(callback);
