@@ -544,12 +544,6 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
 
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      pending_recorder.InitWithNewPipeAndPassReceiver());
-  ukm_recorder_ =
-      std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
-
   if (IsMainThread())
     MainThreadFetchersSet().insert(this);
 }
@@ -1000,6 +994,18 @@ ResourceFetcher::GetOrCreateSubresourceWebBundleList() {
     return subresource_web_bundles_;
   subresource_web_bundles_ = MakeGarbageCollected<SubresourceWebBundleList>();
   return subresource_web_bundles_;
+}
+
+ukm::MojoUkmRecorder* ResourceFetcher::UkmRecorder() {
+  if (ukm_recorder_)
+    return ukm_recorder_.get();
+
+  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      recorder.InitWithNewPipeAndPassReceiver());
+  ukm_recorder_ = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+
+  return ukm_recorder_.get();
 }
 
 Resource* ResourceFetcher::RequestResource(FetchParameters& params,

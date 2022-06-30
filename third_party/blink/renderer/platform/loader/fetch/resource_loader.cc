@@ -566,7 +566,7 @@ void ResourceLoader::Start() {
   if (request.IsAutomaticUpgrade()) {
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kStarted,
                                absl::nullopt, request.GetUkmSourceId(),
-                               fetcher_->ukm_recorder(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
   if (resource_->GetResourceRequest().IsDownloadToNetworkCacheOnly()) {
     // The download-to-cache requests are throttled in net/, they are fire-and
@@ -997,7 +997,7 @@ void ResourceLoader::DidReceiveResponseInternal(
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kResponseReceived,
                                response.HttpStatusCode(),
                                request.GetUkmSourceId(),
-                               fetcher_->ukm_recorder(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
 
   ResourceType resource_type = resource_->GetType();
@@ -1241,7 +1241,7 @@ void ResourceLoader::DidFinishLoading(
     builder.SetFoundPervasivePayload(pervasive_payload_requested.value());
     builder.SetTotalBytesFetched(
         ukm::GetExponentialBucketMinForBytes(encoded_data_length));
-    builder.Record(fetcher_->ukm_recorder());
+    builder.Record(fetcher_->UkmRecorder());
   }
 
   response_end_time_for_error_cases_ = response_end_time;
@@ -1290,7 +1290,7 @@ void ResourceLoader::DidFail(const WebURLError& error,
   if (request.IsAutomaticUpgrade()) {
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kFailed,
                                error.reason(), request.GetUkmSourceId(),
-                               fetcher_->ukm_recorder(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);

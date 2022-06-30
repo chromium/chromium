@@ -320,7 +320,7 @@ class PLATFORM_EXPORT ResourceFetcher
   }
 
   // Access the UKMRecorder.
-  ukm::MojoUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
+  ukm::MojoUkmRecorder* UkmRecorder();
 
  private:
   friend class ResourceCacheValidationSuppressor;
