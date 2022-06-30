@@ -906,7 +906,7 @@ bool Container::ParseShorthand(
   if (!name)
     return false;
 
-  const CSSValue* type = CSSIdentifierValue::Create(CSSValueID::kNone);
+  const CSSValue* type = CSSIdentifierValue::Create(CSSValueID::kNormal);
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
     if (!(type = css_parsing_utils::ConsumeContainerType(range)))
       return false;

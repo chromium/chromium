@@ -2017,8 +2017,8 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   DCHECK_NE(style.ContainerType() & kContainerTypeSize,
             kContainerTypeBlockSize);
-  if (style.ContainerType() == kContainerTypeNone)
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  if (style.ContainerType() == kContainerTypeNormal)
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (style.ContainerType() & kContainerTypeStyle)

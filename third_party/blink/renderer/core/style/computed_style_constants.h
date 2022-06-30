@@ -238,7 +238,7 @@ inline Containment& operator|=(Containment& a, Containment b) {
 
 static const size_t kContainerTypeBits = 3;
 enum EContainerType {
-  kContainerTypeNone = 0x0,
+  kContainerTypeNormal = 0x0,
   kContainerTypeInlineSize = 0x1,
   kContainerTypeBlockSize = 0x2,
   kContainerTypeSize = kContainerTypeInlineSize | kContainerTypeBlockSize,

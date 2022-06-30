@@ -23,7 +23,7 @@ ContainerSelector::ContainerSelector(AtomicString name,
 }
 
 unsigned ContainerSelector::Type(WritingMode writing_mode) const {
-  unsigned type = kContainerTypeNone;
+  unsigned type = kContainerTypeNormal;
 
   LogicalAxes axes =
       logical_axes_ | ToLogicalAxes(physical_axes_, writing_mode);

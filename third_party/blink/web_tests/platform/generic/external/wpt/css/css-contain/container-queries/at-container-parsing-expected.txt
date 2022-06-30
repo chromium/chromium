@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 107 tests; 106 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 111 tests; 110 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS (width)
 PASS (min-width: 0px)
 PASS (max-width: 0px)
@@ -91,6 +91,10 @@ PASS Container selector: "foo"
 PASS Container selector: "inherit"
 PASS Container selector: none
 PASS Container selector: None
+PASS Container selector: normal
+PASS Container selector: Normal
+PASS Container selector: auto
+PASS Container selector: Auto
 PASS Container selector: and
 PASS Container selector: or
 PASS Container selector: not

@@ -151,7 +151,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
   const PhysicalAxes horizontal{kPhysicalAxisHorizontal};
   const PhysicalAxes vertical{kPhysicalAxisVertical};
 
-  const unsigned type_none = kContainerTypeNone;
+  const unsigned type_normal = kContainerTypeNormal;
   const unsigned type_size = kContainerTypeSize;
   const unsigned type_inline_size = kContainerTypeInlineSize;
 };
@@ -166,7 +166,7 @@ TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, vertical));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, none));
     EXPECT_FALSE(Eval(query, 99.0, 100.0, type_size, horizontal));
-    EXPECT_FALSE(Eval(query, 100.0, 100.0, type_none, both));
+    EXPECT_FALSE(Eval(query, 100.0, 100.0, type_normal, both));
   }
 
   {
@@ -176,7 +176,7 @@ TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, horizontal));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, none));
     EXPECT_FALSE(Eval(query, 100.0, 99.0, type_size, vertical));
-    EXPECT_FALSE(Eval(query, 100.0, 100.0, type_none, both));
+    EXPECT_FALSE(Eval(query, 100.0, 100.0, type_normal, both));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_inline_size, both));
   }
 
@@ -188,7 +188,7 @@ TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, none));
     EXPECT_FALSE(Eval(query, 100.0, 99.0, type_size, both));
     EXPECT_FALSE(Eval(query, 99.0, 100.0, type_size, both));
-    EXPECT_FALSE(Eval(query, 100.0, 100.0, type_none, both));
+    EXPECT_FALSE(Eval(query, 100.0, 100.0, type_normal, both));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_inline_size, both));
   }
 }

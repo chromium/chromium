@@ -2973,7 +2973,7 @@ CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
   list->Append(*name);
 
   if (!(IsA<CSSIdentifierValue>(type) &&
-        To<CSSIdentifierValue>(*type).GetValueID() == CSSValueID::kNone)) {
+        To<CSSIdentifierValue>(*type).GetValueID() == CSSValueID::kNormal)) {
     list->Append(*type);
   }
 

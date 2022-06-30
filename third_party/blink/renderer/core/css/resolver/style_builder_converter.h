@@ -119,7 +119,9 @@ class StyleBuilderConverter {
                                                   CSSPropertyID);
   static FilterOperations ConvertOffscreenFilterOperations(const CSSValue&,
                                                            const Font&);
-  template <typename T>
+  // The template parameter ZeroValue indicates which CSSValueID should be
+  // converted to zero.
+  template <typename T, CSSValueID ZeroValue = CSSValueID::kNone>
   static T ConvertFlags(StyleResolverState&, const CSSValue&);
   static FontDescription::FamilyDescription ConvertFontFamily(
       StyleResolverState&,
@@ -343,12 +345,12 @@ T StyleBuilderConverter::ConvertComputedLength(StyleResolverState& state,
       state.CssToLengthConversionData());
 }
 
-template <typename T>
+template <typename T, CSSValueID ZeroValue>
 T StyleBuilderConverter::ConvertFlags(StyleResolverState& state,
                                       const CSSValue& value) {
   T flags = static_cast<T>(0);
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
+  if (identifier_value && identifier_value->GetValueID() == ZeroValue)
     return flags;
   for (auto& flag_value : To<CSSValueList>(value))
     flags |= To<CSSIdentifierValue>(*flag_value).ConvertTo<T>();

@@ -39,27 +39,27 @@
     assert_cqi_equals(child, '30px');
 
     try {
-      inline.style.containerType = 'none';
+      inline.style.containerType = 'normal';
       assert_cqi_equals(child, '50px');
     } finally {
       inline.style = '';
     }
 
     assert_cqi_equals(child, '30px');
-  }, `cqi respond when selected container changes type (inline-size -> none)`);
+  }, `cqi respond when selected container changes type (inline-size -> normal)`);
 
   test(function() {
     assert_cqb_equals(child, '40px');
 
     try {
-      size.style.containerType = 'none';
+      size.style.containerType = 'normal';
       assert_cqb_equals(child, '60px');
     } finally {
       size.style = '';
     }
 
     assert_cqb_equals(child, '40px');
-  }, `cqb respond when selected container changes type (size -> none)`);
+  }, `cqb respond when selected container changes type (size -> normal)`);
 
   test(function() {
     assert_cqb_equals(child, '40px');

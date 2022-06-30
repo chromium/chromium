@@ -5573,10 +5573,16 @@ CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
   if (range.Peek().GetType() != kIdentToken)
     return nullptr;
+  if (range.Peek().Id() == CSSValueID::kNormal)
+    return nullptr;
   // TODO(crbug.com/1066390): ConsumeCustomIdent should not allow "default".
   if (range.Peek().Id() == CSSValueID::kDefault)
     return nullptr;
+  // TODO(crbug.com/1340852): Find out if we can make auto/none invalid
+  // generally.
   if (range.Peek().Id() == CSSValueID::kNone)
+    return nullptr;
+  if (range.Peek().Id() == CSSValueID::kAuto)
     return nullptr;
   if (EqualIgnoringASCIICase(range.Peek().Value(), "not"))
     return nullptr;
@@ -5601,7 +5607,7 @@ CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
 }
 
 CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
-  if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
+  if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(range))
     return value;
 
   CSSValue* style = nullptr;

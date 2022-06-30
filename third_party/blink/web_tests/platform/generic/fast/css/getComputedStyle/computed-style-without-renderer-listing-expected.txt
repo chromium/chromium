@@ -147,7 +147,7 @@ contain-intrinsic-inline-size: none
 contain-intrinsic-size: none
 contain-intrinsic-width: none
 container-name: none
-container-type: none
+container-type: normal
 content: normal
 cursor: auto
 cx: 0px
