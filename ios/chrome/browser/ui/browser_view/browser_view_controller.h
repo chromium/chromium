@@ -87,12 +87,12 @@ typedef struct {
                         WebStateContainerViewProvider>
 
 // Initializes a new BVC.
-// |browser| is the browser whose tabs this BVC will display.
-// |browserContainerViewController| is the container object this BVC will exist
+// `browser` is the browser whose tabs this BVC will display.
+// `browserContainerViewController` is the container object this BVC will exist
 // inside.
 // `dispatcher` is the dispatcher instance this BVC will use.
 // TODO(crbug.com/992582): Remove references to model objects -- including
-//   |browser| and |dispatcher| -- from this class.
+//   `browser` and `dispatcher` -- from this class.
 - (instancetype)initWithBrowser:(Browser*)browser
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController

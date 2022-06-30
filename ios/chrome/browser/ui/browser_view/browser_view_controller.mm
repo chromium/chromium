@@ -508,7 +508,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                           (BrowserViewControllerDependencies)dependencies {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
-    // TODO(crbug.com/1272524): DCHECK that |browser| is non-null.
+    // TODO(crbug.com/1272524): DCHECK that `browser` is non-null.
 
     _browserContainerViewController = browserContainerViewController;
     _browserViewControllerHelper = browserViewControllerHelper;
