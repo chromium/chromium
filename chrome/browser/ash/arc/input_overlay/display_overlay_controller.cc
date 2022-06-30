@@ -156,8 +156,17 @@ void DisplayOverlayController::OnNudgeDismissed() {
 
 gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
   gfx::Point nudge_position = CalculateMenuEntryPosition();
-  return gfx::Point(nudge_position.x() - nudge_width - kMenuEntrySideMargin,
-                    nudge_position.y() + kNudgeVerticalAlign);
+  int x = nudge_position.x() - nudge_width - kMenuEntrySideMargin;
+  int y = nudge_position.y() + kNudgeVerticalAlign;
+  // If the nudge view shows at the outside of the window, move the nudge view
+  // down below the menu button and move it to left to make sure it shows inside
+  // of the window.
+  if (x < 0) {
+    x = std::max(0, x + menu_entry_->width() + kMenuEntrySideMargin);
+    y += menu_entry_->height();
+  }
+
+  return gfx::Point(x, y);
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
