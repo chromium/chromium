@@ -1525,7 +1525,7 @@ void NetworkContext::GetExpectCTState(
     result.Set("error", "non-ASCII domain name");
   }
 
-  std::move(callback).Run(base::Value(std::move(result)));
+  std::move(callback).Run(std::move(result));
 }
 
 void NetworkContext::MaybeEnqueueSCTReport(
@@ -1844,7 +1844,7 @@ void NetworkContext::IsHSTSActiveForHost(const std::string& host,
 
 void NetworkContext::GetHSTSState(const std::string& domain,
                                   GetHSTSStateCallback callback) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
   if (base::IsStringASCII(domain)) {
     net::TransportSecurityState* transport_security_state =
@@ -1857,24 +1857,22 @@ void NetworkContext::GetHSTSState(const std::string& domain,
       bool found_pkp_static = transport_security_state->GetStaticPKPState(
           domain, &static_pkp_state);
       if (found_sts_static || found_pkp_static) {
-        result.SetIntKey("static_upgrade_mode",
-                         static_cast<int>(static_sts_state.upgrade_mode));
-        result.SetBoolKey("static_sts_include_subdomains",
-                          static_sts_state.include_subdomains);
-        result.SetDoubleKey("static_sts_observed",
-                            static_sts_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("static_sts_expiry",
-                            static_sts_state.expiry.ToDoubleT());
-        result.SetBoolKey("static_pkp_include_subdomains",
-                          static_pkp_state.include_subdomains);
-        result.SetDoubleKey("static_pkp_observed",
-                            static_pkp_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("static_pkp_expiry",
-                            static_pkp_state.expiry.ToDoubleT());
-        result.SetStringKey("static_spki_hashes",
-                            HashesToBase64String(static_pkp_state.spki_hashes));
-        result.SetStringKey("static_sts_domain", static_sts_state.domain);
-        result.SetStringKey("static_pkp_domain", static_pkp_state.domain);
+        result.Set("static_upgrade_mode",
+                   static_cast<int>(static_sts_state.upgrade_mode));
+        result.Set("static_sts_include_subdomains",
+                   static_sts_state.include_subdomains);
+        result.Set("static_sts_observed",
+                   static_sts_state.last_observed.ToDoubleT());
+        result.Set("static_sts_expiry", static_sts_state.expiry.ToDoubleT());
+        result.Set("static_pkp_include_subdomains",
+                   static_pkp_state.include_subdomains);
+        result.Set("static_pkp_observed",
+                   static_pkp_state.last_observed.ToDoubleT());
+        result.Set("static_pkp_expiry", static_pkp_state.expiry.ToDoubleT());
+        result.Set("static_spki_hashes",
+                   HashesToBase64String(static_pkp_state.spki_hashes));
+        result.Set("static_sts_domain", static_sts_state.domain);
+        result.Set("static_pkp_domain", static_pkp_state.domain);
       }
 
       net::TransportSecurityState::STSState dynamic_sts_state;
@@ -1885,37 +1883,34 @@ void NetworkContext::GetHSTSState(const std::string& domain,
       bool found_pkp_dynamic = transport_security_state->GetDynamicPKPState(
           domain, &dynamic_pkp_state);
       if (found_sts_dynamic) {
-        result.SetIntKey("dynamic_upgrade_mode",
-                         static_cast<int>(dynamic_sts_state.upgrade_mode));
-        result.SetBoolKey("dynamic_sts_include_subdomains",
-                          dynamic_sts_state.include_subdomains);
-        result.SetDoubleKey("dynamic_sts_observed",
-                            dynamic_sts_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("dynamic_sts_expiry",
-                            dynamic_sts_state.expiry.ToDoubleT());
-        result.SetStringKey("dynamic_sts_domain", dynamic_sts_state.domain);
+        result.Set("dynamic_upgrade_mode",
+                   static_cast<int>(dynamic_sts_state.upgrade_mode));
+        result.Set("dynamic_sts_include_subdomains",
+                   dynamic_sts_state.include_subdomains);
+        result.Set("dynamic_sts_observed",
+                   dynamic_sts_state.last_observed.ToDoubleT());
+        result.Set("dynamic_sts_expiry", dynamic_sts_state.expiry.ToDoubleT());
+        result.Set("dynamic_sts_domain", dynamic_sts_state.domain);
       }
 
       if (found_pkp_dynamic) {
-        result.SetBoolKey("dynamic_pkp_include_subdomains",
-                          dynamic_pkp_state.include_subdomains);
-        result.SetDoubleKey("dynamic_pkp_observed",
-                            dynamic_pkp_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("dynamic_pkp_expiry",
-                            dynamic_pkp_state.expiry.ToDoubleT());
-        result.SetStringKey(
-            "dynamic_spki_hashes",
-            HashesToBase64String(dynamic_pkp_state.spki_hashes));
-        result.SetStringKey("dynamic_pkp_domain", dynamic_pkp_state.domain);
+        result.Set("dynamic_pkp_include_subdomains",
+                   dynamic_pkp_state.include_subdomains);
+        result.Set("dynamic_pkp_observed",
+                   dynamic_pkp_state.last_observed.ToDoubleT());
+        result.Set("dynamic_pkp_expiry", dynamic_pkp_state.expiry.ToDoubleT());
+        result.Set("dynamic_spki_hashes",
+                   HashesToBase64String(dynamic_pkp_state.spki_hashes));
+        result.Set("dynamic_pkp_domain", dynamic_pkp_state.domain);
       }
 
-      result.SetBoolKey("result", found_sts_static || found_pkp_static ||
-                                      found_sts_dynamic || found_pkp_dynamic);
+      result.Set("result", found_sts_static || found_pkp_static ||
+                               found_sts_dynamic || found_pkp_dynamic);
     } else {
-      result.SetStringKey("error", "no TransportSecurityState active");
+      result.Set("error", "no TransportSecurityState active");
     }
   } else {
-    result.SetStringKey("error", "non-ASCII domain name");
+    result.Set("error", "non-ASCII domain name");
   }
 
   std::move(callback).Run(std::move(result));

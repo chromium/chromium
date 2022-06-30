@@ -188,9 +188,9 @@ void StoreBool(bool* result, base::OnceClosure callback, bool value) {
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-void StoreValue(base::Value* result,
+void StoreValue(base::Value::Dict* result,
                 base::OnceClosure callback,
-                base::Value value) {
+                base::Value::Dict value) {
   *result = std::move(value);
   std::move(callback).Run();
 }
@@ -4850,15 +4850,14 @@ TEST_F(NetworkContextTest, ExpectCT) {
 
   // Assert we start with no data for the test host.
   {
-    base::Value state;
+    base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
         kTestDomain, network_isolation_key,
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_TRUE(state.is_dict());
 
-    absl::optional<bool> result = state.GetDict().FindBool("result");
+    absl::optional<bool> result = state.FindBool("result");
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(false, *result);
   }
@@ -4876,45 +4875,42 @@ TEST_F(NetworkContextTest, ExpectCT) {
 
   // Assert added host data is returned.
   {
-    base::Value state;
+    base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
         kTestDomain, network_isolation_key,
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_TRUE(state.is_dict());
 
-    const base::Value::Dict& dict = state.GetDict();
     const std::string* dynamic_expect_ct_domain =
-        dict.FindString("dynamic_expect_ct_domain");
+        state.FindString("dynamic_expect_ct_domain");
     ASSERT_TRUE(dynamic_expect_ct_domain);
     EXPECT_EQ(kTestDomain, *dynamic_expect_ct_domain);
 
     absl::optional<double> dynamic_expect_ct_expiry =
-        dict.FindDouble("dynamic_expect_ct_expiry");
+        state.FindDouble("dynamic_expect_ct_expiry");
     EXPECT_EQ(expiry.ToDoubleT(), dynamic_expect_ct_expiry);
 
     absl::optional<bool> dynamic_expect_ct_enforce =
-        dict.FindBool("dynamic_expect_ct_enforce");
+        state.FindBool("dynamic_expect_ct_enforce");
     EXPECT_EQ(enforce, *dynamic_expect_ct_enforce);
 
     const std::string* dynamic_expect_ct_report_uri =
-        dict.FindString("dynamic_expect_ct_report_uri");
+        state.FindString("dynamic_expect_ct_report_uri");
     ASSERT_TRUE(dynamic_expect_ct_report_uri);
     EXPECT_EQ(report_uri, *dynamic_expect_ct_report_uri);
   }
 
   // Using a different NetworkIsolationKey should return no result.
   {
-    base::Value state;
+    base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
         kTestDomain, net::NetworkIsolationKey::CreateTransient(),
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_TRUE(state.is_dict());
 
-    absl::optional<bool> result = state.GetDict().FindBool("result");
+    absl::optional<bool> result = state.FindBool("result");
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(false, *result);
   }
@@ -4932,15 +4928,14 @@ TEST_F(NetworkContextTest, ExpectCT) {
 
   // Assert data is removed.
   {
-    base::Value state;
+    base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
         kTestDomain, network_isolation_key,
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_TRUE(state.is_dict());
 
-    absl::optional<bool> result = state.GetDict().FindBool("result");
+    absl::optional<bool> result = state.FindBool("result");
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(false, *result);
   }
@@ -5010,7 +5005,7 @@ TEST_F(NetworkContextTest, GetHSTSState) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
-  base::Value state;
+  base::Value::Dict state;
   {
     base::RunLoop run_loop;
     network_context->GetHSTSState(
@@ -5018,12 +5013,10 @@ TEST_F(NetworkContextTest, GetHSTSState) {
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
   }
-  EXPECT_TRUE(state.is_dict());
 
-  const base::Value* result =
-      state.FindKeyOfType("result", base::Value::Type::BOOLEAN);
-  ASSERT_TRUE(result != nullptr);
-  EXPECT_FALSE(result->GetBool());
+  absl::optional<bool> result = state.FindBool("result");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(*result);
 
   {
     base::RunLoop run_loop;
@@ -5039,22 +5032,21 @@ TEST_F(NetworkContextTest, GetHSTSState) {
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
   }
-  EXPECT_TRUE(state.is_dict());
 
-  result = state.FindKeyOfType("result", base::Value::Type::BOOLEAN);
-  ASSERT_TRUE(result != nullptr);
-  EXPECT_TRUE(result->GetBool());
+  result = state.FindBool("result");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(*result);
 
   // Not checking all values - only enough to ensure the underlying call
   // was made.
-  const base::Value* value =
-      state.FindKeyOfType("dynamic_sts_domain", base::Value::Type::STRING);
-  ASSERT_TRUE(value != nullptr);
-  EXPECT_EQ(kTestDomain, value->GetString());
+  const std::string* dynamic_sts_domain =
+      state.FindString("dynamic_sts_domain");
+  ASSERT_TRUE(dynamic_sts_domain);
+  EXPECT_EQ(kTestDomain, *dynamic_sts_domain);
 
-  value = state.FindKeyOfType("dynamic_sts_expiry", base::Value::Type::DOUBLE);
-  ASSERT_TRUE(value != nullptr);
-  EXPECT_EQ(expiry.ToDoubleT(), value->GetDouble());
+  absl::optional<double> dynamic_sts_expiry =
+      state.FindDouble("dynamic_sts_expiry");
+  EXPECT_EQ(expiry.ToDoubleT(), dynamic_sts_expiry);
 }
 
 TEST_F(NetworkContextTest, ForceReloadProxyConfig) {
