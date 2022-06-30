@@ -1116,9 +1116,9 @@ DrawMode LayerTreeHostImpl::GetDrawMode() const {
 static void AppendQuadsToFillScreen(
     viz::CompositorRenderPass* target_render_pass,
     const RenderSurfaceImpl* root_render_surface,
-    SkColor screen_background_color,
+    SkColor4f screen_background_color,
     const Region& fill_region) {
-  if (!root_render_surface || !SkColorGetA(screen_background_color))
+  if (!root_render_surface || !screen_background_color.fA)
     return;
   if (fill_region.IsEmpty())
     return;
@@ -1131,13 +1131,12 @@ static void AppendQuadsToFillScreen(
   gfx::Rect root_target_rect = root_render_surface->content_rect();
   float opacity = 1.f;
   int sorting_context_id = 0;
-  bool are_contents_opaque = SkColorGetA(screen_background_color) == 0xFF;
   viz::SharedQuadState* shared_quad_state =
       target_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), root_target_rect,
                             root_target_rect, gfx::MaskFilterInfo(),
-                            absl::nullopt, are_contents_opaque, opacity,
-                            SkBlendMode::kSrcOver, sorting_context_id);
+                            absl::nullopt, screen_background_color.isOpaque(),
+                            opacity, SkBlendMode::kSrcOver, sorting_context_id);
 
   for (gfx::Rect screen_space_rect : fill_region) {
     gfx::Rect visible_screen_space_rect = screen_space_rect;
@@ -1145,10 +1144,8 @@ static void AppendQuadsToFillScreen(
     // occlusion checks.
     auto* quad =
         target_render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    // TODO(crbug.com/1308932): Call this function with SkColor4f
     quad->SetNew(shared_quad_state, screen_space_rect,
-                 visible_screen_space_rect,
-                 SkColor4f::FromColor(screen_background_color), false);
+                 visible_screen_space_rect, screen_background_color, false);
   }
 }
 
@@ -1456,10 +1453,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     if (num_missing_tiles > 0)
       fill_region = root_render_surface->content_rect();
 
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-    AppendQuadsToFillScreen(
-        frame->render_passes.back().get(), root_render_surface,
-        active_tree_->background_color().toSkColor(), fill_region);
+    AppendQuadsToFillScreen(frame->render_passes.back().get(),
+                            root_render_surface,
+                            active_tree_->background_color(), fill_region);
   }
 
   RemoveRenderPasses(frame);
