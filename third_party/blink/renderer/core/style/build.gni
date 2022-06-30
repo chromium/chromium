@@ -49,8 +49,6 @@ blink_core_sources_style = [
   "ordered_named_grid_lines.h",
   "paint_images.h",
   "quad_length_value.h",
-  "quotes_data.cc",
-  "quotes_data.h",
   "reference_clip_path_operation.cc",
   "reference_clip_path_operation.h",
   "shadow_data.cc",

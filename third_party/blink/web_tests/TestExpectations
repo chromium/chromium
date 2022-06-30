@@ -1466,7 +1466,7 @@ crbug.com/1240236 external/wpt/css/css-fonts/system-ui-ja-vs-zh.html [ Failure ]
 crbug.com/1240236 external/wpt/css/css-fonts/system-ui-ja.html [ Failure ]
 crbug.com/1240236 external/wpt/css/css-fonts/system-ui-ur-vs-ar.html [ Failure ]
 crbug.com/1240236 external/wpt/css/css-fonts/system-ui-zh.html [ Failure ]
-crbug.com/1269537 [ Mac ] fast/css-generated-content/quotes-lang.html [ Failure Pass ]
+crbug.com/1269537 fast/css-generated-content/quotes-lang.html [ Failure Pass ]
 
 crbug.com/1317062 external/wpt/html/rendering/non-replaced-elements/phrasing-content-0/br-wbr-content/content-property.tentative.html [ Failure ]
 
@@ -1804,8 +1804,6 @@ crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-tailed.h
 
 crbug.com/753671 [ Linux ] external/wpt/css/css-content/quotes-001.html [ Failure ]
 crbug.com/753671 [ Mac ] external/wpt/css/css-content/quotes-006.html [ Failure ]
-crbug.com/753671 [ Mac10.13 ] external/wpt/css/css-content/quotes-007.html [ Failure ]
-crbug.com/753671 [ Mac10.14 ] external/wpt/css/css-content/quotes-007.html [ Failure ]
 crbug.com/753671 [ Mac ] external/wpt/css/css-content/quotes-009.html [ Failure ]
 crbug.com/753671 [ Mac10.13 ] external/wpt/css/css-content/quotes-012.html [ Failure ]
 crbug.com/753671 [ Mac10.14 ] external/wpt/css/css-content/quotes-012.html [ Failure ]
@@ -1816,7 +1814,6 @@ crbug.com/753671 [ Mac11 ] external/wpt/css/css-content/quotes-020.html [ Failur
 crbug.com/753671 [ Mac11-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 [ Mac12 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 [ Mac12-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
-crbug.com/753671 external/wpt/css/css-content/quotes-021.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-030.html [ Failure ]
 crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
 

@@ -1368,6 +1368,8 @@ component("platform") {
     "text/mathml_operator_dictionary.h",
     "text/platform_locale.cc",
     "text/platform_locale.h",
+    "text/quotes_data.cc",
+    "text/quotes_data.h",
     "text/segmented_string.cc",
     "text/segmented_string.h",
     "text/suffix_tree.h",

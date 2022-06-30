@@ -19,7 +19,7 @@
  *
  */
 
-#include "third_party/blink/renderer/core/style/quotes_data.h"
+#include "third_party/blink/renderer/platform/text/quotes_data.h"
 
 namespace blink {
 

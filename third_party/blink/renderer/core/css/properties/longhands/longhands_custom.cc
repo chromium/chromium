@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/quotes_data.h"
 
 // Implementations of methods in Longhand subclasses that aren't generated.
 

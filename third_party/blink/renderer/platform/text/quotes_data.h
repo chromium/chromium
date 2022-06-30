@@ -19,10 +19,11 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_QUOTES_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_QUOTES_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_QUOTES_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_QUOTES_DATA_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -30,7 +31,7 @@
 
 namespace blink {
 
-class QuotesData : public RefCounted<QuotesData> {
+class PLATFORM_EXPORT QuotesData : public RefCounted<QuotesData> {
   USING_FAST_MALLOC(QuotesData);
 
  public:
@@ -60,4 +61,4 @@ class QuotesData : public RefCounted<QuotesData> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_QUOTES_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_QUOTES_DATA_H_
