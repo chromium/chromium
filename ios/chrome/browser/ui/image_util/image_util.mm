@@ -46,7 +46,7 @@ UIImage* StretchableImageNamed(NSString* name) {
   UIImage* image = [UIImage imageNamed:name];
   if (!image)
     return nil;
-  // Returns a copy of |image| configured to stretch at the center pixel.
+  // Returns a copy of `image` configured to stretch at the center pixel.
   return StretchableImageFromUIImage(image, floor(image.size.width / 2.0),
                                      floor(image.size.height / 2.0));
 }

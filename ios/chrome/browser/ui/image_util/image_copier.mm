@@ -88,14 +88,14 @@ const int kNoActiveCopy = 0;
     baseViewController:(UIViewController*)baseViewController {
   __weak ImageCopier* weakSelf = self;
 
-  // |idGenerator| is initiated to 1 and incremented by 2, so it will always be
-  // odd number and won't collides with |kNoActiveCopy| or nil.activeID, which
+  // `idGenerator` is initiated to 1 and incremented by 2, so it will always be
+  // odd number and won't collides with `kNoActiveCopy` or nil.activeID, which
   // are 0s.
   self.idGenerator += 2;
   self.activeID = self.idGenerator;
   // This var is to be captured by blocks in ImageFetchTabHelper::GetImageData
   // and web::WebThread::PostDelayedTask. When a block is invoked, it uses the
-  // captured |callbackID| to check if the copy from where it's started is still
+  // captured `callbackID` to check if the copy from where it's started is still
   // alive or has been finished/canceled.
   int callbackID = self.idGenerator;
 
@@ -146,7 +146,7 @@ const int kNoActiveCopy = 0;
                 }
                  style:UIAlertActionStyleCancel];
 
-  // Delays launching alert by |kAlertDelayInMs|.
+  // Delays launching alert by `kAlertDelayInMs`.
   web::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         // Checks that the copy has not finished yet.

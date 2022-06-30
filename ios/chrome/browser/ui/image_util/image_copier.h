@@ -21,8 +21,8 @@ class WebState;
 // Init the ImageCopier.
 - (instancetype)initWithBrowser:(Browser*)browser;
 
-// Copies the image at |url|. |web_state| is used for fetching image data by
-// JavaScript. |referrer| is used for download. |baseViewController| used to
+// Copies the image at `url`. `web_state` is used for fetching image data by
+// JavaScript. `referrer` is used for download. `baseViewController` used to
 // display alerts.
 - (void)copyImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer

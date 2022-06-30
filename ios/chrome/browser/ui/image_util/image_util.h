@@ -15,27 +15,27 @@ class Image;
 @class UIColor;
 @class UIImage;
 
-// Returns the dominant color for |image|.
+// Returns the dominant color for `image`.
 UIColor* DominantColorForImage(const gfx::Image& image, CGFloat opacity);
 
-// Returns a copy of |image| configured to stretch at the given offsets.
+// Returns a copy of `image` configured to stretch at the given offsets.
 UIImage* StretchableImageFromUIImage(UIImage* image,
                                      NSInteger left_cap_width,
                                      NSInteger top_cap_height);
 
-// Returns the image named |name|, configured to stretch at the center pixel.
+// Returns the image named `name`, configured to stretch at the center pixel.
 UIImage* StretchableImageNamed(NSString* name);
 
-// Returns the image named |name|, configured to stretch at the given offsets.
+// Returns the image named `name`, configured to stretch at the given offsets.
 UIImage* StretchableImageNamed(NSString* name,
                                NSInteger left_cap_width,
                                NSInteger top_cap_height);
 
-// Returns the extension by checking the first byte of image |data|. If |data|
+// Returns the extension by checking the first byte of image `data`. If `data`
 // is nil, empty, or cannot be recognized, nil will be returned.
 NSString* GetImageExtensionFromData(NSData* data);
 
-// Returns the UTI by checking the first byte of image |data|. If |data|
+// Returns the UTI by checking the first byte of image `data`. If `data`
 // is nil, empty, or cannot be recognized, nil will be returned.
 NSString* GetImageUTIFromData(NSData* data);
 
