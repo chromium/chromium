@@ -549,28 +549,27 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
     // behavior) should be added before MetricsNavigationThrottle.
     throttles.push_back(page_load_metrics::MetricsNavigationThrottle::Create(
         navigation_handle));
-    // Use Synchronous mode for the navigation interceptor, since this class
-    // doesn't actually call into an arbitrary client, it just posts a task to
-    // call onPageStarted. shouldOverrideUrlLoading happens earlier (see
-    // ContentBrowserClient::ShouldOverrideUrlLoading).
-    std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
-        navigation_interception::InterceptNavigationDelegate::
-            MaybeCreateThrottleFor(
-                navigation_handle,
-                navigation_interception::SynchronyMode::kSync);
-    if (intercept_navigation_throttle)
-      throttles.push_back(std::move(intercept_navigation_throttle));
-
-    throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        navigation_handle, AwBrowserContext::FromWebContents(
-                               navigation_handle->GetWebContents())));
-
-    std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
-        AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-            navigation_handle);
-    if (safe_browsing_throttle)
-      throttles.push_back(std::move(safe_browsing_throttle));
   }
+  // Use Synchronous mode for the navigation interceptor, since this class
+  // doesn't actually call into an arbitrary client, it just posts a task to
+  // call onPageStarted. shouldOverrideUrlLoading happens earlier (see
+  // ContentBrowserClient::ShouldOverrideUrlLoading).
+  std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
+      navigation_interception::InterceptNavigationDelegate::
+          MaybeCreateThrottleFor(navigation_handle,
+                                 navigation_interception::SynchronyMode::kSync);
+  if (intercept_navigation_throttle)
+    throttles.push_back(std::move(intercept_navigation_throttle));
+
+  throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
+      navigation_handle,
+      AwBrowserContext::FromWebContents(navigation_handle->GetWebContents())));
+
+  std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
+      AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+          navigation_handle);
+  if (safe_browsing_throttle)
+    throttles.push_back(std::move(safe_browsing_throttle));
   return throttles;
 }
 
