@@ -8,39 +8,39 @@
 
 namespace file_manager {
 
-TEST(FuseBoxMonikerTest, ExtractTokenResult) {
-  using ResultType = FuseBoxMoniker::ExtractTokenResult::ResultType;
+TEST(FuseBoxMonikerMapTest, ExtractTokenResult) {
+  using ResultType = FuseBoxMonikerMap::ExtractTokenResult::ResultType;
 
   {
-    auto result = FuseBoxMoniker::ExtractToken("foo://bar");
+    auto result = FuseBoxMonikerMap::ExtractToken("foo://bar");
     EXPECT_EQ(result.result_type, ResultType::NOT_A_MONIKER_FS_URL);
   }
 
   {
-    auto result = FuseBoxMoniker::ExtractToken(
+    auto result = FuseBoxMonikerMap::ExtractToken(
         "dummy://something_else/0123456789ABCDEF0000111122223333");
     EXPECT_EQ(result.result_type, ResultType::NOT_A_MONIKER_FS_URL);
   }
 
   {
-    auto result = FuseBoxMoniker::ExtractToken("dummy://moniker");
+    auto result = FuseBoxMonikerMap::ExtractToken("dummy://moniker");
     EXPECT_EQ(result.result_type, ResultType::MONIKER_FS_URL_BUT_ONLY_ROOT);
   }
 
   {
-    auto result = FuseBoxMoniker::ExtractToken("dummy://moniker/");
+    auto result = FuseBoxMonikerMap::ExtractToken("dummy://moniker/");
     EXPECT_EQ(result.result_type,
               ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED);
   }
 
   {
-    auto result = FuseBoxMoniker::ExtractToken("dummy://moniker/0123");
+    auto result = FuseBoxMonikerMap::ExtractToken("dummy://moniker/0123");
     EXPECT_EQ(result.result_type,
               ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED);
   }
 
   {
-    auto result = FuseBoxMoniker::ExtractToken(
+    auto result = FuseBoxMonikerMap::ExtractToken(
         "dummy://moniker/0123456789ABCDEF0000111122223333");
     EXPECT_EQ(result.result_type, ResultType::OK);
     EXPECT_EQ(result.token,

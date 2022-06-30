@@ -4,32 +4,14 @@
 
 #include "chrome/browser/ash/file_manager/fusebox_moniker.h"
 
-#include <map>
-#include "base/no_destructor.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
-
-namespace {
-
-base::NoDestructor<std::map<base::Token, storage::FileSystemURL>>
-    fusebox_monikers;
-
-}  // namespace
 
 namespace file_manager {
 
 // static
-FuseBoxMoniker FuseBoxMoniker::Create(storage::FileSystemURL target) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::Token token = base::Token::CreateRandom();
-  fusebox_monikers->insert({token, std::move(target)});
-  return FuseBoxMoniker(token);
-}
-
-// static
-FuseBoxMoniker::ExtractTokenResult FuseBoxMoniker::ExtractToken(
-    std::string fs_url_as_string) {
+FuseBoxMonikerMap::ExtractTokenResult FuseBoxMonikerMap::ExtractToken(
+    const std::string& fs_url_as_string) {
   if (!base::StartsWith(fs_url_as_string, fusebox::kMonikerFileSystemURL)) {
     ExtractTokenResult result;
     result.result_type = ExtractTokenResult::ResultType::NOT_A_MONIKER_FS_URL;
@@ -61,41 +43,39 @@ FuseBoxMoniker::ExtractTokenResult FuseBoxMoniker::ExtractToken(
 }
 
 // static
-storage::FileSystemURL FuseBoxMoniker::Resolve(base::Token token) {
+std::string FuseBoxMonikerMap::GetFilename(const FuseBoxMoniker& moniker) {
+  return fusebox::kMonikerFilenamePrefixWithTrailingSlash + moniker.ToString();
+}
+
+FuseBoxMonikerMap::FuseBoxMonikerMap() = default;
+FuseBoxMonikerMap::~FuseBoxMonikerMap() = default;
+
+FuseBoxMoniker FuseBoxMonikerMap::CreateMoniker(storage::FileSystemURL target) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto iter = fusebox_monikers->find(token);
-  if (iter != fusebox_monikers->end()) {
+  FuseBoxMoniker moniker = base::Token::CreateRandom();
+  map_.insert({moniker, std::move(target)});
+  return moniker;
+}
+
+void FuseBoxMonikerMap::DestroyMoniker(const FuseBoxMoniker& moniker) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto iter = map_.find(moniker);
+  if (iter != map_.end()) {
+    map_.erase(iter);
+  }
+}
+
+storage::FileSystemURL FuseBoxMonikerMap::Resolve(
+    const FuseBoxMoniker& moniker) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto iter = map_.find(moniker);
+  if (iter != map_.end()) {
     return iter->second;
   }
   return storage::FileSystemURL();
-}
-
-FuseBoxMoniker::FuseBoxMoniker(base::Token token) : token_(token) {}
-
-void FuseBoxMoniker::Destroy() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto iter = fusebox_monikers->find(token_);
-  if (iter != fusebox_monikers->end()) {
-    fusebox_monikers->erase(iter);
-  }
-}
-
-storage::FileSystemURL FuseBoxMoniker::Target() {
-  return Resolve(token_);
-}
-
-std::string FuseBoxMoniker::LinkFilename() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  return fusebox::kMonikerFilenamePrefixWithTrailingSlash + token_.ToString();
-}
-
-base::Token FuseBoxMoniker::LinkToken() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  return token_;
 }
 
 }  // namespace file_manager

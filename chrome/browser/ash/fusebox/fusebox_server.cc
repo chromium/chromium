@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/file_manager/fusebox_moniker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,6 +26,8 @@
 namespace fusebox {
 
 namespace {
+
+Server* g_server_instance = nullptr;
 
 // ParseResult is the type returned by ParseFileSystemURL. It is a result type
 // (see https://en.wikipedia.org/wiki/Result_type), being either an error or a
@@ -68,7 +69,8 @@ ParseResult::~ParseResult() = default;
 // All of the Server methods' arguments start with a FileSystemURL (as a
 // string). This function parses that first argument as well as finding the
 // FileSystemContext we will need to serve those methods.
-ParseResult ParseFileSystemURL(std::string fs_url_as_string) {
+ParseResult ParseFileSystemURL(file_manager::FuseBoxMonikerMap& moniker_map,
+                               std::string fs_url_as_string) {
   scoped_refptr<storage::FileSystemContext> fs_context =
       file_manager::util::GetFileManagerFileSystemContext(
           ProfileManager::GetActiveUserProfile());
@@ -84,13 +86,12 @@ ParseResult ParseFileSystemURL(std::string fs_url_as_string) {
 
   // Intercept any moniker names and replace them by their linked target.
   using ResultType =
-      file_manager::FuseBoxMoniker::ExtractTokenResult::ResultType;
-  auto moniker_parse_result =
-      file_manager::FuseBoxMoniker::ExtractToken(fs_url_as_string);
-  switch (moniker_parse_result.result_type) {
+      file_manager::FuseBoxMonikerMap::ExtractTokenResult::ResultType;
+  auto extract_token_result =
+      file_manager::FuseBoxMonikerMap::ExtractToken(fs_url_as_string);
+  switch (extract_token_result.result_type) {
     case ResultType::OK:
-      fs_url =
-          file_manager::FuseBoxMoniker::Resolve(moniker_parse_result.token);
+      fs_url = moniker_map.Resolve(extract_token_result.token);
       if (!fs_url.is_valid()) {
         LOG(ERROR) << "Unresolvable Moniker";
         return ParseResult(base::File::Error::FILE_ERROR_NOT_FOUND);
@@ -226,10 +227,42 @@ void RunStatCallback(
 
 }  // namespace
 
+// static
+Server* Server::GetInstance() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  return g_server_instance;
+}
+
+Server::Server() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!g_server_instance);
+  g_server_instance = this;
+}
+
+Server::~Server() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(g_server_instance);
+  g_server_instance = nullptr;
+}
+
+file_manager::FuseBoxMoniker Server::CreateMoniker(
+    storage::FileSystemURL target) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  return moniker_map_.CreateMoniker(target);
+}
+
+void Server::DestroyMoniker(file_manager::FuseBoxMoniker moniker) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  moniker_map_.DestroyMoniker(moniker);
+}
+
 void Server::Close(std::string fs_url_as_string, CloseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto common = ParseFileSystemURL(fs_url_as_string);
+  auto common = ParseFileSystemURL(moniker_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
     std::move(callback).Run(common.error_code);
     return;
@@ -243,7 +276,7 @@ void Server::Close(std::string fs_url_as_string, CloseCallback callback) {
 void Server::Open(std::string fs_url_as_string, OpenCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto common = ParseFileSystemURL(fs_url_as_string);
+  auto common = ParseFileSystemURL(moniker_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
     std::move(callback).Run(common.error_code);
     return;
@@ -260,7 +293,7 @@ void Server::Read(std::string fs_url_as_string,
                   ReadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto common = ParseFileSystemURL(fs_url_as_string);
+  auto common = ParseFileSystemURL(moniker_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
     std::move(callback).Run(common.error_code, nullptr, 0);
     return;
@@ -277,7 +310,7 @@ void Server::ReadDir(std::string fs_url_as_string,
                      ReadDirCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto common = ParseFileSystemURL(fs_url_as_string);
+  auto common = ParseFileSystemURL(moniker_map_, fs_url_as_string);
   if (common.is_moniker_root ||
       (common.error_code != base::File::Error::FILE_OK)) {
     constexpr bool has_more = false;
@@ -304,7 +337,7 @@ void Server::ReadDir(std::string fs_url_as_string,
 void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto common = ParseFileSystemURL(fs_url_as_string);
+  auto common = ParseFileSystemURL(moniker_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
     std::move(callback).Run(common.error_code, base::File::Info());
     return;
