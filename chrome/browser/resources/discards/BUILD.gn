@@ -134,8 +134,7 @@ generate_grd("build_grd") {
     ":build_graph_tab_grdp",
     ":build_ts",
   ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   grdp_files = [ "$target_gen_dir/discards_graph_tab.grdp" ]
   grd_prefix = "discards"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"

@@ -52,8 +52,7 @@ generate_grd("build_grd") {
   input_files = [ "web_app_settings.html" ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
 grit("resources") {

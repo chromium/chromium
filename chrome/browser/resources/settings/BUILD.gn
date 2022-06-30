@@ -60,6 +60,93 @@ if (optimize_webui) {
   }
 }
 
+generate_grd("build_grd") {
+  grd_prefix = "settings"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "images/cookies_banner_dark.svg",
+    "images/cookies_banner.svg",
+    "images/googleg_standard_clr_32px.svg",
+    "images/password_check_neutral_dark.svg",
+    "images/password_check_neutral.svg",
+    "images/password_check_positive_dark.svg",
+    "images/password_check_positive.svg",
+    "images/permissions_banner_dark.svg",
+    "images/permissions_banner.svg",
+    "images/privacy_guide/clear_on_exit_graphic_dark_v2.svg",
+    "images/privacy_guide/clear_on_exit_graphic_dark.svg",
+    "images/privacy_guide/clear_on_exit_graphic_v2.svg",
+    "images/privacy_guide/clear_on_exit_graphic.svg",
+    "images/privacy_guide/clouds_graphic_dark.svg",
+    "images/privacy_guide/clouds_graphic.svg",
+    "images/privacy_guide/completion_banner_circle.svg",
+    "images/privacy_guide/completion_banner_dark_v2.svg",
+    "images/privacy_guide/completion_banner_dark.svg",
+    "images/privacy_guide/completion_banner_pill.svg",
+    "images/privacy_guide/completion_banner_square.svg",
+    "images/privacy_guide/completion_banner_triangle.svg",
+    "images/privacy_guide/completion_banner_v2.svg",
+    "images/privacy_guide/completion_banner.svg",
+    "images/privacy_guide/cookies_graphic_dark_v2.svg",
+    "images/privacy_guide/cookies_graphic_dark.svg",
+    "images/privacy_guide/cookies_graphic_v2.svg",
+    "images/privacy_guide/cookies_graphic.svg",
+    "images/privacy_guide/hills_graphic_dark.svg",
+    "images/privacy_guide/hills_graphic.svg",
+    "images/privacy_guide/history_sync_graphic_dark_v2.svg",
+    "images/privacy_guide/history_sync_graphic_dark.svg",
+    "images/privacy_guide/history_sync_graphic_v2.svg",
+    "images/privacy_guide/history_sync_graphic.svg",
+    "images/privacy_guide/horizon_graphic_dark.svg",
+    "images/privacy_guide/horizon_graphic.svg",
+    "images/privacy_guide/msbb_graphic_dark_v2.svg",
+    "images/privacy_guide/msbb_graphic_dark.svg",
+    "images/privacy_guide/msbb_graphic_v2.svg",
+    "images/privacy_guide/msbb_graphic.svg",
+    "images/privacy_guide/privacy_sandbox_graphic_dark.svg",
+    "images/privacy_guide/privacy_sandbox_graphic.svg",
+    "images/privacy_guide/promo_banner_dark.svg",
+    "images/privacy_guide/promo_banner.svg",
+    "images/privacy_guide/safe_browsing_graphic_dark_v2.svg",
+    "images/privacy_guide/safe_browsing_graphic_dark.svg",
+    "images/privacy_guide/safe_browsing_graphic_v2.svg",
+    "images/privacy_guide/safe_browsing_graphic.svg",
+    "images/privacy_guide/waa_graphic_dark.svg",
+    "images/privacy_guide/waa_graphic.svg",
+    "images/privacy_guide/welcome_banner_dark.svg",
+    "images/privacy_guide/welcome_banner.svg",
+    "images/privacy_sandbox_banner_dark.svg",
+    "images/privacy_sandbox_banner.svg",
+    "images/privacy_sandbox_banner_v3_dark.svg",
+    "images/privacy_sandbox_banner_v3.svg",
+    "images/privacy_sandbox_floc_banner_dark.svg",
+    "images/privacy_sandbox_floc_banner.svg",
+    "images/safe_browsing_banner_dark.svg",
+    "images/safe_browsing_banner.svg",
+    "images/sync_banner_dark.svg",
+    "images/sync_banner.svg",
+    "privacy_sandbox/privacy_sandbox.html",
+    "settings.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [
+      ":build",
+      "privacy_sandbox:build_grdp",
+    ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "settings.rollup.js|settings.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+    grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  }
+}
+
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines
   out_folder = "$target_gen_dir/$preprocess_folder"
@@ -220,92 +307,4 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "settings"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "images/cookies_banner_dark.svg",
-    "images/cookies_banner.svg",
-    "images/googleg_standard_clr_32px.svg",
-    "images/password_check_neutral_dark.svg",
-    "images/password_check_neutral.svg",
-    "images/password_check_positive_dark.svg",
-    "images/password_check_positive.svg",
-    "images/permissions_banner_dark.svg",
-    "images/permissions_banner.svg",
-    "images/privacy_guide/clear_on_exit_graphic_dark_v2.svg",
-    "images/privacy_guide/clear_on_exit_graphic_dark.svg",
-    "images/privacy_guide/clear_on_exit_graphic_v2.svg",
-    "images/privacy_guide/clear_on_exit_graphic.svg",
-    "images/privacy_guide/clouds_graphic_dark.svg",
-    "images/privacy_guide/clouds_graphic.svg",
-    "images/privacy_guide/completion_banner_circle.svg",
-    "images/privacy_guide/completion_banner_dark_v2.svg",
-    "images/privacy_guide/completion_banner_dark.svg",
-    "images/privacy_guide/completion_banner_pill.svg",
-    "images/privacy_guide/completion_banner_square.svg",
-    "images/privacy_guide/completion_banner_triangle.svg",
-    "images/privacy_guide/completion_banner_v2.svg",
-    "images/privacy_guide/completion_banner.svg",
-    "images/privacy_guide/cookies_graphic_dark_v2.svg",
-    "images/privacy_guide/cookies_graphic_dark.svg",
-    "images/privacy_guide/cookies_graphic_v2.svg",
-    "images/privacy_guide/cookies_graphic.svg",
-    "images/privacy_guide/hills_graphic_dark.svg",
-    "images/privacy_guide/hills_graphic.svg",
-    "images/privacy_guide/history_sync_graphic_dark_v2.svg",
-    "images/privacy_guide/history_sync_graphic_dark.svg",
-    "images/privacy_guide/history_sync_graphic_v2.svg",
-    "images/privacy_guide/history_sync_graphic.svg",
-    "images/privacy_guide/horizon_graphic_dark.svg",
-    "images/privacy_guide/horizon_graphic.svg",
-    "images/privacy_guide/msbb_graphic_dark_v2.svg",
-    "images/privacy_guide/msbb_graphic_dark.svg",
-    "images/privacy_guide/msbb_graphic_v2.svg",
-    "images/privacy_guide/msbb_graphic.svg",
-    "images/privacy_guide/privacy_sandbox_graphic_dark.svg",
-    "images/privacy_guide/privacy_sandbox_graphic.svg",
-    "images/privacy_guide/promo_banner_dark.svg",
-    "images/privacy_guide/promo_banner.svg",
-    "images/privacy_guide/safe_browsing_graphic_dark_v2.svg",
-    "images/privacy_guide/safe_browsing_graphic_dark.svg",
-    "images/privacy_guide/safe_browsing_graphic_v2.svg",
-    "images/privacy_guide/safe_browsing_graphic.svg",
-    "images/privacy_guide/waa_graphic_dark.svg",
-    "images/privacy_guide/waa_graphic.svg",
-    "images/privacy_guide/welcome_banner_dark.svg",
-    "images/privacy_guide/welcome_banner.svg",
-    "images/privacy_sandbox_banner_dark.svg",
-    "images/privacy_sandbox_banner.svg",
-    "images/privacy_sandbox_banner_v3_dark.svg",
-    "images/privacy_sandbox_banner_v3.svg",
-    "images/privacy_sandbox_floc_banner_dark.svg",
-    "images/privacy_sandbox_floc_banner.svg",
-    "images/safe_browsing_banner_dark.svg",
-    "images/safe_browsing_banner.svg",
-    "images/sync_banner_dark.svg",
-    "images/sync_banner.svg",
-    "privacy_sandbox/privacy_sandbox.html",
-    "settings.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [
-      ":build",
-      "privacy_sandbox:build_grdp",
-    ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
-      "settings.rollup.js|settings.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-    grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  }
 }

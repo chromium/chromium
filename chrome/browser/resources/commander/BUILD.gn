@@ -12,6 +12,16 @@ import("./commander.gni")
 
 preprocess_folder = "preprocessed"
 
+generate_grd("build_grd") {
+  grd_prefix = "commander"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [ "commander.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
 preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
@@ -59,15 +69,4 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "commander"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [ "commander.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

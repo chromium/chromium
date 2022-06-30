@@ -35,6 +35,16 @@ copy("copy_mojo") {
   outputs = [ "$preprocess_folder/{{source_file_part}}" ]
 }
 
+generate_grd("build_grdp") {
+  grd_prefix = "user_education_internals"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  deps = [ ":build_ts" ]
+  resource_path_prefix = "user-education"
+}
+
 ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
@@ -50,15 +60,4 @@ ts_library("build_ts") {
     ":preprocess_gen",
     ":preprocess_src",
   ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "user_education_internals"
-  out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [ "index.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  deps = [ ":build_ts" ]
-  resource_path_prefix = "user-education"
 }

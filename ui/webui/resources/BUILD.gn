@@ -160,6 +160,13 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
+generate_grd("build_ts_grdp") {
+  grd_prefix = "webui"
+  out_grd = "$target_gen_dir/resources_ts.grdp"
+  public_deps = [ ":library" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
 checked_in_dts_files = [
   "cr_elements/cr_button/cr_button.m.d.ts",
   "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
@@ -425,14 +432,6 @@ ts_library("library") {
     ":generate_definitions",
     ":preprocess",
   ]
-}
-
-generate_grd("build_ts_grdp") {
-  grd_prefix = "webui"
-  out_grd = "$target_gen_dir/resources_ts.grdp"
-  public_deps = [ ":library" ]
-  manifest_files =
-      filter_include(get_target_outputs(":library"), [ "*.manifest" ])
 }
 
 ts_definitions("generate_definitions") {

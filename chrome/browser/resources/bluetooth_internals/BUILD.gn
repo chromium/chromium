@@ -33,6 +33,29 @@ generate_grd("build_internal_mojo_grdp") {
           root_build_dir)
 }
 
+generate_grd("build_grd") {
+  grd_prefix = bluetooth_grd_prefix
+  out_grd = resources_grd_file
+  deps = [
+    ":build_internal_mojo_grdp",
+    ":build_public_mojo_grdp",
+    ":build_ts",
+  ]
+  input_files = [
+    "bluetooth_internals.css",
+    "bluetooth_internals.html",
+    "menu.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  grdp_files = [
+    public_mojo_grdp_file,
+    internals_mojo_grdp_file,
+  ]
+
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
 # TODO(crbug.com/1337318): This page should be converted to TypeScript but this
 # will be a lot of work. Passing the JavaScript files through the TypeScript
 # compiler will provide basic static checks (e.g. syntax) without validating
@@ -85,28 +108,4 @@ grit("resources") {
     "bluetooth_internals_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-}
-
-generate_grd("build_grd") {
-  grd_prefix = bluetooth_grd_prefix
-  out_grd = resources_grd_file
-  deps = [
-    ":build_internal_mojo_grdp",
-    ":build_public_mojo_grdp",
-    ":build_ts",
-  ]
-  input_files = [
-    "bluetooth_internals.css",
-    "bluetooth_internals.html",
-    "menu.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  grdp_files = [
-    public_mojo_grdp_file,
-    internals_mojo_grdp_file,
-  ]
-
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

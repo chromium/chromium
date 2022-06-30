@@ -41,8 +41,7 @@ ts_library("build_ts") {
 generate_grd("build_grdp") {
   grd_prefix = "feedback_webui_js"
   out_grd = "$target_gen_dir/resources.grdp"
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   resource_path_prefix = "js"
   deps = [ ":build_ts" ]
 }
