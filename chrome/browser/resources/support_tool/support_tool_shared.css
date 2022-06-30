@@ -45,7 +45,3 @@ h1 {
 .data-collector-list {
   width: 520px;
 }
-
-cr-icon-button {
-  --cr-icon-button-fill-color: white;
-}

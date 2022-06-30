@@ -19,6 +19,7 @@
 
   #info-text {
     color: var(--cr-secondary-text-color);
+    display: inline;
   }
 
   .navigation-buttons {
@@ -44,11 +45,11 @@
   </template>
 </div>
 
-<div class="support-tool-title">Get a link</div>
-<div id="info-text">
-  <span tabindex="0">
+<div class="support-tool-title" tabindex="0">Get a link</div>
+<div>
+  <p id="info-text">
     Copy and send this link to the user to collect the logs.
-  </span>
+  </p>
   <cr-button id="copyURLButton" class="navigation-buttons action-button"
       on-click="onCopyURLClick_" disabled="[[buttonDisabled_]]">
     Copy link
@@ -61,7 +62,7 @@
 <cr-toast id="errorMessageToast" duration="0" tabindex="0"
     aria-labelledby="error-message">
   <span id="error-message">[[errorMessage_]]</span>
-  <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
-      iron-icon="cr:close" aria-label="close">
-  </cr-icon-button>
+  <cr-button on-click="onErrorMessageToastCloseClicked_">
+    Dismiss
+  </cr-button>
 </cr-toast>

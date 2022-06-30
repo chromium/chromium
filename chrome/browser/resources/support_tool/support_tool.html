@@ -52,7 +52,7 @@
 <cr-toast id="errorMessageToast" duration="0" tabindex="0"
     aria-labelledby="error-message">
   <span id="error-message">[[errorMessage_]]</span>
-  <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
-      iron-icon="cr:close" aria-label="close">
-  </cr-icon-button>
+  <cr-button on-click="onErrorMessageToastCloseClicked_">
+    Dismiss
+  </cr-button>
 </cr-toast>

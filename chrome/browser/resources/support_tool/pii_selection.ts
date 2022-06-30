@@ -115,6 +115,11 @@ export class PIISelectionElement extends PIISelectionElementBase {
   private showDisclaimer_(selectedButton: PiiRadioButtons): boolean {
     return (selectedButton === PiiRadioButtons.INCLUDE_NONE);
   }
+
+  private getPiiItemAriaDescription_(description: string, count: number):
+      string {
+    return 'More info for ' + description + ' ' + count;
+  }
 }
 
 declare global {
