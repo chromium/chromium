@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -58,6 +59,12 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
      * @private
      */
     this.selectedFile_ = null;
+
+    /**
+     * Url of the selected image.
+     * @type {string}
+     */
+    this.selectedImageUrl_;
 
     /**
      * True when there is a file selected.
@@ -112,6 +119,20 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   }
 
   /**
+   * Get the image url when uploaded file is image type.
+   * @param {!File} file
+   * @return {!Promise<string>}
+   */
+  async getImageUrl_(file) {
+    const fileDataBuffer = await file.arrayBuffer();
+    const fileDataView = new Uint8Array(fileDataBuffer);
+    const blob = new Blob([Uint8Array.from(fileDataView)], {type: file.type});
+
+    const imageUrl = URL.createObjectURL(blob);
+    return imageUrl;
+  }
+
+  /**
    * @param {!Event} e
    * @protected
    */
@@ -138,6 +159,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
    * @private
    */
   handleSelectedFileHelper_(file) {
+    assert(file);
     // Maximum file size is 10MB.
     const MAX_ATTACH_FILE_SIZE_BYTES = 10 * 1024 * 1024;
     if (file.size > MAX_ATTACH_FILE_SIZE_BYTES) {
@@ -147,6 +169,15 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
     this.selectedFile_ = file;
     this.getElement_('#selectedFileName').textContent = file.name;
     this.getElement_('#selectFileCheckbox').checked = true;
+
+    // Add a preview image when selected file is image type.
+    if (file.type.startsWith('image/')) {
+      this.getImageUrl_(file).then((imageUrl) => {
+        this.selectedImageUrl_ = imageUrl;
+      });
+    } else {
+      this.selectedImageUrl_ = '';
+    }
   }
 
   /**
