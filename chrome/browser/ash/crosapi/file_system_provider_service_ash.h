@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_FILE_SYSTEM_PROVIDER_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_FILE_SYSTEM_PROVIDER_SERVICE_ASH_H_
 
+#include "base/values.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -83,7 +84,7 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
   void OperationFinishedWithProfile(mojom::FSPOperationResponse response,
                                     mojom::FileSystemIdPtr file_system_id,
                                     int64_t request_id,
-                                    std::vector<base::Value> args,
+                                    base::Value::List args,
                                     OperationFinishedCallback callback,
                                     Profile* profile);
 

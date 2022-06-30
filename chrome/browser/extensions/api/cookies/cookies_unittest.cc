@@ -176,10 +176,10 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     // Build up the Params struct.
-    std::vector<base::Value> args;
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey(keys::kDomainKey, std::string(tests[i].filter));
-    args.emplace_back(std::move(dict));
+    base::Value::List args;
+    base::Value::Dict dict;
+    dict.Set(keys::kDomainKey, tests[i].filter);
+    args.Append(std::move(dict));
     std::unique_ptr<GetAll::Params> params(GetAll::Params::Create(args));
 
     cookies_helpers::MatchFilter filter(&params->details);

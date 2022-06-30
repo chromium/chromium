@@ -89,15 +89,14 @@ class FakeEventRouter : public extensions::EventRouter {
                                          OnCloseFileRequested::kEventName);
 
     if (reply_result_ == base::File::FILE_OK) {
-      base::ListValue value_as_list;
-      value_as_list.Append(kFileSystemId);
-      value_as_list.Append(request_id);
-      value_as_list.Append(0 /* execution_time */);
+      base::Value::List list;
+      list.Append(kFileSystemId);
+      list.Append(request_id);
+      list.Append(0 /* execution_time */);
 
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      std::unique_ptr<Params> params(
-          Params::Create(value_as_list.GetListDeprecated()));
+      std::unique_ptr<Params> params(Params::Create(list));
       ASSERT_TRUE(params.get());
       file_system_->GetRequestManager()->FulfillRequest(
           request_id,

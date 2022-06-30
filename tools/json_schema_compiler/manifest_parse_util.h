@@ -105,7 +105,7 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
     return false;
 
   bool result = json_schema_compiler::util::PopulateArrayFromList(
-      value->GetListDeprecated(), out_ptr, error);
+      value->GetList(), out_ptr, error);
   if (!result) {
     DCHECK(error_path_reversed);
     DCHECK(error_path_reversed->empty());

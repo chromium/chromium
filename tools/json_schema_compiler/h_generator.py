@@ -343,7 +343,7 @@ class _Generator(object):
     (c.Sblock('struct Params {')
       .Append('static std::unique_ptr<Params> Create(%s);' %
                   self._GenerateParams(
-                      ('const base::Value::ConstListView& args',)))
+                      ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
       .Append('~Params();')

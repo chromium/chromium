@@ -490,12 +490,12 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   bool has_args() const { return args_.has_value(); }
 
-  const std::vector<base::Value>& args() const {
+  const base::Value::List& args() const {
     DCHECK(args_);
     return *args_;
   }
 
-  std::vector<base::Value>& mutable_args() {
+  base::Value::List& mutable_args() {
     DCHECK(args_);
     return *args_;
   }
@@ -522,7 +522,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
                           const std::vector<std::string>& blob_uuids);
 
   // The arguments to the API. Only non-null if arguments were specified.
-  absl::optional<std::vector<base::Value>> args_;
+  absl::optional<base::Value::List> args_;
 
   base::ElapsedTimer timer_;
 

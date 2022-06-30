@@ -105,13 +105,12 @@ base::Value ConvertBinaryToBase64(const base::Value& binary) {
 // Parses through |args| replacing any BinaryValues with base64 encoded
 // StringValues. Recurses over any nested ListValues, and calls
 // ConvertBinaryDictionaryValuesToBase64 for any nested DictionaryValues.
-void ConvertBinaryListElementsToBase64(base::span<base::Value> args) {
+void ConvertBinaryListElementsToBase64(base::Value::List& args) {
   for (auto& value : args) {
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list() && !value.GetList().empty()) {
-      ConvertBinaryListElementsToBase64(
-          base::make_span(value.GetList().begin(), value.GetList().size()));
+      ConvertBinaryListElementsToBase64(value.GetList());
     } else if (value.is_dict()) {
       ConvertBinaryDictionaryValuesToBase64(value);
     }
@@ -127,8 +126,7 @@ void ConvertBinaryDictionaryValuesToBase64(base::Value& dict) {
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list() && !value.GetList().empty()) {
-      ConvertBinaryListElementsToBase64(
-          base::make_span(value.GetList().begin(), value.GetList().size()));
+      ConvertBinaryListElementsToBase64(value.GetList());
     } else if (value.is_dict()) {
       ConvertBinaryDictionaryValuesToBase64(value);
     }

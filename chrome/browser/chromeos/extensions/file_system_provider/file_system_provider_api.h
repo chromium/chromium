@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/profiles/profile.h"
@@ -114,7 +115,7 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
   // Returns false if the forwarding failed.
   template <typename Params>
   bool ForwardOperationResult(const Params& params,
-                              std::vector<base::Value>& args,
+                              base::Value::List& args,
                               crosapi::mojom::FSPOperationResponse response) {
     crosapi::mojom::FileSystemIdPtr file_system_id;
     int64_t request_id;
@@ -133,9 +134,9 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
 #else
     if (!InterfaceAvailable())
       return false;
-    GetRemote()->OperationFinished(response, std::move(file_system_id),
-                                   request_id, std::move(args),
-                                   std::move(callback));
+    GetRemote()->OperationFinished(
+        response, std::move(file_system_id), request_id,
+        base::Value(std::move(args)).TakeListDeprecated(), std::move(callback));
     return true;
 #endif
   }

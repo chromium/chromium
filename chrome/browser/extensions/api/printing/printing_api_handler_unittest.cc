@@ -191,8 +191,8 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   request.job.content_type = content_type;
   request.document_blob_uuid = std::move(document_blob_uuid);
 
-  std::vector<base::Value> args;
-  args.emplace_back(base::Value::FromUniquePtrValue(request.ToValue()));
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(request.ToValue()));
   return api::printing::SubmitJob::Params::Create(args);
 }
 

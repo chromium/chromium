@@ -53,7 +53,7 @@ namespace pref_keys = extensions::preference_api_constants;
 
 namespace {
 
-bool RemoveContentType(std::vector<base::Value>& args,
+bool RemoveContentType(base::Value::List& args,
                        ContentSettingsType* content_type) {
   if (args.empty() || !args[0].is_string())
     return false;

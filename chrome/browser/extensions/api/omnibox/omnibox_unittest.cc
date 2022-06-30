@@ -77,7 +77,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
   styles_expected.push_back(ACMatchClassification(9, kNone));
 
   std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(list->GetListDeprecated()));
+      SendSuggestions::Params::Create(list->GetList()));
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -109,7 +109,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
           .Build();
 
   std::unique_ptr<SendSuggestions::Params> swapped_params(
-      SendSuggestions::Params::Create(swap_list->GetListDeprecated()));
+      SendSuggestions::Params::Create(swap_list->GetList()));
   EXPECT_TRUE(swapped_params);
   ASSERT_FALSE(swapped_params->suggest_results.empty());
   CompareClassification(
@@ -173,7 +173,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
   styles_expected.push_back(ACMatchClassification(9, kMatch | kDim));
 
   std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(list->GetListDeprecated()));
+      SendSuggestions::Params::Create(list->GetList()));
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -221,7 +221,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
           .Build();
 
   std::unique_ptr<SendSuggestions::Params> moved_params(
-      SendSuggestions::Params::Create(moved_list->GetListDeprecated()));
+      SendSuggestions::Params::Create(moved_list->GetList()));
   EXPECT_TRUE(moved_params);
   ASSERT_FALSE(moved_params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -280,7 +280,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine2) {
   styles_expected.push_back(ACMatchClassification(5, kNone));
 
   std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(list->GetListDeprecated()));
+      SendSuggestions::Params::Create(list->GetList()));
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -332,7 +332,7 @@ TEST(ExtensionOmniboxTest, DefaultSuggestResult) {
           .Build();
 
   std::unique_ptr<SetDefaultSuggestion::Params> params(
-      SetDefaultSuggestion::Params::Create(list->GetListDeprecated()));
+      SetDefaultSuggestion::Params::Create(list->GetList()));
   EXPECT_TRUE(params);
 }
 

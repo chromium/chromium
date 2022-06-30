@@ -84,8 +84,7 @@ void CreateRequestValueFromJSON(const std::string& json,
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  std::unique_ptr<Params> params(
-      Params::Create(parsed_json->GetListDeprecated()));
+  std::unique_ptr<Params> params(Params::Create(parsed_json->GetList()));
   ASSERT_TRUE(params.get());
   *result = RequestValue::CreateForGetActionsSuccess(std::move(params));
   ASSERT_TRUE(result->get());

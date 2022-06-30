@@ -247,9 +247,10 @@ void FileSystemProviderServiceAsh::OperationFinished(
     int64_t request_id,
     std::vector<base::Value> args,
     OperationFinishedCallback callback) {
-  OperationFinishedWithProfile(response, std::move(file_system_id), request_id,
-                               std::move(args), std::move(callback),
-                               ProfileManager::GetPrimaryUserProfile());
+  OperationFinishedWithProfile(
+      response, std::move(file_system_id), request_id,
+      std::move(base::Value(std::move(args)).GetList()), std::move(callback),
+      ProfileManager::GetPrimaryUserProfile());
 }
 
 void FileSystemProviderServiceAsh::ExtensionLoaded(
@@ -400,7 +401,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     mojom::FSPOperationResponse response,
     mojom::FileSystemIdPtr file_system_id,
     int64_t request_id,
-    std::vector<base::Value> args,
+    base::Value::List args,
     OperationFinishedCallback callback,
     Profile* profile) {
   std::string error;

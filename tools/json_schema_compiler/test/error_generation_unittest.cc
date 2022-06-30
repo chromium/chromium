@@ -82,15 +82,15 @@ TEST(JsonSchemaCompilerErrorTest, TypeIsRequired) {
 
 TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::u16string error;
     EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, &error));
   }
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
+    params_value.Append(5);
     std::u16string error;
     EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2", error));
@@ -101,14 +101,14 @@ TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
 
 TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::u16string error;
     EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, &error));
   }
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back();
+    base::Value::List params_value;
+    params_value.Append(base::Value());
     std::u16string error;
     EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("'num' is required", error));
@@ -134,13 +134,13 @@ TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
 TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
     std::u16string error;
-    std::vector<Value> params_value;
-    params_value.emplace_back("Yeah!");
+    base::Value::List params_value;
+    params_value.Append("Yeah!");
     EXPECT_TRUE(errors::TestString::Params::Create(params_value, &error));
   }
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::u16string error;
     EXPECT_FALSE(
         errors::TestTypeInObject::Params::Create(params_value, &error));
