@@ -10,7 +10,6 @@ import six
 from telemetry.page import shared_page_state
 
 from contrib.cluster_telemetry import rasterize_and_record_micro_ct
-from contrib.cluster_telemetry import repaint
 from contrib.cluster_telemetry import skpicture_printer
 
 
@@ -28,7 +27,6 @@ class CTBenchmarks(unittest.TestCase):
   def setUp(self):
     self.ct_benchmarks = [
         rasterize_and_record_micro_ct.RasterizeAndRecordMicroCT(),
-        repaint.RepaintCT(),
         skpicture_printer.SkpicturePrinterCT(),
     ]
     self.shared_page_state_class = shared_page_state.SharedMobilePageState
