@@ -316,7 +316,8 @@ bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
 bool PrePaintTreeWalk::ContextRequiresChildTreeBuilderContext(
     const PrePaintTreeWalkContext& context) {
   if (!context.NeedsTreeBuilderContext()) {
-    DCHECK(!context.tree_builder_context->force_subtree_update_reasons);
+    DCHECK(!context.tree_builder_context ||
+           !context.tree_builder_context->force_subtree_update_reasons);
     DCHECK(!context.paint_invalidator_context.NeedsSubtreeWalk());
     return false;
   }

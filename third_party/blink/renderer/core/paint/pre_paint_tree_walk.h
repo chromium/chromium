@@ -104,27 +104,30 @@ class CORE_EXPORT PrePaintTreeWalk final {
     PrePaintTreeWalkContext(const PrePaintTreeWalkContext& parent_context,
                             bool needs_tree_builder_context)
         : PrePaintTreeWalkContextBase(parent_context) {
-      if (needs_tree_builder_context || DCHECK_IS_ON()) {
+      if (needs_tree_builder_context
+#if DCHECK_IS_ON()
+          || RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()
+#endif
+      ) {
         DCHECK(parent_context.tree_builder_context);
         tree_builder_context.emplace(*parent_context.tree_builder_context);
-      }
 #if DCHECK_IS_ON()
-      if (needs_tree_builder_context)
-        DCHECK(parent_context.tree_builder_context->is_actually_needed);
-      tree_builder_context->is_actually_needed = needs_tree_builder_context;
+        DCHECK(!needs_tree_builder_context ||
+               parent_context.tree_builder_context->is_actually_needed);
+        tree_builder_context->is_actually_needed = needs_tree_builder_context;
 #endif
+      }
     }
 
     PrePaintTreeWalkContext(const PrePaintTreeWalkContext&) = delete;
     PrePaintTreeWalkContext& operator=(const PrePaintTreeWalkContext&) = delete;
 
     bool NeedsTreeBuilderContext() const {
+      return tree_builder_context.has_value()
 #if DCHECK_IS_ON()
-      DCHECK(tree_builder_context);
-      return tree_builder_context->is_actually_needed;
-#else
-      return tree_builder_context.has_value();
+             && tree_builder_context->is_actually_needed
 #endif
+          ;
     }
 
     absl::optional<PaintPropertyTreeBuilderContext> tree_builder_context;

@@ -207,8 +207,10 @@ struct PaintPropertyTreeBuilderContext final {
   PhysicalRect repeating_table_section_bounding_box;
 
 #if DCHECK_IS_ON()
-  // When DCHECK_IS_ON() we create PaintPropertyTreeBuilderContext even if not
-  // needed. See find_paint_offset_needing_update.h.
+  // When DCHECK_IS_ON() and RuntimeEnabledFeatures::
+  // PaintUnderInvalidationCheckingEnabled(), we create
+  // PaintPropertyTreeBuilderContext even if not needed.
+  // See PrePaintTreeWalkContext constructor.
   bool is_actually_needed = true;
 #endif
 
