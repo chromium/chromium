@@ -311,7 +311,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-// Deletes item at |indexPath| from both model and UI.
+// Deletes item at `indexPath` from both model and UI.
 - (void)deleteItemAtIndex:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger sectionID =

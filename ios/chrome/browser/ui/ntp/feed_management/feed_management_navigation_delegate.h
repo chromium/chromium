@@ -19,7 +19,7 @@ class GURL;
 // Navigate to hidden.
 - (void)handleNavigateToHidden;
 
-// Navigate to |url| of a followed site.
+// Navigate to `url` of a followed site.
 - (void)handleNavigateToFollowedURL:(const GURL&)url;
 
 @end

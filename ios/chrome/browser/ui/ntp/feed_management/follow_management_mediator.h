@@ -18,7 +18,7 @@ class ChromeBrowserState;
     : NSObject <FollowedWebChannelsDataSource, TableViewFaviconDataSource>
 
 - (instancetype)init NS_UNAVAILABLE;
-// Init method. |browserState| can't be nil.
+// Init method. `browserState` can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
