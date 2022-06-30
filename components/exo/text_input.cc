@@ -272,13 +272,6 @@ bool TextInput::SetEditableSelectionRange(const gfx::Range& range) {
   return true;
 }
 
-bool TextInput::DeleteRange(const gfx::Range& range) {
-  if (surrounding_text_.size() < range.GetMax())
-    return false;
-  delegate_->DeleteSurroundingText(surrounding_text_, range);
-  return true;
-}
-
 bool TextInput::GetTextFromRange(const gfx::Range& range,
                                  std::u16string* text) const {
   gfx::Range text_range;

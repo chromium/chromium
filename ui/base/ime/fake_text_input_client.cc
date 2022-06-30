@@ -124,9 +124,11 @@ bool FakeTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
   return false;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool FakeTextInputClient::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool FakeTextInputClient::GetTextFromRange(const gfx::Range& range,
                                            std::u16string* text) const {

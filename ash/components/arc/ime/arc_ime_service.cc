@@ -574,10 +574,6 @@ bool ArcImeService::SetEditableSelectionRange(const gfx::Range& range) {
   return true;
 }
 
-bool ArcImeService::DeleteRange(const gfx::Range& range) {
-  return false;
-}
-
 bool ArcImeService::ChangeTextDirectionAndLayoutAlignment(
     base::i18n::TextDirection direction) {
   return false;

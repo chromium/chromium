@@ -427,7 +427,11 @@ class VIEWS_EXPORT Textfield : public View,
   bool GetCompositionTextRange(gfx::Range* range) const override;
   bool GetEditableSelectionRange(gfx::Range* range) const override;
   bool SetEditableSelectionRange(const gfx::Range& range) override;
+#if BUILDFLAG(IS_MAC)
   bool DeleteRange(const gfx::Range& range) override;
+#else
+  bool DeleteRange(const gfx::Range& range);
+#endif
   bool GetTextFromRange(const gfx::Range& range,
                         std::u16string* text) const override;
   void OnInputMethodChanged() override;

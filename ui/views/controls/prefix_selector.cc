@@ -129,9 +129,11 @@ bool PrefixSelector::SetEditableSelectionRange(const gfx::Range& range) {
   return false;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool PrefixSelector::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool PrefixSelector::GetTextFromRange(const gfx::Range& range,
                                       std::u16string* text) const {

@@ -177,6 +177,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Returns false if the operation is not supported.
   virtual bool SetEditableSelectionRange(const gfx::Range& range) = 0;
 
+#if BUILDFLAG(IS_MAC)
   // Deletes contents in the given UTF-16 code unit range. Current
   // composition text will be confirmed before deleting the range.
   // The input caret will be moved to the place where the range gets deleted.
@@ -186,6 +187,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // between browser and renderer. Returns false if the operation is not
   // supported.
   virtual bool DeleteRange(const gfx::Range& range) = 0;
+#endif
 
   // Retrieves the text content in a given UTF-16 code unit range.
   // The result will be stored into |*text|.

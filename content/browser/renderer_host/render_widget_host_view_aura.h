@@ -231,7 +231,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool GetCompositionTextRange(gfx::Range* range) const override;
   bool GetEditableSelectionRange(gfx::Range* range) const override;
   bool SetEditableSelectionRange(const gfx::Range& range) override;
-  bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
                         std::u16string* text) const override;
   void OnInputMethodChanged() override;

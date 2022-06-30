@@ -117,9 +117,11 @@ bool DummyTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
   return true;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool DummyTextInputClient::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool DummyTextInputClient::GetTextFromRange(const gfx::Range& range,
                                             std::u16string* text) const {

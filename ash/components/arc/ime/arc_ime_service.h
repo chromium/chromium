@@ -138,7 +138,6 @@ class ArcImeService : public KeyedService,
   FocusReason GetFocusReason() const override;
   bool GetCompositionTextRange(gfx::Range* range) const override;
   bool SetEditableSelectionRange(const gfx::Range& range) override;
-  bool DeleteRange(const gfx::Range& range) override;
   void OnInputMethodChanged() override {}
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
