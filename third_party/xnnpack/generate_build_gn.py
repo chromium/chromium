@@ -73,7 +73,8 @@ config("xnnpack_config") {
     "XNN_ENABLE_MEMOPT=1",
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
-  ]
+    "XNN_LOG_TO_STDIO=0",
+]
 }
 '''.strip()
 
