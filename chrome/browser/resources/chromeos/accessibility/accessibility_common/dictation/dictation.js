@@ -87,7 +87,7 @@ export class Dictation {
     this.uiController_ = new UIController();
     this.speechParser_ = new SpeechParser(this.inputController_);
     if (this.localePref_) {
-      this.speechParser_.initialize(this.localePref_);
+      this.propagateLocale_(this.localePref_);
     }
     this.hiddenMacroManager_ = new HiddenMacroManager(this.inputController_);
 
@@ -346,10 +346,10 @@ export class Dictation {
       switch (pref.key) {
         case Dictation.DICTATION_LOCALE_PREF:
           if (pref.value) {
-            this.speechRecognitionOptions_.locale =
-                /** @type {string} */ (pref.value);
-            this.localePref_ = this.speechRecognitionOptions_.locale;
-            this.speechParser_.initialize(this.localePref_);
+            const locale = /** @type {string} */ (pref.value);
+            this.speechRecognitionOptions_.locale = locale;
+            this.localePref_ = locale;
+            this.propagateLocale_(locale);
           }
           break;
         case Dictation.SPOKEN_FEEDBACK_PREF:
@@ -494,6 +494,15 @@ export class Dictation {
   runHiddenMacroWithTwoStringArgsForTesting(name, arg1, arg2) {
     this.hiddenMacroManager_.runMacroWithTwoStringArgsForTesting(
         name, arg1, arg2);
+  }
+
+  /**
+   * @param {string} locale
+   * @private
+   */
+  propagateLocale_(locale) {
+    this.speechParser_.initialize(locale);
+    this.inputController_.setLocale(locale);
   }
 }
 

@@ -272,15 +272,16 @@ class ClipboardChangedWaiter : public ui::ClipboardObserver {
 
 }  // namespace
 
-class DictationTest
+class DictationTestBase
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<speech::SpeechRecognitionType> {
- protected:
-  DictationTest() : test_helper_(GetParam()) {}
-  ~DictationTest() override = default;
-  DictationTest(const DictationTest&) = delete;
-  DictationTest& operator=(const DictationTest&) = delete;
+ public:
+  DictationTestBase() : test_helper_(GetParam()) {}
+  ~DictationTestBase() override = default;
+  DictationTestBase(const DictationTestBase&) = delete;
+  DictationTestBase& operator=(const DictationTestBase&) = delete;
 
+ protected:
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::Feature> enabled_features =
@@ -295,9 +296,6 @@ class DictationTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     test_helper_.SetUp(browser()->profile());
-    // Ensure that the Dictation locale preference is set.
-    GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale,
-                                    "en-US");
 
     ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
@@ -475,6 +473,21 @@ class DictationTest
   std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+};
+
+class DictationTest : public DictationTestBase {
+ public:
+  DictationTest() = default;
+  ~DictationTest() override = default;
+  DictationTest(const DictationTest&) = delete;
+  DictationTest& operator=(const DictationTest&) = delete;
+
+ protected:
+  void SetUpOnMainThread() override {
+    GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale,
+                                    "en-US");
+    DictationTestBase::SetUpOnMainThread();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -709,6 +722,39 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
   SendFinalResultAndWaitForTextAreaValue("a test.", "This is a test.");
   SendFinalResultAndWaitForTextAreaValue("you passed!",
                                          "This is a test. You passed!");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+// Tests the behavior of Dictation in other languages.
+class DictationI18NTest : public DictationTestBase {
+ public:
+  DictationI18NTest() = default;
+  ~DictationI18NTest() override = default;
+  DictationI18NTest(const DictationI18NTest&) = delete;
+  DictationI18NTest& operator=(const DictationI18NTest&) = delete;
+
+ protected:
+  void SetUpOnMainThread() override {
+    GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale,
+                                    "ja-JP");
+    DictationTestBase::SetUpOnMainThread();
+  }
+};
+
+// On-device speech recognition is currently limited to en-US, so
+// DictationI18NTest should use network speech recognition only.
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationI18NTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+IN_PROC_BROWSER_TEST_P(DictationI18NTest, NoSmartSpacingOrCapitalization) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("this", "this");
+  SendFinalResultAndWaitForTextAreaValue(" Is", "this Is");
+  SendFinalResultAndWaitForTextAreaValue("a test.", "this Isa test.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }

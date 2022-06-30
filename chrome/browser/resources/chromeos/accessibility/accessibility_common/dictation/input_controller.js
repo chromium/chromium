@@ -30,6 +30,9 @@ export class InputController {
     /** @private {?function():void} */
     this.onConnectCallback_ = null;
 
+    /** @private {?string} */
+    this.locale_ = null;
+
     this.initialize_();
   }
 
@@ -100,8 +103,13 @@ export class InputController {
       return;
     }
 
+    const language = this.locale_.split('-')[0];
+    const useSmartSpacingAndCapitalization =
+        InputController.SMART_SPACING_AND_CAPITALIZATION_LANGUAGES_.includes(
+            language);
     const editableNode = this.focusHandler_.getEditableNode();
-    if (editableNode && editableNode.textSelStart === editableNode.textSelEnd) {
+    if (editableNode && useSmartSpacingAndCapitalization &&
+        editableNode.textSelStart === editableNode.textSelEnd) {
       const value = editableNode.value;
       const caretIndex = editableNode.textSelStart;
       text = EditingUtil.smartCapitalization(value, caretIndex, text);
@@ -280,6 +288,11 @@ export class InputController {
     const newCaretIndex = EditingUtil.navPrevSent(value, caretIndex);
     editableNode.setSelection(newCaretIndex, newCaretIndex);
   }
+
+  /** @param {string} locale */
+  setLocale(locale) {
+    this.locale_ = locale;
+  }
 }
 
 /**
@@ -294,3 +307,12 @@ InputController.IME_ENGINE_ID =
  * @const
  */
 InputController.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
+
+
+/**
+ * The languages that are supported by smart spacing and capitalization.
+ * @private {!Array<string>}
+ * @const
+ */
+InputController.SMART_SPACING_AND_CAPITALIZATION_LANGUAGES_ =
+    ['en', 'fr', 'it', 'de', 'es'];
