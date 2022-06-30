@@ -304,8 +304,6 @@ test("accessibility_unittests") {
     "//ui/gfx:test_support",
   ]
 
-  data_deps = [ "//testing/buildbot/filters:accessibility_unittests_filters" ]
-
   if (is_fuchsia) {
     sources += [
       "platform/fuchsia/accessibility_bridge_fuchsia_unittest.cc",

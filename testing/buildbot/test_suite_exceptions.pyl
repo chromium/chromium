@@ -23,15 +23,6 @@
 # The goal is to drive the number of exceptions to zero, to make all
 # the bots behave similarly.
 {
-  'accessibility_unittests':{
-    'modifications': {
-      'fuchsia-fyi-x64-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.accessibility_unittests.filter',
-        ],
-      },
-    },
-  },
   'android_browsertests': {
     'modifications': {
       'Marshmallow Tablet Tester': {
@@ -3480,11 +3471,6 @@
       'fuchsia-fyi-arm64-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
-        ],
-      },
-      'fuchsia-fyi-x64-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.views_unittests.filter',
         ],
       },
       # https://crbug.com/1111979,
