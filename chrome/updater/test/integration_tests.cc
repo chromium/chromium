@@ -613,7 +613,8 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // TODO(crbug.com/1268555): Even on Windows, component builds do not work.
 #if !defined(COMPONENT_BUILD)
-TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
+// TODO(crbug.com/1340482) - disable the test on branches because it is flaky.
+TEST_F(IntegrationTest, DISABLED_SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   // TODO(crbug.com/1308856): Current versions of the updater do not send an
