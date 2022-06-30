@@ -55,7 +55,7 @@ class BluetoothHidDetectorImpl
   // BluetoothHidDetector:
   void PerformStartBluetoothHidDetection(
       InputDevicesStatus input_devices_status) override;
-  void PerformStopBluetoothHidDetection() override;
+  void PerformStopBluetoothHidDetection(bool is_using_bluetooth) override;
 
   // chromeos::bluetooth_config::mojom::SystemPropertiesObserver
   void OnPropertiesUpdated(

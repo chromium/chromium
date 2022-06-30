@@ -73,7 +73,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     // HID detection must be stopped before BluetoothHidDetectorImpl is
     // destroyed.
     if (IsDiscoverySessionActive())
-      StopBluetoothHidDetection();
+      StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
   }
 
   FakeBluetoothHidDetectorDelegate* StartBluetoothHidDetection(
@@ -88,8 +88,8 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     return delegate;
   }
 
-  void StopBluetoothHidDetection() {
-    bluetooth_hid_detector()->StopBluetoothHidDetection();
+  void StopBluetoothHidDetection(bool is_using_bluetooth) {
+    bluetooth_hid_detector()->StopBluetoothHidDetection(is_using_bluetooth);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -258,7 +258,7 @@ TEST_F(BluetoothHidDetectorImplTest, StartStopStartDetection_BluetoothEnabled) {
 
   // Stop HID detection. Discovery should have stopped but Bluetooth still
   // enabled.
-  StopBluetoothHidDetection();
+  StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
   EXPECT_FALSE(IsDiscoverySessionActive());
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetAdapterState());
 
@@ -273,7 +273,8 @@ TEST_F(BluetoothHidDetectorImplTest, StartStopStartDetection_BluetoothEnabled) {
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetAdapterState());
 }
 
-TEST_F(BluetoothHidDetectorImplTest, StartStopDetection_BluetoothDisabled) {
+TEST_F(BluetoothHidDetectorImplTest,
+       StartStopDetection_BluetoothDisabled_BluetoothUnused) {
   // Initiate disabling Bluetooth.
   SimulateBluetoothToggledByUi(/*enabled=*/false);
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetAdapterState());
@@ -305,10 +306,33 @@ TEST_F(BluetoothHidDetectorImplTest, StartStopDetection_BluetoothDisabled) {
   // Trigger an OnPropertiesUpdated() call. Nothing should happen.
   TriggerOnPropertiesUpdatedCall();
 
-  // Stop HID detection. Discovery should have stopped and Bluetooth disabled.
-  StopBluetoothHidDetection();
+  // Stop HID detection with no device using Bluetooth. Discovery should have
+  // stopped and Bluetooth disabled.
+  StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
   EXPECT_FALSE(IsDiscoverySessionActive());
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetAdapterState());
+}
+
+TEST_F(BluetoothHidDetectorImplTest,
+       StartStopDetection_BluetoothDisabled_BluetoothUsed) {
+  // Initiate disabling Bluetooth.
+  SimulateBluetoothToggledByUi(/*enabled=*/false);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetAdapterState());
+
+  // Complete adapter disabling.
+  SetAdapterState(BluetoothSystemState::kDisabled);
+  EXPECT_EQ(BluetoothSystemState::kDisabled, GetAdapterState());
+
+  // Begin HID detection. The adapter state should switch to enabling.
+  StartBluetoothHidDetection();
+  EXPECT_EQ(BluetoothSystemState::kEnabling, GetAdapterState());
+  EXPECT_FALSE(IsDiscoverySessionActive());
+
+  // Stop HID detection with Bluetooth being used by a device. Discovery should
+  // have stopped but the adapter state remained the same.
+  StopBluetoothHidDetection(/*is_using_bluetooth=*/true);
+  EXPECT_FALSE(IsDiscoverySessionActive());
+  EXPECT_EQ(BluetoothSystemState::kEnabling, GetAdapterState());
 }
 
 TEST_F(BluetoothHidDetectorImplTest, StartDetection_BluetoothUnavailable) {
@@ -810,7 +834,7 @@ TEST_F(BluetoothHidDetectorImplTest, DetectionStopsStartsDuringPairing) {
       BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
 
   // Stop detection.
-  StopBluetoothHidDetection();
+  StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
   EXPECT_FALSE(IsDiscoverySessionActive());
   EXPECT_EQ(3u, delegate1->num_bluetooth_hid_status_changed_calls());
   AssertBluetoothHidDetectionStatus(

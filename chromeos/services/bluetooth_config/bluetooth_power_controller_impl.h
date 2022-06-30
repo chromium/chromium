@@ -31,7 +31,8 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController,
  private:
   // BluetoothPowerController:
   void SetBluetoothEnabledState(bool enabled) override;
-  void SetBluetoothHidDetectionActive(bool active) override;
+  void SetBluetoothHidDetectionActive() override;
+  void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) override;
   void SetPrefs(PrefService* primary_profile_prefs,
                 PrefService* local_state) override;
 

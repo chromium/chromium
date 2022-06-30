@@ -88,9 +88,10 @@ class BluetoothHidDetector {
   void StartBluetoothHidDetection(Delegate* delegate,
                                   InputDevicesStatus input_devices_status);
 
-  // Stops scanning for Bluetooth devices. Calling this method when HID
-  // detection has not been started is an error.
-  void StopBluetoothHidDetection();
+  // Stops scanning for Bluetooth devices. |is_using_bluetooth| indicates
+  // whether or not there is at least one HID connected via Bluetooth. Calling
+  // this method when HID detection has not been started is an error.
+  void StopBluetoothHidDetection(bool is_using_bluetooth);
 
   // Informs BluetoothHidDetector which HID types have been connected.
   virtual void SetInputDevicesStatus(
@@ -108,7 +109,7 @@ class BluetoothHidDetector {
       InputDevicesStatus input_devices_status) = 0;
 
   // Implementation-specific version of StopBluetoothHidDetection().
-  virtual void PerformStopBluetoothHidDetection() = 0;
+  virtual void PerformStopBluetoothHidDetection(bool is_using_bluetooth) = 0;
 
   // Notifies |delegate_| of status changes; should be called by derived
   // types to notify observers of status changes.

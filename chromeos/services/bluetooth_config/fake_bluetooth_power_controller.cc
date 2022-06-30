@@ -18,12 +18,17 @@ void FakeBluetoothPowerController::SetBluetoothEnabledState(bool enabled) {
   adapter_state_controller_->SetBluetoothEnabledState(enabled);
 }
 
-void FakeBluetoothPowerController::SetBluetoothHidDetectionActive(bool active) {
-  if (active) {
-    adapter_state_controller_->SetBluetoothEnabledState(true);
-  } else {
-    adapter_state_controller_->SetBluetoothEnabledState(last_enabled_);
-  }
+void FakeBluetoothPowerController::SetBluetoothHidDetectionActive() {
+  adapter_state_controller_->SetBluetoothEnabledState(true);
+}
+
+void FakeBluetoothPowerController::SetBluetoothHidDetectionInactive(
+    bool is_using_bluetooth) {
+  // If Bluetooth is being used, don't restore the persisted adapter state.
+  if (is_using_bluetooth)
+    return;
+
+  adapter_state_controller_->SetBluetoothEnabledState(last_enabled_);
 }
 
 }  // namespace bluetooth_config

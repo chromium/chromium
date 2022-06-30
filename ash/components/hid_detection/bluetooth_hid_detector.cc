@@ -88,9 +88,9 @@ void BluetoothHidDetector::StartBluetoothHidDetection(
   PerformStartBluetoothHidDetection(input_devices_status);
 }
 
-void BluetoothHidDetector::StopBluetoothHidDetection() {
+void BluetoothHidDetector::StopBluetoothHidDetection(bool is_using_bluetooth) {
   DCHECK(delegate_);
-  PerformStopBluetoothHidDetection();
+  PerformStopBluetoothHidDetection(is_using_bluetooth);
   delegate_ = nullptr;
 }
 

@@ -62,7 +62,8 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
       mojo::PendingRemote<mojom::DiscoverySessionStatusObserver> observer)
       override;
   void SetBluetoothEnabledState(bool enabled) override;
-  void SetBluetoothHidDetectionActive(bool active) override;
+  void SetBluetoothHidDetectionActive() override;
+  void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) override;
   void StartDiscovery(
       mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate) override;
   void Connect(const std::string& device_id, ConnectCallback callback) override;

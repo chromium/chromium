@@ -55,7 +55,16 @@ void HidDetectionManagerImpl::PerformStartHidDetection() {
 void HidDetectionManagerImpl::PerformStopHidDetection() {
   HID_LOG(EVENT) << "Stopping HID detection.";
   input_device_manager_receiver_.reset();
-  bluetooth_hid_detector_->StopBluetoothHidDetection();
+
+  // Check if any of the connected input devices are connected via Bluetooth.
+  bool is_using_bluetooth = false;
+  for (const auto& [device_id, device] : device_id_to_device_map_) {
+    if (device->type == device::mojom::InputDeviceType::TYPE_BLUETOOTH) {
+      is_using_bluetooth = true;
+      break;
+    }
+  }
+  bluetooth_hid_detector_->StopBluetoothHidDetection(is_using_bluetooth);
 }
 
 HidDetectionManager::HidDetectionStatus

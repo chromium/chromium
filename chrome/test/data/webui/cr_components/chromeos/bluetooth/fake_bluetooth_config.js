@@ -172,11 +172,17 @@ export class FakeBluetoothConfig {
                   bluetoothSystemState.kDisabling);
   }
 
+  /** @override */
+  setBluetoothHidDetectionActive() {
+    // This method is left unimplemented as it is only used in OOBE.
+    assertNotReached();
+  }
+
   /**
    * @override
-   * @param {boolean} active
+   * @param {boolean} isUsingBluetooth
    */
-  setBluetoothHidDetectionActive(active) {
+  setBluetoothHidDetectionInactive(isUsingBluetooth) {
     // This method is left unimplemented as it is only used in OOBE.
     assertNotReached();
   }

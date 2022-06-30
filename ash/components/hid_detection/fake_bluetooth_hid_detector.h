@@ -36,11 +36,13 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
     return is_bluetooth_hid_detection_active_;
   }
 
+  bool is_using_bluetooth() { return is_using_bluetooth_; }
+
  private:
   // BluetoothHidDetector:
   void PerformStartBluetoothHidDetection(
       InputDevicesStatus input_devices_status) override;
-  void PerformStopBluetoothHidDetection() override;
+  void PerformStopBluetoothHidDetection(bool is_using_bluetooth) override;
 
   InputDevicesStatus input_devices_status_;
   size_t num_set_input_devices_status_calls_ = 0;
@@ -48,6 +50,7 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
   absl::optional<BluetoothHidMetadata> current_pairing_device_;
   absl::optional<BluetoothHidPairingState> current_pairing_state_;
   bool is_bluetooth_hid_detection_active_ = false;
+  bool is_using_bluetooth_ = false;
 };
 
 }  // namespace ash::hid_detection
