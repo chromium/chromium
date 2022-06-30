@@ -16674,7 +16674,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {
