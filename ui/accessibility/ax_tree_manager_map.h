@@ -5,15 +5,14 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_MANAGER_MAP_H_
 #define UI_ACCESSIBILITY_AX_TREE_MANAGER_MAP_H_
 
-#include <unordered_map>
-
+#include "base/containers/flat_map.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
 namespace ui {
 
 // This class manages AXTreeManager instances. It is a singleton wrapper
-// around a std::unordered_map. AXTreeID's are used as the key for the map.
+// around a base::flat_map. AXTreeID's are used as the key for the map.
 // Since AXTreeID's might refer to AXTreeIDUnknown, callers should not expect
 // AXTreeIDUnknown to map to a particular AXTreeManager.
 class AX_EXPORT AXTreeManagerMap {
@@ -33,7 +32,7 @@ class AX_EXPORT AXTreeManagerMap {
   AXTreeManager* GetManagerForChildTree(const AXNode& parent_node);
 
  private:
-  std::unordered_map<AXTreeID, AXTreeManager*, AXTreeIDHash> map_;
+  base::flat_map<AXTreeID, AXTreeManager*> map_;
 };
 
 }  // namespace ui

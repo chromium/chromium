@@ -547,7 +547,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   // Reset content changed events counter every time we finish an atomic update.
   wcax->ResetContentChangedEventsCounter();
 
-  // Clear unordered_set of nodes cleared from the cache after atomic update.
+  // Clear set of nodes cleared from the cache after atomic update.
   nodes_already_cleared_.clear();
 
   if (root_changed) {

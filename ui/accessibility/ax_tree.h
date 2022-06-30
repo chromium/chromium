@@ -11,9 +11,9 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -388,9 +388,9 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   base::ObserverList<AXTreeObserver> observers_;
   raw_ptr<AXNode, DanglingUntriaged> root_ = nullptr;
-  std::unordered_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
   std::string error_;
   AXTreeData data_;
+  base::flat_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
 
   // Map from an int attribute (if IsNodeIdIntAttribute is true) to
   // a reverse mapping from target nodes to source nodes.
@@ -403,7 +403,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // Map from node ID to cached table info, if the given node is a table.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<AXNodeID, std::unique_ptr<AXTableInfo>>
+  mutable base::flat_map<AXNodeID, std::unique_ptr<AXTableInfo>>
       table_info_map_;
 
   // The next negative node ID to use for internal nodes.
@@ -462,7 +462,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // objects.
   // All other objects will map to default-constructed OrderedSetInfo objects.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<AXNodeID, NodeSetSizePosInSetInfo>
+  mutable base::flat_map<AXNodeID, NodeSetSizePosInSetInfo>
       node_set_size_pos_in_set_info_map_;
 
   // Indicates if the tree is updating.

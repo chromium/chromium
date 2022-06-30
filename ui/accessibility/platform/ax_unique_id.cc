@@ -5,9 +5,9 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 
 #include <memory>
-#include <unordered_set>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 
@@ -15,7 +15,7 @@ namespace ui {
 
 namespace {
 
-base::LazyInstance<std::unordered_set<int32_t>>::Leaky g_assigned_ids =
+base::LazyInstance<base::flat_set<int32_t>>::Leaky g_assigned_ids =
     LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace

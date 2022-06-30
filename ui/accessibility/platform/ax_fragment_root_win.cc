@@ -4,8 +4,7 @@
 
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 
-#include <unordered_map>
-
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
@@ -252,7 +251,7 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  std::unordered_map<gfx::AcceleratedWidget, AXFragmentRootWin*> map_;
+  base::flat_map<gfx::AcceleratedWidget, AXFragmentRootWin*> map_;
 };
 
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,

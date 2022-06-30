@@ -25,10 +25,9 @@ AXTreeManagerBase* AXTreeManagerBase::GetManager(const AXTreeID& tree_id) {
 }
 
 // static
-std::unordered_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>&
+base::flat_map<AXTreeID, AXTreeManagerBase*>&
 AXTreeManagerBase::GetTreeManagerMapInstance() {
-  static base::NoDestructor<
-      std::unordered_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>>
+  static base::NoDestructor<base::flat_map<AXTreeID, AXTreeManagerBase*>>
       map_instance;
   return *map_instance;
 }

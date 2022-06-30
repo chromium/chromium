@@ -6,8 +6,8 @@
 #define UI_ACCESSIBILITY_AX_TREE_MANAGER_BASE_H_
 
 #include <memory>
-#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -122,7 +122,7 @@ class AX_EXPORT AXTreeManagerBase final {
   AXTreeManagerBase* DetachChildTree(AXNode& host_node);
 
  private:
-  static std::unordered_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>&
+  static base::flat_map<AXTreeID, AXTreeManagerBase*>&
   GetTreeManagerMapInstance();
 
   std::unique_ptr<AXTree> tree_;

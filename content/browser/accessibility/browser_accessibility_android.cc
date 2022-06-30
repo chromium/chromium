@@ -5,8 +5,8 @@
 #include "content/browser/accessibility/browser_accessibility_android.h"
 
 #include <algorithm>
-#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
 #include "base/lazy_instance.h"
@@ -81,7 +81,7 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
       new BrowserAccessibilityAndroid(manager, node));
 }
 
-using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;
+using UniqueIdMap = base::flat_map<int32_t, BrowserAccessibilityAndroid*>;
 // Map from each AXPlatformNode's unique id to its instance.
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
     LAZY_INSTANCE_INITIALIZER;
