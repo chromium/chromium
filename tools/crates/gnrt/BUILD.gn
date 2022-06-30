@@ -34,6 +34,7 @@ rust_static_library("gnrt_lib") {
     # in the first place, but does due to a crates.py bug.
     "//third_party/rust/cargo_platform/v0_1:lib",
     "//third_party/rust/once_cell/v1:lib",
+    "//third_party/rust/semver/v1:lib",
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:lib",
     "//third_party/rust/toml/v0_5:test_support",

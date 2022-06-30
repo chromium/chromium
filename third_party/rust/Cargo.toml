@@ -46,6 +46,7 @@ cargo_metadata = "0.14"
 clap = "3"
 once_cell = "1"
 rstest = "0.12"
+semver = "1"
 small_ctor = "0.1"
 tempfile = "3"
 

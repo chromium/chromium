@@ -16,7 +16,7 @@ fn test() {
             "build-script-outputs = [\"stuff.rs\"]\n",
         )),
         Ok(FullDependency {
-            version: Some(Version("1.0.0".to_string())),
+            version: Some(VersionConstraint("1.0.0".to_string())),
             features: vec!["foo".to_string(), "bar".to_string()],
             allow_first_party_usage: false,
             build_script_outputs: vec!["stuff.rs".to_string()],
@@ -29,7 +29,7 @@ fn test() {
             "build-script-outputs = [\"generated.rs\"]\n",
         )),
         Ok(FullDependency {
-            version: Some(Version("3.14.159".to_string())),
+            version: Some(VersionConstraint("3.14.159".to_string())),
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["generated.rs".to_string()],
@@ -57,17 +57,17 @@ fn test() {
 
     expect_eq!(
         manifest.dependency_spec.dependencies.get("cxx"),
-        Some(&Dependency::Short(Version("1".to_string())))
+        Some(&Dependency::Short(VersionConstraint("1".to_string())))
     );
     expect_eq!(
         manifest.dependency_spec.dependencies.get("serde"),
-        Some(&Dependency::Short(Version("1".to_string())))
+        Some(&Dependency::Short(VersionConstraint("1".to_string())))
     );
 
     expect_eq!(
         manifest.dependency_spec.dependencies.get("rustversion"),
         Some(&Dependency::Full(FullDependency {
-            version: Some(Version("1".to_string())),
+            version: Some(VersionConstraint("1".to_string())),
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["version.rs".to_string()],
@@ -77,7 +77,7 @@ fn test() {
     expect_eq!(
         manifest.dependency_spec.dependencies.get("unicode-linebreak"),
         Some(&Dependency::Full(FullDependency {
-            version: Some(Version("0.1".to_string())),
+            version: Some(VersionConstraint("0.1".to_string())),
             features: vec![],
             allow_first_party_usage: false,
             build_script_outputs: vec!["table.rs".to_string()],
@@ -87,7 +87,7 @@ fn test() {
     expect_eq!(
         manifest.dependency_spec.dev_dependencies.get("syn"),
         Some(&Dependency::Full(FullDependency {
-            version: Some(Version("1".to_string())),
+            version: Some(VersionConstraint("1".to_string())),
             features: vec!["full".to_string()],
             allow_first_party_usage: true,
             build_script_outputs: vec![],
@@ -100,7 +100,7 @@ fn test() {
     let manifest = CargoManifest {
         package: CargoPackage {
             name: "chromium".to_string(),
-            version: Version("0.1.0".to_string()),
+            version: Version::new(0, 1, 0),
             edition: Default::default(),
         },
         workspace: None,

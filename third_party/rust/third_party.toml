@@ -90,5 +90,6 @@ cargo_metadata = "0.14"
 cargo-platform = "0.1"
 clap = "3"
 once_cell = "1"
+semver = "1"
 tempfile = "3"
 toml = {version = "0.5", features = ["preserve_order"]}

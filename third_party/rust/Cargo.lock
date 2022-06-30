@@ -237,6 +237,7 @@ dependencies = [
  "once_cell",
  "rstest",
  "rustversion",
+ "semver",
  "serde",
  "serde_json_lenient",
  "small_ctor",

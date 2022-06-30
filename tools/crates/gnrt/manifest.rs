@@ -17,11 +17,16 @@ pub type DependencySet = BTreeMap<String, Dependency>;
 /// and the local path.
 pub type CargoPatchSet = BTreeMap<String, CargoPatch>;
 
-/// A crate version in a dependency specification.
+/// A specific crate version.
+pub use semver::Version;
+
+/// A version constraint in a dependency spec. We don't use `semver::VersionReq`
+/// since we only pass it through opaquely from third_party.toml to Cargo.toml.
+/// Parsing it is unnecessary.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 // From serde's perspective we serialize and deserialize this as a plain string.
 #[serde(transparent)]
-pub struct Version(pub String);
+pub struct VersionConstraint(pub String);
 
 /// Parsed third_party.toml. This is a limited variant of Cargo.toml.
 #[derive(Clone, Debug, Deserialize)]
@@ -72,7 +77,7 @@ pub struct DependencySpec {
 pub enum Dependency {
     /// A dependency of the form `foo = "1.0.11"`: just the package name as key
     /// and the version as value. The sole field is the crate version.
-    Short(Version),
+    Short(VersionConstraint),
     /// A dependency that specifies other fields in the form of `foo = { ... }`
     /// or `[dependencies.foo] ... `.
     Full(FullDependency),
@@ -84,7 +89,7 @@ pub enum Dependency {
 pub struct FullDependency {
     /// Version constraint on dependency.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub version: Option<Version>,
+    pub version: Option<VersionConstraint>,
     /// Required features.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub features: Vec<String>,
@@ -184,7 +189,7 @@ pub fn generate_fake_cargo_toml<Iter: IntoIterator<Item = PatchSpecification>>(
 
     let package = CargoPackage {
         name: "chromium".to_string(),
-        version: Version("0.1.0".to_string()),
+        version: Version::new(0, 1, 0),
         edition: Default::default(),
     };
 
