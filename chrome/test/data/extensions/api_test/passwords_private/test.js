@@ -432,6 +432,7 @@ var availableTests = [
       formattedOrigin: 'example.com',
       detailedOrigin: 'https://example.com',
       isAndroidCredential: false,
+      hasStartableScript: false,
       signonRealm: 'https://example.com',
       username: 'alice',
       compromisedInfo: {
@@ -456,6 +457,7 @@ var availableTests = [
       formattedOrigin: 'example.com',
       detailedOrigin: 'https://example.com',
       isAndroidCredential: false,
+      hasStartableScript: false,
       signonRealm: 'https://example.com',
       username: 'alice',
       compromisedInfo: {
@@ -483,6 +485,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -507,6 +510,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -531,6 +535,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -553,6 +558,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -578,6 +584,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -601,6 +608,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -624,6 +632,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -649,6 +658,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -672,6 +682,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
@@ -697,6 +708,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           changePasswordUrl: 'https://example.com/.well-known/change-password',
@@ -720,6 +732,7 @@ var availableTests = [
           formattedOrigin: 'example.com',
           detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
+          hasStartableScript: false,
           signonRealm: 'https://example.com',
           username: 'alice',
           changePasswordUrl: 'https://example.com/.well-known/change-password',
@@ -743,6 +756,7 @@ var availableTests = [
           formattedOrigin: 'App (com.example.app)',
           detailedOrigin: 'com.example.app',
           isAndroidCredential: true,
+          hasStartableScript: false,
           signonRealm: '',
           username: 'alice',
           compromisedInfo: {

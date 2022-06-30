@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
@@ -26,8 +27,10 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
+#include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -38,10 +41,13 @@
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
@@ -50,6 +56,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -632,13 +639,46 @@ PasswordCheckDelegate::ConstructInsecureCredential(
   api_credential.signon_realm = entry.signon_realm;
   api_credential.username = base::UTF16ToUTF8(entry.username);
 
+  // For the time being, the automated password change is restricted to
+  // compromised credentials. In the future, this requirement may be relaxed.
+  if ((entry.IsPhished() || entry.IsLeaked()) &&
+      IsAutomatedPasswordChangeFromSettingsEnabled() &&
+      !entry.username.empty()) {
+    GURL url = api_credential.is_android_credential
+                   ? GURL(entry.affiliated_web_realm)
+                   : entry.url;
+    api_credential.has_startable_script =
+        !url.is_empty() && GetPasswordScriptsFetcher()->IsScriptAvailable(
+                               url::Origin::Create(entry.url));
+  } else {
+    api_credential.has_startable_script = false;
+  }
+
   return api_credential;
 }
 
 PasswordChangeSuccessTracker*
-PasswordCheckDelegate::GetPasswordChangeSuccessTracker() {
+PasswordCheckDelegate::GetPasswordChangeSuccessTracker() const {
   return password_manager::PasswordChangeSuccessTrackerFactory::
       GetForBrowserContext(profile_);
+}
+
+password_manager::PasswordScriptsFetcher*
+PasswordCheckDelegate::GetPasswordScriptsFetcher() const {
+  return PasswordScriptsFetcherFactory::GetForBrowserContext(profile_);
+}
+
+bool PasswordCheckDelegate::IsAutomatedPasswordChangeFromSettingsEnabled()
+    const {
+  // Do not offer password change to non-syncing users, as it is required
+  // for generating passwords.
+  if (password_manager_util::GetPasswordSyncState(
+          SyncServiceFactory::GetForProfile(profile_)) ==
+      password_manager::SyncState::kNotSyncing) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordChange);
 }
 
 }  // namespace extensions

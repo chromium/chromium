@@ -28,6 +28,7 @@ class Profile;
 
 namespace password_manager {
 class PasswordChangeSuccessTracker;
+class PasswordScriptsFetcher;
 }  // namespace password_manager
 
 namespace extensions {
@@ -160,10 +161,17 @@ class PasswordCheckDelegate
   api::passwords_private::InsecureCredential ConstructInsecureCredential(
       const password_manager::CredentialUIEntry& entry);
 
-  // Obtain a raw pointer to the |PasswordChangeSuccessTracker| associated
-  // with |profile_|.
+  // Returns a raw pointer to the `PasswordChangeSuccessTracker` associated
+  // with `profile_`.
   password_manager::PasswordChangeSuccessTracker*
-  GetPasswordChangeSuccessTracker();
+  GetPasswordChangeSuccessTracker() const;
+
+  // Returns a raw pointer to the `PasswordScriptsFetcher` associated with
+  // `profile_`.
+  password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher() const;
+
+  // Returns whether automatic password changes are enabled from settings.
+  bool IsAutomatedPasswordChangeFromSettingsEnabled() const;
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;

@@ -114,6 +114,7 @@ chrome.passwordsPrivate.CompromisedInfo;
  *   detailedOrigin: string,
  *   isAndroidCredential: boolean,
  *   changePasswordUrl: (string|undefined),
+ *   hasStartableScript: boolean,
  *   signonRealm: string,
  *   username: string,
  *   password: (string|undefined),

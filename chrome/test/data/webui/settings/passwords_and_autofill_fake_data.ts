@@ -273,6 +273,7 @@ export function makeInsecureCredential(
     id: id || 0,
     formattedOrigin: url,
     changePasswordUrl: `http://${url}/`,
+    hasStartableScript: false,
     username: username,
     detailedOrigin: '',
     isAndroidCredential: false,
