@@ -12,6 +12,8 @@ CloudAnalysisSettings& CloudAnalysisSettings::operator=(
     CloudAnalysisSettings&&) = default;
 CloudAnalysisSettings::CloudAnalysisSettings(const CloudAnalysisSettings&) =
     default;
+CloudAnalysisSettings& CloudAnalysisSettings::operator=(
+    const CloudAnalysisSettings&) = default;
 CloudAnalysisSettings::~CloudAnalysisSettings() = default;
 
 LocalAnalysisSettings::LocalAnalysisSettings() = default;
@@ -20,6 +22,8 @@ LocalAnalysisSettings& LocalAnalysisSettings::operator=(
     LocalAnalysisSettings&&) = default;
 LocalAnalysisSettings::LocalAnalysisSettings(const LocalAnalysisSettings&) =
     default;
+LocalAnalysisSettings& LocalAnalysisSettings::operator=(
+    const LocalAnalysisSettings&) = default;
 LocalAnalysisSettings::~LocalAnalysisSettings() = default;
 
 CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings() = default;
@@ -36,6 +40,8 @@ CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings(
 CloudOrLocalAnalysisSettings& CloudOrLocalAnalysisSettings::operator=(
     CloudOrLocalAnalysisSettings&&) = default;
 CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings(
+    const CloudOrLocalAnalysisSettings&) = default;
+CloudOrLocalAnalysisSettings& CloudOrLocalAnalysisSettings::operator=(
     const CloudOrLocalAnalysisSettings&) = default;
 CloudOrLocalAnalysisSettings::~CloudOrLocalAnalysisSettings() = default;
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -44,6 +45,7 @@ struct CloudAnalysisSettings {
   CloudAnalysisSettings(CloudAnalysisSettings&&);
   CloudAnalysisSettings& operator=(CloudAnalysisSettings&&);
   CloudAnalysisSettings(const CloudAnalysisSettings&);
+  CloudAnalysisSettings& operator=(const CloudAnalysisSettings&);
   ~CloudAnalysisSettings();
 
   // The URL of the server that performs an analysis in the cloud.
@@ -60,6 +62,7 @@ struct LocalAnalysisSettings {
   LocalAnalysisSettings(LocalAnalysisSettings&&);
   LocalAnalysisSettings& operator=(LocalAnalysisSettings&&);
   LocalAnalysisSettings(const LocalAnalysisSettings&);
+  LocalAnalysisSettings& operator=(const LocalAnalysisSettings&);
   ~LocalAnalysisSettings();
 
   std::string local_path;
@@ -74,6 +77,7 @@ class CloudOrLocalAnalysisSettings
   CloudOrLocalAnalysisSettings(CloudOrLocalAnalysisSettings&&);
   CloudOrLocalAnalysisSettings& operator=(CloudOrLocalAnalysisSettings&&);
   CloudOrLocalAnalysisSettings(const CloudOrLocalAnalysisSettings&);
+  CloudOrLocalAnalysisSettings& operator=(const CloudOrLocalAnalysisSettings&);
 
   ~CloudOrLocalAnalysisSettings();
 
