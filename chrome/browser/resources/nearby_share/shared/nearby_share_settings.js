@@ -8,6 +8,7 @@ import '/mojo/nearby_share_settings.mojom-lite.js';
 
 /** @type {?nearbyShare.mojom.NearbyShareSettingsInterface} */
 let nearbyShareSettings = null;
+
 /** @type {boolean} */
 let isTesting = false;
 

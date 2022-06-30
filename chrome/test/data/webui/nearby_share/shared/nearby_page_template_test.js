@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://nearby/shared/nearby_page_template.js';
 
 import {NearbyPageTemplateElement} from 'chrome://nearby/shared/nearby_page_template.js';
 

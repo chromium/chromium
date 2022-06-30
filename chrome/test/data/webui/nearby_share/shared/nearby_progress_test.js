@@ -9,7 +9,8 @@ import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
 import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
 import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-import 'chrome://nearby/shared/nearby_progress.js';
+
+import {NearbyProgressElement} from 'chrome://nearby/shared/nearby_progress.js';
 
 import {assertEquals} from '../../chai_assert.js';
 
@@ -49,14 +50,16 @@ suite('ProgressTest', function() {
     shareTarget.name = name;
     progressElement.shareTarget = shareTarget;
 
-    const renderedName = progressElement.$$('#device-name').innerText;
+    const renderedName =
+        progressElement.shadowRoot.querySelector('#device-name').innerText;
     assertEquals(name, renderedName);
   });
 
   test('renders target image', function() {
     progressElement.shareTarget = getDefaultShareTarget();
 
-    const renderedSource = progressElement.$$('#share-target-image').src;
+    const renderedSource =
+        progressElement.shadowRoot.querySelector('#share-target-image').src;
     assertEquals('chrome://image/?http://google.com/image=s68', renderedSource);
   });
 
@@ -65,7 +68,8 @@ suite('ProgressTest', function() {
     shareTarget.imageUrl.url = '';
     progressElement.shareTarget = shareTarget;
 
-    const renderedSource = progressElement.$$('#share-target-image').src;
+    const renderedSource =
+        progressElement.shadowRoot.querySelector('#share-target-image').src;
     assertEquals('', renderedSource);
   });
 });

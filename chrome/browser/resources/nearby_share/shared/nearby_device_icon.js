@@ -2,34 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './nearby_shared_icons.js';
-
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 /**
  * @fileoverview The 'nearby-device-icon' component shows an icon for a nearby
  * device. This might be a user defined image or a generic icon based on device
  * type.
  */
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-device-icon',
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './nearby_shared_icons.js';
 
-  properties: {
-    /**
-     * The share target to show the icon for. Expected to start as null, then
-     * change to a valid object before this component is shown.
-     * @type {?nearbyShare.mojom.ShareTarget}
-     */
-    shareTarget: {
-      type: Object,
-      value: null,
-    },
-  },
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/** @polymer */
+export class NearbyDeviceIconElement extends PolymerElement {
+  static get is() {
+    return 'nearby-device-icon';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The share target to show the icon for. Expected to start as null, then
+       * change to a valid object before this component is shown.
+       * @type {?nearbyShare.mojom.ShareTarget}
+       */
+      shareTarget: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
 
   /**
    * @return {string}
@@ -49,5 +57,7 @@ Polymer({
       default:
         return 'nearby-share:laptop';
     }
-  },
-});
+  }
+}
+
+customElements.define(NearbyDeviceIconElement.is, NearbyDeviceIconElement);

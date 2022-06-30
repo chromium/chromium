@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/strings.m.js';
-import 'chrome://nearby/shared/nearby_contact_visibility.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
+import {NearbyContactVisibilityElement} from 'chrome://nearby/shared/nearby_contact_visibility.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -80,7 +80,7 @@ suite('nearby-contact-visibility', () => {
    * @return {boolean} true when the checkboxes for contacts are visible
    */
   function areContactCheckBoxesVisible() {
-    const list = visibilityElement.$$('#contactList');
+    const list = visibilityElement.shadowRoot.querySelector('#contactList');
     if (!list) {
       return false;
     }
@@ -91,7 +91,8 @@ suite('nearby-contact-visibility', () => {
    * @return {boolean} true when visibility selection radio group is disabled
    */
   function isRadioGroupDisabled() {
-    return visibilityElement.$$('#visibilityRadioGroup').disabled;
+    return visibilityElement.shadowRoot.querySelector('#visibilityRadioGroup')
+        .disabled;
   }
 
   /**
@@ -108,9 +109,14 @@ suite('nearby-contact-visibility', () => {
    * @param {boolean} no is noContacts check?
    */
   function assertToggleState(all, some, no) {
-    assertEquals(all, visibilityElement.$$('#allContacts').checked);
-    assertEquals(some, visibilityElement.$$('#someContacts').checked);
-    assertEquals(no, visibilityElement.$$('#noContacts').checked);
+    assertEquals(
+        all,
+        visibilityElement.shadowRoot.querySelector('#allContacts').checked);
+    assertEquals(
+        some,
+        visibilityElement.shadowRoot.querySelector('#someContacts').checked);
+    assertEquals(
+        no, visibilityElement.shadowRoot.querySelector('#noContacts').checked);
   }
 
 
@@ -128,7 +134,7 @@ suite('nearby-contact-visibility', () => {
     assertFalse(isDownloadContactsPendingVisible());
 
     // If we click retry, we should go into pending state.
-    visibilityElement.$$('#tryAgainLink').click();
+    visibilityElement.shadowRoot.querySelector('#tryAgainLink').click();
     await waitAfterNextRender(visibilityElement);
 
     assertFalse(isDownloadContactsFailedVisible());
@@ -141,8 +147,8 @@ suite('nearby-contact-visibility', () => {
     assertFalse(isDownloadContactsFailedVisible());
     assertFalse(isDownloadContactsPendingVisible());
     assertTrue(areContactCheckBoxesVisible());
-    const items =
-        visibilityElement.$$('#contactList').querySelectorAll('.contact-item');
+    const items = visibilityElement.shadowRoot.querySelector('#contactList')
+                      .querySelectorAll('.contact-item');
     assertEquals(fakeContactManager.contactRecords.length, items.length);
   });
 
@@ -154,7 +160,7 @@ suite('nearby-contact-visibility', () => {
     assertTrue(isRadioGroupDisabled());
 
     // Radio group disabled while downloading
-    visibilityElement.$$('#tryAgainLink').click();
+    visibilityElement.shadowRoot.querySelector('#tryAgainLink').click();
     await waitAfterNextRender(visibilityElement);
     assertTrue(isDownloadContactsPendingVisible());
     assertTrue(isRadioGroupDisabled());
@@ -295,7 +301,7 @@ suite('nearby-contact-visibility', () => {
         await waitAfterNextRender(visibilityElement);
 
         // visibility setting is not immediately updated
-        visibilityElement.$$('#someContacts').click();
+        visibilityElement.shadowRoot.querySelector('#someContacts').click();
         await waitAfterNextRender(visibilityElement);
         assertTrue(areContactCheckBoxesVisible());
         assertEquals(

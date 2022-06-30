@@ -6,10 +6,11 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://nearby/shared/nearby_device_icon.js';
 import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
 import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
 import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
+
+import {NearbyDeviceIconElement} from 'chrome://nearby/shared/nearby_device_icon.js';
 
 import {assertEquals} from '../../chai_assert.js';
 
@@ -32,7 +33,8 @@ suite('DeviceIconTest', function() {
   });
 
   test('renders default icon', function() {
-    const renderedIcon = deviceIconElement.$$('#icon').icon;
+    const renderedIcon =
+        deviceIconElement.shadowRoot.querySelector('#icon').icon;
     assertEquals('nearby-share:laptop', renderedIcon);
   });
 
@@ -44,7 +46,8 @@ suite('DeviceIconTest', function() {
     });
     deviceIconElement.shareTarget = shareTarget;
 
-    const renderedIcon = deviceIconElement.$$('#icon').icon;
+    const renderedIcon =
+        deviceIconElement.shadowRoot.querySelector('#icon').icon;
     assertEquals(expected, renderedIcon);
   }
 

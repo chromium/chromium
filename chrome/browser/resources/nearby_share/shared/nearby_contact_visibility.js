@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import '//resources/cr_elements/cr_radio_button/cr_card_radio_button.m.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './nearby_page_template.js';
-import './nearby_shared_icons.js';
-
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {sendWithPromise} from '//resources/js/cr.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
-import {NearbySettings} from './nearby_share_settings_behavior.js';
-
 /**
  * @fileoverview The 'nearby-contact-visibility' component allows users to
  * set the preferred visibility to contacts for Nearby Share. This component is
  * embedded in the nearby_visibility_page as well as the settings pop-up dialog.
  */
+
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './nearby_page_template.js';
+import './nearby_shared_icons.js';
+
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
 
 /** @enum {string} */
 const ContactsState = {
@@ -93,95 +93,117 @@ const DEVICE_VISIBILITY_DARK_ICON =
  */
 export let NearbyVisibilityContact;
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-contact-visibility',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyContactVisibilityElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class NearbyContactVisibilityElement extends
+    NearbyContactVisibilityElementBase {
+  static get is() {
+    return 'nearby-contact-visibility';
+  }
 
-  properties: {
-    /** @type {Object} */
-    ContactsState: {
-      type: Object,
-      value: ContactsState,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {string} */
-    contactsState: {
-      type: String,
-      value: ContactsState.PENDING,
-    },
+  static get properties() {
+    return {
+      /** @type {Object} */
+      ContactsState: {
+        type: Object,
+        value: ContactsState,
+      },
 
-    /** @type {?NearbySettings} */
-    settings: {
-      type: Object,
-      notify: true,
-    },
+      /** @type {string} */
+      contactsState: {
+        type: String,
+        value: ContactsState.PENDING,
+      },
 
-    /**
-     * @type {?string} Which of visibility setting is selected as a string or
-     *      null for no selection. ('all', 'some', 'none', null).
-     */
-    selectedVisibility: {
-      type: String,
-      value: null,
-      notify: true,
-    },
+      /** @type {?NearbySettings} */
+      settings: {
+        type: Object,
+        notify: true,
+      },
 
-    /**
-     * @type {?Array<NearbyVisibilityContact>} The user's contacts re-formatted
-     *     for binding.
-     */
-    contacts: {
-      type: Array,
-      value: null,
-    },
+      /**
+       * @type {?string} Which of visibility setting is selected as a string or
+       *      null for no selection. ('all', 'some', 'none', null).
+       */
+      selectedVisibility: {
+        type: String,
+        value: null,
+        notify: true,
+      },
 
-    /** @private */
-    numUnreachable_: {
-      type: Number,
-      value: 0,
-      observer: 'updateNumUnreachableMessage_',
-    },
+      /**
+       * @type {?Array<NearbyVisibilityContact>} The user's contacts
+       *     re-formatted for binding.
+       */
+      contacts: {
+        type: Array,
+        value: null,
+      },
 
-    /** @private */
-    numUnreachableMessage_: {
-      type: String,
-      value: '',
-      notify: true,
-    },
+      /** @private */
+      numUnreachable_: {
+        type: Number,
+        value: 0,
+        observer: 'updateNumUnreachableMessage_',
+      },
 
-    isVisibilitySelected: {
-      type: Boolean,
-      computed: 'isVisibilitySelected_(selectedVisibility)',
-      notify: true,
-    },
+      /** @private */
+      numUnreachableMessage_: {
+        type: String,
+        value: '',
+        notify: true,
+      },
 
-    /**
-     * Whether the contact visibility page is being rendered in dark mode.
-     * @private {boolean}
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      isVisibilitySelected: {
+        type: Boolean,
+        computed: 'isVisibilitySelected_(selectedVisibility)',
+        notify: true,
+      },
 
-  /** @private {?nearbyShare.mojom.ContactManagerInterface} */
-  contactManager_: null,
+      /**
+       * Whether the contact visibility page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  /** @private {?nearbyShare.mojom.DownloadContactsObserverReceiver} */
-  downloadContactsObserverReceiver_: null,
+  static get observers() {
+    return [
+      'settingsChanged_(settings.visibility)',
+    ];
+  }
 
-  /** @private {?number} */
-  downloadTimeoutId_: null,
+  constructor() {
+    super();
+    /** @private {?nearbyShare.mojom.ContactManagerInterface} */
+    this.contactManager_ = null;
 
-  observers: [
-    'settingsChanged_(settings.visibility)',
-  ],
+    /** @private {?nearbyShare.mojom.DownloadContactsObserverReceiver} */
+    this.downloadContactsObserverReceiver_ = null;
+
+    /** @private {?number} */
+    this.downloadTimeoutId_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.contactManager_ = getContactManager();
     this.downloadContactsObserverReceiver_ = observeContactManager(
         /** @type {!nearbyShare.mojom.DownloadContactsObserverInterface} */ (
@@ -189,14 +211,16 @@ Polymer({
     // Start a contacts download now so we have it by the time the component is
     // shown.
     this.downloadContacts_();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.downloadContactsObserverReceiver_) {
       this.downloadContactsObserverReceiver_.$.close();
     }
-  },
+  }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
@@ -207,7 +231,7 @@ Polymer({
    */
   isVisibilitySelected_(selectedVisibility) {
     return this.selectedVisibility !== null;
-  },
+  }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
@@ -219,7 +243,7 @@ Polymer({
    */
   isVisibility_(selectedVisibility, visibilityString) {
     return this.selectedVisibility === visibilityString;
-  },
+  }
 
   /**
    * Makes a mojo request to download the latest version of contacts.
@@ -235,7 +259,7 @@ Polymer({
     // response.
     this.downloadTimeoutId_ =
         setTimeout(this.onContactsDownloadFailed.bind(this), 30 * 1000);
-  },
+  }
 
   /**
    * @param {boolean} allowed
@@ -258,7 +282,7 @@ Polymer({
       name: contactRecord.personName,
       checked: allowed,
     };
-  },
+  }
 
   /**
    * From nearbyShare.mojom.DownloadContactsObserver, called when contacts have
@@ -293,7 +317,7 @@ Polymer({
     this.contactsState = items.length > 0 ? ContactsState.HAS_CONTACTS :
                                             ContactsState.ZERO_CONTACTS;
     this.numUnreachable_ = numUnreachableExcluded;
-  },
+  }
 
   /**
    * From nearbyShare.mojom.DownloadContactsObserver, called when contacts have
@@ -302,7 +326,7 @@ Polymer({
   onContactsDownloadFailed() {
     this.contactsState = ContactsState.FAILED;
     clearTimeout(this.downloadTimeoutId_);
-  },
+  }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
@@ -313,7 +337,7 @@ Polymer({
   showContactCheckBoxes_() {
     return this.selectedVisibility === 'some' ||
         this.selectedVisibility === 'none';
-  },
+  }
 
   /**
    * When the contact check boxes are visible, the contact name and description
@@ -327,7 +351,7 @@ Polymer({
       return 'true';
     }
     return undefined;
-  },
+  }
 
   /**
    * Used to show/hide ui elements based on the contacts download state.
@@ -338,7 +362,7 @@ Polymer({
    */
   inContactsState_(contactsState, expectedState) {
     return contactsState === expectedState;
-  },
+  }
 
   /**
    * @param {?NearbySettings} settings
@@ -351,7 +375,7 @@ Polymer({
     } else {
       this.selectedVisibility = null;
     }
-  },
+  }
 
   /**
    * @param {string} contactsState
@@ -361,7 +385,7 @@ Polymer({
   disableRadioGroup_(contactsState) {
     return contactsState === ContactsState.PENDING ||
         contactsState === ContactsState.FAILED;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -372,7 +396,7 @@ Polymer({
   showZeroState_(selectedVisibility, contactsState) {
     return !selectedVisibility && contactsState !== ContactsState.PENDING &&
         contactsState !== ContactsState.FAILED;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -383,7 +407,7 @@ Polymer({
   showContactsContainer_(selectedVisibility, contactsState) {
     return this.showExplanationState_(selectedVisibility, contactsState) ||
         this.showContactList_(selectedVisibility, contactsState);
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -399,7 +423,7 @@ Polymer({
 
     return selectedVisibility === 'none' ||
         contactsState === ContactsState.HAS_CONTACTS;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -410,7 +434,7 @@ Polymer({
   showEmptyState_(selectedVisibility, contactsState) {
     return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
         contactsState === ContactsState.ZERO_CONTACTS;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -421,7 +445,7 @@ Polymer({
   showContactList_(selectedVisibility, contactsState) {
     return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
         contactsState === ContactsState.HAS_CONTACTS;
-  },
+  }
 
   /**
    * Builds the html for the download retry message, applying the appropriate
@@ -435,7 +459,8 @@ Polymer({
    * @private
    */
   domChangeDownloadFailed_() {
-    const contactsFailedMessage = this.$$('#contactsFailedMessage');
+    const contactsFailedMessage =
+        this.shadowRoot.querySelector('#contactsFailedMessage');
     if (!contactsFailedMessage) {
       return;
     }
@@ -488,7 +513,7 @@ Polymer({
       event.preventDefault();
       this.downloadContacts_();
     });
-  },
+  }
 
   /**
    * Builds the html for the zero state help text, applying the appropriate aria
@@ -549,7 +574,7 @@ Polymer({
     anchorTag.target = '_blank';
 
     return tempEl.innerHTML;
-  },
+  }
 
   /**
    * @return {boolean} true if the unreachable contacts message should be shown
@@ -557,7 +582,7 @@ Polymer({
    */
   showUnreachableContactsMessage_() {
     return this.numUnreachable_ > 0;
-  },
+  }
 
   /** @private */
   updateNumUnreachableMessage_() {
@@ -576,7 +601,7 @@ Polymer({
               this.numUnreachableMessage_ = loadTimeData.substituteString(
                   labelTemplate, this.numUnreachable_);
             });
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -594,7 +619,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * Save visibility setting and sync allowed contacts with contact manager.
@@ -615,7 +640,7 @@ Polymer({
       }
     }
     this.contactManager_.setAllowedContacts(allowedContacts);
-  },
+  }
 
   /**
    * Return the selected visibility as a enum to nearby_visibiity_page when
@@ -627,7 +652,7 @@ Polymer({
    */
   getSelectedVisibility() {
     return visibilityStringToValue(this.selectedVisibility);
-  },
+  }
 
   /**
    * Returns the icon based on Light/Dark mode.
@@ -637,5 +662,8 @@ Polymer({
   getDeviceVisibilityIcon_() {
     return this.isDarkModeActive_ ? DEVICE_VISIBILITY_DARK_ICON :
                                     DEVICE_VISIBILITY_LIGHT_ICON;
-  },
-});
+  }
+}
+
+customElements.define(
+    NearbyContactVisibilityElement.is, NearbyContactVisibilityElement);

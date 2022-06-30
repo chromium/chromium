@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/strings.m.js';
-import 'chrome://nearby/shared/nearby_onboarding_one_page.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
+import {NearbyOnboardingOnePageElement} from 'chrome://nearby/shared/nearby_onboarding_one_page.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -42,7 +42,11 @@ suite('nearby-onboarding-one-page', function() {
       allowedContacts: [],
     };
     document.body.appendChild(element);
-    element.fire('view-enter-start');
+    const viewEnterStartEvent = new CustomEvent('view-enter-start', {
+      bubbles: true,
+      composed: true,
+    });
+    element.dispatchEvent(viewEnterStartEvent);
   });
 
   test('Renders one-page onboarding page', async function() {

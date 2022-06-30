@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/strings.m.js';
-import 'chrome://nearby/shared/nearby_visibility_page.js';
 
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
+import {NearbyVisibilityPageElement} from 'chrome://nearby/shared/nearby_visibility_page.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {isChildVisible, waitAfterNextRender} from '../../test_util.js';

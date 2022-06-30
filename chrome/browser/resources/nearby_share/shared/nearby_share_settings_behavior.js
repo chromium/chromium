@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getNearbyShareSettings, observeNearbyShareSettings} from './nearby_share_settings.js';
-
 /**
  * @fileoverview NearbyShareSettingsBehavior wraps up talking to the settings
  * mojo to get values and keeps them in sync by observing for changes
  */
+
+import {getNearbyShareSettings, observeNearbyShareSettings} from './nearby_share_settings.js';
+
 /**
  * @typedef {{
  *            enabled:boolean,
