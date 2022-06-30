@@ -35,7 +35,7 @@ void FakeTargetDeviceConnectionBroker::StartAdvertising(
 }
 
 void FakeTargetDeviceConnectionBroker::StopAdvertising(
-    ResultCallback on_stop_advertising_callback) {
+    base::OnceClosure on_stop_advertising_callback) {
   ++num_stop_advertising_calls_;
   on_stop_advertising_callback_ = std::move(on_stop_advertising_callback);
 }

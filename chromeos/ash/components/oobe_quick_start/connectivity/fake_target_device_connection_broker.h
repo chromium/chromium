@@ -44,7 +44,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   FeatureSupportStatus GetFeatureSupportStatus() const override;
   void StartAdvertising(ConnectionLifecycleListener* listener,
                         ResultCallback on_start_advertising_callback) override;
-  void StopAdvertising(ResultCallback on_stop_advertising_callback) override;
+  void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
   void set_feature_support_status(FeatureSupportStatus feature_support_status) {
     feature_support_status_ = feature_support_status;
@@ -66,7 +66,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     return std::move(on_start_advertising_callback_);
   }
 
-  ResultCallback on_stop_advertising_callback() {
+  base::OnceClosure on_stop_advertising_callback() {
     return std::move(on_stop_advertising_callback_);
   }
 
@@ -77,7 +77,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
       FeatureSupportStatus::kSupported;
   ConnectionLifecycleListener* connection_lifecycle_listener_ = nullptr;
   ResultCallback on_start_advertising_callback_;
-  ResultCallback on_stop_advertising_callback_;
+  base::OnceClosure on_stop_advertising_callback_;
 };
 
 }  // namespace ash::quick_start

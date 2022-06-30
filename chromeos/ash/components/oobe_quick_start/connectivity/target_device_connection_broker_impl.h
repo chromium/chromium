@@ -32,12 +32,13 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   FeatureSupportStatus GetFeatureSupportStatus() const override;
   void StartAdvertising(ConnectionLifecycleListener* listener,
                         ResultCallback on_start_advertising_callback) override;
-  void StopAdvertising(ResultCallback on_stop_advertising_callback) override;
+  void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
  private:
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
   void OnStartFastPairAdvertisingError(ResultCallback callback);
+  void OnStopFastPairAdvertising(base::OnceClosure callback);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 

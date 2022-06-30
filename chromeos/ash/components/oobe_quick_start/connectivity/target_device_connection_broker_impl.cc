@@ -92,9 +92,22 @@ void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError(
 }
 
 void TargetDeviceConnectionBrokerImpl::StopAdvertising(
-    ResultCallback on_stop_advertising_callback) {
+    base::OnceClosure on_stop_advertising_callback) {
+  if (!fast_pair_advertiser_) {
+    VLOG(1) << __func__ << " Not currently advertising, ignoring.";
+    std::move(on_stop_advertising_callback).Run();
+    return;
+  }
+
+  fast_pair_advertiser_->StopAdvertising(base::BindOnce(
+      &TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising,
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_stop_advertising_callback)));
+}
+
+void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
+    base::OnceClosure callback) {
   fast_pair_advertiser_.reset();
-  std::move(on_stop_advertising_callback).Run(true);
+  std::move(callback).Run();
 }
 
 }  // namespace ash::quick_start

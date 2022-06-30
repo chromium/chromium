@@ -27,12 +27,17 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
   explicit FakeFastPairAdvertiser(
       scoped_refptr<device::BluetoothAdapter> adapter,
       bool should_succeed_on_start,
+      base::OnceCallback<void()> on_stop_advertising_callback,
       base::OnceCallback<void()> on_destroy_callback)
       : FastPairAdvertiser(adapter),
         should_succeed_on_start_(should_succeed_on_start),
+        on_stop_advertising_callback_(std::move(on_stop_advertising_callback)),
         on_destroy_callback_(std::move(on_destroy_callback)) {}
 
-  ~FakeFastPairAdvertiser() override { std::move(on_destroy_callback_).Run(); }
+  ~FakeFastPairAdvertiser() override {
+    StopAdvertising(base::DoNothing());
+    std::move(on_destroy_callback_).Run();
+  }
 
   void StartAdvertising(base::OnceCallback<void()> callback,
                         base::OnceCallback<void()> error_callback) override {
@@ -43,13 +48,24 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
       std::move(error_callback).Run();
   }
 
+  void StopAdvertising(base::OnceCallback<void()> callback) override {
+    if (!has_called_on_stop_advertising_callback_) {
+      std::move(on_stop_advertising_callback_).Run();
+      has_called_on_stop_advertising_callback_ = true;
+    }
+
+    std::move(callback).Run();
+  }
+
   size_t start_advertising_call_count() {
     return start_advertising_call_count_;
   }
 
  private:
   bool should_succeed_on_start_;
+  bool has_called_on_stop_advertising_callback_ = false;
   size_t start_advertising_call_count_ = 0u;
+  base::OnceCallback<void()> on_stop_advertising_callback_;
   base::OnceCallback<void()> on_destroy_callback_;
 };
 
@@ -62,6 +78,8 @@ class FakeFastPairAdvertiserFactory : public FastPairAdvertiser::Factory {
       scoped_refptr<device::BluetoothAdapter> adapter) override {
     auto fake_fast_pair_advertiser = std::make_unique<FakeFastPairAdvertiser>(
         adapter, should_succeed_on_start_,
+        base::BindOnce(&FakeFastPairAdvertiserFactory::OnStopAdvertising,
+                       weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(
             &FakeFastPairAdvertiserFactory::OnFastPairAdvertiserDestroyed,
             weak_ptr_factory_.GetWeakPtr()));
@@ -74,6 +92,8 @@ class FakeFastPairAdvertiserFactory : public FastPairAdvertiser::Factory {
     last_fake_fast_pair_advertiser_ = nullptr;
   }
 
+  void OnStopAdvertising() { stop_advertising_called_ = true; }
+
   size_t StartAdvertisingCount() {
     return last_fake_fast_pair_advertiser_
                ? last_fake_fast_pair_advertiser_->start_advertising_call_count()
@@ -82,9 +102,12 @@ class FakeFastPairAdvertiserFactory : public FastPairAdvertiser::Factory {
 
   bool AdvertiserDestroyed() { return fast_pair_advertiser_destroyed_; }
 
+  bool StopAdvertisingCalled() { return stop_advertising_called_; }
+
  private:
   FakeFastPairAdvertiser* last_fake_fast_pair_advertiser_ = nullptr;
   bool should_succeed_on_start_ = false;
+  bool stop_advertising_called_ = false;
   bool fast_pair_advertiser_destroyed_ = false;
   base::WeakPtrFactory<FakeFastPairAdvertiserFactory> weak_ptr_factory_{this};
 };
@@ -139,20 +162,23 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         fast_pair_advertiser_factory_.get());
   }
 
-  void AdvertisingResultCallback(bool success) {
-    advertising_callback_called_ = true;
+  void StartAdvertisingResultCallback(bool success) {
+    start_advertising_callback_called_ = true;
     if (success) {
-      advertising_callback_success_ = true;
+      start_advertising_callback_success_ = true;
       return;
     }
-    advertising_callback_success_ = false;
+    start_advertising_callback_success_ = false;
   }
+
+  void StopAdvertisingCallback() { stop_advertising_callback_called_ = true; }
 
  protected:
   bool is_bluetooth_powered_ = true;
   bool is_bluetooth_present_ = true;
-  bool advertising_callback_called_ = false;
-  bool advertising_callback_success_ = true;
+  bool start_advertising_callback_called_ = false;
+  bool start_advertising_callback_success_ = false;
+  bool stop_advertising_callback_called_ = false;
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
   std::unique_ptr<FakeFastPairAdvertiserFactory> fast_pair_advertiser_factory_;
@@ -178,11 +204,11 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, StartFastPairAdvertising) {
   connection_broker_->StartAdvertising(
       nullptr,
       base::BindOnce(
-          &TargetDeviceConnectionBrokerImplTest::AdvertisingResultCallback,
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(1u, fast_pair_advertiser_factory_->StartAdvertisingCount());
-  EXPECT_TRUE(advertising_callback_called_);
-  EXPECT_TRUE(advertising_callback_success_);
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_TRUE(start_advertising_callback_success_);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
@@ -193,11 +219,11 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   connection_broker_->StartAdvertising(
       nullptr,
       base::BindOnce(
-          &TargetDeviceConnectionBrokerImplTest::AdvertisingResultCallback,
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
-  EXPECT_TRUE(advertising_callback_called_);
-  EXPECT_FALSE(advertising_callback_success_);
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_FALSE(start_advertising_callback_success_);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
@@ -208,9 +234,42 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   connection_broker_->StartAdvertising(
       nullptr,
       base::BindOnce(
-          &TargetDeviceConnectionBrokerImplTest::AdvertisingResultCallback,
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
-  EXPECT_TRUE(advertising_callback_called_);
-  EXPECT_FALSE(advertising_callback_success_);
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_FALSE(start_advertising_callback_success_);
   EXPECT_TRUE(fast_pair_advertiser_factory_->AdvertiserDestroyed());
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StopFastPairAdvertising_NeverStarted) {
+  // If StartAdvertising is never called, StopAdvertising should not propagate
+  // to the fast pair advertiser.
+  connection_broker_->StopAdvertising(base::BindOnce(
+      &TargetDeviceConnectionBrokerImplTest::StopAdvertisingCallback,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_TRUE(stop_advertising_callback_called_);
+  EXPECT_FALSE(fast_pair_advertiser_factory_->StopAdvertisingCalled());
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest, StopFastPairAdvertising) {
+  connection_broker_->StartAdvertising(
+      nullptr,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(1u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_TRUE(start_advertising_callback_success_);
+  EXPECT_FALSE(fast_pair_advertiser_factory_->StopAdvertisingCalled());
+
+  connection_broker_->StopAdvertising(base::BindOnce(
+      &TargetDeviceConnectionBrokerImplTest::StopAdvertisingCallback,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_TRUE(fast_pair_advertiser_factory_->StopAdvertisingCalled());
+  EXPECT_TRUE(fast_pair_advertiser_factory_->AdvertiserDestroyed());
+  EXPECT_TRUE(stop_advertising_callback_called_);
 }
