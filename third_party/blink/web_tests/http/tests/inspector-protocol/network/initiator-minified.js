@@ -5,7 +5,7 @@
   window.onerror = (msg) => testRunner.log('onerror: ' + msg);
   window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
   let errorForLog = new Error();
-  setTimeout(() => testRunner.die('Timeout', errorForLog), 5000);
+  setTimeout(() => testRunner.die('Timeout', errorForLog), 28000);
 
   dp.Network.enable();
   dp.Page.enable();
