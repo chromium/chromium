@@ -55,10 +55,10 @@ class Layer;
 
 namespace blink {
 class Element;
+class EmptyLocalFrameClient;
 class Node;
 class Page;
 class PagePopupChromeClient;
-class PagePopupLocalFrameClient;
 class PagePopupClient;
 class WebViewImpl;
 class LocalDOMWindow;
@@ -256,7 +256,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // This is the WebView that opened the popup.
   WebViewImpl* opener_web_view_ = nullptr;
   Persistent<PagePopupChromeClient> chrome_client_;
-  Persistent<PagePopupLocalFrameClient> local_frame_client_;
+  Persistent<EmptyLocalFrameClient> local_frame_client_;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
   // This member is non-null between the call to Initialize() and the call to
   // ClosePopup(). If page_ is non-null, it is guaranteed to have an attached
@@ -300,7 +300,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   friend class WebPagePopup;
   friend class PagePopupChromeClient;
-  friend class PagePopupLocalFrameClient;
+  friend class EmptyLocalFrameClient;
 };
 
 // WebPagePopupImpl is the only implementation of WebPagePopup and PagePopup, so

@@ -142,17 +142,6 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
 
 }  // namespace
 
-class PagePopupLocalFrameClient final : public EmptyLocalFrameClient {
- public:
-  explicit PagePopupLocalFrameClient(WebPagePopupImpl& popup) : popup_(popup) {}
-
- private:
-  // LocalFrameClient overrides:
-  void Detached(FrameDetachType) override { popup_.MainFrameDetached(); }
-
-  WebPagePopupImpl& popup_;
-};
-
 class PagePopupChromeClient final : public EmptyChromeClient {
  public:
   explicit PagePopupChromeClient(WebPagePopupImpl* popup) : popup_(popup) {}
@@ -331,8 +320,7 @@ WebPagePopupImpl::WebPagePopupImpl(
     PagePopupClient* popup_client)
     : opener_web_view_(opener_web_view),
       chrome_client_(MakeGarbageCollected<PagePopupChromeClient>(this)),
-      local_frame_client_(
-          MakeGarbageCollected<PagePopupLocalFrameClient>(*this)),
+      local_frame_client_(MakeGarbageCollected<EmptyLocalFrameClient>()),
       page_(CreatePage(*chrome_client_, *opener_web_view)),
       popup_client_(popup_client),
       popup_widget_host_(std::move(popup_widget_host)),
@@ -572,17 +560,10 @@ void WebPagePopupImpl::Update() {
     SetWindowRect(WindowRectInScreen());
 }
 
-void WebPagePopupImpl::MainFrameDetached() {
-  widget_base_->Shutdown();
-  widget_base_.reset();
-}
-
 void WebPagePopupImpl::DestroyPage() {
   page_->WillCloseAnimationHost(nullptr);
   page_->WillBeDestroyed();
   page_.Clear();
-  // Ensure that MainFrameDetached was called and destroyed `widget_base_`.
-  DCHECK(!widget_base_);
 }
 
 AXObject* WebPagePopupImpl::RootAXObject() {
@@ -949,6 +930,12 @@ void WebPagePopupImpl::Close() {
     // This should end up running ClosePopup() though the PopupClient.
     Cancel();
   }
+
+  // TODO(dtapuska): WidgetBase shutdown should happen before Page is
+  // disposed if the PageScheduler get used more. See crbug.com/1340914
+  // for a crash.
+  widget_base_->Shutdown();
+  widget_base_.reset();
 
   // Self-delete on Close().
   Release();
