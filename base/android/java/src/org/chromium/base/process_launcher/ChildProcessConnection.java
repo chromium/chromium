@@ -935,12 +935,11 @@ public class ChildProcessConnection {
         return mModerateBinding.isBound();
     }
 
-    /**
-     * @param waiveCpuPriority Normally moderate binding may raise the CPU scheduling priority
-     * as well as the importance for memory management. Pass true to not affect CPU scheduling
-     * priority. Note the refcounts for waiveCpuPriority and not are separate,
-     * so removeModerateBinding parameter must match.
-     */
+    public int getModerateBindingCount() {
+        assert isRunningOnLauncherThread();
+        return mModerateBindingCount;
+    }
+
     public void addModerateBinding() {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {
@@ -954,9 +953,6 @@ public class ChildProcessConnection {
         mModerateBindingCount++;
     }
 
-    /**
-     * @param waiveCpuPriority See addModerateBinding.
-     */
     public void removeModerateBinding() {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {

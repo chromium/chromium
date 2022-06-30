@@ -185,6 +185,9 @@ public final class ChildProcessLauncherHelperImpl {
                                     ChildProcessImportance.MODERATE);
                             if (mBindingManager != null) mBindingManager.rankingChanged();
                         }
+                        if (mSandboxed) {
+                            ChildProcessConnectionMetrics.getInstance().addConnection(connection);
+                        }
                     }
 
                     // Tell native launch result (whether getPid is 0).
@@ -217,6 +220,9 @@ public final class ChildProcessLauncherHelperImpl {
                         setReverseRankWhenConnectionLost(mRanking.getReverseRank(connection));
                         mRanking.removeConnection(connection);
                         if (mBindingManager != null) mBindingManager.rankingChanged();
+                    }
+                    if (mSandboxed) {
+                        ChildProcessConnectionMetrics.getInstance().removeConnection(connection);
                     }
                 }
             };
@@ -450,6 +456,7 @@ public final class ChildProcessLauncherHelperImpl {
                     sBindingManager = new BindingManager(context, allocator.getNumberOfServices(),
                             sSandboxedChildConnectionRanking);
                 }
+                ChildProcessConnectionMetrics.getInstance().setBindingManager(sBindingManager);
             }
         });
 

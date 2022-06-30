@@ -39,7 +39,7 @@ class BindingManager implements ComponentCallbacks2 {
     private final Iterable<ChildProcessConnection> mRanking;
     private final Runnable mDelayedClearer;
 
-    // If not null, this is a connection in |mConnections| that does not have a moderate binding
+    // If not null, this is the connection in |mConnections| that does not have a moderate binding
     // added by BindingManager.
     private ChildProcessConnection mWaivedConnection;
 
@@ -145,6 +145,32 @@ class BindingManager implements ComponentCallbacks2 {
     void onBroughtToForeground() {
         assert LauncherThread.runningOnLauncherThread();
         LauncherThread.removeCallbacks(mDelayedClearer);
+    }
+
+    /**
+     * @return the number of moderate bindings that are the result of just BindingManager.
+     */
+    int getExclusiveModerateBindingCount() {
+        int exclusiveModerateBindingCount = 0;
+        for (ChildProcessConnection connection : mConnections) {
+            if (!isExclusiveModerateBinding(connection)) continue;
+
+            exclusiveModerateBindingCount++;
+        }
+        return exclusiveModerateBindingCount;
+    }
+
+    /**
+     * @param connection The connection to check if BindingManager has a moderate binding for.
+     * @return whether this BindingManager has an exclusive moderate connection.
+     */
+    boolean hasExclusiveModerateBinding(ChildProcessConnection connection) {
+        return mConnections.contains(connection) && isExclusiveModerateBinding(connection);
+    }
+
+    private boolean isExclusiveModerateBinding(ChildProcessConnection connection) {
+        return connection != mWaivedConnection && !connection.isStrongBindingBound()
+                && connection.getModerateBindingCount() == 1;
     }
 
     /**

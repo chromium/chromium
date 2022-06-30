@@ -203,6 +203,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BindingManager.java",
     "java/src/org/chromium/content/browser/BrowserContextHandleImpl.java",
+    "java/src/org/chromium/content/browser/ChildProcessConnectionMetrics.java",
     "java/src/org/chromium/content/browser/ChildProcessLauncherHelperImpl.java",
     "java/src/org/chromium/content/browser/ChildProcessRanking.java",
     "java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
@@ -621,6 +622,7 @@ android_library("content_javatests") {
 robolectric_binary("content_junit_tests") {
   sources = [
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
+    "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessRankingTest.java",
     "junit/src/org/chromium/content/browser/ScreenOrientationProviderImplTest.java",
     "junit/src/org/chromium/content/browser/SpareChildConnectionTest.java",
