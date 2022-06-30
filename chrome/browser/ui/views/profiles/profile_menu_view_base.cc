@@ -563,15 +563,16 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
       ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
 
   SetEnableArrowKeyTraversal(true);
+
+  // TODO(crbug.com/1341017): Using `SetAccessibleRole(kMenu)` here will
+  // result in screenreader to announce the menu having only one item. This is
+  // probably because this API sets the a11y role for the widget, but not root
+  // view in it. This is confusing and prone to misuse. We should unify the two
+  // sets of API for BubbleDialogDelegateView.
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
 
   RegisterWindowClosingCallback(base::BindOnce(
       &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
-
-  // Use `ax::mojom::Role::kMenuBar`, because it fits better the kind of UI
-  // contained in this dialog. The top-level container in this dialog uses a
-  // kMenu role to match.
-  SetAccessibleRole(ax::mojom::Role::kMenuBar);
 }
 
 ProfileMenuViewBase::~ProfileMenuViewBase() {
