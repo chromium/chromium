@@ -31,8 +31,7 @@
             <View
                 android:id="@+id/fre_space_above_logo"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="24dp"
+                android:layout_height="24dp"
                 android:layout_weight="3"
                 android:visibility="invisible" />
 
@@ -50,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingMultiplier="1.2"
                 android:gravity="center"
-                android:paddingHorizontal="70dp"
+                android:paddingHorizontal="24dp"
                 android:text="@string/fre_welcome"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
@@ -82,8 +81,7 @@
             <View
                 android:id="@+id/fre_space_between_header_and_bottom_group"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="40dp"
+                android:layout_height="24dp"
                 android:layout_weight="5"
                 android:visibility="invisible" />
 

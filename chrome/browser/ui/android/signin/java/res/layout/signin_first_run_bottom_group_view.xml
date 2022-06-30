@@ -15,7 +15,6 @@
         android:orientation="horizontal"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
         <include layout="@layout/account_row" />
