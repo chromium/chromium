@@ -59,7 +59,8 @@ generate_grd("build_grd") {
     "audio.css",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 
   grd_prefix = "audio"
   out_grd = resources_grd_file

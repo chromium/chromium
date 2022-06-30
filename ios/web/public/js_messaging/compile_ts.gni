@@ -49,7 +49,8 @@ template("compile_ts") {
   }
 
   # Compile the scripts and output them into `compiled_scripts_dir` in the same
-  # directory structure to maintain path imports specified in tsconfig.manifest
+  # directory structure to maintain path imports specified in the tsc manifest
+  # file.
   ts_library(target_name) {
     forward_variables_from(invoker, [ "deps" ])
 

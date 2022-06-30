@@ -59,14 +59,6 @@ copy("copy") {
   outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
 }
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_signin"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "signin"
-}
-
 ts_library("build_ts") {
   root_dir = preprocessed_folder
   out_dir = "$target_gen_dir/tsc"
@@ -104,4 +96,13 @@ ts_library("build_ts") {
     ":preprocess",
     "..:generate_definitions",
   ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_signin"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "signin"
 }

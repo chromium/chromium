@@ -42,31 +42,6 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "history"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "history.html",
-    "images/journeys.svg",
-    "images/list.svg",
-    "images/sign_in_promo_dark.svg",
-    "images/sign_in_promo.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
-      "history.rollup.js|history.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-}
-
 preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
@@ -127,4 +102,30 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "history"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "history.html",
+    "images/journeys.svg",
+    "images/list.svg",
+    "images/sign_in_promo_dark.svg",
+    "images/sign_in_promo.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "history.rollup.js|history.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
 }

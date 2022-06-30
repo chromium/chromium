@@ -26,25 +26,6 @@ grit("apps_resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-generate_grd("build_apps_grd") {
-  grd_prefix = "apps"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "apps_page.css",
-    "images/error_yellow900.svg",
-    "images/trash.png",
-    "nav_dot.css",
-    "new_tab.css",
-    "new_tab.html",
-    "tile_page.css",
-    "trash.css",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 # Note: There are no plans to migrate this page to TypeScript, as it is a fairly
 # old page with an undecided future, and would be a lot of work. Passing JS file
 # through TS compiler to get some basic static checks (mostly validating syntax
@@ -68,4 +49,24 @@ ts_library("build_ts") {
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [ "//ui/webui/resources:library" ]
+}
+
+generate_grd("build_apps_grd") {
+  grd_prefix = "apps"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "apps_page.css",
+    "images/error_yellow900.svg",
+    "images/trash.png",
+    "nav_dot.css",
+    "new_tab.css",
+    "new_tab.html",
+    "tile_page.css",
+    "trash.css",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

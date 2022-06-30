@@ -87,14 +87,6 @@ if (is_chromeos) {
   preprocessed_tests += [ "link_container_test.ts" ]
 }
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_print_preview"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "print_preview"
-}
-
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 preprocess_if_expr("preprocess") {
@@ -141,4 +133,13 @@ ts_library("build_ts") {
     ":preprocess",
     "..:generate_definitions",
   ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_print_preview"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "print_preview"
 }

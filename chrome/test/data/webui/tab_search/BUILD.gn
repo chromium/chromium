@@ -5,15 +5,6 @@
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_tab_search"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "tab_search"
-}
-
 ts_library("build_ts") {
   root_dir = "./"
   out_dir = "$target_gen_dir/tsc"
@@ -46,4 +37,14 @@ ts_library("build_ts") {
     "//chrome/browser/resources/tab_search:build_ts",
   ]
   extra_deps = [ "..:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_tab_search"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "tab_search"
 }
