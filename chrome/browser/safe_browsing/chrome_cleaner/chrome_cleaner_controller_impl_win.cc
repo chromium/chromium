@@ -151,7 +151,8 @@ void ChromeCleanerControllerDelegate::FetchAndVerifyChromeCleaner(
   FetchChromeCleaner(
       base::BindOnce(&OnChromeCleanerFetched, std::move(fetched_callback)),
       g_browser_process->system_network_context_manager()
-          ->GetURLLoaderFactory());
+          ->GetURLLoaderFactory(),
+      g_browser_process->local_state());
 }
 
 bool ChromeCleanerControllerDelegate::IsMetricsAndCrashReportingEnabled() {

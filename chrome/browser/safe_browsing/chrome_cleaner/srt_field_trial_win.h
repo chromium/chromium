@@ -11,6 +11,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace safe_browsing {
 
 // These values are used to send UMA information and are replicated in the
@@ -67,8 +69,11 @@ extern const base::FeatureParam<std::string> kReporterDistributionTagParam;
 // matching version of the cleaner.
 extern const base::FeatureParam<std::string> kCleanerDownloadGroupParam;
 
-// Returns the correct SRT download URL for the current field trial.
-GURL GetSRTDownloadURL();
+// Returns the correct SRT download URL, based on the current platform and
+// download group. The download group is taken from
+// `kChromeCleanupDistributionFeature` or from `prefs` if the feature is
+// disabled.
+GURL GetSRTDownloadURL(PrefService* prefs);
 
 // Records a value for the SRT Prompt Histogram.
 void RecordSRTPromptHistogram(SRTPromptHistogramValue value);

@@ -178,7 +178,7 @@ void RegisterComponentsForUpdate() {
   // on chromium build bots, it is always registered here and
   // RegisterSwReporterComponent() has support for running only in official
   // builds or tests.
-  RegisterSwReporterComponent(cus);
+  RegisterSwReporterComponent(cus, g_browser_process->local_state());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   RegisterThirdPartyModuleListComponent(cus);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
