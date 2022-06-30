@@ -24,6 +24,7 @@ constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kDefaultCalculatorWebApp,
 #if BUILDFLAG(IS_CHROMEOS)
     &kCursiveStylusPreinstall,
+    &kCursiveManagedStylusPreinstall,
     &kMessagesPreinstall,
     &::chromeos::features::kCloudGamingDevice,
 #endif
@@ -77,6 +78,11 @@ const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
 // screen.
 const base::Feature kCursiveStylusPreinstall{"CursiveStylusPreinstall",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables installing the Cursive app on managed devices with a built-in
+// stylus-capable screen.
+const base::Feature kCursiveManagedStylusPreinstall{
+    "CursiveManagedStylusPreinstall", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables installing the Messages app on unmanaged devices.
 const base::Feature kMessagesPreinstall{"MessagesPreinstall",

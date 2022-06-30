@@ -25,6 +25,8 @@ extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
 
 extern const base::Feature kCursiveStylusPreinstall;
 
+extern const base::Feature kCursiveManagedStylusPreinstall;
+
 extern const base::Feature kMessagesPreinstall;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
