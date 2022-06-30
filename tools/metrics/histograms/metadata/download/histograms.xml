@@ -877,6 +877,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
+    expires_after="2022-12-28">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Records the last interrupt reason for a download that has just been retried
+    through the download bubble.
+  </summary>
+</histogram>
+
 <histogram name="Download.SavePackage" enum="DownloadSavePackageEvent"
     expires_after="M77">
   <owner>dtrainor@chromium.org</owner>

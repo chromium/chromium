@@ -19,22 +19,29 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_commands.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/download_item_reroute_info.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/vector_icons.h"
+#endif
+
 using download::DownloadItem;
+using offline_items_collection::FailState;
 using safe_browsing::DownloadFileType;
+using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::SetArgPointee;
-using ::testing::_;
 
 namespace {
 
@@ -117,6 +124,7 @@ class DownloadItemModelTest : public testing::Test {
         .WillByDefault(
             Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
     ON_CALL(item_, IsPaused()).WillByDefault(Return(false));
+    ON_CALL(item_, CanResume()).WillByDefault(Return(false));
     ON_CALL(item_, GetMixedContentStatus())
         .WillByDefault(
             Return(download::DownloadItem::MixedContentStatus::SAFE));
@@ -153,6 +161,12 @@ class DownloadItemModelTest : public testing::Test {
   void SetStatusTextBuilder(bool for_bubble) {
     model_.set_status_text_builder_for_testing(for_bubble);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetIsBubbleV2Enabled(bool is_enabled) {
+    model_.set_is_bubble_v2_enabled_for_testing(is_enabled);
+  }
+#endif
 
  private:
   NiceMock<download::MockDownloadItem> item_;
@@ -695,6 +709,153 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
               test_case.expected_bubble_status_msg);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
+  std::vector<download::DownloadInterruptReason> no_retry_interrupt_reasons = {
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT};
+  std::vector<download::DownloadInterruptReason> retry_interrupt_reasons = {
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
+      download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN,
+      download::DOWNLOAD_INTERRUPT_REASON_CRASH,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT};
+
+  const struct TestCase {
+    std::vector<download::DownloadInterruptReason> interrupt_reasons;
+    bool can_resume;
+
+    std::string expected_warning_summary;
+    raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
+    absl::optional<DownloadCommands::Command> expected_primary_button_command;
+  } kTestCases[] = {
+      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
+       false,
+       "Your organization blocked this file because it didn't meet a security "
+       "policy",
+       &views::kInfoIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
+       false,
+       "Try using a shorter file name or saving to a different folder",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
+       false,
+       "Free up space on your device. Then, try to download again",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
+       false,
+       "Try to sign in to the site. Then, download again",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {no_retry_interrupt_reasons, false, "",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {retry_interrupt_reasons, false, "", &vector_icons::kFileDownloadOffIcon,
+       DownloadCommands::Command::RETRY},
+      {retry_interrupt_reasons, true, "", &vector_icons::kFileDownloadOffIcon,
+       DownloadCommands::Command::RESUME},
+  };
+
+  SetIsBubbleV2Enabled(true);
+  SetupDownloadItemDefaults();
+  for (const auto& test_case : kTestCases) {
+    for (const auto& interrupt_reason : test_case.interrupt_reasons) {
+      SetupInterruptedDownloadItem(interrupt_reason);
+      EXPECT_CALL(item(), CanResume())
+          .WillRepeatedly(Return(test_case.can_resume));
+
+      DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
+      EXPECT_EQ(test_case.expected_warning_summary,
+                base::UTF16ToUTF8(bubble_ui_info.warning_summary));
+      EXPECT_EQ(test_case.expected_icon_model_override,
+                bubble_ui_info.icon_model_override);
+      if (!test_case.expected_primary_button_command.has_value()) {
+        EXPECT_FALSE(bubble_ui_info.has_primary_button);
+      } else {
+        EXPECT_EQ(test_case.expected_primary_button_command.value(),
+                  bubble_ui_info.primary_button_command);
+      }
+      EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
+      EXPECT_FALSE(bubble_ui_info.has_progress_bar);
+    }
+  }
+}
+
+TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_BubbleV2Off) {
+  const struct TestCase {
+    std::vector<download::DownloadInterruptReason> interrupt_reasons;
+
+    std::string expected_warning_summary;
+    raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
+    absl::optional<DownloadCommands::Command> expected_primary_button_command;
+  } kTestCases[] = {
+      {{
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
+           download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN,
+           download::DOWNLOAD_INTERRUPT_REASON_CRASH,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
+       },
+       "",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+  };
+
+  SetIsBubbleV2Enabled(false);
+  SetupDownloadItemDefaults();
+  for (const auto& test_case : kTestCases) {
+    for (const auto& interrupt_reason : test_case.interrupt_reasons) {
+      SetupInterruptedDownloadItem(interrupt_reason);
+      DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
+      EXPECT_EQ(test_case.expected_warning_summary,
+                base::UTF16ToUTF8(bubble_ui_info.warning_summary));
+      EXPECT_EQ(test_case.expected_icon_model_override,
+                bubble_ui_info.icon_model_override);
+      if (!test_case.expected_primary_button_command.has_value()) {
+        EXPECT_FALSE(bubble_ui_info.has_primary_button);
+      } else {
+        EXPECT_EQ(test_case.expected_primary_button_command.value(),
+                  bubble_ui_info.primary_button_command);
+      }
+      EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
+      EXPECT_FALSE(bubble_ui_info.has_progress_bar);
+    }
+  }
+}
+#endif
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
   SetupDownloadItemDefaults();

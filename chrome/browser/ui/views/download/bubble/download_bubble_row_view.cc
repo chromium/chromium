@@ -301,6 +301,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   review_button_ =
       AddMainPageButton(DownloadCommands::REVIEW,
                         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_REVIEW));
+  retry_button_ =
+      AddMainPageButton(DownloadCommands::RETRY,
+                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RETRY));
 
   subpage_icon_holder_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -419,6 +422,8 @@ void DownloadBubbleRowView::UpdateButtonsForItems() {
                              DownloadCommands::RESUME);
   review_button_->SetVisible(ui_info_.primary_button_command ==
                              DownloadCommands::REVIEW);
+  retry_button_->SetVisible(ui_info_.primary_button_command ==
+                            DownloadCommands::RETRY);
   subpage_icon_->SetVisible(ui_info_.has_subpage);
   subpage_icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(ui_info_.has_subpage ? kDownloadSubpageIconMargin : 0)));

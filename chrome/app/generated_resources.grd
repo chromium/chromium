@@ -2583,6 +2583,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Label for the button prompting the dialog containing the enterprise administrator's message explaining the violation.">
         Review
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_RETRY"
+               desc="Label for the button prompting to retry a failed download.">
+        Try again
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_DISK_FULL"
                desc="Status text for a download item that was interrupted because there is not enough room on the disk to download this file.">
         Out of storage space

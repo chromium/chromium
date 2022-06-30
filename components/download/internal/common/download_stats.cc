@@ -240,6 +240,13 @@ void RecordDownloadResumption(DownloadInterruptReason reason,
   base::UmaHistogramBoolean("Download.Resume.UserResume", user_resume);
 }
 
+void RecordDownloadRetry(DownloadInterruptReason reason) {
+  std::vector<base::HistogramBase::Sample> samples =
+      base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
+  UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Retry.InterruptReason", reason,
+                                   samples);
+}
+
 void RecordAutoResumeCountLimitReached(DownloadInterruptReason reason) {
   base::UmaHistogramBoolean("Download.Resume.AutoResumeLimitReached", true);
 

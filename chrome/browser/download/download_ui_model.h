@@ -491,8 +491,21 @@ class DownloadUIModel {
 
   void set_status_text_builder_for_testing(bool for_bubble);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // The following two methods exist for simpler unit testing.
+  // Setting an override for whether the DownloadBubbleV2 functionality is
+  // enabled.
+  void set_is_bubble_v2_enabled_for_testing(bool is_enabled);
+  // Returns whether the DownloadBubbleV2 functionality is enabled.
+  bool IsBubbleV2Enabled() const;
+#endif
+
   // Unowned Clock to override the time of "Now".
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+
+#if !BUILDFLAG(IS_ANDROID)
+  absl::optional<bool> is_bubble_V2_enabled_for_testing_;
+#endif
 
   std::unique_ptr<StatusTextBuilderBase> status_text_builder_;
 

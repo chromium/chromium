@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "content/public/browser/download_manager.h"
 
@@ -463,6 +464,10 @@ void DownloadBubbleUIController::RetryDownload(
     DownloadUIModel* model,
     DownloadCommands::Command command) {
   DCHECK(command == DownloadCommands::RETRY);
+  display_controller_->HideBubble();
+  RecordDownloadRetry(
+      OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
+          model->GetLastFailState()));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bubble_retry_download", R"(

@@ -224,6 +224,10 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadResumption(
     DownloadInterruptReason reason,
     bool user_resume);
 
+// Records the interrupt reason when a download is retried.
+COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadRetry(
+    DownloadInterruptReason reason);
+
 // Records whenever a download hits max auto-resumption limit.
 COMPONENTS_DOWNLOAD_EXPORT void RecordAutoResumeCountLimitReached(
     DownloadInterruptReason reason);

@@ -800,24 +800,22 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
     case FailState::FILE_SECURITY_CHECK_FAILED:
     case FailState::FILE_ACCESS_DENIED:
     case FailState::SERVER_FORBIDDEN:
+    case FailState::FILE_SAME_AS_SOURCE:
+    case FailState::SERVER_BAD_CONTENT:
       return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
           .AddIconAndColor(vector_icons::kFileDownloadOffIcon,
                            ui::kColorAlertHighSeverity);
-    // Try retry in these cases, and in the default case.
-    case FailState::FILE_SAME_AS_SOURCE:
+    // Try resume if possible or retry if not in these cases, and in the default
+    // case.
     case FailState::NETWORK_INVALID_REQUEST:
     case FailState::NETWORK_FAILED:
-    case FailState::NETWORK_INSTABILITY:
     case FailState::NETWORK_TIMEOUT:
     case FailState::NETWORK_DISCONNECTED:
     case FailState::NETWORK_SERVER_DOWN:
-    case FailState::SERVER_BAD_CONTENT:
-    case FailState::USER_CANCELED:
     case FailState::FILE_TRANSIENT_ERROR:
     case FailState::USER_SHUTDOWN:
     case FailState::CRASH:
     case FailState::SERVER_CONTENT_LENGTH_MISMATCH:
-    case FailState::CANNOT_DOWNLOAD:
     case FailState::SERVER_NO_RANGE:
     case FailState::SERVER_CROSS_ORIGIN_REDIRECT:
     case FailState::FILE_FAILED:
@@ -827,13 +825,28 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
     case FailState::SERVER_UNREACHABLE:
     case FailState::FILE_TOO_SHORT:
       break;
+    // Not possible because the USER_CANCELED fail state does not allow a call
+    // into this function
+    case FailState::USER_CANCELED:
+    // Deprecated
+    case FailState::NETWORK_INSTABILITY:
+    case FailState::CANNOT_DOWNLOAD:
+      NOTREACHED();
+      break;
     case FailState::NO_FAILURE:
       return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false);
   }
-  // TODO(bhatiarohit): Check if it is possible to retry downloads.
-  return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
-      .AddIconAndColor(vector_icons::kFileDownloadOffIcon,
-                       ui::kColorAlertHighSeverity);
+
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
+          .AddIconAndColor(vector_icons::kFileDownloadOffIcon,
+                           ui::kColorAlertHighSeverity);
+  if (IsBubbleV2Enabled()) {
+    bubble_ui_info.AddPrimaryButton(CanResume()
+                                        ? DownloadCommands::Command::RESUME
+                                        : DownloadCommands::Command::RETRY);
+  }
+  return bubble_ui_info;
 }
 
 DownloadUIModel::BubbleUIInfo
@@ -1453,6 +1466,19 @@ void DownloadUIModel::set_status_text_builder_for_testing(bool for_bubble) {
   }
   status_text_builder_->SetModel(this);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void DownloadUIModel::set_is_bubble_v2_enabled_for_testing(bool is_enabled) {
+  is_bubble_V2_enabled_for_testing_ = is_enabled;
+}
+
+bool DownloadUIModel::IsBubbleV2Enabled() const {
+  if (is_bubble_V2_enabled_for_testing_.has_value()) {
+    return is_bubble_V2_enabled_for_testing_.value();
+  }
+  return download::IsDownloadBubbleV2Enabled(profile());
+}
+#endif
 
 std::u16string DownloadUIModel::GetInterruptDescription() const {
   std::u16string state_description;

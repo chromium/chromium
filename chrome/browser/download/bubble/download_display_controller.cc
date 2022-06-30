@@ -118,6 +118,12 @@ void DownloadDisplayController::HideToolbarButton() {
   }
 }
 
+void DownloadDisplayController::HideBubble() {
+  if (display_->IsShowingDetails()) {
+    display_->HideDetails();
+  }
+}
+
 void DownloadDisplayController::UpdateToolbarButtonState() {
   int in_progress_count = 0;
   bool has_deep_scanning_download = false;
