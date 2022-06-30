@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_TYPED_NAVIGATION_UPGRADE_TAB_HELPER_H_
 
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
@@ -55,6 +56,8 @@ class TypedNavigationUpgradeTabHelper
     kUpgraded,
     // A fallback navigation to http:// is started.
     kFallbackStarted,
+    // The upgraded navigation timed out.
+    kStoppedWithTimeout,
   };
 
   TypedNavigationUpgradeTabHelper(web::WebState* web_state,
@@ -62,6 +65,8 @@ class TypedNavigationUpgradeTabHelper
                                   HttpsUpgradeService* service);
   friend class web::WebStateUserData<TypedNavigationUpgradeTabHelper>;
 
+  // Called when the upgrade timer times out.
+  void OnHttpsLoadTimeout(base::WeakPtr<web::WebState> weak_web_state);
   // Starts a fallback navigation to the http:// version of https_url.
   void FallbackToHttp(web::WebState* web_state, const GURL& https_url);
 
@@ -73,6 +78,8 @@ class TypedNavigationUpgradeTabHelper
   ui::PageTransition navigation_transition_type_ = ui::PAGE_TRANSITION_FIRST;
   bool navigation_is_renderer_initiated_ = false;
   web::Referrer referrer_;
+
+  base::OneShotTimer timer_;
 
   PrerenderService* prerender_service_;
   HttpsUpgradeService* service_;

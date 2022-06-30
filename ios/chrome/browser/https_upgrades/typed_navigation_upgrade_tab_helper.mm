@@ -63,6 +63,16 @@ void TypedNavigationUpgradeTabHelper::CreateForWebState(
   }
 }
 
+void TypedNavigationUpgradeTabHelper::OnHttpsLoadTimeout(
+    base::WeakPtr<web::WebState> weak_web_state) {
+  DCHECK(state_ == State::kUpgraded);
+  state_ = State::kStoppedWithTimeout;
+  web::WebState* web_state = weak_web_state.get();
+  if (web_state) {
+    web_state->Stop();
+  }
+}
+
 void TypedNavigationUpgradeTabHelper::FallbackToHttp(web::WebState* web_state,
                                                      const GURL& https_url) {
   const GURL http_url = service_->GetHttpUrl(https_url);
@@ -113,6 +123,12 @@ void TypedNavigationUpgradeTabHelper::DidStartNavigation(
       // but we are only using it to record metrics so this is acceptable.
       state_ = State::kUpgraded;
       RecordUMA(Event::kHttpsLoadStarted);
+      // `timer_` is deleted when the tab helper is deleted, so it's safe to use
+      // Unretained here.
+      timer_.Start(
+          FROM_HERE, service_->GetFallbackDelay(),
+          base::BindOnce(&TypedNavigationUpgradeTabHelper::OnHttpsLoadTimeout,
+                         base::Unretained(this), web_state->GetWeakPtr()));
     }
   }
 }
@@ -132,6 +148,14 @@ void TypedNavigationUpgradeTabHelper::DidFinishNavigation(
   if (navigation_context->GetFailedHttpsUpgradeType() ==
       web::HttpsUpgradeType::kOmnibox) {
     RecordUMA(Event::kHttpsLoadFailedWithCertError);
+    FallbackToHttp(web_state, navigation_context->GetUrl());
+    return;
+  }
+
+  // Start a fallback navigation if the upgraded navigation timed out.
+  if (state_ == State::kStoppedWithTimeout) {
+    DCHECK(!timer_.IsRunning());
+    RecordUMA(Event::kHttpsLoadTimedOut);
     FallbackToHttp(web_state, navigation_context->GetUrl());
     return;
   }

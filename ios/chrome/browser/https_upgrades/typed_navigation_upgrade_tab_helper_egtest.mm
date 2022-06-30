@@ -140,6 +140,38 @@ std::string GetURLWithoutScheme(const GURL& url) {
       @"Failed to record fail event");
 }
 
+// Asserts that the metrics are properly recorded for a timed-out upgrade.
+// repeatCount is the expected number of times the upgrade failed.
+- (void)assertTimedOutUpgrade:(int)repeatCount {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:(repeatCount * 2)
+              forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                                 kEventHistogram)],
+      @"Incorrect numbber of records in event histogram");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:repeatCount
+             forBucket:static_cast<int>(
+                           security_interstitials::omnibox_https_upgrades::
+                               Event::kHttpsLoadStarted)
+          forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                             kEventHistogram)],
+      @"Failed to record upgrade attempt");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:repeatCount
+             forBucket:static_cast<int>(
+                           security_interstitials::omnibox_https_upgrades::
+                               Event::kHttpsLoadTimedOut)
+          forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                             kEventHistogram)],
+      @"Failed to record fail event");
+  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+             @"Timer is still running");
+}
+
 // Focuses on the omnibox and types the given text.
 - (void)typeTextAndPressEnter:(const std::string&)text {
   [ChromeEarlGreyUI focusOmnibox];
@@ -151,6 +183,8 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"\n")];
 }
+
+#pragma mark - Tests
 
 // Navigate to an HTTP URL. Since it's not typed in the omnibox, it shouldn't
 // be upgraded to HTTPS.
@@ -241,6 +275,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   GURL testURL = self.testServer->GetURL("/");
   std::string text = GetURLWithoutScheme(testURL);
 
+  // Navigation should upgrade but eventually load the HTTP URL.
   [self typeTextAndPressEnter:text];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertFailedUpgrade:1];
@@ -256,6 +291,45 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [self typeTextAndPressEnter:text];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertFailedUpgrade:1];
+}
+
+// Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
+// but the HTTPS URL serves a slow loading response. The upgrade should timeout
+// and the navigation should fall back to HTTP.
+- (void)testUpgrade_SlowTTPS {
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+                                      useFakeHTTPS:true];
+  [HttpsUpgradeAppInterface
+      setFallbackHttpPortForTesting:self.testServer->port()];
+  // Set the fallback delay to zero. This will immediately stop the HTTPS
+  // upgrade attempt.
+  [HttpsUpgradeAppInterface setFallbackDelayForTesting:0];
+
+  // Go to a web page to have a normal location bar.
+  [ChromeEarlGrey loadURL:GURL("data:text/html,Blank Page")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
+
+  // Type the URL in the omnibox with an \n at the end.
+  GURL testURL = self.testServer->GetURL("/");
+  std::string text = GetURLWithoutScheme(testURL);
+
+  // Navigation should upgrade but eventually load the HTTP URL due to slow
+  // HTTPS.
+  [self typeTextAndPressEnter:text];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  [self assertTimedOutUpgrade:1];
+
+  // Load an interim data URL to clear the "HTTP_RESPONSE" text.
+  [ChromeEarlGrey loadURL:GURL("data:text/html,Blank Page")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
+
+  // Try again. This time the omnibox will find a history match for the http
+  // URL and navigate directly to it. Histograms shouldn't change.
+  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // time has passed.
+  [self typeTextAndPressEnter:text];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  [self assertTimedOutUpgrade:1];
 }
 
 @end
