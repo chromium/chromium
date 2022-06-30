@@ -110,6 +110,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   bool AsyncAttributeValue() const override;
   bool DeferAttributeValue() const override;
   bool HasSourceAttribute() const override;
+  bool HasAttributionsrcAttribute() const override;
   bool IsConnected() const override;
   bool HasChildren() const override;
   const AtomicString& GetNonceForElement() const override;

@@ -2,7 +2,7 @@
  * Helper functions for attribution reporting API tests.
  */
 
-const blankURL = () => new URL('/resources/blank.html', location);
+const blankURL = () => new URL('resources/empty.txt', location);
 
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {
@@ -116,9 +116,17 @@ const registerAttributionSrc = async (t, {
       }
       return 'event';
     case 'script':
-      // TODO(apaseltiner): Support optional attributionsrc value.
       const script = document.createElement('script');
-      script.attributionSrc = url;
+      if (eligible === null) {
+        script.attributionSrc = url;
+      } else {
+        await new Promise(resolve => {
+          script.onload = resolve;
+          script.attributionSrc = '';
+          script.src = url;
+          document.body.appendChild(script);
+        });
+      }
       return 'event';
     case 'a':
       // TODO(apaseltiner): Support optional attributionsrc value.

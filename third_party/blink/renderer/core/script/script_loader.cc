@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -513,13 +514,25 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
       potentially_render_blocking ? RenderBlockingBehavior::kBlocking
                                   : RenderBlockingBehavior::kNonBlocking;
 
+  // TODO(apaseltiner): Propagate the element instead of passing nullptr.
+  const auto attribution_reporting_eligibility =
+      element_->HasAttributionsrcAttribute() &&
+              CanRegisterAttributionInContext(
+                  context_window->GetFrame(), /*element=*/nullptr,
+                  /*request_id=*/absl::nullopt,
+                  AttributionSrcLoader::RegisterContext::kResource,
+                  /*log_issues=*/false)
+          ? ScriptFetchOptions::AttributionReportingEligibility::kEligible
+          : ScriptFetchOptions::AttributionReportingEligibility::kIneligible;
+
   // <spec step="22">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,
   // parser metadata is parser metadata, credentials mode is module script
   // credentials mode, and referrer policy is referrer policy.</spec>
-  ScriptFetchOptions options(nonce, integrity_metadata, integrity_attr,
-                             parser_state, credentials_mode, referrer_policy,
-                             fetch_priority_hint, render_blocking_behavior);
+  ScriptFetchOptions options(
+      nonce, integrity_metadata, integrity_attr, parser_state, credentials_mode,
+      referrer_policy, fetch_priority_hint, render_blocking_behavior,
+      RejectCoepUnsafeNone(false), attribution_reporting_eligibility);
 
   // <spec step="23">Let settings object be the element's node document's
   // relevant settings object.</spec>

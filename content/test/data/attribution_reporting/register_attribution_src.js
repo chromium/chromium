@@ -18,6 +18,13 @@ function createAttributionSrcScript(src) {
   script.setAttribute('attributionsrc', src);
 }
 
+function createAttributionEligibleScriptSrc(src) {
+  const script = document.createElement('script');
+  script.setAttribute('attributionsrc', '');
+  script.src = src;
+  document.body.appendChild(script);
+}
+
 function doAttributionEligibleFetch(url) {
   const headers = {
     'Attribution-Reporting-Eligible': 'event-source'

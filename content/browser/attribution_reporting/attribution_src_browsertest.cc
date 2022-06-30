@@ -151,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        SourceRegisteredViaEligibilityHeader) {
   const char* kTestCases[] = {
       "createAttributionEligibleImgSrc($1);", "createAttributionSrcScript($1);",
-      "doAttributionEligibleFetch($1);", "doAttributionEligibleXHR($1);"};
+      "doAttributionEligibleFetch($1);", "doAttributionEligibleXHR($1);",
+      "createAttributionEligibleScriptSrc($1);"};
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
 

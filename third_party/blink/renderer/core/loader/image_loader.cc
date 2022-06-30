@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -509,7 +510,7 @@ void ImageLoader::DoUpdateFromElement(
             /*log_issues=*/false)) {
       resource_request.SetHttpHeaderField(
           http_names::kAttributionReportingEligible,
-          AttributionSrcLoader::kAttributionEligibleEventSourceAndTrigger);
+          kAttributionEligibleEventSourceAndTrigger);
     }
 
     bool page_is_being_dismissed =

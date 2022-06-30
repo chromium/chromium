@@ -40,8 +40,6 @@ class CORE_EXPORT AttributionSrcLoader
   static constexpr const char* kAttributionEligibleNavigationSource =
       "navigation-source";
   static constexpr const char* kAttributionEligibleTrigger = "trigger";
-  static constexpr const char* kAttributionEligibleEventSourceAndTrigger =
-      "event-source, trigger";
 
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;

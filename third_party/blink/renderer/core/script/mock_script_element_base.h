@@ -37,6 +37,7 @@ class MockScriptElementBase : public GarbageCollected<MockScriptElementBase>,
   MOCK_METHOD0(ChildTextContent, String());
   MOCK_CONST_METHOD0(ScriptTextInternalSlot, String());
   MOCK_CONST_METHOD0(HasSourceAttribute, bool());
+  MOCK_CONST_METHOD0(HasAttributionsrcAttribute, bool());
   MOCK_CONST_METHOD0(IsConnected, bool());
   MOCK_CONST_METHOD0(HasChildren, bool());
   MOCK_CONST_METHOD0(GetNonceForElement, const AtomicString&());

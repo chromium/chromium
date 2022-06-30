@@ -115,7 +115,7 @@ void HTMLScriptElement::ParseAttribute(
           *this);
     }
   } else if (params.name == html_names::kAttributionsrcAttr) {
-    if (!params.new_value.IsNull() && GetDocument().GetFrame()) {
+    if (!params.new_value.IsEmpty() && GetDocument().GetFrame()) {
       GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
           GetDocument().CompleteURL(params.new_value), this);
     }
@@ -278,6 +278,10 @@ bool HTMLScriptElement::DeferAttributeValue() const {
 
 bool HTMLScriptElement::HasSourceAttribute() const {
   return FastHasAttribute(html_names::kSrcAttr);
+}
+
+bool HTMLScriptElement::HasAttributionsrcAttribute() const {
+  return FastHasAttribute(html_names::kAttributionsrcAttr);
 }
 
 bool HTMLScriptElement::IsConnected() const {
