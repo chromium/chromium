@@ -26,7 +26,7 @@ class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
  public:
   static std::unique_ptr<MockLinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy,
-      content::RenderFrameHost* render_frame_host) {
+      content::GlobalRenderFrameHostId render_frame_host_id) {
     // WebContents can be null in tests.
     content::WebContents* web_contents = proxy->GetWebContents();
     if (web_contents && extensions::ProcessManager::Get(
@@ -36,14 +36,16 @@ class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
       return nullptr;
     }
 
-    DCHECK(render_frame_host);
     return base::WrapUnique(new MockLinkToTextMenuObserver(
-        proxy, render_frame_host, base::BindOnce([]() {})));
+        proxy, render_frame_host_id, base::BindOnce([]() {})));
   }
-  MockLinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
-                             content::RenderFrameHost* render_frame_host,
-                             CompletionCallback callback)
-      : LinkToTextMenuObserver(proxy, render_frame_host, std::move(callback)) {}
+  MockLinkToTextMenuObserver(
+      RenderViewContextMenuProxy* proxy,
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      CompletionCallback callback)
+      : LinkToTextMenuObserver(proxy,
+                               render_frame_host_id,
+                               std::move(callback)) {}
 
   void SetGenerationResults(
       std::string selector,
@@ -104,7 +106,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
   void Reset(bool incognito) {
     menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
     observer_ =
-        MockLinkToTextMenuObserver::Create(menu_.get(), getRenderFrameHost());
+        MockLinkToTextMenuObserver::Create(menu_.get(), getRenderFrameHostId());
     menu_->SetObserver(observer_.get());
   }
 
@@ -120,9 +122,9 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   MockLinkToTextMenuObserver* observer() { return observer_.get(); }
 
-  content::RenderFrameHost* getRenderFrameHost() {
+  content::GlobalRenderFrameHostId getRenderFrameHostId() {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    return web_contents->GetPrimaryMainFrame();
+    return web_contents->GetPrimaryMainFrame()->GetGlobalId();
   }
 
  private:
@@ -259,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, HiddenForExtensions) {
   menu()->set_web_contents(web_contents);
 
   std::unique_ptr<MockLinkToTextMenuObserver> observer =
-      MockLinkToTextMenuObserver::Create(menu(), getRenderFrameHost());
+      MockLinkToTextMenuObserver::Create(menu(), getRenderFrameHostId());
   EXPECT_EQ(nullptr, observer);
 }
 
