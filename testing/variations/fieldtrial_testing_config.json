@@ -5909,25 +5909,6 @@
             ]
         }
     ],
-    "NtpRealboxAnswersInSuggest": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpRealboxSuggestionAnswers"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpRealboxDesignUpdates": [
         {
             "platforms": [
@@ -5973,25 +5954,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NtpRealboxPedals"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NtpRealboxTailSuggest": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpRealboxTailSuggest"
                     ]
                 }
             ]
