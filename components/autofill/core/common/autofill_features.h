@@ -60,8 +60,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFillAndImportFromMoreFields;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFillCreditCardAsPerFormatString;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillDelayPopupControllerDeletion;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillDisableFilling;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillDisableAddressImport;
