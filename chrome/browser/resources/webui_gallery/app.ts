@@ -42,6 +42,10 @@ export class WebuiGalleryAppElement extends PolymerElement {
               name: 'cr-radio demo',
               url: 'cr_radio_demo.html',
             },
+            {
+              name: 'cr-toggle demo',
+              url: 'cr_toggle_demo.html',
+            },
           ];
         },
       },
