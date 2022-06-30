@@ -55,6 +55,9 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
 // Title of the Module.
 @property(nonatomic, strong) UILabel* title;
 
+// The height constraint of this container view.
+@property(nonatomic, strong) NSLayoutConstraint* heightConstraint;
+
 @end
 
 @implementation ContentSuggestionsModuleContainer
@@ -117,6 +120,9 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
         [contentView.topAnchor constraintEqualToAnchor:self.topAnchor],
       ]];
     }
+    self.heightConstraint = [self.heightAnchor
+        constraintEqualToConstant:[self calculateIntrinsicHeight]];
+    self.heightConstraint.active = YES;
   }
   return self;
 }
@@ -159,6 +165,7 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
       self.traitCollection.preferredContentSizeCategory) {
     self.title.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    self.heightConstraint.constant = [self calculateIntrinsicHeight];
   }
 }
 
@@ -174,7 +181,7 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
     case ContentSuggestionsModuleTypeReturnToRecentTab:
       return kReturnToRecentTabSize.height;
   }
-  return kContentTitleVerticalSpacing + self.title.font.lineHeight +
+  return kContentTitleVerticalSpacing + ceilf(self.title.font.lineHeight) +
          kTitleTopInset + contentHeight;
 }
 

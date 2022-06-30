@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_view.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -39,7 +40,9 @@ const CGFloat kPreferredMaxWidth = 73;
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
-    _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
+    _titleLabel.preferredMaxLayoutWidth =
+        IsContentSuggestionsUIModuleRefreshEnabled() ? kIconSize
+                                                     : kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
 
     _imageContainerView = [[UIView alloc] init];
@@ -71,7 +74,7 @@ const CGFloat kPreferredMaxWidth = 73;
 
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       ApplyVisualConstraintsWithMetrics(
-          @[ @"V:|[container]-(space)-[title]|" ],
+          @[ @"V:|[container]-(space)-[title]-(>=0)-|" ],
           @{@"container" : containerView, @"title" : _titleLabel},
           @{@"space" : @(kSpaceIconTitle)});
       [NSLayoutConstraint activateConstraints:@[
