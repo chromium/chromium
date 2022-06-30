@@ -28,10 +28,6 @@ namespace {
 constexpr float kFloatWindowTabletWidthRatio = 0.3333333f;
 constexpr float kFloatWindowTabletHeightRatio = 0.8f;
 
-// The distance from the edge of the floated window to the edge of the work area
-// when it is floated.
-constexpr int kFloatWindowPaddingDp = 8;
-
 bool InTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
@@ -77,16 +73,36 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
 
   const int width = std::max(preferred_size.width(), minimum_size.width());
-  DCHECK_GT(preferred_size.height(), minimum_size.height());
 
-  // TODO(sammiequon): This assumes the float window is to be magnetized to
-  // the right. Once dragging and interactions with other window states is
-  // allowed, it needs to be reworked.
-  gfx::Rect float_bounds(work_area.right() - width,
-                         work_area.bottom() - preferred_size.height(), width,
-                         preferred_size.height());
-  float_bounds.Offset(-kFloatWindowPaddingDp, -kFloatWindowPaddingDp);
-  return float_bounds;
+  // Preferred height is always greater than minimum height since this function
+  // won't be called otherwise.
+  DCHECK_GT(preferred_size.height(), minimum_size.height());
+  const int height = preferred_size.height();
+
+  // Update the origin of the float window based on whichever corner it is
+  // magnetized to.
+  const MagnetismCorner corner =
+      Shell::Get()->float_controller()->magnetism_corner();
+  gfx::Point origin;
+  switch (corner) {
+    case MagnetismCorner::kTopLeft:
+      origin = gfx::Point(kFloatWindowPaddingDp, kFloatWindowPaddingDp);
+      break;
+    case MagnetismCorner::kTopRight:
+      origin = gfx::Point(work_area.right() - width - kFloatWindowPaddingDp,
+                          kFloatWindowPaddingDp);
+      break;
+    case MagnetismCorner::kBottomLeft:
+      origin = gfx::Point(kFloatWindowPaddingDp,
+                          work_area.bottom() - height - kFloatWindowPaddingDp);
+      break;
+    case MagnetismCorner::kBottomRight:
+      origin = gfx::Point(work_area.right() - width - kFloatWindowPaddingDp,
+                          work_area.bottom() - height - kFloatWindowPaddingDp);
+      break;
+  }
+
+  return gfx::Rect(origin, gfx::Size(width, height));
 }
 
 // static
@@ -119,6 +135,38 @@ bool FloatController::CanFloatWindowInTablet(aura::Window* window) {
 bool FloatController::IsFloated(const aura::Window* window) const {
   DCHECK(window);
   return float_window_ == window;
+}
+
+void FloatController::OnDragCompleted(
+    const gfx::PointF& last_location_in_parent) {
+  DCHECK(float_window_);
+
+  // Use the display bounds since the user may drag on to the shelf or spoken
+  // feedback bar.
+  const gfx::RectF display_bounds(
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(float_window_->GetRootWindow())
+          .bounds());
+
+  // Check which corner to magnetize to based on which quadrent of the display
+  // the mouse/touch was released. If it somehow falls outside, then magnetize
+  // to the previous location.
+  gfx::RectF display_bounds_left, display_bounds_right;
+  display_bounds.SplitVertically(&display_bounds_left, &display_bounds_right);
+  const float center_y = display_bounds.CenterPoint().y();
+  if (display_bounds_left.InclusiveContains(last_location_in_parent)) {
+    magnetism_corner_ = last_location_in_parent.y() < center_y
+                            ? MagnetismCorner::kTopLeft
+                            : MagnetismCorner::kBottomLeft;
+  } else if (display_bounds_right.InclusiveContains(last_location_in_parent)) {
+    magnetism_corner_ = last_location_in_parent.y() < center_y
+                            ? MagnetismCorner::kTopRight
+                            : MagnetismCorner::kBottomRight;
+  }
+
+  WindowState* window_state = WindowState::Get(float_window_);
+  DCHECK(window_state);
+  TabletModeWindowState::UpdateWindowPosition(window_state, /*animate=*/true);
 }
 
 void FloatController::OnWindowDestroying(aura::Window* window) {

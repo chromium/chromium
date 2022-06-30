@@ -7,6 +7,8 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/frame/header_view.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -15,6 +17,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/base/hit_test.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
 
@@ -203,6 +206,66 @@ TEST_F(TabletWindowFloatTest, Rotation) {
   EXPECT_NEAR(no_rotation_bounds.width(), window->bounds().width(), shelf_size);
   EXPECT_NEAR(no_rotation_bounds.height(), window->bounds().height(),
               shelf_size);
+}
+
+// Tests that on drag release, the window sticks to one of the four corners of
+// the work area.
+TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
+  // Use a set display size so we can drag to specific spots.
+  UpdateDisplay("1600x1000");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  wm::ActivateWindow(window.get());
+
+  // Enter tablet mode and float `window`.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(Shell::Get()->float_controller()->IsFloated(window.get()));
+
+  // Exiting immersive mode because of float does not seem to trigger a layout
+  // like it does in production code. Here we force a layout, otherwise the
+  // client view will remain the size of the widget, and dragging it will give
+  // use HTCLIENT.
+  auto* frame = NonClientFrameViewAsh::Get(window.get());
+  NonClientFrameViewAsh::Get(window.get())->GetHeaderView();
+  frame->Layout();
+
+  const int padding = FloatController::kFloatWindowPaddingDp;
+  const int shelf_size = ShelfConfig::Get()->shelf_size();
+
+  // The default location is in the bottom right.
+  EXPECT_EQ(gfx::Point(1600 - padding, 1000 - padding - shelf_size),
+            window->bounds().bottom_right());
+
+  HeaderView* header_view = frame->GetHeaderView();
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(1590, 10);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(gfx::Point(1600 - padding, padding), window->bounds().top_right());
+
+  // Move the mouse to somewhere in the top left. Test that on release, it
+  // magnetizes to the top left.
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(10, 10);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(gfx::Point(padding, padding), window->bounds().origin());
+
+  // Switch to portrait orientation and move the mouse somewhere in the bottom
+  // left. Test that on release, it magentizes to the bottom left.
+  UpdateDisplay("1000x1600");
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(10, 1590);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(gfx::Point(padding, 1600 - shelf_size - padding),
+            window->bounds().bottom_left());
 }
 
 }  // namespace ash

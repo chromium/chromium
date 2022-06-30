@@ -27,6 +27,10 @@ class TabletModeFloatWindowResizer : public WindowResizer {
   void CompleteDrag() override;
   void RevertDrag() override;
   void FlingOrSwipe(ui::GestureEvent* event) override;
+
+ private:
+  // The location in parent passed to `Drag()`.
+  gfx::PointF last_location_in_parent_;
 };
 
 }  // namespace ash

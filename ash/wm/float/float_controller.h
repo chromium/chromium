@@ -23,10 +23,23 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
                                    public TabletModeObserver,
                                    public display::DisplayObserver {
  public:
+  // The possible corners that a floated window can be placed in tablet mode.
+  // The default is `kBottomRight` and this is changed by dragging the window.
+  enum class MagnetismCorner {
+    kTopLeft = 0,
+    kTopRight,
+    kBottomLeft,
+    kBottomRight,
+  };
+
   FloatController();
   FloatController(const FloatController&) = delete;
   FloatController& operator=(const FloatController&) = delete;
   ~FloatController() override;
+
+  // The distance from the edge of the floated window to the edge of the work
+  // area when it is floated.
+  static constexpr int kFloatWindowPaddingDp = 8;
 
   // Gets the ideal float bounds of `window` in tablet mode if it were to be
   // floated.
@@ -37,8 +50,15 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
 
   aura::Window* float_window() { return float_window_; }
 
+  MagnetismCorner magnetism_corner() const { return magnetism_corner_; }
+
   // Return true if `window` is floated, otherwise false.
   bool IsFloated(const aura::Window* window) const;
+
+  // Called by the resizer when a drag is completed. This assumes the dragged
+  // window associated with the resizer is `float_window_`. Updates the bounds
+  // and magnetism of the floated window.
+  void OnDragCompleted(const gfx::PointF& last_location_in_parent);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -72,6 +92,11 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // Only one floating window is allowed, updated when a new window
   // is floated.
   aura::Window* float_window_ = nullptr;
+
+  // The corner a floated window should be magnetized to. It persists throughout
+  // the session; if you drag a window to the bottom left and float another
+  // window, that window will also be magnetized to the bottom left.
+  MagnetismCorner magnetism_corner_ = MagnetismCorner::kBottomRight;
 
   // Observes floated window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
