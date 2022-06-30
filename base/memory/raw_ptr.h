@@ -682,7 +682,9 @@ using RawPtrMayDangle = internal::RawPtrNoOpImpl;
 using RawPtrBanDanglingIfSupported = internal::RawPtrNoOpImpl;
 #endif
 
-template <typename T, typename Impl = RawPtrBanDanglingIfSupported>
+using DefaultRawPtrImpl = RawPtrBanDanglingIfSupported;
+
+template <typename T, typename Impl = DefaultRawPtrImpl>
 class TRIVIAL_ABI GSL_POINTER raw_ptr {
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
