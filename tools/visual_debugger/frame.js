@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Enum class to identify horizontal or vertical flips
+//
 class FlipEnum {
   static HorizontalFlip = new FlipEnum(1);
   static VerticalFlip = new FlipEnum(2);
@@ -11,19 +12,40 @@ class FlipEnum {
     this.id = id;
   }
 }
+// Circular buffer to store the past X amount of frames.
+//
+class CircularBuffer {
+  constructor(size) {
+    this.instances = Array(size);
+    this.maxSize = size;
+    this.numFrames = 0;
+  }
+
+  get(index) {
+    if (index < 0 || index < this.numFrames - this.maxSize ||
+        index >= this.numFrames) {
+      return undefined;
+    }
+    return this.instances[index % this.maxSize];
+  }
+
+  push(frame) {
+    // Push frames into buffer
+    this.instances[this.numFrames % this.maxSize] = frame;
+    this.numFrames++;
+  }
+}
 
 // Represents a single frame, and contains all associated data.
 //
 class DrawFrame {
-  static instances = [];
+  static maxBufferNumFrames = 10000;
+  static frameBuffer = new CircularBuffer(DrawFrame.maxBufferNumFrames);
 
-  static count() { return DrawFrame.instances.length; }
+  static count() { return DrawFrame.frameBuffer.instances.length; }
 
   static get(index) {
-    const ins = DrawFrame.instances;
-    if (index < 0) return ins[index];
-    if (index >= ins.length) return ins[ins.length - 1];
-    return ins[index];
+    return DrawFrame.frameBuffer.get(index);
   }
 
   constructor(json) {
@@ -47,7 +69,31 @@ class DrawFrame {
     // |new_sources| requires some work. So for now, do the easy thing.
     this.json_ = json;
 
-    DrawFrame.instances.push(this);
+    DrawFrame.frameBuffer.push(this);
+
+    // Update scrubber as new frames come in
+    const scrubberFrame = document.querySelector('#scrubberframe');
+
+    scrubberFrame.max = DrawFrame.frameBuffer.numFrames - 1;
+
+    // Handle scrubber when # of frames reached cap of circular buffer.
+    if (DrawFrame.frameBuffer.numFrames > DrawFrame.frameBuffer.maxSize) {
+      const oldestFrameId = DrawFrame.frameBuffer.numFrames
+                            - DrawFrame.frameBuffer.maxSize;
+
+      scrubberFrame.min = oldestFrameId;
+      // Once the scrubber reaches the left very (oldest frame),
+      // update scrubber value to match scrubber min value and
+      // update drawing on canvas to match correspondingly.
+      if (scrubberFrame.value <= scrubberFrame.min) {
+        scrubberFrame.value = oldestFrameId;
+        Player.instance.forward();
+      }
+    }
+    // Handle scrubber when # of frames haven't yet reached buffer cap.
+    else {
+      scrubberFrame.min = 0;
+    }
   }
 
   submissionCount() {

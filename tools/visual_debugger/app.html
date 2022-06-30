@@ -288,7 +288,7 @@
   }
 
   async function saveDemoDataToDisk() {
-    const text = JSON.stringify(DrawFrame.instances.map(d => d.toJSON()));
+    const text = JSON.stringify(DrawFrame.frameBuffer.instances.map(d => d.toJSON()));
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
     link.download = 'cvd-stream.json';
@@ -388,7 +388,6 @@
     const player = new Player(viewer, (frame) => {
       // TODO: This feels like a hack. Find a cleaner way to update the scrubbers?
       const scrubberFrame = document.querySelector('#scrubberframe');
-      scrubberFrame.max = DrawFrame.count();
       scrubberFrame.value = player.currentFrameIndex;
 
       const scrubberDraw = document.querySelector('#scrubberdraw');
