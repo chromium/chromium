@@ -113,9 +113,6 @@ interface PageHandler {
   // Ungroup a tab.
   UngroupTab(int32 tab_id);
 
-  // Get colors of the current theme.
-  GetThemeColors() => (map<string, string> colors);
-
   // Get layout of the tab strip.
   GetLayout() => (map<string, string> layout);
 

@@ -14,8 +14,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class Browser;
+class ColorChangeHandler;
 class TabStripPageHandler;
 class TabStripUIEmbedder;
 
@@ -38,6 +40,12 @@ class TabStripUI : public ui::MojoWebUIController,
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<tab_strip::mojom::PageHandlerFactory> receiver);
+
+  // Instantiates the implementor of the mojom::PageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
 
   // Initialize TabStripUI with its embedder and the Browser it's running in.
   // Must be called exactly once. The WebUI won't work until this is called.
@@ -65,6 +73,8 @@ class TabStripUI : public ui::MojoWebUIController,
   WebuiLoadTimer webui_load_timer_;
 
   std::unique_ptr<TabStripPageHandler> page_handler_;
+
+  std::unique_ptr<ColorChangeHandler> color_provider_handler_;
 
   mojo::Receiver<tab_strip::mojom::PageHandlerFactory> page_factory_receiver_{
       this};

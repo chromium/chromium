@@ -19,14 +19,14 @@
   }
 
   tabstrip-alert-indicators {
-    --indicator-color: var(--tabstrip-tab-text-color);
+    --indicator-color: var(--color-web-ui-tab-strip-tab-text);
   }
 
   #tab {
-    background: var(--tabstrip-tab-background-color);
+    background: var(--color-web-ui-tab-strip-tab-background);
     border-radius: var(--tabstrip-tab-border-radius);
-    box-shadow: 0 0 0 1px var(--tabstrip-tab-separator-color);
-    color: var(--tabstrip-tab-text-color);
+    box-shadow: 0 0 0 1px var(--color-web-ui-tab-strip-tab-separator);
+    color: var(--color-web-ui-tab-strip-tab-text);
     display: flex;
     flex-direction: column;
     height: var(--tabstrip-tab-height);
@@ -39,44 +39,44 @@
   }
 
   :host-context(.focus-outline-visible) #tab:focus {
-    box-shadow: 0 0 0 2px var(--tabstrip-focus-outline-color);
+    box-shadow: 0 0 0 2px var(--color-web-ui-tab-strip-focus-outline);
   }
 
   :host([active]) #title {
-    background-color: var(--tabstrip-tab-active-title-background-color);
+    background-color: var(--color-web-ui-tab-strip-tab-active-title-background);
   }
 
   :host([active]) #titleText {
-    color: var(--tabstrip-tab-active-title-content-color);
+    color: var(--color-web-ui-tab-strip-tab-active-title-content);
   }
 
   :host([active]) #titleText::after {
     background: linear-gradient(
         to right, transparent,
-        var(--tabstrip-tab-active-title-background-color));
+        var(--color-web-ui-tab-strip-tab-active-title-background));
   }
 
   :host-context([dir='rtl']):host([active]) #titleText::after {
     background: linear-gradient(
         to left, transparent,
-        var(--tabstrip-tab-active-title-background-color));
+        var(--color-web-ui-tab-strip-tab-active-title-background));
   }
 
   :host([active]) tabstrip-alert-indicators {
-    --indicator-color: var(--tabstrip-tab-active-title-content-color);
+    --indicator-color: var(--color-web-ui-tab-strip-tab-active-title-content);
     --tabstrip-indicator-capturing-color:
-        var(--tabstrip-tab-active-title-content-color);
+        var(--color-web-ui-tab-strip-tab-active-title-content);
     --tabstrip-indicator-pip-color:
-        var(--tabstrip-tab-active-title-content-color);
+        var(--color-web-ui-tab-strip-tab-active-title-content);
   }
 
   :host([active]) #closeIcon {
-    background-color: var(--tabstrip-tab-active-title-content-color);
+    background-color: var(--color-web-ui-tab-strip-tab-active-title-content);
   }
 
   #title {
     align-items: center;
-    border-block-end: 1px solid var(--tabstrip-tab-separator-color);
+    border-block-end: 1px solid var(--color-web-ui-tab-strip-tab-separator);
     box-sizing: border-box;
     display: flex;
     height: var(--tabstrip-tab-title-height);
@@ -157,8 +157,8 @@
   }
 
   #blocked {
-    background: var(--tabstrip-tab-blocked-color);
-    border: solid 1px var(--tabstrip-tab-background-color);
+    background: var(--color-web-ui-tab-strip-tab-blocked);
+    border: solid 1px var(--color-web-ui-tab-strip-tab-background);
     border-radius: 50%;
     bottom: 0;
     display: none;
@@ -182,13 +182,13 @@
   }
 
   :host([waiting_]) #progressSpinner {
-    background-color: var(--tabstrip-tab-waiting-spinning-color);
+    background-color: var(--color-web-ui-tab-strip-tab-waiting-spinning);
     transform: /* Center first, then flip horizontally. */
               translate(-50%, -50%) scaleX(-1);
   }
 
   :host([active][waiting_]) #progressSpinner {
-    background-color: var(--tabstrip-tab-active-title-content-color);
+    background-color: var(--color-web-ui-tab-strip-tab-active-title-content);
   }
 
   :host([waiting_]) #favicon {
@@ -196,11 +196,11 @@
   }
 
   :host([loading_]) #progressSpinner {
-    background-color: var(--tabstrip-tab-loading-spinning-color);
+    background-color: var(--color-web-ui-tab-strip-tab-loading-spinning);
   }
 
   :host([active][loading_]) #progressSpinner {
-    background-color: var(--tabstrip-tab-active-title-content-color);
+    background-color: var(--color-web-ui-tab-strip-tab-active-title-content);
   }
 
   :host([crashed_]) #favicon {
@@ -240,7 +240,7 @@
 
   #titleText::after {
     background: linear-gradient(
-        to right, transparent, var(--tabstrip-tab-background-color));
+        to right, transparent, var(--color-web-ui-tab-strip-tab-background));
     content: '';
     display: block;
     height: 100%;
@@ -252,7 +252,7 @@
 
   :host-context([dir='rtl']) #titleText::after {
     background: linear-gradient(
-        to left, transparent, var(--tabstrip-tab-background-color));
+        to left, transparent, var(--color-web-ui-tab-strip-tab-background));
     left: 0;
     right: auto;
   }
@@ -300,7 +300,7 @@
 
   #thumbnail {
     align-items: flex-start;
-    background: var(--tabstrip-tab-background-color);
+    background: var(--color-web-ui-tab-strip-tab-background);
     display: flex;
     flex: 1;
     height: var(--tabstrip-tab-thumbnail-height);
@@ -343,7 +343,7 @@
   }
 
   :host([dragging_]) #dragPlaceholder {
-    background: var(--tabstrip-tab-background-color);
+    background: var(--color-web-ui-tab-strip-tab-background);
     border-radius: var(--tabstrip-tab-border-radius);
     height: 100%;
     opacity: 0.5;

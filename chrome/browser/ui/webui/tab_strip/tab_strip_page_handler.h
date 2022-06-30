@@ -109,7 +109,6 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   // tab_strip::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
   void GetGroupVisualData(GetGroupVisualDataCallback callback) override;
-  void GetThemeColors(GetThemeColorsCallback callback) override;
   void CloseContainer() override;
   void CloseTab(int32_t tab_id, bool tab_was_swiped) override;
   void ShowEditDialogForGroup(const std::string& group_id,

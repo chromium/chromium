@@ -11,7 +11,7 @@ suite('ColorChangeListenerTest', () => {
         '<link rel="stylesheet" href="chrome://theme/colors.css"/>';
   });
 
-  test('CorrectlyUpdatesColorsStylesheetURL', () => {
+  test('CorrectlyUpdatesColorsStylesheetURL', async () => {
     const colorCssNode =
         document.querySelector<HTMLLinkElement>(COLORS_CSS_SELECTOR);
     assertTrue(!!colorCssNode);
@@ -22,12 +22,26 @@ suite('ColorChangeListenerTest', () => {
     // refreshColorCss() should append search params to the colors CSS href.
     assertTrue(refreshColorCss());
 
-    const finalHref = colorCssNode.getAttribute('href');
-    assertTrue(!!finalHref);
-    assertTrue(finalHref.startsWith('chrome://theme/colors.css'));
-    assertTrue(!!new URL(finalHref).search);
+    const secondHref = colorCssNode.getAttribute('href');
+    assertTrue(!!secondHref);
+    assertTrue(secondHref.startsWith('chrome://theme/colors.css'));
+    assertTrue(!!new URL(secondHref).search);
 
-    assertNotEquals(initialHref, finalHref);
+    assertNotEquals(initialHref, secondHref);
+
+    // Wait 1 millisecond before refresh. Otherwise the timestamp-based
+    // version might not yet be updated.
+    await new Promise(resolve => setTimeout(resolve, 1));
+    // refreshColorCss() should append search params to the colors CSS href.
+    assertTrue(refreshColorCss());
+
+    const thirdHref = colorCssNode.getAttribute('href');
+    assertTrue(!!thirdHref);
+    assertTrue(thirdHref.startsWith('chrome://theme/colors.css'));
+    assertTrue(!!new URL(thirdHref).search);
+
+    assertNotEquals(initialHref, thirdHref);
+    assertNotEquals(secondHref, thirdHref);
   });
 
   test('HandlesCasesWhereColorsStylesheetIsNotSetCorrectly', () => {

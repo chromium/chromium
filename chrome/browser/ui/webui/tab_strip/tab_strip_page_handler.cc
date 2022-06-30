@@ -594,53 +594,6 @@ void TabStripPageHandler::GetGroupVisualData(
   std::move(callback).Run(std::move(group_visual_datas));
 }
 
-void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
-  TRACE_EVENT0("browser", "TabStripPageHandler:HandleGetThemeColors");
-  // This should return an object of CSS variables to rgba values so that
-  // the WebUI can use the CSS variables to color the tab strip
-  base::flat_map<std::string, std::string> colors;
-  colors["--tabstrip-background-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE));
-  colors["--tabstrip-tab-background-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR));
-  colors["--tabstrip-tab-text-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetColorProviderColor(kColorTabForegroundActiveFrameActive));
-  colors["--tabstrip-tab-separator-color"] = color_utils::SkColorToRgbaString(
-      SkColorSetA(embedder_->GetColorProviderColor(
-                      kColorTabForegroundActiveFrameActive),
-                  /* 16% opacity */ 0.16 * 255));
-
-  std::string throbber_color = color_utils::SkColorToRgbaString(
-      embedder_->GetColorProviderColor(kColorTabThrobber));
-  colors["--tabstrip-tab-loading-spinning-color"] = throbber_color;
-  colors["--tabstrip-tab-waiting-spinning-color"] =
-      color_utils::SkColorToRgbaString(
-          embedder_->GetColorProviderColor(kColorTabThrobberPreconnect));
-  colors["--tabstrip-indicator-recording-color"] =
-      color_utils::SkColorToRgbaString(
-          embedder_->GetColorProviderColor(ui::kColorAlertHighSeverity));
-  colors["--tabstrip-indicator-pip-color"] = throbber_color;
-  colors["--tabstrip-indicator-capturing-color"] = throbber_color;
-  colors["--tabstrip-tab-blocked-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetColorProviderColor(ui::kColorButtonBackgroundProminent));
-  colors["--tabstrip-focus-outline-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetColorProviderColor(ui::kColorFocusableBorderFocused));
-  colors["--tabstrip-tab-active-title-background-color"] =
-      color_utils::SkColorToRgbaString(
-          embedder_->GetColorProviderColor(kColorThumbnailTabBackground));
-  colors["--tabstrip-tab-active-title-content-color"] =
-      color_utils::SkColorToRgbaString(
-          embedder_->GetColorProviderColor(kColorThumbnailTabForeground));
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  colors["--tabstrip-scrollbar-thumb-color-rgb"] =
-      color_utils::SkColorToRgbString(color_utils::GetColorWithMaxContrast(
-          embedder_->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)));
-#endif
-
-  std::move(callback).Run(std::move(colors));
-}
-
 void TabStripPageHandler::GroupTab(int32_t tab_id,
                                    const std::string& group_id_string) {
   int tab_index = -1;
