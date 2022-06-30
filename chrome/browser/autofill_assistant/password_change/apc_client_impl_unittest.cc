@@ -4,8 +4,10 @@
 
 #include "chrome/browser/autofill_assistant/password_change/apc_client_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl.h"
 #include "chrome/browser/autofill_assistant/password_change/mock_apc_onboarding_coordinator.h"
@@ -191,15 +193,20 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
 
   // Prepare to extract the callback to the coordinator.
   ApcOnboardingCoordinator::Callback coordinator_callback;
+  base::MockCallback<ApcClient::ResultCallback> result_callback1,
+      result_callback2;
   EXPECT_CALL(*coordinator(), PerformOnboarding)
       .WillOnce(MoveArg<0>(&coordinator_callback));
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kShown));
-  EXPECT_TRUE(client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false));
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
+                result_callback1.Get());
   EXPECT_TRUE(client->IsRunning());
 
   // We cannot start a second flow.
-  EXPECT_FALSE(client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false));
+  EXPECT_CALL(result_callback2, Run(false));
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
+                result_callback2.Get());
 
   // Prepare to extract the callback to the external script controller.
   base::OnceCallback<void(
@@ -217,6 +224,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
       /* success= */ true};
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kNotShown));
+  EXPECT_CALL(result_callback1, Run(true));
   std::move(external_script_controller_callback).Run(script_result);
   EXPECT_FALSE(client->IsRunning());
 }
@@ -227,8 +235,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromSettings) {
   EXPECT_CALL(*coordinator(), PerformOnboarding)
       .WillOnce(MoveArg<0>(&coordinator_callback));
 
-  EXPECT_TRUE(
-      apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false));
+  apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
+                      base::DoNothing());
 
   // Prepare to extract the script_params to the external script
   // controller.
@@ -252,9 +260,9 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromLeakWarning) {
       .Times(1)
       .WillOnce(MoveArg<0>(&coordinator_callback));
 
-  // `skip_login` equals to a trigger from leak warning.
-  EXPECT_TRUE(
-      apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
+  // `skip_login = true` equals a trigger from leak warning.
+  apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                      base::DoNothing());
 
   // Prepare to extract the script_params to the external script
   // controller.
@@ -277,8 +285,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithFailedOnboarding) {
       .Times(1)
       .WillOnce(MoveArg<0>(&coordinator_callback));
 
-  EXPECT_TRUE(
-      apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
+  apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                      base::DoNothing());
 
   // Fail onboarding.
   std::move(coordinator_callback).Run(false);
@@ -302,8 +310,24 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithUnifiedSidePanelDisabled) {
       .Times(0);
 
   // Starting it does not work.
-  EXPECT_FALSE(client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                base::DoNothing());
   EXPECT_FALSE(client->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, StopApcFlow) {
+  raw_ptr<ApcClient> client =
+      ApcClient::GetOrCreateForWebContents(web_contents());
+
+  base::MockCallback<ApcClient::ResultCallback> result_callback;
+
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                result_callback.Get());
+
+  // Calling `Stop()` twice only triggers the callback the first time around.
+  EXPECT_CALL(result_callback, Run(false)).Times(1);
+  client->Stop();
+  client->Stop();
 }
 
 TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
@@ -316,8 +340,8 @@ TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
       .WillOnce(MoveArg<0>(&coordinator_callback));
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kShown));
-  EXPECT_TRUE(
-      apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
+  apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                      base::DoNothing());
   std::move(coordinator_callback).Run(true);
   EXPECT_TRUE(apc_client()->IsRunning());
 

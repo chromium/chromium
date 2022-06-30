@@ -36,10 +36,11 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   ApcClientImpl& operator=(const ApcClientImpl&) = delete;
 
   // ApcClient:
-  bool Start(const GURL& url,
+  void Start(const GURL& url,
              const std::string& username,
-             bool skip_login) override;
-  void Stop() override;
+             bool skip_login,
+             ResultCallback callback) override;
+  void Stop(bool success) override;
   bool IsRunning() const override;
 
  protected:
@@ -101,6 +102,9 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // The state of the `ApcClient` to avoid that a run is started while
   // another is already ongoing in the tab.
   bool is_running_ = false;
+
+  // The callback that signals the end of the run.
+  ResultCallback result_callback_;
 
   // Orchestrates prompting the user for consent if it has not been given
   // previously.

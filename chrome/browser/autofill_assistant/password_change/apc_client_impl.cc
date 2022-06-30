@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -46,18 +47,24 @@ ApcClientImpl::ApcClientImpl(content::WebContents* web_contents)
 
 ApcClientImpl::~ApcClientImpl() = default;
 
-bool ApcClientImpl::Start(const GURL& url,
+void ApcClientImpl::Start(const GURL& url,
                           const std::string& username,
-                          bool skip_login) {
+                          bool skip_login,
+                          ResultCallback callback) {
   // If the unified side panel is not enabled, trying to register an entry in it
   // later on will crash.
-  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    return false;
+  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   // Ensure that only one run is ongoing.
-  if (is_running_)
-    return false;
+  if (is_running_) {
+    std::move(callback).Run(false);
+    return;
+  }
   is_running_ = true;
+  result_callback_ = std::move(callback);
 
   GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kShown);
 
@@ -70,15 +77,14 @@ bool ApcClientImpl::Start(const GURL& url,
   onboarding_coordinator_ = CreateOnboardingCoordinator();
   onboarding_coordinator_->PerformOnboarding(base::BindOnce(
       &ApcClientImpl::OnOnboardingComplete, base::Unretained(this)));
-
-  return true;
 }
 
-void ApcClientImpl::Stop() {
+void ApcClientImpl::Stop(bool success) {
   GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kNotShown);
   onboarding_coordinator_.reset();
   external_script_controller_.reset();
   is_running_ = false;
+  std::exchange(result_callback_, base::DoNothing()).Run(success);
 }
 
 bool ApcClientImpl::IsRunning() const {
@@ -89,7 +95,7 @@ bool ApcClientImpl::IsRunning() const {
 // has been given.
 void ApcClientImpl::OnOnboardingComplete(bool success) {
   if (!success) {
-    Stop();
+    Stop(/*success=*/false);
     return;
   }
 
@@ -118,11 +124,11 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
 void ApcClientImpl::OnRunComplete(
     autofill_assistant::HeadlessScriptController::ScriptResult result) {
   // TODO(crbug.com/1324089): Handle failed result.
-  Stop();
+  Stop(result.success);
 }
 
 void ApcClientImpl::OnHidden() {
-  Stop();
+  Stop(/*success=*/false);
 
   // The two resets below are not included in `Stop()`, since we may wish to
   // render content in the side panel even for a stopped flow.
