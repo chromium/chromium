@@ -20,10 +20,10 @@ class GURL;
 // Object to fetch favicon attributes by URL - an image or a fallback icon if
 // there is no favicon image available with large enough resolution.
 @interface FaviconAttributesProvider : NSObject
-// Favicon attributes associated with |URL| will be fetched using
-// |largeIconService|. The favicon will be rendered with height and width equal
-// to |faviconSize|, and the image will be fetched if the source size is greater
-// than or equal to |minFaviconSize|.
+// Favicon attributes associated with `URL` will be fetched using
+// `largeIconService`. The favicon will be rendered with height and width equal
+// to `faviconSize`, and the image will be fetched if the source size is greater
+// than or equal to `minFaviconSize`.
 - (instancetype)initWithFaviconSize:(CGFloat)faviconSize
                      minFaviconSize:(CGFloat)minFaviconSize
                    largeIconService:(favicon::LargeIconService*)largeIconService
@@ -40,7 +40,7 @@ class GURL;
 @property(nonatomic, readonly) CGFloat minSize;
 // Expected favicon size (in points). Will downscale favicon to this.
 @property(nonatomic, readonly) CGFloat faviconSize;
-// Cache for the favicon. Using a cache makes the |completion| block to be
+// Cache for the favicon. Using a cache makes the `completion` block to be
 // called synchronously and potentially multiple times. If this is null, no
 // cache is used.
 @property(nonatomic, assign) LargeIconCache* cache;
