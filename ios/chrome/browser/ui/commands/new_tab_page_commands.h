@@ -19,7 +19,7 @@
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
 
-// Notifies the new tab page that the |feedType|'s model has completed updates.
+// Notifies the new tab page that the `feedType`'s model has completed updates.
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
 @end
