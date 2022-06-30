@@ -295,7 +295,7 @@ class DeepScanningRequestTest : public testing::Test {
         enterprise_connectors::CloudOrLocalAnalysisSettings(
             std::move(cloud_settings));
     default_settings.block_until_verdict =
-        enterprise_connectors::BlockUntilVerdict::BLOCK;
+        enterprise_connectors::BlockUntilVerdict::kBlock;
 
     for (const auto& tag : settings.value().tags) {
       ASSERT_EQ(tag.second.requires_justification,
@@ -313,8 +313,8 @@ class DeepScanningRequestTest : public testing::Test {
               default_settings.block_unsupported_file_types);
     ASSERT_EQ(settings.value().block_until_verdict,
               default_settings.block_until_verdict);
-    ASSERT_EQ(settings.value().cloud_settings().analysis_url,
-              default_settings.cloud_settings().analysis_url);
+    ASSERT_EQ(settings.value().cloud_or_local_settings.analysis_url(),
+              default_settings.cloud_or_local_settings.analysis_url());
   }
 
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
@@ -374,7 +374,7 @@ TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
     settings.tags = {{"dlp", enterprise_connectors::TagSettings()},
                      {"malware", enterprise_connectors::TagSettings()}};
     settings.block_until_verdict =
-        enterprise_connectors::BlockUntilVerdict::BLOCK;
+        enterprise_connectors::BlockUntilVerdict::kBlock;
     return settings;
   };
 
@@ -522,7 +522,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
     EXPECT_FALSE(settings().has_value());
     enterprise_connectors::AnalysisSettings analysis_settings;
     analysis_settings.block_until_verdict =
-        enterprise_connectors::BlockUntilVerdict::BLOCK;
+        enterprise_connectors::BlockUntilVerdict::kBlock;
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,

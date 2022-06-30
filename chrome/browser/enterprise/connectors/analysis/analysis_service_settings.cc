@@ -59,8 +59,8 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   // found.
   block_until_verdict_ =
       settings_value.FindIntKey(kKeyBlockUntilVerdict).value_or(0)
-          ? BlockUntilVerdict::BLOCK
-          : BlockUntilVerdict::NO_BLOCK;
+          ? BlockUntilVerdict::kBlock
+          : BlockUntilVerdict::kNoBlock;
   block_password_protected_files_ =
       settings_value.FindBoolKey(kKeyBlockPasswordProtected).value_or(false);
   block_large_files_ =
@@ -177,7 +177,7 @@ absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
 bool AnalysisServiceSettings::ShouldBlockUntilVerdict() const {
   if (!IsValid())
     return false;
-  return block_until_verdict_ == BlockUntilVerdict::BLOCK;
+  return block_until_verdict_ == BlockUntilVerdict::kBlock;
 }
 
 absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(

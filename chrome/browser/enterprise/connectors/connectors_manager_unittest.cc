@@ -168,7 +168,7 @@ class ConnectorsManagerTest : public testing::Test {
 
   // Set to the default value of their legacy policy.
   std::map<std::string, TagSettings> expected_tags_ = {};
-  BlockUntilVerdict expected_block_until_verdict_ = BlockUntilVerdict::NO_BLOCK;
+  BlockUntilVerdict expected_block_until_verdict_ = BlockUntilVerdict::kNoBlock;
   bool expected_block_password_protected_files_ = false;
   bool expected_block_large_files_ = false;
   bool expected_block_unsupported_file_types_ = false;
@@ -212,7 +212,7 @@ class ConnectorsManagerConnectorPoliciesTest
 
     AnalysisSettings settings;
 
-    settings.block_until_verdict = BlockUntilVerdict::BLOCK;
+    settings.block_until_verdict = BlockUntilVerdict::kBlock;
     settings.block_password_protected_files = true;
     settings.block_large_files = true;
     settings.block_unsupported_file_types = true;
@@ -318,7 +318,7 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
                         .at(0)
                         .GetAnalysisSettings(GURL(kDlpAndMalwareUrl));
     ASSERT_TRUE(settings.has_value());
-    expected_block_until_verdict_ = BlockUntilVerdict::BLOCK;
+    expected_block_until_verdict_ = BlockUntilVerdict::kBlock;
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
     expected_block_unsupported_file_types_ = true;

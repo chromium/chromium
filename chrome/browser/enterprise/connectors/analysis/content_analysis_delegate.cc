@@ -264,7 +264,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
     safe_browsing::DeepScanAccessPoint access_point) {
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict = data.settings.block_until_verdict ==
-                          enterprise_connectors::BlockUntilVerdict::BLOCK;
+                          enterprise_connectors::BlockUntilVerdict::kBlock;
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate = testing_factory->is_null()
                       ? base::WrapUnique(new ContentAnalysisDelegate(
@@ -513,8 +513,10 @@ void ContentAnalysisDelegate::PreparePageRequest() {
 void ContentAnalysisDelegate::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Request* request) {
-  if (data_.settings.is_cloud_analysis())
-    request->set_device_token(data_.settings.cloud_settings().dm_token);
+  if (data_.settings.cloud_or_local_settings.is_cloud_analysis()) {
+    request->set_device_token(
+        data_.settings.cloud_or_local_settings.dm_token());
+  }
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(data_.url.spec());

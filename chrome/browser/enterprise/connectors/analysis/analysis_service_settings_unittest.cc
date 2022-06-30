@@ -160,7 +160,7 @@ AnalysisSettings NormalSettingsWithTags(
     std::map<std::string, TagSettings> tags) {
   AnalysisSettings settings;
   settings.tags = std::move(tags);
-  settings.block_until_verdict = BlockUntilVerdict::BLOCK;
+  settings.block_until_verdict = BlockUntilVerdict::kBlock;
   settings.block_password_protected_files = true;
   settings.block_large_files = true;
   settings.block_unsupported_file_types = true;
@@ -243,8 +243,8 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
     // Set the GURL field dynamically to avoid static initialization issues.
     if (GetParam().expected_settings != NoSettings() &&
         !GetParam()
-             .expected_settings->cloud_settings()
-             .analysis_url.is_valid()) {
+             .expected_settings->cloud_or_local_settings.analysis_url()
+             .is_valid()) {
       absl::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url =
@@ -276,9 +276,10 @@ TEST_P(AnalysisServiceSettingsTest, Test) {
               expected_settings()->block_large_files);
     ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
               expected_settings()->block_unsupported_file_types);
-    ASSERT_TRUE(analysis_settings.value().is_cloud_analysis());
-    ASSERT_EQ(analysis_settings.value().cloud_settings().analysis_url,
-              expected_settings()->cloud_settings().analysis_url);
+    ASSERT_TRUE(
+        analysis_settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.analysis_url(),
+              expected_settings()->cloud_or_local_settings.analysis_url());
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
     for (const auto& entry : expected_settings()->tags) {

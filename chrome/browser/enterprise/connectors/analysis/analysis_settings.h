@@ -34,8 +34,8 @@ struct TagSettings {
 // Enum representing if an analysis should block further interactions with the
 // browser until its verdict is obtained.
 enum class BlockUntilVerdict {
-  NO_BLOCK = 0,
-  BLOCK = 1,
+  kNoBlock = 0,
+  kBlock = 1,
 };
 
 // Struct holding settings data specific to a cloud analysis.
@@ -77,11 +77,17 @@ class CloudOrLocalAnalysisSettings
 
   ~CloudOrLocalAnalysisSettings();
 
+  // Helpers for convenient check of the underlying variant.
+  bool is_cloud_analysis() const;
+  bool is_local_analysis() const;
+
   // Only call these when the CloudAnalysisSettings variant is used.
+  const CloudAnalysisSettings& cloud_settings() const;
   const GURL& analysis_url() const;
   const std::string& dm_token() const;
 
   // Only call these when the LocalAnalysisSettings variant is used.
+  const LocalAnalysisSettings& local_settings() const;
   const std::string local_path() const;
 };
 
@@ -92,17 +98,9 @@ struct AnalysisSettings {
   AnalysisSettings& operator=(AnalysisSettings&&);
   ~AnalysisSettings();
 
-  // Helpers for convenient access to the `cloud_or_local_settings` member.
-  // Accessors should only be called when the corresponding bool method returns
-  // true.
-  bool is_cloud_analysis() const;
-  bool is_local_analysis() const;
-  const CloudAnalysisSettings& cloud_settings() const;
-  const LocalAnalysisSettings& local_settings() const;
-
   CloudOrLocalAnalysisSettings cloud_or_local_settings;
   std::map<std::string, TagSettings> tags;
-  BlockUntilVerdict block_until_verdict = BlockUntilVerdict::NO_BLOCK;
+  BlockUntilVerdict block_until_verdict = BlockUntilVerdict::kNoBlock;
   bool block_password_protected_files = false;
   bool block_large_files = false;
   bool block_unsupported_file_types = false;

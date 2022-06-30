@@ -39,6 +39,20 @@ CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings(
     const CloudOrLocalAnalysisSettings&) = default;
 CloudOrLocalAnalysisSettings::~CloudOrLocalAnalysisSettings() = default;
 
+bool CloudOrLocalAnalysisSettings::is_cloud_analysis() const {
+  return absl::holds_alternative<CloudAnalysisSettings>(*this);
+}
+
+bool CloudOrLocalAnalysisSettings::is_local_analysis() const {
+  return absl::holds_alternative<LocalAnalysisSettings>(*this);
+}
+
+const CloudAnalysisSettings& CloudOrLocalAnalysisSettings::cloud_settings()
+    const {
+  DCHECK(is_cloud_analysis());
+  return absl::get<CloudAnalysisSettings>(*this);
+}
+
 const GURL& CloudOrLocalAnalysisSettings::analysis_url() const {
   DCHECK(absl::holds_alternative<CloudAnalysisSettings>(*this));
   return absl::get<CloudAnalysisSettings>(*this).analysis_url;
@@ -47,6 +61,12 @@ const GURL& CloudOrLocalAnalysisSettings::analysis_url() const {
 const std::string& CloudOrLocalAnalysisSettings::dm_token() const {
   DCHECK(absl::holds_alternative<CloudAnalysisSettings>(*this));
   return absl::get<CloudAnalysisSettings>(*this).dm_token;
+}
+
+const LocalAnalysisSettings& CloudOrLocalAnalysisSettings::local_settings()
+    const {
+  DCHECK(is_local_analysis());
+  return absl::get<LocalAnalysisSettings>(*this);
 }
 
 const std::string CloudOrLocalAnalysisSettings::local_path() const {
@@ -58,25 +78,5 @@ AnalysisSettings::AnalysisSettings() = default;
 AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
 AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;
 AnalysisSettings::~AnalysisSettings() = default;
-
-bool AnalysisSettings::is_cloud_analysis() const {
-  return absl::holds_alternative<CloudAnalysisSettings>(
-      cloud_or_local_settings);
-}
-
-bool AnalysisSettings::is_local_analysis() const {
-  return absl::holds_alternative<LocalAnalysisSettings>(
-      cloud_or_local_settings);
-}
-
-const CloudAnalysisSettings& AnalysisSettings::cloud_settings() const {
-  DCHECK(is_cloud_analysis());
-  return absl::get<CloudAnalysisSettings>(cloud_or_local_settings);
-}
-
-const LocalAnalysisSettings& AnalysisSettings::local_settings() const {
-  DCHECK(is_local_analysis());
-  return absl::get<LocalAnalysisSettings>(cloud_or_local_settings);
-}
 
 }  // namespace enterprise_connectors

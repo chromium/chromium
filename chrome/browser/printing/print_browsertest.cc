@@ -756,10 +756,10 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     // print Connector policy.
     EXPECT_EQ(data.settings.tags.size(), 1u);
     EXPECT_TRUE(base::Contains(data.settings.tags, "dlp"));
-    EXPECT_TRUE(data.settings.is_cloud_analysis());
-    EXPECT_EQ(data.settings.cloud_settings().dm_token, kFakeDmToken);
+    EXPECT_TRUE(data.settings.cloud_or_local_settings.is_cloud_analysis());
+    EXPECT_EQ(data.settings.cloud_or_local_settings.dm_token(), kFakeDmToken);
     EXPECT_EQ(data.settings.block_until_verdict,
-              enterprise_connectors::BlockUntilVerdict::BLOCK);
+              enterprise_connectors::BlockUntilVerdict::kBlock);
     EXPECT_TRUE(data.settings.block_large_files);
 
     // The snapshot should be valid and populated.

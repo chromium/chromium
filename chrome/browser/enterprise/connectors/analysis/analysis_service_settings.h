@@ -102,7 +102,7 @@ class AnalysisServiceSettings {
   PatternSettings enabled_patterns_settings_;
   PatternSettings disabled_patterns_settings_;
 
-  BlockUntilVerdict block_until_verdict_ = BlockUntilVerdict::NO_BLOCK;
+  BlockUntilVerdict block_until_verdict_ = BlockUntilVerdict::kNoBlock;
   bool block_password_protected_files_ = false;
   bool block_large_files_ = false;
   bool block_unsupported_file_types_ = false;

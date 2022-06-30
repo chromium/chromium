@@ -205,7 +205,7 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   if (!dm_token.has_value())
     return absl::nullopt;
 
-  if (settings.value().is_cloud_analysis()) {
+  if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
     absl::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
         .dm_token = dm_token.value().value;
   }

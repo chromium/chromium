@@ -489,8 +489,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_TRUE(settings.value().is_cloud_analysis());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().cloud_settings().dm_token);
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
     ASSERT_FALSE(settings.value().per_profile);
     ValidateClientMetadata(*settings.value().client_metadata,
                            /*profile_reporting*/ false);
@@ -520,8 +521,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_TRUE(settings.value().is_cloud_analysis());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().cloud_settings().dm_token);
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
     ASSERT_FALSE(settings.value().per_profile);
     ValidateClientMetadata(*settings.value().client_metadata,
                            /*profile_reporting*/ false);
@@ -537,9 +539,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().is_cloud_analysis());
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
       ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_settings().dm_token);
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ValidateClientMetadata(*settings.value().client_metadata,
                              /*profile_reporting*/ true);
@@ -547,9 +549,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().is_cloud_analysis());
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
       ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_settings().dm_token);
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_TRUE(settings.value().client_metadata);
       ValidateClientMetadata(*settings.value().client_metadata,
@@ -573,8 +575,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_TRUE(settings.value().is_cloud_analysis());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().cloud_settings().dm_token);
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
     ASSERT_FALSE(settings.value().per_profile);
     ASSERT_FALSE(settings.value().client_metadata);
   }
@@ -589,18 +592,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().is_cloud_analysis());
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
       ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_settings().dm_token);
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().is_cloud_analysis());
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
       ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_settings().dm_token);
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);

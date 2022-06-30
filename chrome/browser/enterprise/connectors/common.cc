@@ -110,7 +110,7 @@ safe_browsing::EventResult CalculateEventResult(
     bool allowed_by_scan_result,
     bool should_warn) {
   bool wait_for_verdict =
-      settings.block_until_verdict == BlockUntilVerdict::BLOCK;
+      settings.block_until_verdict == BlockUntilVerdict::kBlock;
   return (allowed_by_scan_result || !wait_for_verdict)
              ? safe_browsing::EventResult::ALLOWED
              : (should_warn ? safe_browsing::EventResult::WARNED

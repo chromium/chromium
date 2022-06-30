@@ -235,7 +235,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
       settings.has_value() &&
       settings.value().block_until_verdict ==
-          enterprise_connectors::BlockUntilVerdict::NO_BLOCK;
+          enterprise_connectors::BlockUntilVerdict::kNoBlock;
 
   if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
       base::FeatureList::IsEnabled(
