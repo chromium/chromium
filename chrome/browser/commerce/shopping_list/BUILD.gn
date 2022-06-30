@@ -15,6 +15,7 @@ static_library("shopping_list") {
   deps = [
     "//base",
     "//chrome/common",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -39,6 +40,7 @@ static_library("unit_tests") {
   deps = [
     ":shopping_list",
     "//base/test:test_support",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/power_bookmarks/core:proto",
     "//content/public/browser",
