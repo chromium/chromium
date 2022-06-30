@@ -39,39 +39,31 @@ namespace gpu {
 
 #if BUILDFLAG(IS_MAC)
 namespace {
-class AppleGpuMemoryDumpProvider
+class IOSurfaceMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:
-  AppleGpuMemoryDumpProvider();
+  IOSurfaceMemoryDumpProvider();
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
  private:
   // NoDestructor only.
-  ~AppleGpuMemoryDumpProvider() override = default;
+  ~IOSurfaceMemoryDumpProvider() override = default;
 };
 
-AppleGpuMemoryDumpProvider::AppleGpuMemoryDumpProvider() {
+IOSurfaceMemoryDumpProvider::IOSurfaceMemoryDumpProvider() {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "CommandBuffer", nullptr);
 }
 
-bool AppleGpuMemoryDumpProvider::OnMemoryDump(
+bool IOSurfaceMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   // Collect IOSurface total memory usage.
-  size_t surface_virtual_size = 0;
-  size_t surface_resident_size = 0;
-  size_t surface_swapped_out_size = 0;
-  size_t surface_dirty_size = 0;
-
-  // And IOAccelerator. Per vm_statistics.h in XNU, this is used to
-  // "differentiate memory needed by GPU drivers and frameworks from generic
-  // IOKit allocations". See xnu-1456.1.26/osfmk/mach/vm_statistics.h.
-  size_t accelerator_virtual_size = 0;
-  size_t accelerator_resident_size = 0;
-  size_t accelerator_swapped_out_size = 0;
-  size_t accelerator_dirty_size = 0;
+  size_t virtual_size = 0;
+  size_t resident_size = 0;
+  size_t swapped_out_size = 0;
+  size_t dirty_size = 0;
 
   task_t task = mach_task_self();
   mach_vm_address_t address = 0;
@@ -91,9 +83,8 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
       return false;
     }
 
-    // All IOSurfaces and IOAccelerator allocations seen locally (M1 laptop)
-    // have rw-/rw- permissions. More distinctive characteristics require the
-    // extended info, which are more expensive to query.
+    // All IOSurfaces have rw-/rw- permissions. More distinctive characteristics
+    // require the extended info, which are more expensive to query.
     const vm_prot_t rw = VM_PROT_READ | VM_PROT_WRITE;
     if (basic_info.protection != rw || basic_info.max_protection != rw)
       continue;
@@ -115,30 +106,24 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
     if (ret != KERN_SUCCESS)
       return false;
 
-    switch (info.user_tag) {
-      case VM_MEMORY_IOSURFACE:
-        surface_virtual_size += size;
-        surface_resident_size += info.pages_resident * base::GetPageSize();
-        surface_swapped_out_size +=
-            info.pages_swapped_out * base::GetPageSize();
-        surface_dirty_size += info.pages_dirtied * base::GetPageSize();
-        break;
-      case VM_MEMORY_IOACCELERATOR:
-        accelerator_virtual_size += size;
-        accelerator_resident_size += info.pages_resident * base::GetPageSize();
-        accelerator_swapped_out_size +=
-            info.pages_swapped_out * base::GetPageSize();
-        accelerator_dirty_size += info.pages_dirtied * base::GetPageSize();
-        break;
-    }
+    // Only look at IOSurfaces.
+    if (info.user_tag != VM_MEMORY_IOSURFACE)
+      continue;
+
+    virtual_size += size;
+    resident_size += info.pages_resident * base::GetPageSize();
+    swapped_out_size += info.pages_swapped_out * base::GetPageSize();
+    dirty_size += info.pages_dirtied * base::GetPageSize();
   }
 
   auto* dump = pmd->CreateAllocatorDump("iosurface");
-  dump->AddScalar("virtual_size", "bytes", surface_virtual_size);
-  dump->AddScalar("resident_size", "bytes", surface_resident_size);
-  dump->AddScalar("swapped_out_size", "bytes", surface_swapped_out_size);
-  dump->AddScalar("dirty_size", "bytes", surface_dirty_size);
-  dump->AddScalar("size", "bytes", surface_virtual_size);
+  dump->AddScalar("virtual_size", "bytes", virtual_size);
+  dump->AddScalar("resident_size", "bytes", resident_size);
+  dump->AddScalar("swapped_out_size", "bytes", swapped_out_size);
+  dump->AddScalar("dirty_size", "bytes", dirty_size);
+
+  dump->AddScalar("size", "bytes", virtual_size);
+
   // Some IOSurfaces have a non-trivial difference between their mapped size
   // and their "dirty" size, possibly because some of it has been marked
   // purgeable, and has been purged (rather than swapped out). Report resident
@@ -147,17 +132,7 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
   //
   // Note: not using "dirty_size", as it doesn't contain the swapped out part.
   dump->AddScalar("resident_swapped", "bytes",
-                  surface_resident_size + surface_swapped_out_size);
-
-  // Ditto for IOAccelerator.
-  dump = pmd->CreateAllocatorDump("ioaccelerator");
-  dump->AddScalar("virtual_size", "bytes", accelerator_virtual_size);
-  dump->AddScalar("resident_size", "bytes", accelerator_resident_size);
-  dump->AddScalar("swapped_out_size", "bytes", accelerator_swapped_out_size);
-  dump->AddScalar("dirty_size", "bytes", accelerator_dirty_size);
-  dump->AddScalar("size", "bytes", accelerator_virtual_size);
-  dump->AddScalar("resident_swapped", "bytes",
-                  accelerator_resident_size + accelerator_swapped_out_size);
+                  resident_size + swapped_out_size);
 
   return true;
 }
@@ -172,7 +147,7 @@ CommandBufferService::CommandBufferService(CommandBufferServiceClient* client,
   DCHECK(client_);
   state_.token = 0;
 #if BUILDFLAG(IS_MAC)
-  static base::NoDestructor<AppleGpuMemoryDumpProvider> dump_provider;
+  static base::NoDestructor<IOSurfaceMemoryDumpProvider> dump_provider;
 #endif
 }
 
