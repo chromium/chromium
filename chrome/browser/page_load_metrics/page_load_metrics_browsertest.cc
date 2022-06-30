@@ -1569,8 +1569,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       internal::FIRST_MEANINGFUL_PAINT_RECORDED, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstMeaningfulPaint,
                                       1);
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramParseStartToFirstMeaningfulPaint, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
@@ -1595,8 +1593,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       internal::FIRST_MEANINGFUL_PAINT_DID_NOT_REACH_NETWORK_STABLE, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstMeaningfulPaint,
                                       0);
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramParseStartToFirstMeaningfulPaint, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PayloadSize) {

@@ -33,9 +33,6 @@ class DocumentWritePageLoadMetricsObserver
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void OnFirstMeaningfulPaintInMainFrameDocument(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-
   void OnParseStop(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
@@ -51,9 +48,6 @@ class DocumentWritePageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing);
 
   void LogDocumentWriteBlockParseStop(
-      const page_load_metrics::mojom::PageLoadTiming& timing);
-
-  void LogDocumentWriteBlockFirstMeaningfulPaint(
       const page_load_metrics::mojom::PageLoadTiming& timing);
 };
 

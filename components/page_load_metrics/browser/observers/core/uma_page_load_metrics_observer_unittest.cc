@@ -705,8 +705,6 @@ TEST_F(UmaPageLoadMetricsObserverTest, FirstMeaningfulPaint) {
 
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstMeaningfulPaint, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramParseStartToFirstMeaningfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramFirstMeaningfulPaintStatus,
       internal::FIRST_MEANINGFUL_PAINT_RECORDED, 1);

@@ -69,9 +69,6 @@ SXG_LOAD_METRIC_VARIABLE(
     FirstMeaningfulPaint,
     "Experimental.PaintTiming.NavigationToFirstMeaningfulPaint")
 SXG_LOAD_METRIC_VARIABLE(
-    ParseStartToFirstMeaningfulPaint,
-    "Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint")
-SXG_LOAD_METRIC_VARIABLE(
     DomContentLoaded,
     "DocumentTiming.NavigationToDOMContentLoadedEventFired")
 SXG_LOAD_METRIC_VARIABLE(Load, "DocumentTiming.NavigationToLoadEventFired")
@@ -167,9 +164,6 @@ void SignedExchangePageLoadMetricsObserver::
 
   SXG_PAGE_LOAD_HISTOGRAM(FirstMeaningfulPaint,
                           timing.paint_timing->first_meaningful_paint.value());
-  SXG_PAGE_LOAD_HISTOGRAM(ParseStartToFirstMeaningfulPaint,
-                          timing.paint_timing->first_meaningful_paint.value() -
-                              timing.parse_timing->parse_start.value());
 }
 
 void SignedExchangePageLoadMetricsObserver::OnDomContentLoadedEventStart(

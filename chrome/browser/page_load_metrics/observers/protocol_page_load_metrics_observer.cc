@@ -78,10 +78,6 @@ void ProtocolPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
   PROTOCOL_HISTOGRAM(
       "Experimental.PaintTiming.NavigationToFirstMeaningfulPaint", protocol_,
       timing.paint_timing->first_meaningful_paint.value());
-  PROTOCOL_HISTOGRAM(
-      "Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint", protocol_,
-      timing.paint_timing->first_meaningful_paint.value() -
-          timing.parse_timing->parse_start.value());
 }
 
 void ProtocolPageLoadMetricsObserver::OnDomContentLoadedEventStart(
