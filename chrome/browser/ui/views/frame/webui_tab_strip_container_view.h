@@ -133,7 +133,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
                                      tab_groups::TabGroupId group) override;
   void HideEditDialogForGroup() override;
   TabStripUILayout GetLayout() override;
-  SkColor GetColor(int id) const override;
   SkColor GetColorProviderColor(ui::ColorId id) const override;
 
   // views::View:

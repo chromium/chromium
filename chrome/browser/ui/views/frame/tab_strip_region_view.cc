@@ -56,9 +56,9 @@ END_METADATA
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
-  views::SetCascadingThemeProviderColor(
+  views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
-      ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE);
+      kColorTabBackgroundInactiveFrameInactive);
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal);

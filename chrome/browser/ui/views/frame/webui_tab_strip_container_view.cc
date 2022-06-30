@@ -834,10 +834,6 @@ TabStripUILayout WebUITabStripContainerView::GetLayout() {
   return TabStripUILayout::CalculateForWebViewportSize(tab_contents_size);
 }
 
-SkColor WebUITabStripContainerView::GetColor(int id) const {
-  return GetThemeProvider()->GetColor(id);
-}
-
 SkColor WebUITabStripContainerView::GetColorProviderColor(
     ui::ColorId id) const {
   return GetColorProvider()->GetColor(id);

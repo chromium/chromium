@@ -737,8 +737,8 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
   // tabs.
-  views::SetCascadingThemeProviderColor(this, views::kCascadingBackgroundColor,
-                                        ThemeProperties::COLOR_TOOLBAR);
+  views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
+                                        kColorToolbar);
   Init();
 
   SetProperty(views::kElementIdentifierKey, kTabStripElementId);

@@ -38,7 +38,6 @@ class TabStripUIEmbedder {
 
   virtual TabStripUILayout GetLayout() = 0;
 
-  virtual SkColor GetColor(int id) const = 0;
   virtual SkColor GetColorProviderColor(ui::ColorId id) const = 0;
 };
 

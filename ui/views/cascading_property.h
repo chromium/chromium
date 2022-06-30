@@ -61,11 +61,6 @@ void SetCascadingProperty(
                     static_cast<CascadingProperty<T>*>(property.release()));
 }
 
-VIEWS_EXPORT void SetCascadingThemeProviderColor(
-    View* view,
-    const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
-    int color_id);
-
 VIEWS_EXPORT void SetCascadingColorProviderColor(
     View* view,
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,

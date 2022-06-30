@@ -51,7 +51,6 @@ class MockTabStripUIEmbedder : public TabStripUIEmbedder {
                void(gfx::Point, gfx::Rect, tab_groups::TabGroupId));
   MOCK_METHOD0(HideEditDialogForGroup, void());
   MOCK_METHOD0(GetLayout, TabStripUILayout());
-  MOCK_CONST_METHOD1(GetColor, SkColor(int));
   MOCK_CONST_METHOD1(GetColorProviderColor, SkColor(ui::ColorId));
 };
 
