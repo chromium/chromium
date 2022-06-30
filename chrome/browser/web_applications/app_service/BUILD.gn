@@ -67,3 +67,21 @@ source_set("app_service") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "web_app_publisher_helper_unittest.cc" ]
+
+  deps = [
+    ":app_service",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:intents",
+    "//content/public/common",
+    "//testing/gtest",
+  ]
+}

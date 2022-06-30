@@ -48,6 +48,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -968,7 +969,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);
   web_app.SetUrlHandlers(web_app_info.url_handlers);
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppManifestLockScreen))
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi))
     web_app.SetLockScreenStartUrl(web_app_info.lock_screen_start_url);
 
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);

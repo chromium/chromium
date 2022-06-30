@@ -682,6 +682,22 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
           provider_->os_integration_manager().GetEnabledFileHandlers(
               web_app->app_id())));
 
+  // These filters are used by the settings page to display would-be-handled
+  // extensions even when the feature is not enabled for the app, whereas
+  // `GetEnabledFileHandlers` above only returns the ones that currently are
+  // enabled.
+  const apps::FileHandlers* all_file_handlers =
+      registrar().GetAppFileHandlers(web_app->app_id());
+  if (all_file_handlers && !all_file_handlers->empty()) {
+    std::set<std::string> extensions_set =
+        apps::GetFileExtensionsFromFileHandlers(*all_file_handlers);
+    app->intent_filters.push_back(apps_util::CreateFileFilter(
+        {apps_util::kIntentActionPotentialFileHandler},
+        /*mime_types=*/{},
+        /*file_extensions=*/
+        {extensions_set.begin(), extensions_set.end()}));
+  }
+
   if (IsNoteTakingWebApp(*web_app))
     app->intent_filters.push_back(apps_util::CreateNoteTakingFilterMojom());
 

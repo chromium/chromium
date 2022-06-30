@@ -80,6 +80,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -3438,8 +3439,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 class ManifestUpdateManagerBrowserTest_LockScreen
     : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kWebAppManifestLockScreen};
+ public:
+  ManifestUpdateManagerBrowserTest_LockScreen() {
+    feature_list_.InitWithFeatures({features::kWebLockScreenApi,
+                                    blink::features::kWebAppManifestLockScreen},
+                                   /*disabled_features=*/{});
+  }
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_LockScreen,

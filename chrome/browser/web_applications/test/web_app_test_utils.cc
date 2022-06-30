@@ -544,6 +544,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     chromeos_data->show_in_management = cros_random.next_bool();
     chromeos_data->is_disabled = cros_random.next_bool();
     chromeos_data->oem_installed = cros_random.next_bool();
+    // Comply with DCHECK that system apps cannot be OEM installed.
+    if (app->IsSystemApp())
+      chromeos_data->oem_installed = false;
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
