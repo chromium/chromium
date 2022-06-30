@@ -173,6 +173,10 @@ crbug.com/1302749 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ RetryOn
 # Failing on android N5
 crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
+# Flaking on Linux FYI Release (AMD RX 5500 XT)
+crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLContextLostFromSelectElement [ RetryOnFailure ]
+
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
