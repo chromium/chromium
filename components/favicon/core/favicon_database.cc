@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -798,12 +799,21 @@ absl::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
                              "FROM icon_mapping "
                              "INNER JOIN favicons "
                              "ON icon_mapping.icon_id = favicons.id "
-                             "WHERE icon_mapping.page_url LIKE ? "
+                             "WHERE (page_url >= ? AND page_url < ?) "
+                             "OR (page_url >= ? AND page_url < ?) "
                              "ORDER BY favicons.icon_type DESC"));
 
-  // Bind the host with a prefix of "://" and suffix of "/" to ensure the entire
-  // host name is matched.
-  statement.BindString(0, base::StringPrintf("%%://%s/%%", url.host().c_str()));
+  // This is an optimization to avoid using the LIKE operator which can be
+  // expensive. This statement finds all rows where page_url starts from either
+  // "http://<host>/" or "https://<host>/".
+  std::string http_prefix =
+      base::StringPrintf("http://%s/", url.host().c_str());
+  statement.BindString(0, http_prefix);
+  statement.BindString(1, database_utils::UpperBoundString(http_prefix));
+  std::string https_prefix =
+      base::StringPrintf("https://%s/", url.host().c_str());
+  statement.BindString(2, https_prefix);
+  statement.BindString(3, database_utils::UpperBoundString(https_prefix));
 
   while (statement.Step()) {
     favicon_base::IconType icon_type =

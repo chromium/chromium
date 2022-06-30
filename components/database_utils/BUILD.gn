@@ -4,6 +4,8 @@
 
 static_library("database_utils") {
   sources = [
+    "upper_bound_string.cc",
+    "upper_bound_string.h",
     "url_converter.cc",
     "url_converter.h",
   ]

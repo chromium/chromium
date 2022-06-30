@@ -4,7 +4,6 @@
 
 #include "components/history/core/browser/url_database.h"
 
-#include <limits>
 #include <string>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
@@ -337,8 +337,7 @@ bool URLDatabase::AutocompleteForPrefix(const std::string& prefix,
   // followed by the maximum character size. Use 8-bit strings for everything
   // so we can be sure sqlite is comparing everything in 8-bit mode. Otherwise,
   // it will have to convert strings either to UTF-8 or UTF-16 for comparison.
-  std::string end_query(prefix);
-  end_query.push_back(std::numeric_limits<unsigned char>::max());
+  std::string end_query = database_utils::UpperBoundString(prefix);
 
   statement.BindString(0, prefix);
   statement.BindString(1, end_query);
