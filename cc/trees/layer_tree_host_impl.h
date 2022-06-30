@@ -20,6 +20,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_controller_impl.h"
@@ -899,6 +900,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void RequestImplSideInvalidationForRerasterTiling();
 
+  void SetDownsampleMetricsForTesting(bool value) {
+    downsample_metrics_ = value;
+  }
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1304,6 +1309,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ThrottleDecider throttle_decider_;
 
   std::vector<uint32_t> finished_transition_request_sequence_ids_;
+
+  bool downsample_metrics_ = true;
+  base::MetricsSubSampler metrics_subsampler_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

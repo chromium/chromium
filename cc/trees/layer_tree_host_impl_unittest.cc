@@ -1133,6 +1133,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
        GPUMemoryForSmallLayerHistogramTest) {
   base::HistogramTester histogram_tester;
   SetClientNameForMetrics("Renderer");
+  host_impl_->SetDownsampleMetricsForTesting(false);
   // With default tile size being set to 256 * 256, the following layer needs
   // one tile only which costs 256 * 256 * 4 / 1024 = 256KB memory.
   TestGPUMemoryForTilings(gfx::Size(200, 200));
@@ -1146,6 +1147,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
        GPUMemoryForLargeLayerHistogramTest) {
   base::HistogramTester histogram_tester;
   SetClientNameForMetrics("Renderer");
+  host_impl_->SetDownsampleMetricsForTesting(false);
   // With default tile size being set to 256 * 256, the following layer needs
   // 4 tiles which cost 256 * 256 * 4 * 4 / 1024 = 1024KB memory.
   TestGPUMemoryForTilings(gfx::Size(500, 500));
