@@ -193,6 +193,9 @@ GURL BinaryUploadService::Request::GetUrlWithParams() const {
     case enterprise_connectors::PRINT:
       connector = "OnPrint";
       break;
+    case enterprise_connectors::FILE_TRANSFER:
+      connector = "OnFileTransfer";
+      break;
     case enterprise_connectors::ANALYSIS_CONNECTOR_UNSPECIFIED:
       break;
   }

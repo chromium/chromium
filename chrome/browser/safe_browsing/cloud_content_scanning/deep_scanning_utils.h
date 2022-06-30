@@ -51,6 +51,9 @@ enum class DeepScanAccessPoint {
 
   // A deep scan was initiated from printing a page.
   PRINT,
+
+  // A deep scan was initiated from transferring 1+ file(s) within ChromeOS.
+  FILE_TRANSFER,
 };
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 

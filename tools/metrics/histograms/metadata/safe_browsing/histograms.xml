@@ -559,6 +559,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.DeepScan.FileTransfer.BytesPerSeconds"
+    units="bytes" expires_after="2023-06-28">
+  <owner>sseckler@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the bytes/sec from the size of a file transfer request divided
+    by the duration of a successful deep scanning upload request. It is logged
+    once for each successful binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.FileTransfer{Result}.Duration"
+    units="ms" expires_after="2023-06-28">
+  <owner>sseckler@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user file transfer request with
+    {Result} result. It is logged once for each binary upload with that result.
+  </summary>
+  <token key="Result">
+    <variant name="" summary="any"/>
+    <variant name=".CancelledByUser" summary="a CancelledByUser"/>
+    <variant name=".FailedToGetToken" summary="a FailedToGetToken"/>
+    <variant name=".FailedToGetVerdict" summary="a FailedToGetVerdict"/>
+    <variant name=".FileEncrypted" summary="a FileEncrypted"/>
+    <variant name=".FileTooLarge" summary="a FileTooLarge"/>
+    <variant name=".Success" summary="a Success"/>
+    <variant name=".Timeout" summary="a Timeout"/>
+    <variant name=".TooManyRequests" summary="a TooManyRequests"/>
+    <variant name=".Unknown" summary="an Unknown"/>
+    <variant name=".UnsupportedFileType" summary="an UnsupportedFileType"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.DeepScan.Paste.BytesPerSeconds" units="bytes"
     expires_after="2023-02-01">
   <owner>domfc@chromium.org</owner>

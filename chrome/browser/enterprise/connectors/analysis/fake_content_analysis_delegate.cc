@@ -179,6 +179,7 @@ void FakeContentAnalysisDelegate::Response(
     case AnalysisConnector::PRINT:
       PageRequestCallback(result_, response);
       break;
+    case AnalysisConnector::FILE_TRANSFER:
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED();
   }

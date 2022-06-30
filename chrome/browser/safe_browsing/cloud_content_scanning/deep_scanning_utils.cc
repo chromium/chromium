@@ -249,6 +249,8 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
       return "Paste";
     case DeepScanAccessPoint::PRINT:
       return "Print";
+    case DeepScanAccessPoint::FILE_TRANSFER:
+      return "FileTransfer";
   }
   NOTREACHED();
   return "";

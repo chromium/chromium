@@ -11,7 +11,7 @@
 namespace enterprise_connectors {
 
 TEST(EnterpriseConnectorsProtoTest, AnalysisConnectorEnum) {
-  EXPECT_EQ(enterprise_connectors::AnalysisConnector_ARRAYSIZE, 5);
+  EXPECT_EQ(enterprise_connectors::AnalysisConnector_ARRAYSIZE, 6);
   EXPECT_EQ(enterprise_connectors::AnalysisConnector_ARRAYSIZE,
             content_analysis::sdk::AnalysisConnector_ARRAYSIZE);
 
@@ -25,6 +25,8 @@ TEST(EnterpriseConnectorsProtoTest, AnalysisConnectorEnum) {
             (int)content_analysis::sdk::BULK_DATA_ENTRY);
   EXPECT_EQ((int)enterprise_connectors::PRINT,
             (int)content_analysis::sdk::PRINT);
+  EXPECT_EQ((int)enterprise_connectors::FILE_TRANSFER,
+            (int)content_analysis::sdk::FILE_TRANSFER);
 }
 
 using ChromiumResult = enterprise_connectors::ContentAnalysisResponse::Result;

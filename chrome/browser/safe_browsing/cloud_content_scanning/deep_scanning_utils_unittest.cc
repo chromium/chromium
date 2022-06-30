@@ -87,7 +87,8 @@ INSTANTIATE_TEST_SUITE_P(
                                      DeepScanAccessPoint::UPLOAD,
                                      DeepScanAccessPoint::DRAG_AND_DROP,
                                      DeepScanAccessPoint::PASTE,
-                                     DeepScanAccessPoint::PRINT),
+                                     DeepScanAccessPoint::PRINT,
+                                     DeepScanAccessPoint::FILE_TRANSFER),
                      testing::ValuesIn(kAllBinaryUploadServiceResults)));
 
 TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {

@@ -2020,6 +2020,9 @@ std::string SerializeContentAnalysisRequest(
     case enterprise_connectors::PRINT:
       request_dict.Set("analysis_connector", "PRINT");
       break;
+    case enterprise_connectors::FILE_TRANSFER:
+      request_dict.Set("analysis_connector", "FILE_TRANSFER");
+      break;
   }
 
   if (request.has_request_data()) {
