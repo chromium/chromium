@@ -42,10 +42,14 @@ ScreenAIService::ScreenAIService(
       receiver_(this, std::move(receiver)) {
   DCHECK(init_function_ && annotate_function_ &&
          extract_main_content_function_);
-  if (!init_function_(features::IsScreenAIVisualAnnotationsEnabled(),
-                      features::IsReadAnythingWithScreen2xEnabled(),
-                      features::IsScreenAIDebugModeEnabled(),
-                      GetLibraryFilePath().DirName().MaybeAsASCII())) {
+  if (!init_function_(
+          /*init_visual_annotations = */ features::
+                  IsScreenAIVisualAnnotationsEnabled() ||
+              features::IsPdfOcrEnabled(),
+          /*init_main_content_extraction = */
+          features::IsReadAnythingWithScreen2xEnabled(),
+          /*debug_mode = */ features::IsScreenAIDebugModeEnabled(),
+          /*models_path = */ GetLibraryFilePath().DirName().MaybeAsASCII())) {
     // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
     VLOG(0) << "Screen AI library initialization failed.";
     base::Process::TerminateCurrentProcessImmediately(-1);

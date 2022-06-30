@@ -23,6 +23,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -210,6 +211,9 @@ class RenderViewContextMenu
   void AppendExitFullscreenItem();
   void AppendCopyItem();
   void AppendLinkToTextItems();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void AppendPdfOcrItem();
+#endif
   void AppendPrintItem();
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
@@ -298,6 +302,9 @@ class RenderViewContextMenu
   void ExecPictureInPicture();
   // Implemented in RenderViewContextMenuViews.
   void ExecOpenInReadAnything() override {}
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ExecRunPdfOcr();
+#endif
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);

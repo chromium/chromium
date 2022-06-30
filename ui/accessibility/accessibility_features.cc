@@ -207,7 +207,7 @@ bool IsScreenAIVisualAnnotationsEnabled() {
 }
 
 bool IsScreenAIServiceNeeded() {
-  return IsScreenAIVisualAnnotationsEnabled() ||
+  return IsPdfOcrEnabled() || IsScreenAIVisualAnnotationsEnabled() ||
          IsReadAnythingWithScreen2xEnabled();
 }
 

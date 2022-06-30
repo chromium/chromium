@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -2230,6 +2231,50 @@ IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, Rotate) {
     run_loop.Run();
   }
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PdfOcrContextMenuBrowserTest : public PdfPluginContextMenuBrowserTest,
+                                     public ::testing::WithParamInterface<int> {
+ public:
+  PdfOcrContextMenuBrowserTest() {
+    if (IsPdfOcrEnabled())
+      scoped_feature_list_.InitAndEnableFeature(features::kPdfOcr);
+    else
+      scoped_feature_list_.InitAndDisableFeature(features::kPdfOcr);
+    accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(
+        IsScreenReaderEnabled());
+  }
+
+  PdfOcrContextMenuBrowserTest(const PdfOcrContextMenuBrowserTest&) = delete;
+  PdfOcrContextMenuBrowserTest& operator=(const PdfOcrContextMenuBrowserTest&) =
+      delete;
+
+  ~PdfOcrContextMenuBrowserTest() override = default;
+
+  bool IsScreenReaderEnabled() { return GetParam() & 1; }
+
+  bool IsPdfOcrEnabled() { return GetParam() & 2; }
+
+  void SetUpOnMainThread() override {
+    PdfPluginContextMenuBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PdfOcrContextMenuBrowserTest, PdfOcr) {
+  std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+  ASSERT_EQ(menu->IsItemPresent(IDC_CONTENT_CONTEXT_RUN_PDF_OCR),
+            IsPdfOcrEnabled() && IsScreenReaderEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfOcrContextMenuBrowserTest,
+                         ::testing::Range(0, 4));
+
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 class LoadImageRequestObserver : public content::WebContentsObserver {

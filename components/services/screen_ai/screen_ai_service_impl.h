@@ -54,7 +54,7 @@ class ScreenAIService : public mojom::ScreenAIService,
   typedef bool (*InitFunction)(bool /*init_visual_annotations*/,
                                bool /*init_main_content_extraction*/,
                                bool /*debug_mode*/,
-                               const std::string& models_path);
+                               const std::string& /*models_path*/);
   InitFunction init_function_;
 
   typedef bool (*AnnotateFunction)(const SkBitmap& /*image*/,
