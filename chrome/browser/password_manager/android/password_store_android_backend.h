@@ -53,11 +53,13 @@ class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendBridge::Consumer {
  public:
-  explicit PasswordStoreAndroidBackend(PrefService* prefs);
+  PasswordStoreAndroidBackend(std::unique_ptr<SyncDelegate> sync_delegate,
+                              PrefService* prefs);
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
+      std::unique_ptr<SyncDelegate> sync_delegate,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
           sync_controller_delegate,
       PrefService* prefs);
@@ -237,6 +239,9 @@ class PasswordStoreAndroidBackend
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
+
+  // Delegate to obtain sync status, and syncing account.
+  std::unique_ptr<SyncDelegate> sync_delegate_;
 
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>

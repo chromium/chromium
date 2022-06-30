@@ -19,6 +19,7 @@ class PasswordStoreBackendSyncDelegateImpl
  private:
   // SyncDelegate implementation.
   bool IsSyncingPasswordsEnabled() override;
+  absl::optional<std::string> GetSyncingAccount() override;
 
   base::raw_ptr<Profile> profile_;
 };

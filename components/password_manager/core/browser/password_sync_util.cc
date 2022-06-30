@@ -106,12 +106,5 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
              syncer::UserSelectableType::kPasswords);
 }
 
-absl::optional<std::string> GetSyncingAccount(
-    const syncer::SyncService* sync_service) {
-  if (!sync_service || !IsPasswordSyncEnabled(sync_service))
-    return absl::nullopt;
-  return sync_service->GetAccountInfo().email;
-}
-
 }  // namespace sync_util
 }  // namespace password_manager

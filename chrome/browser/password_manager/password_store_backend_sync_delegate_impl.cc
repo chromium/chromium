@@ -25,3 +25,13 @@ bool PasswordStoreBackendSyncDelegateImpl::IsSyncingPasswordsEnabled() {
   DCHECK(SyncServiceFactory::HasSyncService(profile_));
   return IsPasswordSyncEnabled(SyncServiceFactory::GetForProfile(profile_));
 }
+
+absl::optional<std::string>
+PasswordStoreBackendSyncDelegateImpl::GetSyncingAccount() {
+  DCHECK(SyncServiceFactory::HasSyncService(profile_));
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (!sync_service || !IsPasswordSyncEnabled(sync_service))
+    return absl::nullopt;
+  return sync_service->GetAccountInfo().email;
+}

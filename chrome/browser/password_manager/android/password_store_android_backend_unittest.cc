@@ -130,6 +130,12 @@ class MockPasswordStoreAndroidBackendBridge
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&, Account), (override));
 };
 
+class MockSyncDelegate : public PasswordStoreBackend::SyncDelegate {
+ public:
+  MOCK_METHOD(bool, IsSyncingPasswordsEnabled, (), (override));
+  MOCK_METHOD(absl::optional<std::string>, GetSyncingAccount, (), (override));
+};
+
 }  // namespace
 
 class PasswordStoreAndroidBackendTest : public testing::Test {
@@ -146,7 +152,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     backend_ = std::make_unique<PasswordStoreAndroidBackend>(
         base::PassKey<class PasswordStoreAndroidBackendTest>(),
         CreateMockBridge(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_);
+        CreateMockSyncDelegate(), CreatePasswordSyncControllerDelegate(),
+        &prefs_);
   }
 
   ~PasswordStoreAndroidBackendTest() override {
@@ -161,7 +168,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   FakePasswordManagerLifecycleHelper* lifecycle_helper() {
     return lifecycle_helper_;
   }
-  syncer::SyncService* sync_service() { return &sync_service_; }
+  MockSyncDelegate* sync_delegate() { return sync_delegate_; }
+  syncer::TestSyncService* sync_service() { return &sync_service_; }
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_;
   }
@@ -173,20 +181,17 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   void EnableSyncForTestAccount() {
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
-    AccountInfo account_info;
-    account_info.email = kTestAccount;
-    sync_service_.SetAccountInfo(account_info);
+    EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*sync_delegate(), GetSyncingAccount)
+        .WillRepeatedly(Return(kTestAccount));
   }
 
   void DisableSyncFeature() {
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, /*types=*/{});
-  }
-
-  void SetSyncAuthError(GoogleServiceAuthError error) {
-    sync_service_.SetAuthError(error);
+    EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*sync_delegate(), GetSyncingAccount)
+        .WillRepeatedly(Return(absl::nullopt));
   }
 
  private:
@@ -204,6 +209,12 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     return new_helper;
   }
 
+  std::unique_ptr<PasswordStoreBackend::SyncDelegate> CreateMockSyncDelegate() {
+    auto unique_delegate = std::make_unique<NiceMock<MockSyncDelegate>>();
+    sync_delegate_ = unique_delegate.get();
+    return unique_delegate;
+  }
+
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
   CreatePasswordSyncControllerDelegate() {
     auto unique_delegate = std::make_unique<
@@ -218,6 +229,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
   syncer::TestSyncService sync_service_;
+  raw_ptr<MockSyncDelegate> sync_delegate_;
   TestingPrefServiceSimple prefs_;
   base::test::ScopedFeatureList scoped_feature_list_{
       password_manager::features::kUnifiedPasswordManagerAndroid};
@@ -231,11 +243,9 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsCompletionCallbackAfterInit) {
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
+  EnableSyncForTestAccount();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  EnableSyncForTestAccount();
-  backend().OnSyncServiceInitialized(sync_service());
-
   const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins(ExpectSyncingAccount(kTestAccount)))
@@ -524,11 +534,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
+  EnableSyncForTestAccount();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  EnableSyncForTestAccount();
-  backend().OnSyncServiceInitialized(sync_service());
-
   const JobId kJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
 
@@ -571,13 +579,12 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
 
 TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalErrorCausingExperimentUnenrollment) {
-  base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -611,13 +618,12 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalDeveloperErrorNotCausingExperimentUnenrollment) {
-  base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -650,13 +656,12 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalPassphraseRequiredCausingExperimentUnenrollment) {
-  base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -691,16 +696,16 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalErrorInCombinationWithNoSyncError) {
-  base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
+
   backend().OnSyncServiceInitialized(sync_service());
 
   ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
   ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
 
   const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -722,18 +727,18 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalErrorInCombinationWithTransientSyncError) {
-  base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
+
   backend().OnSyncServiceInitialized(sync_service());
 
   GoogleServiceAuthError transient_error(
       GoogleServiceAuthError::CONNECTION_FAILED);
   ASSERT_TRUE(transient_error.IsTransientError());
-  SetSyncAuthError(transient_error);
+  sync_service()->SetAuthError(transient_error);
 
   const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -755,18 +760,18 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalErrorInCombinationWithPersistentSyncError) {
-  base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
+
   backend().OnSyncServiceInitialized(sync_service());
 
   GoogleServiceAuthError persistent_error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   ASSERT_TRUE(persistent_error.IsPersistentError());
-  SetSyncAuthError(persistent_error);
+  sync_service()->SetAuthError(persistent_error);
 
   const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -788,13 +793,12 @@ TEST_F(PasswordStoreAndroidBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
+  EnableSyncForTestAccount();
   base::HistogramTester histogram_tester;
   constexpr auto kLatencyDelta = base::Milliseconds(123u);
 
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  EnableSyncForTestAccount();
-  backend().OnSyncServiceInitialized(sync_service());
 
   // Check that calling DisableAutoSignInForOrigins triggers logins retrieval
   // first.
@@ -874,8 +878,6 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
 TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
   base::HistogramTester histogram_tester;
   constexpr auto kLatencyDelta = base::Milliseconds(123u);
-
-  backend().OnSyncServiceInitialized(sync_service());
   EnableSyncForTestAccount();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
@@ -914,12 +916,10 @@ TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLoginsSuccessMetrics) {
+  EnableSyncForTestAccount();
   base::HistogramTester histogram_tester;
-
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  EnableSyncForTestAccount();
-  backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge(), GetAllLogins(ExpectLocalAccount()))
@@ -982,6 +982,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        AttachesObserverOnSyncServiceInitialized) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
+
   backend().OnSyncServiceInitialized(sync_service());
 
   EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
