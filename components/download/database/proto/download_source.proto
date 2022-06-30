@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package download_pb;
 
 // This should stay in sync with the download::DownloadSource enum in
-// components/download/public/core/download_source.h.
+// components/download/public/common/download_source.h.
 enum DownloadSource {
   UNKNOWN = 0;
   NAVIGATION = 1;
@@ -22,4 +22,5 @@ enum DownloadSource {
   OFFLINE_PAGE = 8;
   CONTEXT_MENU = 9;
   RETRY = 10;
+  RETRY_FROM_BUBBLE = 11;
 }

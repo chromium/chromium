@@ -378,4 +378,5 @@ Refer to README.md for content description and update process.
  <item id="borealis_splash_logo_loader" added_in_milestone="104" content_hash_code="031855a1" os_list="chromeos" file_path="chrome/browser/ui/views/borealis/borealis_splash_screen_view.cc" />
  <item id="pending_beacon_api" added_in_milestone="105" content_hash_code="02288864" os_list="linux,windows,android,chromeos" file_path="content/browser/renderer_host/pending_beacon_service.cc" />
  <item id="printing_server_printers_query" added_in_milestone="106" content_hash_code="06f4759c" os_list="chromeos" file_path="chrome/browser/ash/printing/server_printers_fetcher.cc" />
+ <item id="download_bubble_retry_download" added_in_milestone="105" content_hash_code="000b1439" os_list="linux,windows,chromeos" file_path="chrome/browser/download/bubble/download_bubble_controller.cc" />
 </annotations>

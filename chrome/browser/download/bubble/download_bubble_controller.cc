@@ -464,5 +464,33 @@ void DownloadBubbleUIController::RetryDownload(
     DownloadCommands::Command command) {
   DCHECK(command == DownloadCommands::RETRY);
 
-  // TODO THEFROG - will be filled in in subsequent CL
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("download_bubble_retry_download", R"(
+        semantics {
+          sender: "The download bubble"
+          description: "Kick off retrying an interrupted download."
+          trigger:
+            "The user selects the retry button for an interrupted download on "
+            "the downloads bubble."
+          data: "None"
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "This feature cannot be disabled by settings, but it's only "
+            "triggered by user request."
+          policy_exception_justification: "Not implemented."
+        })");
+
+  // Use the last URL in the chain like resumption does.
+  auto download_url_params = std::make_unique<download::DownloadUrlParameters>(
+      model->GetURL(), traffic_annotation);
+  // Set to false because user interaction is needed.
+  download_url_params->set_content_initiated(false);
+  download_url_params->set_download_source(
+      download::DownloadSource::RETRY_FROM_BUBBLE);
+
+  download_manager_->DownloadUrl(std::move(download_url_params));
 }

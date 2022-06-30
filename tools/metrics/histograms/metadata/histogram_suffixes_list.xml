@@ -2593,6 +2593,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Navigation" label="Navigation."/>
   <suffix name="OfflinePage" label="OfflinePage."/>
   <suffix name="Retry" label="Retry."/>
+  <suffix name="RetryFromBubble" label="RetryFromBubble."/>
   <suffix name="UnknownSource" label="UnknownSource."/>
   <suffix name="WebContentsAPI" label="WebContentsAPI."/>
   <affected-histogram name="Download.Counts"/>
