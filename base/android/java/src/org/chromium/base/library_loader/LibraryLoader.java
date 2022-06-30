@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.system.Os;
 
 import androidx.annotation.IntDef;
@@ -25,6 +24,8 @@ import org.chromium.base.Log;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.TimeUtils.CurrentThreadTimeMillisTimer;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.annotations.JNINamespace;
@@ -845,8 +846,8 @@ public class LibraryLoader {
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
             setLinkerImplementationIfNeededAlreadyLocked();
 
-            long startTime = SystemClock.uptimeMillis();
-            long startThreadTime = SystemClock.currentThreadTimeMillis();
+            UptimeMillisTimer uptimeTimer = new UptimeMillisTimer();
+            CurrentThreadTimeMillisTimer threadTimeTimer = new CurrentThreadTimeMillisTimer();
 
             if (useChromiumLinker() && !mFallbackToSystemLinker) {
                 if (DEBUG) Log.i(TAG, "Loading with the Chromium linker.");
@@ -860,10 +861,9 @@ public class LibraryLoader {
                 loadWithSystemLinkerAlreadyLocked(appInfo, inZygote);
             }
 
-            long loadTimeMs = SystemClock.uptimeMillis() - startTime;
+            long loadTimeMs = uptimeTimer.getElapsedMillis();
             getMediator().recordLoadTimeHistogram(loadTimeMs);
-            getMediator().recordLoadThreadTimeHistogram(
-                    SystemClock.currentThreadTimeMillis() - startThreadTime);
+            getMediator().recordLoadThreadTimeHistogram(threadTimeTimer.getElapsedMillis());
             if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
             mLoadState = LoadState.MAIN_DEX_LOADED;
         } catch (UnsatisfiedLinkError e) {

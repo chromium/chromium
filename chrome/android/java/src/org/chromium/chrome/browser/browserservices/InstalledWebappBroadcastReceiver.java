@@ -117,7 +117,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
             }
         }
 
-        try (TimingMetric unused = TimingMetric.mediumWallTime(
+        try (TimingMetric unused = TimingMetric.mediumUptime(
                      BrowserServicesTimingMetrics.CLIENT_APP_DATA_LOAD_TIME)) {
             // The {@link InstalledWebappDataRegister} (because it uses Preferences) is loaded
             // lazily, so to time opening the file we must include the first read as well.

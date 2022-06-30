@@ -6,13 +6,11 @@ package org.chromium.base.metrics;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.chromium.base.time.Timer;
+import org.chromium.base.TimeUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A class to be used with a try-with-resources to record the elapsed time within the try
@@ -20,17 +18,17 @@ import java.util.concurrent.TimeUnit;
  * source.
  */
 public class TimingMetric implements AutoCloseable {
-    @IntDef({TimeDuration.SHORT, TimeDuration.MEDIUM, TimeDuration.LONG})
+    @IntDef({TimerType.SHORT_UPTIME, TimerType.MEDIUM_UPTIME, TimerType.SHORT_THREAD_TIME})
     @Retention(RetentionPolicy.SOURCE)
-    @interface TimeDuration {
-        int SHORT = 0;
-        int MEDIUM = 1;
-        int LONG = 2;
+    private @interface TimerType {
+        int SHORT_UPTIME = 0;
+        int MEDIUM_UPTIME = 1;
+        int SHORT_THREAD_TIME = 2;
     }
 
-    private final String mMetric;
-    private final @TimeDuration int mTimeDuration;
-    private @Nullable Timer mTimer;
+    private final String mMetricName;
+    private final @TimerType int mTimerType;
+    private long mStartTime;
 
     /**
      * Create a new TimingMetric measuring wall time (ie. time experienced by the user) of
@@ -38,70 +36,61 @@ public class TimingMetric implements AutoCloseable {
      *
      * @param metric The name of the histogram to record.
      */
-    public static TimingMetric shortWallTime(String name) {
-        return new TimingMetric(name, Timer.forUpTime(), TimeDuration.SHORT);
+    public static TimingMetric shortUptime(@NonNull String metricName) {
+        TimingMetric ret = new TimingMetric(metricName, TimerType.SHORT_UPTIME);
+        ret.mStartTime = TimeUtils.uptimeMillis();
+        return ret;
     }
 
     /**
      * Create a new TimingMetric measuring wall time (ie. time experienced by the user) of up to 3
      * minutes.
      *
-     * @param metric The name of the histogram to record.
+     * @param metricName The name of the histogram to record.
      */
-    public static TimingMetric mediumWallTime(String name) {
-        return new TimingMetric(name, Timer.forUpTime(), TimeDuration.MEDIUM);
+    public static TimingMetric mediumUptime(@NonNull String metricName) {
+        TimingMetric ret = new TimingMetric(metricName, TimerType.MEDIUM_UPTIME);
+        ret.mStartTime = TimeUtils.uptimeMillis();
+        return ret;
     }
 
     /**
      * Create a new TimingMetric measuring thread time (ie. actual time spent executing the code) of
      * up to 10 seconds.
      *
-     * @param metric The name of the histogram to record.
+     * @param metricName The name of the histogram to record.
      */
-    public static TimingMetric shortThreadTime(String name) {
-        return new TimingMetric(name, Timer.forCpuTime(), TimeDuration.SHORT);
+    public static TimingMetric shortThreadTime(@NonNull String metricName) {
+        TimingMetric ret = new TimingMetric(metricName, TimerType.SHORT_THREAD_TIME);
+        ret.mStartTime = TimeUtils.currentThreadTimeMillis();
+        return ret;
     }
 
-    /**
-     * Construct a new AutoCloseable time measuring metric.
-     * In most cases the user should defer to one of the static constructors to instantiate this
-     * class.
-     *
-     * @param metric The name of the histogram to record.
-     * @param timer The timer to use.
-     * @param timeDuration The anticipated duration for this metric.
-     */
-    /* package */ TimingMetric(
-            @NonNull String metric, @NonNull Timer timer, @TimeDuration int timeDuration) {
-        mMetric = metric;
-        mTimer = timer;
-        mTimeDuration = timeDuration;
+    private TimingMetric(String metricName, @TimerType int timerType) {
+        mMetricName = metricName;
+        mTimerType = timerType;
     }
 
     @Override
     public void close() {
-        if (mTimer == null) return;
+        String metricName = mMetricName;
+        long startTime = mStartTime;
+        if (startTime == 0) return;
+        mStartTime = 0;
 
-        final long measuredTime = mTimer.getElapsedTime(TimeUnit.MILLISECONDS);
-        mTimer = null;
-
-        switch (mTimeDuration) {
-            case TimeDuration.SHORT:
-                RecordHistogram.recordTimesHistogram(mMetric, measuredTime);
+        switch (mTimerType) {
+            case TimerType.SHORT_UPTIME:
+                RecordHistogram.recordTimesHistogram(
+                        metricName, TimeUtils.uptimeMillis() - startTime);
                 break;
-            case TimeDuration.MEDIUM:
-                RecordHistogram.recordMediumTimesHistogram(mMetric, measuredTime);
+            case TimerType.MEDIUM_UPTIME:
+                RecordHistogram.recordMediumTimesHistogram(
+                        metricName, TimeUtils.uptimeMillis() - startTime);
                 break;
-            case TimeDuration.LONG:
-                RecordHistogram.recordLongTimesHistogram(mMetric, measuredTime);
+            case TimerType.SHORT_THREAD_TIME:
+                RecordHistogram.recordTimesHistogram(
+                        metricName, TimeUtils.currentThreadTimeMillis() - startTime);
                 break;
         }
-    }
-
-    /**
-     * Cancel the measurement.
-     */
-    public void cancel() {
-        mTimer = null;
     }
 }

@@ -98,7 +98,7 @@ public class ServiceTabLauncher {
         Context context = ContextUtils.getApplicationContext();
 
         List<ResolveInfo> resolveInfos;
-        try (TimingMetric t = TimingMetric.mediumWallTime(
+        try (TimingMetric t = TimingMetric.mediumUptime(
                      BrowserServicesTimingMetrics.SERVICE_TAB_RESOLVE_TIME)) {
             resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
         }

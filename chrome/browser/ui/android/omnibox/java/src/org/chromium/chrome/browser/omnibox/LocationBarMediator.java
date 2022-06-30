@@ -494,8 +494,8 @@ class LocationBarMediator
         // ContentView.
         if (currentTab != null && !url.isEmpty()) {
             LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-            try (TimingMetric record = TimingMetric.shortWallTime(
-                         "Android.Omnibox.SetGeolocationHeadersTime")) {
+            try (TimingMetric record =
+                            TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
                 loadUrlParams.setVerbatimHeaders(GeolocationHeader.getGeoHeader(url, currentTab));
             }
             loadUrlParams.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);

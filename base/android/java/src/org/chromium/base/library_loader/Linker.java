@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.annotations.AccessedByNative;
 import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
@@ -311,11 +311,10 @@ abstract class Linker {
         boolean keepReservation = keepMemoryReservationUntilLoad();
         switch (preference) {
             case PreferAddress.FIND_RESERVED:
-                long startTimeMs = SystemClock.uptimeMillis();
+                UptimeMillisTimer timer = new UptimeMillisTimer();
                 boolean reservationFound =
                         getLinkerJni().findRegionReservedByWebViewZygote(mLocalLibInfo);
-                long durationMs = SystemClock.uptimeMillis() - startTimeMs;
-                saveWebviewReservationSearchStats(reservationFound, durationMs);
+                saveWebviewReservationSearchStats(reservationFound, timer.getElapsedMillis());
                 if (reservationFound) {
                     assert isNonZeroLoadAddress(mLocalLibInfo);
                     if (addressHint == 0 || addressHint == mLocalLibInfo.mLoadAddress) {
@@ -636,7 +635,7 @@ abstract class Linker {
 
         // Most likely the relocations already have been provided at this point. If not, wait until
         // takeSharedRelrosFromBundle() notifies about RELROs arrival.
-        long startTime = DEBUG ? SystemClock.uptimeMillis() : 0;
+        UptimeMillisTimer timer = DEBUG ? new UptimeMillisTimer() : null;
         while (mRemoteLibInfo == null) {
             try {
                 mLock.wait();
@@ -646,8 +645,7 @@ abstract class Linker {
         }
 
         if (DEBUG) {
-            Log.i(TAG, "Time to wait for shared RELRO: %d ms",
-                    SystemClock.uptimeMillis() - startTime);
+            Log.i(TAG, "Time to wait for shared RELRO: %d ms", timer.getElapsedMillis());
         }
     }
 

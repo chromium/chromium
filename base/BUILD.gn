@@ -4207,7 +4207,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/TaskTraits.java",
       "android/java/src/org/chromium/base/task/TaskTraitsExtensionDescriptor.java",
-      "android/java/src/org/chromium/base/time/Timer.java",
     ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -4299,6 +4298,7 @@ if (is_android) {
     ]
 
     sources = [
+      "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumRunnerCommon.java",
@@ -4377,7 +4377,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
       "test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
-      "test/android/javatests/src/org/chromium/base/time/TestTimer.java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -4429,6 +4428,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/LogTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
       "android/junit/src/org/chromium/base/PromiseTest.java",
+      "android/junit/src/org/chromium/base/TimeUtilsTest.java",
       "android/junit/src/org/chromium/base/TraceEventTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
@@ -4453,7 +4453,6 @@ if (is_android) {
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
       "android/junit/src/org/chromium/base/task/SequencedTaskRunnerTaskMigrationTest.java",
       "android/junit/src/org/chromium/base/task/TaskTraitsTest.java",
-      "android/junit/src/org/chromium/base/time/TimerTest.java",
       "android/junit/src/org/chromium/base/util/GarbageCollectionTestUtilsUnitTest.java",
       "test/android/junit/src/org/chromium/base/test/SetUpStatementTest.java",
       "test/android/junit/src/org/chromium/base/test/TestListInstrumentationRunListenerTest.java",

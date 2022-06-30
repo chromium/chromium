@@ -4,8 +4,7 @@
 
 package org.chromium.base.metrics;
 
-import android.os.SystemClock;
-
+import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -28,7 +27,7 @@ public class RecordUserAction {
      * Record that the user performed an action. See tools/metrics/actions/README.md
      */
     public static void record(final String action) {
-        UmaRecorderHolder.get().recordUserAction(action, SystemClock.elapsedRealtime());
+        UmaRecorderHolder.get().recordUserAction(action, TimeUtils.elapsedRealtimeMillis());
     }
 
     /**

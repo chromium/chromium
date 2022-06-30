@@ -4,8 +4,7 @@
 
 package org.chromium.base.metrics;
 
-import android.os.SystemClock;
-
+import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
@@ -66,7 +65,7 @@ import java.util.Map;
     @Override
     public void recordUserAction(String name, long elapsedRealtimeMillis) {
         // Java and native code use different clocks. We need a relative elapsed time.
-        long millisSinceEvent = SystemClock.elapsedRealtime() - elapsedRealtimeMillis;
+        long millisSinceEvent = TimeUtils.elapsedRealtimeMillis() - elapsedRealtimeMillis;
         NativeUmaRecorderJni.get().recordUserAction(name, millisSinceEvent);
     }
 
