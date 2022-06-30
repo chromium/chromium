@@ -41,8 +41,8 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_is_visible_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
@@ -8250,7 +8250,7 @@ FocusgroupFlags Element::GetFocusgroupFlags() const {
   return GetElementRareData()->GetFocusgroupFlags();
 }
 
-bool Element::isVisible(IsVisibleOptions* options) const {
+bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   // Unlock ancestor content-visibility:auto elements. If this element is
   // offscreen and locked due to content-visibility:auto, this method should not
   // count that as invisible.

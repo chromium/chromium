@@ -88,6 +88,7 @@ namespace http://www.w3.org/1999/xhtml
     property baseURI
     property before
     property blur
+    property checkVisibility
     property childElementCount
     property childNodes
     property children
@@ -152,7 +153,6 @@ namespace http://www.w3.org/1999/xhtml
     property isDefaultNamespace
     property isEqualNode
     property isSameNode
-    property isVisible
     property lang
     property lastChild
     property lastElementChild
@@ -1324,6 +1324,7 @@ namespace http://www.w3.org/2000/svg
     property baseURI
     property before
     property blur
+    property checkVisibility
     property childElementCount
     property childNodes
     property children
@@ -1377,7 +1378,6 @@ namespace http://www.w3.org/2000/svg
     property isDefaultNamespace
     property isEqualNode
     property isSameNode
-    property isVisible
     property lastChild
     property lastElementChild
     property localName

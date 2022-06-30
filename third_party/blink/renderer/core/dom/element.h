@@ -102,7 +102,7 @@ class ResizeObservation;
 class ResizeObserver;
 class ResizeObserverSize;
 class ScrollIntoViewOptions;
-class IsVisibleOptions;
+class CheckVisibilityOptions;
 class ScrollToOptions;
 class ShadowRoot;
 class ShadowRootInit;
@@ -1170,7 +1170,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   FocusgroupFlags GetFocusgroupFlags() const;
 
-  bool isVisible(IsVisibleOptions* options) const;
+  bool checkVisibility(CheckVisibilityOptions* options) const;
 
   bool IsDocumentElement() const;
 

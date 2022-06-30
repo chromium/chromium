@@ -364,6 +364,10 @@
       status: "stable",
     },
     {
+      name: "checkVisibility",
+      status: "experimental",
+    },
+    {
       name: "ClickPointerEvent",
       status: "stable",
     },
@@ -1292,10 +1296,6 @@
     {
       name: "InteractionId",
       status: "stable",
-    },
-    {
-      name: "isVisible",
-      status: "experimental",
     },
     {
       name: "KeyboardAccessibleTooltip",

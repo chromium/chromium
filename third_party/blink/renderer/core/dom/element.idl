@@ -24,8 +24,8 @@
 enum NativeScrollBehavior { "disable-native-scroll", "perform-before-native-scroll", "perform-after-native-scroll" };
 callback ScrollStateCallback = void (ScrollState scrollState);
 
-// https://drafts.csswg.org/cssom-view/#dictdef-isvisibleoptions
-dictionary IsVisibleOptions {
+// https://drafts.csswg.org/cssom-view/#dictdef-checkvisibilityoptions
+dictionary CheckVisibilityOptions {
   boolean checkInert = false;
   boolean checkOpacity = false;
   boolean checkVisibilityCSS = false;
@@ -118,8 +118,8 @@ dictionary IsVisibleOptions {
     [Measure] DOMRectList getClientRects();
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect] DOMRect getBoundingClientRect();
 
-    // https://drafts.csswg.org/cssom-view/#dom-element-isvisible
-    [RuntimeEnabled=isVisible] boolean isVisible(optional IsVisibleOptions options = {});
+    // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
+    [RuntimeEnabled=checkVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
     // TODO(sunyunjia): Add default value for scrollIntoView() once
     // crbug.com/734599 is fixed.

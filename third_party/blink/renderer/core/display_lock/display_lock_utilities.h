@@ -66,7 +66,7 @@ class CORE_EXPORT DisplayLockUtilities {
     FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
     friend gfx::RectF Range::BoundingRect() const;
     friend DOMRectList* Range::getClientRects() const;
-    friend bool Element::isVisible(IsVisibleOptions*) const;
+    friend bool Element::checkVisibility(CheckVisibilityOptions*) const;
 
     friend class DisplayLockContext;
 

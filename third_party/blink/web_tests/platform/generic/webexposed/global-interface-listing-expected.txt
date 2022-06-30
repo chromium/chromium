@@ -2281,6 +2281,7 @@ interface Element : Node
     method append
     method attachShadow
     method before
+    method checkVisibility
     method closest
     method computedStyleMap
     method constructor
@@ -2304,7 +2305,6 @@ interface Element : Node
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
-    method isVisible
     method matches
     method prepend
     method querySelector
