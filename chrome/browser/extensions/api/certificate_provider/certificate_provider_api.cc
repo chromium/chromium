@@ -498,7 +498,7 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
 
 void CertificateProviderRequestPinFunction::OnInputReceived(
     const std::string& value) {
-  std::vector<base::Value> create_results;
+  base::Value::List create_results;
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
@@ -508,8 +508,7 @@ void CertificateProviderRequestPinFunction::OnInputReceived(
     LOG(WARNING) << "PIN request succeeded";
     api::certificate_provider::PinResponseDetails details;
     details.user_input = std::make_unique<std::string>(value);
-    create_results.emplace_back(
-        base::Value::FromUniquePtrValue(details.ToValue()));
+    create_results.Append(base::Value::FromUniquePtrValue(details.ToValue()));
   } else {
     // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
     LOG(WARNING) << "PIN request canceled";

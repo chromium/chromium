@@ -164,8 +164,8 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   if (!engine->SetComposition(params.context_id, params.text.c_str(),
                               selection_start, selection_end, params.cursor,
                               segments, &error)) {
-    std::vector<base::Value> results;
-    results.emplace_back(false);
+    base::Value::List results;
+    results.Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
@@ -184,8 +184,8 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   const CommitText::Params::Parameters& params = parent_params->parameters;
   if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
                           &error)) {
-    std::vector<base::Value> results;
-    results.emplace_back(false);
+    base::Value::List results;
+    results.Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }

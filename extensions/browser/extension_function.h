@@ -379,11 +379,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   ResponseValue TwoArguments(base::Value arg1, base::Value arg2);
   // Success, a list of arguments |results| to pass to caller.
   ResponseValue ArgumentList(base::Value::List results);
-  // Deprecated version of above method.
-  //
-  // TODO(https://crbug.com/1338341): Remove this when no longer needed, or when
-  // removing Value::List.
-  ResponseValue ArgumentList(std::vector<base::Value> results);
   // Error. chrome.runtime.lastError.message will be set to |error|.
   ResponseValue Error(std::string error);
   // Error with formatting. Args are processed using
@@ -403,12 +398,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // It shouldn't be possible to have both an error *and* some arguments.
   // Some legacy APIs do rely on it though, like webstorePrivate.
   ResponseValue ErrorWithArguments(base::Value::List args,
-                                   const std::string& error);
-  // Deprecated version of above method.
-  //
-  // TODO(https://crbug.com/1338341): Remove this when no longer needed, or when
-  // removing Value::List.
-  ResponseValue ErrorWithArguments(std::vector<base::Value> args,
                                    const std::string& error);
   // Bad message. A ResponseValue equivalent to EXTENSION_FUNCTION_VALIDATE(),
   // so this will actually kill the renderer and not respond at all.

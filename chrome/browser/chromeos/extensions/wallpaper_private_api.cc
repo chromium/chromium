@@ -334,10 +334,10 @@ void WallpaperPrivateSetWallpaperIfExistsFunction::
   if (file_exists) {
     Respond(OneArgument(base::Value(true)));
   } else {
-    std::vector<base::Value> args;
+    base::Value::List args;
     // TODO(crbug.com/830212): Do not send arguments when the function fails.
     // Call sites should inspect chrome.runtime.lastError instead.
-    args.emplace_back(false);
+    args.Append(false);
     Respond(ErrorWithArguments(
         std::move(args), "The wallpaper doesn't exist in local file system."));
   }

@@ -124,8 +124,8 @@ ExtensionFunction::ResponseAction GcmRegisterFunction::Run() {
 void GcmRegisterFunction::CompleteFunctionWithResult(
     const std::string& registration_id,
     gcm::GCMClient::Result gcm_result) {
-  std::vector<base::Value> result;
-  result.emplace_back(registration_id);
+  base::Value::List result;
+  result.Append(registration_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded
@@ -182,8 +182,8 @@ ExtensionFunction::ResponseAction GcmSendFunction::Run() {
 void GcmSendFunction::CompleteFunctionWithResult(
     const std::string& message_id,
     gcm::GCMClient::Result gcm_result) {
-  std::vector<base::Value> result;
-  result.emplace_back(message_id);
+  base::Value::List result;
+  result.Append(message_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded

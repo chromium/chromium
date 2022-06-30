@@ -491,8 +491,8 @@ void UsbTransferFunction::OnCompleted(
     Respond(
         OneArgument(base::Value::FromUniquePtrValue(std::move(transfer_info))));
   } else {
-    std::vector<base::Value> error_args;
-    error_args.emplace_back(
+    base::Value::List error_args;
+    error_args.Append(
         base::Value::FromUniquePtrValue(std::move(transfer_info)));
     // Using ErrorWithArguments is discouraged but required to provide the
     // detailed transfer info as the transfer may have partially succeeded.
@@ -1353,8 +1353,8 @@ void UsbResetDeviceFunction::OnComplete(bool success) {
   } else {
     ReleaseDeviceResource(parameters_->handle);
 
-    std::vector<base::Value> error_args;
-    error_args.emplace_back(false);
+    base::Value::List error_args;
+    error_args.Append(false);
     // Using ErrorWithArguments is discouraged but required to maintain
     // compatibility with existing applications.
     Respond(ErrorWithArguments(std::move(error_args), kErrorResetDevice));

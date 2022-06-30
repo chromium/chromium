@@ -250,8 +250,8 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
     client_certs.Append(base::Value(std::move(cert)));
   }
 
-  std::vector<base::Value> results;
-  results.emplace_back(std::move(client_certs));
+  base::Value::List results;
+  results.Append(std::move(client_certs));
   Respond(ArgumentList(std::move(results)));
 }
 

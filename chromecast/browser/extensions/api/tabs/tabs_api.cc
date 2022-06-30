@@ -891,7 +891,7 @@ ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
     return RespondNow(Error(keys::kCannotZoomDisabledTabError));
   }
 
-  return RespondNow(ArgumentList(std::vector<base::Value>()));
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
@@ -964,7 +964,7 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
 
   ZoomController::FromWebContents(web_contents)->SetZoomMode(zoom_mode);
 
-  return RespondNow(ArgumentList(std::vector<base::Value>()));
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {

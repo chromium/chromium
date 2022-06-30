@@ -610,8 +610,8 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
   if (!engine->InputMethodEngine::SetSelectionRange(
           params.context_id, *params.selection_start, *params.selection_end,
           &error)) {
-    std::vector<base::Value> results;
-    results.emplace_back(false);
+    base::Value::List results;
+    results.Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
