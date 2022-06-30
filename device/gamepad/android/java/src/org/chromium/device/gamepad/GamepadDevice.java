@@ -4,7 +4,12 @@
 
 package org.chromium.device.gamepad;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
+import android.os.CombinedVibration;
 import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.VibratorManager;
 import android.view.InputDevice;
 import android.view.InputDevice.MotionRange;
 import android.view.KeyEvent;
@@ -19,6 +24,7 @@ import java.util.List;
 /**
  * Manages information related to each connected gamepad device.
  */
+@SuppressLint("NewApi") // VibratorManager requires API level 31.
 class GamepadDevice {
     // Axis ids are used as indices which are empirically always smaller than 256 so this allows
     // us to create cheap associative arrays.
@@ -63,6 +69,19 @@ class GamepadDevice {
             KeyEvent.KEYCODE_MEDIA_RECORD // 0x82
     };
 
+    // The ID for the  Vibrator  that controls the strong rumble effect.
+    static final int FF_STRONG_MAGNITUDE_CHANNEL_IDX = 0;
+
+    // The ID for the  Vibrator  that controls the weak rumble effect.
+    static final int FF_WEAK_MAGNITUDE_CHANNEL_IDX = 1;
+
+    // The maximum effect length, in milliseconds.
+    // See  device::AbstractHapticGamepad::GetMaxEffectDurationMillis .
+    static final long VIBRATION_DEFAULT_DURATION_MILLIS = 5000;
+
+    //@see VibrationEffect#MAX_AMPLITUDE
+    static final int VIBRATION_MAX_AMPLITUDE = 255;
+
     // An id for the gamepad.
     private int mDeviceId;
     // The index of the gamepad in the Navigator.
@@ -104,6 +123,10 @@ class GamepadDevice {
     // Mappings to canonical gamepad
     private GamepadMappings mMappings;
 
+    // True if the gamepad supports "dual-rumble" vibration effects.
+    private boolean mSupportsDualRumble;
+    private VibratorManager mVibratorManager;
+
     GamepadDevice(int index, InputDevice inputDevice) {
         mDeviceIndex = index;
         mDeviceId = inputDevice.getId();
@@ -134,6 +157,21 @@ class GamepadDevice {
         }
 
         mMappings = GamepadMappings.getMappings(inputDevice, mAxes, buttons);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            VibratorManager vibratorManager = inputDevice.getVibratorManager();
+            int[] vibratorIds = vibratorManager.getVibratorIds();
+            if (vibratorIds.length >= 2) {
+                mSupportsDualRumble =
+                        vibratorManager.getVibrator(vibratorIds[FF_STRONG_MAGNITUDE_CHANNEL_IDX])
+                                .hasAmplitudeControl()
+                        && vibratorManager.getVibrator(vibratorIds[FF_WEAK_MAGNITUDE_CHANNEL_IDX])
+                                   .hasAmplitudeControl();
+                if (mSupportsDualRumble) {
+                    mVibratorManager = vibratorManager;
+                }
+            }
+        }
     }
 
     /**
@@ -213,6 +251,49 @@ class GamepadDevice {
      */
     public int getButtonsLength() {
         return mMappings.getButtonsLength();
+    }
+
+    /**
+     * @return if gamepad support dual rumble
+     */
+    public boolean supportsDualRumble() {
+        return mSupportsDualRumble;
+    }
+
+    /**
+     * Play a two-channel VibrationEffect with the specified magnitudes on
+     * the strong and weak vibration channels. If both magnitudes are zero,
+     * cancel vibration.
+     */
+    public void doVibration(double strongMagnitude, double weakMagnitude) {
+        int strong = scaleMagnitude(strongMagnitude);
+        int weak = scaleMagnitude(weakMagnitude);
+        if (strong == 0 && weak == 0) {
+            cancelVibration();
+            return;
+        }
+        CombinedVibration.ParallelCombination effect = CombinedVibration.startParallel();
+        if (strong > 0) {
+            effect.addVibrator(FF_STRONG_MAGNITUDE_CHANNEL_IDX,
+                    VibrationEffect.createOneShot(VIBRATION_DEFAULT_DURATION_MILLIS, strong));
+        }
+        if (weak > 0) {
+            effect.addVibrator(FF_WEAK_MAGNITUDE_CHANNEL_IDX,
+                    VibrationEffect.createOneShot(VIBRATION_DEFAULT_DURATION_MILLIS, weak));
+        }
+        mVibratorManager.vibrate(effect.combine());
+    }
+
+    private int scaleMagnitude(double magnitude) {
+        magnitude = Math.max(0.0, Math.min(1.0, magnitude));
+        return (int) Math.round(magnitude * VIBRATION_MAX_AMPLITUDE);
+    }
+
+    /**
+     * Stop all vibration for this gamepad.
+     */
+    public void cancelVibration() {
+        mVibratorManager.cancel();
     }
 
     /**

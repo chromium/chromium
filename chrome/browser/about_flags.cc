@@ -8675,6 +8675,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePerfettoSystemTracingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kEnablePerfettoSystemTracing)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-android-gamepad-vibration",
+     flag_descriptions::kEnableAndroidGamepadVibrationName,
+     flag_descriptions::kEnableAndroidGamepadVibrationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kEnableAndroidGamepadVibration)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

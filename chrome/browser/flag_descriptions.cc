@@ -3812,6 +3812,10 @@ const char kPasswordEditDialogWithDetailsDescription[] =
     "Enables UI which shows the dialog after clicking on save/update password"
     " with the functionality to choose user account and edit the password.";
 
+const char kEnableAndroidGamepadVibrationName[] = "Gamepad vibration";
+const char kEnableAndroidGamepadVibrationDescription[] =
+    "Enables the ability to play vibration effects on supported gamepads.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // BUILDFLAG(IS_ANDROID)

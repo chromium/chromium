@@ -57664,6 +57664,7 @@ from previous Chrome versions.
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
   <int value="-482188490" label="ImpulseScrollAnimations:disabled"/>
+  <int value="-481238673" label="EnableAndroidGamepadVibration:disabled"/>
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
@@ -59865,6 +59866,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-magnifier-new-focus-following"/>
   <int value="969340095" label="EnableDspHotword:disabled"/>
   <int value="970344161" label="CrosPrivacyHub:enabled"/>
+  <int value="970901442" label="EnableAndroidGamepadVibration:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
   <int value="975104092" label="show-taps"/>

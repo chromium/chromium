@@ -2168,6 +2168,9 @@ extern const char kWebNotesDynamicTemplatesDescription[];
 extern const char kPasswordEditDialogWithDetailsName[];
 extern const char kPasswordEditDialogWithDetailsDescription[];
 
+extern const char kEnableAndroidGamepadVibrationName[];
+extern const char kEnableAndroidGamepadVibrationDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !BUILDFLAG(IS_ANDROID)

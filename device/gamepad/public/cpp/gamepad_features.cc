@@ -30,6 +30,12 @@ const base::Feature kEnableWindowsGamingInputDataFetcher{
 const base::Feature kRestrictGamepadAccess{"RestrictGamepadAccess",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables gamepad vibration on Android 12+.
+const base::Feature kEnableAndroidGamepadVibration{
+    "EnableAndroidGamepadVibration", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool AreGamepadButtonAxisEventsEnabled() {
   // Check if button and axis events are enabled by a field trial.
   if (base::FeatureList::IsEnabled(kEnableGamepadButtonAxisEvents))

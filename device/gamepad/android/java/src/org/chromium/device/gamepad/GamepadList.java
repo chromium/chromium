@@ -317,13 +317,13 @@ public class GamepadList {
                             /*index=*/i, device.isStandardGamepad(), /*connected=*/true,
                             device.getName(), device.getVendorId(), device.getProductId(),
                             device.getTimestamp(), device.getAxes(), device.getButtons(),
-                            device.getButtonsLength());
+                            device.getButtonsLength(), device.supportsDualRumble());
                 } else {
                     GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
                             /*index=*/i, /*mapping=*/false, /*connected=*/false,
                             /*devicename=*/null, /*vendorId=*/0, /*productId=*/0,
                             /*timestamp=*/0, /*axes=*/null, /*buttons=*/null,
-                            /*buttonsLength=*/0);
+                            /*buttonsLength=*/0, /*supportsDualRumble=*/false);
                 }
             }
         }
@@ -347,6 +347,32 @@ public class GamepadList {
         }
     }
 
+    @CalledByNative
+    static void setVibration(int index, double strongMagnitude, double weakMagnitude) {
+        getInstance().doVibration(index, strongMagnitude, weakMagnitude);
+    }
+
+    private void doVibration(int index, double strongMagnitude, double weakMagnitude) {
+        GamepadDevice device;
+        synchronized (mLock) {
+            device = getDevice(index);
+        }
+        device.doVibration(strongMagnitude, weakMagnitude);
+    }
+
+    @CalledByNative
+    static void setZeroVibration(int index) {
+        getInstance().cancelVibration(index);
+    }
+
+    private void cancelVibration(int index) {
+        GamepadDevice device;
+        synchronized (mLock) {
+            device = getDevice(index);
+        }
+        device.cancelVibration();
+    }
+
     private static class LazyHolder {
         private static final GamepadList INSTANCE = new GamepadList();
     }
@@ -355,6 +381,6 @@ public class GamepadList {
     interface Natives {
         void setGamepadData(GamepadList caller, long webGamepadsPtr, int index, boolean mapping,
                 boolean connected, String devicename, int vendorId, int productId, long timestamp,
-                float[] axes, float[] buttons, int buttonsLength);
+                float[] axes, float[] buttons, int buttonsLength, boolean supportsDualRumble);
     }
 }

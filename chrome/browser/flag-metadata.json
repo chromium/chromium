@@ -1488,6 +1488,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-android-gamepad-vibration",
+    "owners": [ "deviceapi-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-android-pwas-default-offline-page",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 120
