@@ -76,6 +76,12 @@ class OmniboxClient {
   // Returns the session ID of the current page.
   virtual const SessionID& GetSessionID() const = 0;
 
+  // Called when the user changes the selected |index| in the result list.
+  // |match| is the suggestion corresponding to that index. Currently
+  // experimental and only called from select omnibox implementations.
+  virtual void OnSelectedMatchChanged(size_t index,
+                                      const AutocompleteMatch& match) {}
+
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
   virtual OmniboxControllerEmitter* GetOmniboxControllerEmitter();
   virtual TemplateURLService* GetTemplateURLService();

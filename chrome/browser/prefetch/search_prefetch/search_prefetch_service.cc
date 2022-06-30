@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/search_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -269,19 +270,6 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (match_search_terms.size() == 0)
     return;
 
-  if (IsSearchNavigationPrefetchEnabled() &&
-      default_search->data().prefetch_likely_navigations) {
-    auto start = base::TimeTicks::Now();
-    bool started_prefetch = MaybePrefetchURL(opened_url,
-                                             /*navigation_prefetch=*/true);
-
-    // Record the overhead of starting the prefetch earlier.
-    if (started_prefetch) {
-      UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.StartTime.NavigationPrefetch",
-                          (base::TimeTicks::Now() - start));
-    }
-  }
-
   if (prefetches_.find(match_search_terms) == prefetches_.end()) {
     return;
   }
@@ -506,6 +494,35 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
       prerender_manager->StartPrerenderSearchSuggestion(match);
     }
   }
+}
+
+void SearchPrefetchService::MaybePrefetchLikelyMatch(
+    size_t index,
+    const AutocompleteMatch& match) {
+  if (!IsSearchNavigationPrefetchEnabled())
+    return;
+  // Assume the user is going back to enter more for now.
+  if (index == 0)
+    return;
+  // Only prefetch search types.
+  if (!AutocompleteMatch::IsSearchType(match.type))
+    return;
+  // Check to make sure this is search related and that we can read the search
+  // arguments. For Search history this may be null.
+  if (!match.search_terms_args)
+    return;
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  // The default search provider needs to opt into prefetching behavior.
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider() ||
+      !template_url_service->GetDefaultSearchProvider()
+           ->data()
+           .prefetch_likely_navigations) {
+    return;
+  }
+  MaybePrefetchURL(GetPrefetchURLFromMatch(match, template_url_service),
+                   /*navigation_prefetch=*/true);
 }
 
 void SearchPrefetchService::OnTemplateURLServiceChanged() {

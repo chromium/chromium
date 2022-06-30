@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -178,6 +179,10 @@ class SearchPrefetchService : public KeyedService,
   base::WeakPtr<SearchPrefetchService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  // Considers if this prefetch is worth starting, and if so, starts a prefetch
+  // for |match|. |index| is the location within the omnibox drop down.
+  void MaybePrefetchLikelyMatch(size_t index, const AutocompleteMatch& match);
 
  private:
   // Returns whether the prefetch started or not.

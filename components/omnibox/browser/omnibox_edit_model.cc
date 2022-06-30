@@ -1853,6 +1853,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   }
 
   const AutocompleteMatch& match = result().match_at(popup_selection_.line);
+
+  // Inform the client that a new row is now selected.
+  client_->OnSelectedMatchChanged(popup_selection_.line, match);
+
   DCHECK((popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE) ||
          match.associated_keyword.get());
   if (popup_selection_.IsButtonFocused()) {

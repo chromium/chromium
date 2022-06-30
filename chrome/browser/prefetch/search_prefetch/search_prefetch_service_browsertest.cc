@@ -2805,16 +2805,19 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       DISABLED_NavigationPrefetchIsServed) {
+                       NavigationPrefetchIsServed) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
-  std::string search_terms = kOmniboxSuggestNonPrefetchQuery;
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+  AddNewSuggestionRule(user_input, {user_input, search_terms},
+                       /*prefetch_index=*/-1, /*prerender_index=*/-1);
 
   // Trigger an omnibox suggest fetch that does not have a prefetch hint.
   AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
   OmniboxView* omnibox = location_bar->GetOmniboxView();
@@ -2829,10 +2832,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
+  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
-  EXPECT_FALSE(prefetch_status.has_value());
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
 
   omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
 
@@ -2853,19 +2859,20 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
 }
 
-// TODO(https://crbug.com/1318154): Flaky on Mac bots.
-// TODO(https://crbug.com/1317890): Flaky on other bots as well.
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       DISABLED_NavigationPrefetchReplacesError) {
+                       NavigationPrefetchReplacesError) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = kOmniboxErrorQuery;
+  std::string user_input = "terms";
+  AddNewSuggestionRule(user_input, {user_input, search_terms},
+                       /*prefetch_index=*/1, /*prerender_index=*/-1);
 
   // Trigger an omnibox suggest fetch that does not have a prefetch hint.
   AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
   OmniboxView* omnibox = location_bar->GetOmniboxView();
@@ -2888,6 +2895,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
 
+  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+
   omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -2903,11 +2917,14 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
-  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+  AddNewSuggestionRule(user_input, {user_input, search_terms},
+                       /*prefetch_index=*/1, /*prerender_index=*/-1);
 
   // Trigger an omnibox suggest fetch that does not have a prefetch hint.
   AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
   OmniboxView* omnibox = location_bar->GetOmniboxView();
@@ -2930,6 +2947,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
+  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
   omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -2944,11 +2968,14 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), false);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
-  std::string search_terms = kOmniboxSuggestNonPrefetchQuery;
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+  AddNewSuggestionRule(user_input, {user_input, search_terms},
+                       /*prefetch_index=*/-1, /*prerender_index=*/-1);
 
   // Trigger an omnibox suggest fetch that does not have a prefetch hint.
   AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
   OmniboxView* omnibox = location_bar->GetOmniboxView();
@@ -2962,6 +2989,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
+
+  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(

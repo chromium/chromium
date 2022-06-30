@@ -424,6 +424,15 @@ void ChromeOmniboxClient::FocusWebContents() {
     controller_->GetWebContents()->Focus();
 }
 
+void ChromeOmniboxClient::OnSelectedMatchChanged(
+    size_t index,
+    const AutocompleteMatch& match) {
+  if (SearchPrefetchService* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    search_prefetch_service->MaybePrefetchLikelyMatch(index, match);
+  }
+}
+
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = controller_->GetWebContents();
 

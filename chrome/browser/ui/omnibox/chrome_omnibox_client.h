@@ -85,6 +85,8 @@ class ChromeOmniboxClient : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   void OpenUpdateChromeDialog() override;
   void FocusWebContents() override;
+  void OnSelectedMatchChanged(size_t index,
+                              const AutocompleteMatch& match) override;
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,
