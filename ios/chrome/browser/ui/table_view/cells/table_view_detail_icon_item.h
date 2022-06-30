@@ -18,7 +18,7 @@
 // The symbol leading icon. If empty, no icon will be shown.
 @property(nonatomic, copy) UIImage* symbolImage;
 
-// The background color for the leading |symbolImage|.
+// The background color for the leading `symbolImage`.
 @property(nonatomic, copy) UIColor* symbolBackgroundColor;
 
 // The main text string.
