@@ -835,6 +835,7 @@ chromium-metrics-reviews@google.com.
     <variant name="EmptyLabelPINCount"/>
     <variant name="FingerprintCount"/>
     <variant name="KioskCount"/>
+    <variant name="MissingKeyDataCount"/>
     <variant name="PasswordCount"/>
     <variant name="PINCount"/>
     <variant name="SmartCardCount"/>
