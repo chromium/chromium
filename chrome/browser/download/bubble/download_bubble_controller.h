@@ -151,6 +151,9 @@ class DownloadBubbleUIController
   void ProcessDownloadWarningButtonPress(DownloadUIModel* model,
                                          DownloadCommands::Command command);
 
+  // Kick off retrying an eligible interrupted download.
+  void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);
+
   raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::DownloadManager> download_manager_;

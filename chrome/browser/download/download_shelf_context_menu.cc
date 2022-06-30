@@ -204,8 +204,9 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       id = IDS_OPEN_DOWNLOAD_NOW;
       break;
-    // This command is not supported on the context menu.
+    // These commands are not supported on the context menu.
     case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
     case DownloadCommands::MAX:
       NOTREACHED();
       break;

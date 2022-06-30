@@ -165,9 +165,10 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
                  ? DownloadShelfContextMenuAction::kBypassDeepScanningClicked
                  : DownloadShelfContextMenuAction::kBypassDeepScanningEnabled;
 
-    // The following is not actually visible in the context menu so should
+    // The following are not actually visible in the context menu so should
     // never be logged.
     case DownloadCommands::Command::REVIEW:
+    case DownloadCommands::Command::RETRY:
       NOTREACHED();
       return DownloadShelfContextMenuAction::kNotReached;
   }

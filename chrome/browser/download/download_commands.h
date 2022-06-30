@@ -36,6 +36,7 @@ class DownloadCommands {
     DEEP_SCAN,                 // Send file to Safe Browsing for deep scanning.
     BYPASS_DEEP_SCANNING,      // Bypass the prompt to deep scan.
     REVIEW,                    // Show enterprise download review dialog.
+    RETRY,                     // Retry the download.
     MAX
   };
 

@@ -413,6 +413,9 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       model->ReviewScanningVerdict(
           browser_->tab_strip_model()->GetActiveWebContents());
       break;
+    case DownloadCommands::RETRY:
+      RetryDownload(model, command);
+      break;
     case DownloadCommands::CANCEL:
       RemoveContentIdFromPartialView(model->GetContentId());
       [[fallthrough]];
@@ -454,4 +457,12 @@ bool DownloadBubbleUIController::SubmitDownloadToFeedbackService(
   NOTREACHED();
   return false;
 #endif
+}
+
+void DownloadBubbleUIController::RetryDownload(
+    DownloadUIModel* model,
+    DownloadCommands::Command command) {
+  DCHECK(command == DownloadCommands::RETRY);
+
+  // TODO THEFROG - will be filled in in subsequent CL
 }
