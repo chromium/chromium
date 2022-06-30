@@ -18,8 +18,7 @@ export let Emoji;
 export let EmojiVariants;
 
 /**
- * @typedef {{category: CategoryEnum, group: string,
- *            emoji: !Array<EmojiVariants>}} EmojiGroup
+ * @typedef {{group: string, emoji: !Array<EmojiVariants>}} EmojiGroup
  */
 export let EmojiGroup;
 

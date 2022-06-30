@@ -8,7 +8,12 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {EmojiButton} from './emoji_button.js';
 import {EmojiCategoryButton} from './emoji_category_button.js';
 import Fuse from './fuse.js';
-import {EmojiGroupData, EmojiVariants, CategoryEnum} from './types.js';
+import {CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
+
+/**
+ * @typedef {!Array<{item: !EmojiVariants}>} FuseResults
+ */
+let FuseResults;
 
 export class EmojiSearch extends PolymerElement {
   static get is() {
@@ -22,37 +27,42 @@ export class EmojiSearch extends PolymerElement {
   static get properties() {
     return {
       /** @type {EmojiGroupData} */
-      categoriesData: {type: Array, readonly: true},
+      emojiData: {type: Array, readonly: true},
+      /** @type {EmojiGroupData} */
+      emoticonData: {type: Array, readonly: true},
       /** @type {!string} */
       search: {type: String, notify: true},
-      /** @type {!boolean} */
-      lazyIndexing: {type: Boolean, value: true},
-      /** @private {EmojiGroupData} */
-      searchResults: {type: Array, computed: 'computeSearchResults(search)'},
+      /** @private {!Array<!EmojiVariants>} */
+      emojiList: {
+        type: Array,
+        computed: 'computeEmojiList(emojiData,emojiData.length)',
+        observer: 'onEmojiListChanged'
+      },
+      /** @private {!Array<!EmojiVariants>} */
+      emoticonList: {
+        type: Array,
+        computed: 'computeEmojiList(emoticonData)',
+        observer: 'onEmoticonListChanged'
+      },
+      /** @private {!Array<!EmojiVariants>} */
+      emojiResults:
+          {type: Array, computed: 'computeSearchResults(search, \'emoji\')'},
+      /** @private {!Array<!EmojiVariants>} */
+      emoticonResults:
+          {type: Array, computed: 'computeSearchResults(search, \'emoticon\')'},
       /** @private {!boolean} */
       v2Enabled: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
         readonly: true
-      },
-      /** @private {!boolean} */
-      needIndexing: {type: Boolean, value: false},
+      }
     };
-  }
-
-  static get observers() {
-    return [
-      'categoriesDataChanged(categoriesData.splices,lazyIndexing)'
-    ];
   }
 
   constructor() {
     super();
-
-    // TODO(b/235419647): Update the config to use extended search.
-    /** @private {Object<string, Object>} */
-    this.fuseConfig = {
+    const fuseConfig = {
       threshold: 0.0,        // Exact match only.
       ignoreLocation: true,  // Match in all locations.
       keys: [
@@ -60,14 +70,16 @@ export class EmojiSearch extends PolymerElement {
         'base.keywords',
       ]
     };
-    /** @private {Map<CategoryEnum,Object>} */
-    this.fuseInstances = new Map();
+    this.emojiFuse = new Fuse([], fuseConfig);
+    this.emoticonFuse = new Fuse([], fuseConfig);
+    this.addEventListener('scroll', () => {
+      this.onSearchScroll();
+    });
   }
 
   ready() {
     super.ready();
 
-    this.addEventListener('scroll', () => this.onSearchScroll());
     this.addEventListener('search', ev => this.onSearch(ev.detail));
     this.$.search.getSearchInput().addEventListener(
         'keydown',
@@ -78,30 +90,6 @@ export class EmojiSearch extends PolymerElement {
 
   onSearch(newSearch) {
     this.search = newSearch;
-  }
-
-  /**
-   * Processes the changes to the data and determines whether indexing is
-   * needed or not. It also triggers indexing if mode is not lazy and there
-   * are new changes.
-   *
-   * @param {*} changedRecords
-   * @param {!boolean} lazyIndexing
-   * @returns
-   */
-  categoriesDataChanged(changedRecords, lazyIndexing) {
-    if (!changedRecords && lazyIndexing) {
-      return;
-    }
-
-    // Indexing is needed if there are new changes.
-    this.needIndexing = this.needIndexing || changedRecords.indexSplices
-        .some((s) => s.removed.length + s.addedCount > 0);
-
-    // Trigger indexing if mode is not lazy and indexing is needed.
-    if (!lazyIndexing && this.needIndexing) {
-      this.createSearchIndices();
-    }
   }
 
   /**
@@ -132,7 +120,6 @@ export class EmojiSearch extends PolymerElement {
     ev.preventDefault();
     ev.stopPropagation();
 
-    // TODO(v/b/234673356): Move the navigation logic to emoji-group.
     if (!focusedResult) {
       return;
     }
@@ -159,9 +146,9 @@ export class EmojiSearch extends PolymerElement {
    * @param {KeyboardEvent} ev
    */
   onSearchKeyDown(ev) {
-    const resultsCount = this.getNumSearchResults();
     // if not searching or no results, do nothing.
-    if (!this.search || resultsCount === 0) {
+    if (!this.search ||
+        (this.emojiResults.length === 0 && this.emoticonResults.length === 0)) {
       return;
     }
 
@@ -172,17 +159,19 @@ export class EmojiSearch extends PolymerElement {
       ev.preventDefault();
       ev.stopPropagation();
 
-      // TODO(b/234673356): Remove this block.
       if (!this.v2Enabled) {
         // focus first item in result list.
         const firstButton = this.shadowRoot.querySelector('.result');
         firstButton.focus();
 
         // if there is only one result, select it on enter.
-        if (isEnter && resultsCount === 1) {
+        if (isEnter && this.emojiResults.length === 1) {
           firstButton.querySelector('emoji-button').click();
         }
       } else {
+        const resultsCount =
+          this.emojiResults.length + this.emoticonResults.length;
+
         if (resultsCount === 0) {
           return;
         }
@@ -207,10 +196,11 @@ export class EmojiSearch extends PolymerElement {
    * 1) Remove duplicates.
    * 2) Remove groupings.
    * @param {!EmojiGroupData} emojiData
+   * @param {number} emojiDataLength Used to trick polymer into calling this
+   *     when the emojidata is updated via push
    * @return {!Array<!EmojiVariants>}
    */
-  preprocessDataForIndexing(emojiData) {
-    // TODO(b/235419647): Remove addition of extra space.
+  computeEmojiList(emojiData, emojiDataLength) {
     return Array.from(
         new Map(emojiData.map(group => group.emoji).flat(1).map(emoji => {
           // The Fuse search library in ChromeOS doesn't support prefix
@@ -227,39 +217,6 @@ export class EmojiSearch extends PolymerElement {
         })).values());
   }
 
-  /**
-   * Indexes category data for search.
-   *
-   * Note: The indexing is done for all data from scratch, it is possible
-   * to index only the new changes with the cost of increasing logic
-   * complexity.
-   */
-  createSearchIndices() {
-    if (!this.categoriesData || this.categoriesData.length === 0) {
-      return;
-    }
-
-    // Get the list of unique categories in the order they appeared
-    // in the data.
-    const categories = [...new Set(
-      this.categoriesData.map(item => item.category))];
-
-    // Remove existing indices.
-    this.fuseInstances.clear();
-
-    for (const category of categories) {
-      // Filter records for the category and preprocess them.
-      const indexableEmojis = this.preprocessDataForIndexing(
-          this.categoriesData.filter(
-            emojiGroup => emojiGroup.category === category));
-
-      // Create a new index for the category.
-      this.fuseInstances.set(category,
-          new Fuse(indexableEmojis, this.fuseConfig));
-    }
-    this.needIndexing = false;
-  }
-
   onSearchScroll() {
     if (!this.v2Enabled) {
       this.$['search-shadow'].style.boxShadow =
@@ -270,44 +227,50 @@ export class EmojiSearch extends PolymerElement {
   }
 
   /**
-   * Computes search results for a keyword.
    *
-   * @param {?string} search Search keyword
-   * @returns {EmojiGroupData} Search results for all categories that had
-   *    matching items.
+   * @param {!Array<!EmojiVariants>} emojiList
+   * @suppress {missingProperties}
    */
-  computeSearchResults(search) {
+  onEmojiListChanged(emojiList) {
+    // suppressed property error due to Fuse being untyped.
+    this.emojiFuse.setCollection(emojiList);
+  }
+
+  /**
+   *
+   * @param {!Array<!EmojiVariants>} emoticonList
+   * @suppress {missingProperties}
+   */
+  onEmoticonListChanged(emoticonList) {
+    this.emoticonFuse.setCollection(emoticonList);
+  }
+
+  /**
+   * @param {?string} search
+   * @param {CategoryEnum} category
+   */
+  computeSearchResults(search, category) {
     if (!search) {
       return [];
     }
-
-    // Index data if needed (for lazy mode).
-    if (this.needIndexing) {
-      this.createSearchIndices();
-    }
-
-    // TODO(b/235419647): Use `^${search}|'" ${search}"'` for extended search.
     // Add an initial space to force prefix matching only.
     const prefixSearchTerm = ` ${search}`;
-
-    const searchResults = [];
-
-    // Search the keyword in the fuse instance of each category.
-    for (const [category, fuseInstance] of this.fuseInstances.entries()) {
-      const categorySearchResult = (/** @type {Object} */ (fuseInstance))
-        .search(prefixSearchTerm).map(item => item.item);
-
-      // Add the category results if not empty.
-      if (categorySearchResult.length !== 0) {
-        searchResults.push({
-          'category': category,
-          'group': '',
-          'emoji': categorySearchResult,
-        });
+    let fuseResults = [];
+    if (!this.v2Enabled) {
+      fuseResults = this.emojiFuse.search(prefixSearchTerm);
+    } else {
+      switch (category) {
+        case CategoryEnum.EMOJI:
+          fuseResults = this.emojiFuse.search(prefixSearchTerm);
+          break;
+        case CategoryEnum.EMOTICON:
+          fuseResults = this.emoticonFuse.search(prefixSearchTerm);
+          break;
+        default:
+          throw new Error('Unknown category.');
       }
     }
-
-    return searchResults;
+    return fuseResults.map(item => item.item);
   }
 
   onResultClick(ev) {
@@ -321,7 +284,7 @@ export class EmojiSearch extends PolymerElement {
   }
 
   /**
-   * Finds the first button in the search result page.
+   * Find the first button in the search result page.
    *
    * @returns {?HTMLElement} First button or null for no results.
    */
@@ -338,25 +301,15 @@ export class EmojiSearch extends PolymerElement {
   }
 
   /**
-   * Determines visibility of the search results for V1.
-   *
-   * @param {!EmojiGroupData} searchResults Search results.
-   * @param {!boolean} v2Enabled V2 enablement status.
-   * @returns {boolean} True if V2 is not enabled and there are results items.
+   * @param {!Array<!EmojiVariants>} emojiResults
+   * @param {!Array<!EmojiVariants>} emoticonResults
+   * @returns {boolean}
    */
-  shouldShowV1Results(searchResults, v2Enabled) {
-    // TODO(b/234673356): Remove this function.
-    return !v2Enabled && searchResults.length > 0;
-  }
-
-  /**
-   * Calculates the total number of items in the search results.
-   *
-   * @returns {number} Number of search results.
-   */
-  getNumSearchResults() {
-    return this.searchResults.reduce(
-      (acc, item) => acc + item.emoji.length, 0);
+  isSearchResultEmpty(emojiResults, emoticonResults) {
+    if (!this.v2Enabled) {
+      return emojiResults.length === 0;
+    }
+    return emojiResults.length === 0 && emoticonResults.length === 0;
   }
 }
 

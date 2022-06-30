@@ -176,10 +176,9 @@
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-    <!-- TODO(b/234673356): Merge this block into the V2 one. -->
-    <template is="dom-if"
-        if="[[shouldShowV1Results(searchResults, v2Enabled)]]">
-      <template is="dom-repeat" items="[[searchResults.0.emoji]]">
+    <template is="dom-if" if="[[!v2Enabled]]">
+      <template is="dom-repeat" items="[[emojiResults]]">
+        <!-- TODO(b/234673508): Remove the emoji button -->
         <div class="result" tabindex="0" on-click="onResultClick">
           <emoji-button tabindex="-1"
               emoji="[[item.base.string]]"
@@ -191,14 +190,16 @@
     </template>
     <template is="dom-if" if="[[v2Enabled]]">
       <div id="search-results">
-        <template is="dom-repeat" items="[[searchResults]]">
-          <emoji-group data="[[item.emoji]]" category$="[[item.category]]">
-          </emoji-group>
-        </template>
+        <emoji-group id="emoji-result" data="[[emojiResults]]"
+          category="emoji">
+        </emoji-group>
+        <emoji-group id="emoticon-result" data="[[emoticonResults]]"
+          category="emoticon">
+        </emoji-group>
       </div>
     </template>
     <template is="dom-if"
-      if="[[!searchResults.length]]">
+      if="[[isSearchResultEmpty(emojiResults, emoticonResults)]]">
       <div class="no-result">
         <picture>
           <source srcset="no_results_dark.svg"

@@ -383,14 +383,14 @@ suite('<emoji-picker>', () => {
       search.search = 'face with tears of joy';
 
       await waitForCondition(
-          () => search.getNumSearchResults() > 0, 'no search get any results',
+          () => search.emojiResults.length > 0, 'no search get any results',
           1000);
-      assertGT(search.getNumSearchResults(), 0);
+      assertGT(search.emojiResults.length, 0);
     });
     test('finds no results for garbage search', async () => {
       const search = findInEmojiPicker('emoji-search');
       search.search = 'THIS string should not match anything';
-      assertEquals(search.getNumSearchResults(), 0);
+      assertEquals(search.emojiResults.length, 0);
     });
   });
 });
