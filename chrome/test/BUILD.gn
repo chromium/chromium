@@ -9153,6 +9153,7 @@ if (!is_android) {
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
       "//components/metrics:content",
+      "//components/password_manager/content/browser",
       "//components/privacy_sandbox:privacy_sandbox",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
       "//components/reading_list/core",
