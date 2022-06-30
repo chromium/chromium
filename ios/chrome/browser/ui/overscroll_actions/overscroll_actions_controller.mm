@@ -404,11 +404,9 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   } else {
     if (contentOffsetFromExpandedHeader < -kHeaderMaxExpansionThreshold) {
       self.overscrollState = OverscrollState::ACTION_READY;
-      [self scrollView].scrollIndicatorInsets = insets;
     } else {
       // Set the contentInset to remove the bounce that would fight with drag.
       [self setScrollViewContentInset:insets];
-      [self scrollView].scrollIndicatorInsets = insets;
       _initialHeaderHeight =
           [[self delegate] headerHeightForOverscrollActionsController:self];
       self.overscrollState = OverscrollState::STARTED_PULLING;
@@ -928,7 +926,6 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
     const UIEdgeInsets insets = TopContentInset(
         self.scrollView, -distanceScrolled + self.initialContentInset);
     [self setScrollViewContentInset:insets];
-    [[self scrollView] setScrollIndicatorInsets:insets];
   }
   _bounceState.yInset = [self scrollView].contentInset.top;
   _bounceState.initialYInset = _bounceState.yInset;
@@ -983,7 +980,6 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
         TopContentInset(self.scrollView, _bounceState.yInset);
     _forceStateUpdate = YES;
     [self setScrollViewContentInset:insets];
-    [self scrollView].scrollIndicatorInsets = insets;
     _forceStateUpdate = NO;
   }
 }
