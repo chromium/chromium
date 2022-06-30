@@ -27,8 +27,8 @@
 - (instancetype)initWithIncognito:(BOOL)isIncognito;
 // Current input search term.
 - (NSString*)searchTerm;
-// Update view based on model. If |focusTextfield| is YES, focus the
-// textfield. Updates the results count and, if |initialUpdate| is true, fills
+// Update view based on model. If `focusTextfield` is YES, focus the
+// textfield. Updates the results count and, if `initialUpdate` is true, fills
 // the text field with search term from the model.
 - (void)updateView:(FindInPageModel*)model
      initialUpdate:(BOOL)initialUpdate
@@ -44,7 +44,7 @@
 
 // Hide the keyboard when the find next/previous buttons are pressed.
 - (IBAction)hideKeyboard:(id)sender;
-// Indicates that Find in Page is shown. When true, |view| is guaranteed not to
+// Indicates that Find in Page is shown. When true, `view` is guaranteed not to
 // be nil.
 - (BOOL)isFindInPageShown;
 // Indicates that the Find in Page text field is first responder.

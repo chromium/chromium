@@ -18,8 +18,8 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Updates |resultsLabel| with |text|. Updates |inputField| layout so that input
-// text does not overlap with results count. |text| can be nil.
+// Updates `resultsLabel` with `text`. Updates `inputField` layout so that input
+// text does not overlap with results count. `text` can be nil.
 - (void)updateResultsLabelWithText:(NSString*)text;
 
 // The textfield with search term.
