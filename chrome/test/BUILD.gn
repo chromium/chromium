@@ -6686,6 +6686,7 @@ test("unit_tests") {
       "../browser/upgrade_detector/mock_build_state_observer.cc",
       "../browser/upgrade_detector/mock_build_state_observer.h",
       "../browser/upgrade_detector/upgrade_detector_unittest.cc",
+      "../browser/usb/chrome_usb_delegate_unittest.cc",
       "../browser/usb/usb_blocklist_unittest.cc",
       "../browser/usb/usb_chooser_context_mock_device_observer.cc",
       "../browser/usb/usb_chooser_context_mock_device_observer.h",

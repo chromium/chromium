@@ -1826,6 +1826,8 @@ static_library("browser") {
     "universal_web_contents_observers.h",
     "update_client/chrome_update_query_params_delegate.cc",
     "update_client/chrome_update_query_params_delegate.h",
+    "usb/chrome_usb_delegate.cc",
+    "usb/chrome_usb_delegate.h",
     "usb/frame_usb_services.cc",
     "usb/frame_usb_services.h",
     "usb/usb_blocklist.cc",

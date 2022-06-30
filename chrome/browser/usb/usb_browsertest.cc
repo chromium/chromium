@@ -42,7 +42,9 @@
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -51,12 +53,6 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-namespace blink {
-namespace mojom {
-class WebUsbService;
-}
-}  // namespace blink
 
 using content::RenderFrameHost;
 using device::FakeUsbDeviceManager;
@@ -133,16 +129,24 @@ class FakeUsbChooser : public WebUsbChooser {
   }
 };
 
-std::unique_ptr<content::UsbChooser> RunChooser(
-    RenderFrameHost& frame,
-    std::vector<device::mojom::UsbDeviceFilterPtr> filters,
-    blink::mojom::WebUsbService::GetPermissionCallback callback) {
-  auto controller = std::make_unique<UsbChooserController>(
-      &frame, std::move(filters), std::move(callback));
-  auto chooser = std::make_unique<FakeUsbChooser>();
-  chooser->ShowChooser(&frame, std::move(controller));
-  return chooser;
-}
+class TestUsbDelegate : public ChromeUsbDelegate {
+ public:
+  TestUsbDelegate() = default;
+  TestUsbDelegate(TestUsbDelegate&) = delete;
+  TestUsbDelegate& operator=(TestUsbDelegate&) = delete;
+  ~TestUsbDelegate() override = default;
+
+  std::unique_ptr<content::UsbChooser> RunChooser(
+      content::RenderFrameHost& frame,
+      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+      blink::mojom::WebUsbService::GetPermissionCallback callback) override {
+    auto controller = std::make_unique<UsbChooserController>(
+        &frame, std::move(filters), std::move(callback));
+    auto chooser = std::make_unique<FakeUsbChooser>();
+    chooser->ShowChooser(&frame, std::move(controller));
+    return chooser;
+  }
+};
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
  public:
@@ -162,13 +166,18 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
                                                       std::move(receiver));
     } else {
       web_usb_service_ = std::make_unique<WebUsbServiceImpl>(render_frame_host);
-      web_usb_service_->SetChooserFactoryForTesting(
-          base::BindRepeating(&RunChooser));
+      web_usb_service_->SetUsbDelegateForTesting(
+          std::make_unique<TestUsbDelegate>());
       web_usb_service_->BindReceiver(std::move(receiver));
     }
   }
 
   void UseRealChooser() { use_real_chooser_ = true; }
+
+  void ResetUsbDelegate() {
+    if (web_usb_service_)
+      web_usb_service_->SetUsbDelegateForTesting(nullptr);
+  }
 
  private:
   bool use_real_chooser_ = false;
@@ -223,7 +232,8 @@ class WebUsbTest : public InProcessBrowserTest {
     EXPECT_EQ(origin_, render_frame_host->GetLastCommittedOrigin().GetURL());
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
+    test_content_browser_client_.ResetUsbDelegate();
     content::SetBrowserClientForTesting(original_content_browser_client_);
   }
 
