@@ -261,6 +261,11 @@ const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
 // crbug.com/1294648
 const base::FeatureParam<std::string> kDrDcBlockListByDevice{
     &kEnableDrDc, "BlockListByDevice", "LF9810_2GB"};
+
+// crbug.com/1340059, crbug.com/1340064
+const base::FeatureParam<std::string> kDrDcBlockListByModel{
+    &kEnableDrDc, "BlockListByModel",
+    "SM-J400M|SM-J415F|ONEPLUS A3003|OCTAStream*"};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
@@ -368,10 +373,10 @@ bool IsDrDcEnabled() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   if (IsDeviceBlocked(build_info->device(), kDrDcBlockListByDevice.Get()))
     return false;
-
+  if (IsDeviceBlocked(build_info->model(), kDrDcBlockListByModel.Get()))
+    return false;
   if (!base::FeatureList::IsEnabled(kEnableDrDc))
     return false;
-
   return IsUsingVulkan() ? base::FeatureList::IsEnabled(kEnableDrDcVulkan)
                          : true;
 #else
