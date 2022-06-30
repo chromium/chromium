@@ -539,6 +539,7 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
   app_launch_info->container = container;
   app_launch_info->disposition = disposition;
   app_launch_info->display_id = display_id;
+  app_launch_info->active_tab_index = active_tab_index;
   app_launch_info->handler_id = handler_id;
   app_launch_info->urls = urls;
   app_launch_info->first_non_pinned_tab_index = first_non_pinned_tab_index;
