@@ -70,6 +70,7 @@ GREYLayoutConstraint* RightConstraint() {
 // 6. Recent Tabs
 // 7. Site Information
 // 8. Settings
+//
 // When |isNTP| is true, this method excludes the Site Information (#7)
 // destination from the layout check, because Site Information is excluded from
 // the destinations carousel on the NTP.
@@ -137,6 +138,69 @@ GREYLayoutConstraint* RightConstraint() {
   [ChromeEarlGreyUI closeToolsMenu];
 }
 
+// Tests the destination carousel displays the default sort order for incognito,
+// which is:
+// 1. Bookmarks
+// 2. Reading List
+// 3. Password Manager
+// 4. Downloads
+// 5. Site Information
+// 6. Settings
+//
+// When |isNTP| is true, this method excludes the Site Information (#5)
+// destination from the layout check, because Site Information is excluded from
+// the destinations carousel on the NTP.
++ (void)verifyCarouselHasDefaultSortOrderOnNTPForIncognito:(BOOL)isNTP {
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+
+  // . . . Bookmarks, Reading List . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ReadingListDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::BookmarksDestinationButton())];
+  // . . . Reading List, Password Manager . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PasswordsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::ReadingListDestinationButton())];
+  // . . . Password Manager, Downloads . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::DownloadsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::PasswordsDestinationButton())];
+
+  if (isNTP) {
+    // . . . Downloads, Settings . . .
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SettingsDestinationButton()]
+        assertWithMatcher:grey_layout(
+                              @[ RightConstraintWithOverlap() ],
+                              chrome_test_util::DownloadsDestinationButton())];
+  } else {
+    // Site Information is included in the destinations carousel on non-NTP
+    // pages.
+
+    // . . . Downloads, Site Information . . .
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SiteInfoDestinationButton()]
+        assertWithMatcher:grey_layout(
+                              @[ RightConstraint() ],
+                              chrome_test_util::DownloadsDestinationButton())];
+    // . . . Site Information, Settings . . .
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SettingsDestinationButton()]
+        assertWithMatcher:grey_layout(
+                              @[ RightConstraintWithOverlap() ],
+                              chrome_test_util::SiteInfoDestinationButton())];
+  }
+
+  [ChromeEarlGreyUI closeToolsMenu];
+}
+
 #pragma mark - DestinationUsageHistoryCase Tests
 
 // Tests the default sort order for the destinations carousel is correctly
@@ -167,6 +231,37 @@ GREYLayoutConstraint* RightConstraint() {
 // destinations carousel on the NTP.
 - (void)testDefaultCarouselSortOrderDisplayedOnNTP {
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+}
+
+// Tests the default sort order for the destinations carousel is correctly
+// displayed for an incognito page. The default sort order is:
+// 1. Bookmarks
+// 2. Reading List
+// 3. Password Manager
+// 4. Downloads
+// 5. Site Information
+// 6. Settings
+- (void)testDefaultCarouselSortOrderDisplayedForIncognito {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [DestinationUsageHistoryCase
+      verifyCarouselHasDefaultSortOrderOnNTPForIncognito:NO];
+}
+
+// Tests the default sort order for the destinations carousel is correctly
+// displayed on the incognito NTP. The default sort order is:
+// 1. Bookmarks
+// 2. Reading List
+// 3. Password Manager
+// 4. Downloads
+// 5. Settings
+//
+// NOTE: By design, the Site Information destination is removed from the
+// destinations carousel on the NTP.
+- (void)testDefaultCarouselSortOrderDisplayedOnNTPForIncognito {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [DestinationUsageHistoryCase
+      verifyCarouselHasDefaultSortOrderOnNTPForIncognito:YES];
 }
 
 // For the following tests, it's important to note the destinations carousel is
