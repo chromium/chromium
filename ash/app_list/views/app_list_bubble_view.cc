@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
@@ -24,6 +25,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -33,6 +35,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -129,27 +132,30 @@ gfx::Rect GetShowHideAnimationBounds(bool is_side_shelf,
 
 }  // namespace
 
-// Makes focus traversal skip the assistant button when pressing the down arrow
-// key or the up arrow key. Normally views would move focus from the search box
-// to the assistant button on arrow down. However, the assistant button is
-// visually to the right, so this feels weird. Likewise, on arrow up from
-// continue tasks it feels better to put focus directly in the search box.
-class AssistantButtonFocusSkipper : public ui::EventHandler {
+// Makes focus traversal skip the assistant button and the hide continue section
+// button when pressing the down arrow key or the up arrow key. Normally views
+// would move focus from the search box to the assistant button on arrow down.
+// However, these buttons are visually to the right, so this feels weird.
+// Likewise, on arrow up from continue tasks it feels better to put focus
+// directly in the search box.
+class ButtonFocusSkipper : public ui::EventHandler {
  public:
-  explicit AssistantButtonFocusSkipper(views::View* button) : button_(button) {
-    DCHECK(button_);
-    Shell::Get()->AddPreTargetHandler(this);
-  }
+  ButtonFocusSkipper() { Shell::Get()->AddPreTargetHandler(this); }
 
-  ~AssistantButtonFocusSkipper() override {
-    Shell::Get()->RemovePreTargetHandler(this);
+  ~ButtonFocusSkipper() override { Shell::Get()->RemovePreTargetHandler(this); }
+
+  void AddButton(views::View* button) {
+    DCHECK(button);
+    buttons_.push_back(button);
   }
 
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
     // Don't adjust focus behavior if the user already focused the button.
-    if (button_->HasFocus())
-      return;
+    for (views::View* button : buttons_) {
+      if (button->HasFocus())
+        return;
+    }
 
     bool skip_focus = false;
     // This class overrides OnEvent() to examine all events so that focus
@@ -160,12 +166,14 @@ class AssistantButtonFocusSkipper : public ui::EventHandler {
         skip_focus = true;
       }
     }
-    button_->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
-                                         : views::View::FocusBehavior::ALWAYS);
+    for (views::View* button : buttons_) {
+      button->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
+                                          : views::View::FocusBehavior::ALWAYS);
+    }
   }
 
  private:
-  views::View* const button_;
+  std::vector<views::View*> buttons_;
 };
 
 AppListBubbleView::AppListBubbleView(
@@ -246,9 +254,9 @@ void AppListBubbleView::InitContentsView(
   params.increase_child_view_padding = true;
   search_box_view_->Init(params);
 
-  assistant_button_focus_skipper_ =
-      std::make_unique<AssistantButtonFocusSkipper>(
-          search_box_view_->assistant_button());
+  // Skip the assistant button on arrow up/down in app list.
+  button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();
+  button_focus_skipper_->AddButton(search_box_view_->assistant_button());
 
   // The main view has a solid color layer, so the separator needs its own
   // layer to visibly paint.
@@ -277,6 +285,11 @@ void AppListBubbleView::InitContentsView(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
           a11y_announcer_.get(), /*folder_controller=*/this,
           /*search_box=*/search_box_view_));
+  if (features::IsLauncherHideContinueSectionEnabled()) {
+    // Skip the "hide continue section" button on arrow up/down in app list.
+    button_focus_skipper_->AddButton(
+        apps_page_->toggle_continue_section_button());
+  }
 
   search_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleSearchPage>(
@@ -634,8 +647,8 @@ void AppListBubbleView::CloseButtonPressed() {
 
 void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   // Nothing to do. Search box starts focused, and FocusManager handles arrow
-  // key traversal from there. AssistantButtonFocusSkipper above handles
-  // skipping the assistant button on arrow up and arrow down.
+  // key traversal from there. ButtonFocusSkipper above handles skipping the
+  // assistant and hide continue section buttons on arrow up and arrow down.
 }
 
 bool AppListBubbleView::CanSelectSearchResults() {

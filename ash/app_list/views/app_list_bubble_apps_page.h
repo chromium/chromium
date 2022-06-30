@@ -141,6 +141,9 @@ class ASH_EXPORT AppListBubbleAppsPage
   void UpdateContinueSectionVisibility();
 
   views::ScrollView* scroll_view() { return scroll_view_; }
+  IconButton* toggle_continue_section_button() {
+    return toggle_continue_section_button_;
+  }
   ScrollableAppsGridView* scrollable_apps_grid_view() {
     return scrollable_apps_grid_view_;
   }
@@ -150,9 +153,6 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   views::View* continue_label_container_for_test() {
     return continue_label_container_;
-  }
-  IconButton* toggle_continue_section_button_for_test() {
-    return toggle_continue_section_button_;
   }
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
   views::Separator* separator_for_test() { return separator_; }

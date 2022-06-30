@@ -25,7 +25,7 @@ class AppListBubbleSearchPage;
 class AppListFolderItem;
 class AppListFolderView;
 class AppListViewDelegate;
-class AssistantButtonFocusSkipper;
+class ButtonFocusSkipper;
 class FolderBackgroundView;
 class SearchBoxView;
 class SearchResultPageDialogController;
@@ -197,7 +197,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   base::OnceClosure on_hide_animation_ended_;
 
   // See class comment in .cc file.
-  std::unique_ptr<AssistantButtonFocusSkipper> assistant_button_focus_skipper_;
+  std::unique_ptr<ButtonFocusSkipper> button_focus_skipper_;
 
   base::WeakPtrFactory<AppListBubbleView> weak_factory_{this};
 };

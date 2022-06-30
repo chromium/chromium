@@ -286,7 +286,7 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
   // The toggle continue section button has the "hide" tooltip.
   auto* apps_page = helper->GetBubbleAppsPage();
   IconButton* toggle_continue_section_button =
-      apps_page->toggle_continue_section_button_for_test();
+      apps_page->toggle_continue_section_button();
   ASSERT_TRUE(toggle_continue_section_button);
   EXPECT_EQ(toggle_continue_section_button->GetTooltipText(),
             u"Hide all suggestions");
@@ -321,7 +321,7 @@ TEST_F(AppListBubbleAppsPageTest, HideContinueSectionPlaysAnimation) {
 
   // Hide the continue section.
   auto* apps_page = helper->GetBubbleAppsPage();
-  LeftClickOn(apps_page->toggle_continue_section_button_for_test());
+  LeftClickOn(apps_page->toggle_continue_section_button());
 
   // Separator and apps grid are animating.
   auto* separator = apps_page->separator_for_test();
@@ -351,7 +351,7 @@ TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
   // The toggle continue section button has the "show" tooltip.
   auto* apps_page = helper->GetBubbleAppsPage();
   IconButton* toggle_continue_section_button =
-      apps_page->toggle_continue_section_button_for_test();
+      apps_page->toggle_continue_section_button();
   ASSERT_TRUE(toggle_continue_section_button);
   EXPECT_EQ(toggle_continue_section_button->GetTooltipText(),
             u"Show all suggestions");
@@ -391,7 +391,7 @@ TEST_F(AppListBubbleAppsPageTest, ShowContinueSectionPlaysAnimation) {
 
   // Click the show continue section button.
   auto* apps_page = helper->GetBubbleAppsPage();
-  LeftClickOn(apps_page->toggle_continue_section_button_for_test());
+  LeftClickOn(apps_page->toggle_continue_section_button());
 
   // Animations play for continue section, recent apps, separator and apps grid.
   auto* continue_section = helper->GetBubbleContinueSectionView();

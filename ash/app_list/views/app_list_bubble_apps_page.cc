@@ -639,11 +639,7 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
           /*has_border=*/false));
   // The icon is scaled down since the button is tiny.
   toggle_continue_section_button_->SetIconSize(16);
-  // TODO(jamescook): Allow the toggle continue button to be keyboard focused.
-  // This will involve fixing custom arrow key focus handling behavior (e.g.
-  // arrow down when focus is in search box).
-  toggle_continue_section_button_->SetFocusBehavior(
-      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  // See ButtonFocusSkipper in app_list_bubble_view.cc for focus handling.
 }
 
 void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {
