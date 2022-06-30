@@ -17,12 +17,12 @@ class GURL;
 
 namespace history {
 
-// Returns a localized version of |visit_time| including a relative
+// Returns a localized version of `visit_time` including a relative
 // indicator (e.g. today, yesterday).
 std::u16string GetRelativeDateLocalized(const base::Time& visit_time);
 
-// Formats |title| to support RTL, or creates an RTL supported title based on
-// |url| if |title| is empty.
+// Formats `title` to support RTL, or creates an RTL supported title based on
+// `url` if `title` is empty.
 NSString* FormattedTitle(const std::u16string& title, const GURL& url);
 
 }  // namespace history

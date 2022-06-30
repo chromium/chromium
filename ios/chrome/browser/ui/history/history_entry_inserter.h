@@ -55,7 +55,7 @@ class Time;
 // not found, and invokes delegate callback.
 - (NSUInteger)sectionIdentifierForTimestamp:(base::Time)timestamp;
 
-// Removes section at |sectionIndex|, and invokes delegate callback when removal
+// Removes section at `sectionIndex`, and invokes delegate callback when removal
 // is complete.
 - (void)removeSection:(NSInteger)sectionIndex;
 

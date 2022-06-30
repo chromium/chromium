@@ -10,8 +10,8 @@
 // Protocol for instances that will provide menus to History components.
 @protocol HistoryMenuProvider
 
-// Creates a context menu configuration instance for the given |item|, which is
-// represented on the UI by |view|.
+// Creates a context menu configuration instance for the given `item`, which is
+// represented on the UI by `view`.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (HistoryEntryItem*)item
                                                       withView:(UIView*)view;
