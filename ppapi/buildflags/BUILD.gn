@@ -11,5 +11,8 @@ import("//ppapi/buildflags/buildflags.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_PLUGINS=$enable_plugins" ]
+  flags = [
+    "ENABLE_PLUGINS=$enable_plugins",
+    "ENABLE_PPAPI=$enable_ppapi",
+  ]
 }
