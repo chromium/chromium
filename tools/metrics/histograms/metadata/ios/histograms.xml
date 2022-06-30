@@ -848,6 +848,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MainThreadFreezeDetection.RecordGenerationTime" units="ms"
+    expires_after="2022-09-12">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The time taken to record a freeze report. Logged immediately after
+    generating a hang report.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MainThreadFreezeDetection.RecoveredAfter" units="ms"
     expires_after="2022-09-12">
   <owner>justincohen@chromium.org</owner>
