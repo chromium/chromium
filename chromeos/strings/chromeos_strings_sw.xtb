@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Washa hali nyeusi</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Vipengele visivyo na sifa<ph name="LINK_END" /> vimepatikana. Ili kuhakikisha kuwa vipengele vyote vilivyoidhinishwa vimetambuliwa, sasisha mfumo wa uendeshaji wa Chrome uwe toleo jipya zaidi.</translation>
 <translation id="2180197493692062006">Hitilafu fulani imetokea. Jaribu kufungua programu upya.</translation>
+<translation id="2182088270354640012">Asante kwa maoni. Maoni yako husaidia kuboresha mfumo wa uendeshaji wa Chrome na yatakaguliwa na timu ya mfumo wa uendeshaji wa Chrome. Kutokana na idadi ya ripoti zilizokusanywa, hutaweza kupokea jibu la moja kwa moja.</translation>
 <translation id="2209788852729124853">Badilisha Hesabu za Trafiki</translation>
 <translation id="2212733584906323460">Upe Usuluhishaji huu Jina</translation>
 <translation id="2217935453350629363">Kasi ya sasa</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Inazima kisha iwake...</translation>
 <translation id="2533048460510040082">Maudhui ya usaidizi yanayopendekezwa</translation>
 <translation id="2536159006530886390">Imeshindwa kuunganisha kwenye intaneti.</translation>
+<translation id="256360469103926202">Maoni yako husaidia kuboresha mfumo wa uendeshaji wa Chrome na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kutuma jibu.</translation>
 <translation id="2570743873672969996">Inatekeleza jaribio la <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Nenda kwenye Mipangilio ili uiweke</translation>
 <translation id="2619761439309613843">Onyesha Upya Kila Siku</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Inatafuta vichanganuzi</translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
 <translation id="3268178239013324452">Haijakamilika - Kifuniko kimefunguka</translation>
+<translation id="3275729367986477355">Picha ya ishara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Badilisha faili}other{Badilisha faili}}</translation>
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3291996639387199448">Uelekeo wa ufunguo</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Kwa usaidizi zaidi, nenda kwenye <ph name="BEGIN_LINK" />Kituo cha Usaidizi<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoriti ya mbano</translation>
 <translation id="4794140124556169553">Huenda hatua ya kufanya jaribio la kiini cha kompyuta (CPU) ikaathiri utendaji wa mfumo wako</translation>
+<translation id="4800589996161293643">Jumuiya ya Chromebook</translation>
 <translation id="4804818685124855865">Tenganisha</translation>
 <translation id="4808449224298348341">Kazi ya kuchapisha ya <ph name="DOCUMENT_TITLE" /> ilighairiwa</translation>
 <translation id="4809927044794281115">Mandhari meupe</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">Sijapata swali lolote kwenye skrini yako. Jaribu kugonga maikrofoni ili uniulize chochote.</translation>
 <translation id="5212593641110061691">Kijigazeti</translation>
 <translation id="5222676887888702881">Ondoka</translation>
+<translation id="522307662484862935">Usiweke anwani ya barua pepe</translation>
 <translation id="5227902338748591677">Ratiba ya mandhari meusi</translation>
 <translation id="5234764350956374838">Ondoa</translation>
 <translation id="5252456968953390977">Uzururaji</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">Washa mandhari meusi</translation>
 <translation id="6295178529664209245">Ungependa kuendelea na urekebishaji?</translation>
 <translation id="6302401976930124515">Jaribio la <ph name="TEST_NAME" /> limeghairiwa</translation>
+<translation id="631063167932043783">Programu ya Gundua</translation>
 <translation id="6319207335391420837">Sasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Washa taswira ya skrini</translation>
 <translation id="6325525973963619867">Imeshindwa</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">Imeshindwa kuunganisha kwenye tovuti za HTTPS kupitia kinga mtandao</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Waulize wataalamu katika mijadala ya usaidizi ya Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">Mara ambazo betri imechajiwa na kutumia chaji</translation>
 <translation id="7747039790905080783">Kitufe kilichoshirikiwa awali</translation>
 <translation id="7762130827864645708">Nenosiri lako limebadilishwa. Tafadhali tumia nenosiri jipya kuanzia sasa.</translation>
+<translation id="7762839321248874531">Tuma <ph name="BEGIN_LINK1" />maelezo ya mfumo na programu<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />vipimo<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Kiambishi cha kikoa kinacholingana</translation>
 <translation id="7769672763586021400">Aina ya Kitambulisho</translation>
 <translation id="7784116172884276937">Hakuna seva za DNS zilizowekwa mipangilio</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">Lebo-nyeupe</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> hii inasimamiwa na biashara</translation>
 <translation id="8398927464629426868">Kiwango cha sasa cha kifaa cha kuchaji au kutumia chaji</translation>
+<translation id="8420955526972171689">Tekeleza majaribio na utatuzi wa hitilafu za maunzi</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Kibodi ya ndani</translation>
 <translation id="8431300646573772016">Mapya katika ChromeOS</translation>

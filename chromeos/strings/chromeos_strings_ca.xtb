@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Activa el mode fosc</translation>
 <translation id="2177831236093724629">S'han trobat <ph name="LINK_BEGIN" />components no qualificats<ph name="LINK_END" />. Per assegurar-te que tots els components qualificats estiguin identificats, actualitza Chrome OS a la versió més recent.</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
+<translation id="2182088270354640012">Gràcies pels teus suggeriments, que ajuden a millorar ChromeOS. El nostre equip de ChromeOS els revisarà. Com que s'envia un gran nombre d'informes, no rebràs una resposta directa.</translation>
 <translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2212733584906323460">Resolució del nom</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">S'està reiniciant...</translation>
 <translation id="2533048460510040082">Contingut d'ajuda suggerit</translation>
 <translation id="2536159006530886390">No es pot connectar a Internet.</translation>
+<translation id="256360469103926202">Els teus suggeriments ajuden a millorar ChromeOS. El nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Per configurar-la, ves a Configuració</translation>
 <translation id="2619761439309613843">Actualització diària</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
+<translation id="3275729367986477355">Imatge d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edita el fitxer}other{Edita els fitxers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direcció de la clau</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Per obtenir més ajuda, ves al <ph name="BEGIN_LINK" />Centre d'ajuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme de compressió</translation>
 <translation id="4794140124556169553">Executar una prova de CPU pot afectar el rendiment del sistema</translation>
+<translation id="4800589996161293643">Comunitat de Chromebook</translation>
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="4808449224298348341">S'ha cancel·lat la tasca d'impressió del document <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Tema clar</translation>
@@ -488,6 +492,7 @@
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
+<translation id="522307662484862935">No incloguis l'adreça electrònica</translation>
 <translation id="5227902338748591677">Programació del tema fosc</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5252456968953390977">Itinerància</translation>
@@ -614,6 +619,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6284632978374966585">Activa el tema fosc</translation>
 <translation id="6295178529664209245">Vols continuar amb la reparació?</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
+<translation id="631063167932043783">Aplicació Explora</translation>
 <translation id="6319207335391420837">Actualitza el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activa l'estalvi de pantalla</translation>
 <translation id="6325525973963619867">Error</translation>
@@ -720,6 +726,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7297226631177386107">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Pregunta als experts al fòrum d'ajuda de Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
@@ -762,6 +769,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7747039790905080783">Clau precompartida</translation>
 <translation id="7762130827864645708">La contrasenya s'ha canviat correctament. Utilitza la contrasenya nova a partir d'ara.</translation>
+<translation id="7762839321248874531">Envia <ph name="BEGIN_LINK2" />mètriques<ph name="END_LINK2" /> i <ph name="BEGIN_LINK1" />informació del sistema i de l'aplicació<ph name="END_LINK1" /></translation>
 <translation id="7763470514545477072">Sufix de domini coincident</translation>
 <translation id="7769672763586021400">Identificador del model</translation>
 <translation id="7784116172884276937">No hi ha cap servidor DNS configurat</translation>
@@ -831,6 +839,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8382302752385457774">Etiqueta blanca</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
+<translation id="8420955526972171689">Executa proves i resol els problemes relacionats amb el maquinari</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclat intern</translation>
 <translation id="8431300646573772016">Novetats de Chrome OS</translation>

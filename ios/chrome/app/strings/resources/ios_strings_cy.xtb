@@ -100,7 +100,6 @@
 <translation id="1687475363370981210">Marcio Pob un ohonynt fel wedi'u Darllen</translation>
 <translation id="1689333818294560261">Llysenw</translation>
 <translation id="1690731385917361335">Dim eitemau</translation>
-<translation id="1692118695553449118">Mae cysoni ymlaen</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> wedi'i ddewis</translation>
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
 <translation id="1752547299766512813">Cadw Cyfrineiriau</translation>
@@ -174,7 +173,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2469960372084740698">Diffodd Pori'n Ddiogel?</translation>
 <translation id="2473876017985765807">Rydych eisoes wedi cadw cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Heb ei dewis</translation>
-<translation id="2497852260688568942">Mae Cysoni wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="2500374554657206846">Dewisiadau ar gyfer Cadw Cyfrinair</translation>
 <translation id="2523363575747517183">Mae'r wefan hon yn ceisio agor rhaglen arall tro ar ôl tro.</translation>
 <translation id="2529021024822217800">Agor y Cyfan</translation>
@@ -490,7 +488,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="509789154667432072">Ychwanegu Nod Tudalen</translation>
 <translation id="5118713593561876160">Diddordebau</translation>
 <translation id="5118764316110575523">Diffodd</translation>
-<translation id="5127805178023152808">Mae cysoni wedi'i ddiffodd</translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
 <translation id="5140288047769711648">Bydd Chrome yn cofio'r cyfrinair hwn i chi. Nid oes rhaid i chi ei gofio.</translation>
 <translation id="5150492518600715772">Anfon at eich Dyfais</translation>
@@ -602,7 +599,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="60829778314739003">Derbyn a Pharhau</translation>
 <translation id="6084848228346514841">Dewis Tabiau</translation>
 <translation id="6103540626693881831">Amgryptio ar y Ddyfais</translation>
-<translation id="6108923351542677676">Wrthi'n gosod…</translation>
 <translation id="6119050551270742952">Mae'r dudalen we bresennol yn y modd Anhysbys</translation>
 <translation id="6122191549521593678">Ar-lein</translation>
 <translation id="6127379762771434464">Tynnwyd eitem</translation>

@@ -100,7 +100,6 @@
 <translation id="1687475363370981210">Отметить все как прочитанные</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="1690731385917361335">Закладок нет</translation>
-<translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
@@ -174,7 +173,6 @@
 <translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
-<translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="2500374554657206846">Параметры сохранения пароля</translation>
 <translation id="2523363575747517183">Этот сайт часто пытается открыть другое приложение.</translation>
 <translation id="2529021024822217800">Открыть все</translation>
@@ -490,7 +488,6 @@
 <translation id="509789154667432072">Добавить закладку</translation>
 <translation id="5118713593561876160">Интересы</translation>
 <translation id="5118764316110575523">ВЫКЛ</translation>
-<translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
 <translation id="5140288047769711648">Вам не нужно запоминать этот пароль, так как он будет сохранен в Chrome.</translation>
 <translation id="5150492518600715772">Отправить на свое устройство</translation>
@@ -602,7 +599,6 @@
 <translation id="60829778314739003">Принять и продолжить</translation>
 <translation id="6084848228346514841">Выберите вкладки</translation>
 <translation id="6103540626693881831">Шифрование на устройстве</translation>
-<translation id="6108923351542677676">Настройка…</translation>
 <translation id="6119050551270742952">Открыто в режиме инкогнито</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>

@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Караңгы теманы күйгүзүү</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Такталбаган курамдык бөлүктөр<ph name="LINK_END" /> табылды. Такталбаган бардык курамдык бөлүктөрдүн аныкталганын текшерүү үчүн Chrome OS'ту акыркы версияга жаңыртыңыз.</translation>
 <translation id="2180197493692062006">Бир жерден ката кетти. Колдонмону кайрадан ачып көрүңүз.</translation>
+<translation id="2182088270354640012">Сын-пикириңиз үчүн чоң рахмат. Пикириңиз Chrome OS'ту жакшыртууга жардам берип, Chrome OS жамааты тарабынан каралып чыгат. Кабарлар көп тапшырылгандыктан, ар бирине жооп жаза албайбыз.</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Өчүрүлүп күйгүзүлүүдө…</translation>
 <translation id="2533048460510040082">Сунушталган пайдалуу материалдар</translation>
 <translation id="2536159006530886390">Интернетке туташпай жатат.</translation>
+<translation id="256360469103926202">Пикириңиз Chrome OS'ту жакшыртууга жардам берип, жамаатыбыз тарабынан каралып чыгат. Кабарлардын көп болгонуна байланыштуу жооп жаза албайбыз.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
 <translation id="2584559707064218956">Тууралоо үчүн Жөндөөлөргө өтүңүз</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Сканерлер изделүүдө</translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
+<translation id="3275729367986477355">Аватардын сүрөтү</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды түзөтүү}other{Файлдарды түзөтүү}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Ачкычтын багыты</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Кеңири маалымат алуу үчүн <ph name="BEGIN_LINK" />Жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4793756956024303490">Кысуунун алгоритми</translation>
 <translation id="4794140124556169553">CPU сыноосу иштетилсе, системанын ишине кедергиси тийиши мүмкүн</translation>
+<translation id="4800589996161293643">Chromebook коомдоштугу</translation>
 <translation id="4804818685124855865">Ажыратуу</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>
 <translation id="4809927044794281115">Жарык тема</translation>
@@ -488,6 +492,7 @@
 Мага суроо берүү үчүн микрофонду таптап коюңуз.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
+<translation id="522307662484862935">Электрондук почта дареги жазылбасын</translation>
 <translation id="5227902338748591677">Караңгы теманын графиги</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">Караңгы теманы күйгүзүү</translation>
 <translation id="6295178529664209245">Оңдой бересизби?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
+<translation id="631063167932043783">Мүмкүнчүлүктөр колдонмосу</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> түзмөгүндө орнотулган программаны жаңыртуу</translation>
 <translation id="6321407676395378991">Көшөгөнү күйгүзүү</translation>
 <translation id="6325525973963619867">Аткарылган жок</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">HTTPS вебсайттарына тармактык коргоо аркылуу туташпай жатат</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook'тун Жардам форумундагы адистерден сураңыз</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Издөөдөгү натыйжаларды көрүү үчүн Издөө жана Боштук баскычтарын басыңыз.</translation>
 <translation id="7343649194310845056">Тармак түзмөктөрү</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">Циклдердин саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="7762130827864645708">Сырсөзүңүз өзгөрдү. Мындан кийин жаңы сырсөздү колдонуңуз.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Тутум жана колдонмо тууралуу маалыматты<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />көрсөткүчтөрдү<ph name="END_LINK2" /> жөнөтүү</translation>
 <translation id="7763470514545477072">Домен суффиксине окшош</translation>
 <translation id="7769672763586021400">Үлгү ID'си</translation>
 <translation id="7784116172884276937">DNS серверлери туураланган жок</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">Ак энбелги</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
+<translation id="8420955526972171689">Аппараттык камсыздоону сынап, бузулууларды аныктап оңдоо</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Ички баскычтоп</translation>
 <translation id="8431300646573772016">ChromeOS жаңылыктары</translation>

@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Koyu modu aç</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Uygun olmayan bileşenler<ph name="LINK_END" /> bulundu. Uygun olan tüm bileşenlerin tanımlandığından emin olmak için Chrome OS'i en son sürüme güncelleyin.</translation>
 <translation id="2180197493692062006">Bir sorun oldu. Uygulamayı yeniden açmayı deneyin.</translation>
+<translation id="2182088270354640012">Geri bildirim için teşekkürler. Geri bildirimleriniz Chrome OS Ekibi tarafından incelenir ve Chrome OS'i iyileştirmemize yardımcı olur. Çok sayıda rapor gönderildiği için raporunuzu doğrudan yanıtlayamayacağız.</translation>
 <translation id="2209788852729124853">Trafik Sayaçlarını Sıfırla</translation>
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
 <translation id="2217935453350629363">Şu anki hız</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Yeniden başlatılıyor…</translation>
 <translation id="2533048460510040082">Önerilen yardım içeriği</translation>
 <translation id="2536159006530886390">İnternete bağlanamıyor.</translation>
+<translation id="256360469103926202">Geri bildiriminiz ekibimiz tarafından incelenecek ve Chrome OS'in iyileştirilmesi için değerlendirilecektir. Çok sayıda rapor aldığımız için yanıt gönderemiyoruz.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2584559707064218956">Kurulum yapmak için Ayarlar'a gidin</translation>
 <translation id="2619761439309613843">Günlük Yenileme</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
+<translation id="3275729367986477355">Avatar resmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Dosyayı düzenle}other{Dosyaları düzenle}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Anahtar yönü</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Daha fazla yardım için <ph name="BEGIN_LINK" />Yardım Merkezi<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="4793756956024303490">Sıkıştırma algoritması</translation>
 <translation id="4794140124556169553">CPU testi çalıştırmak sisteminizin performansını etkileyebilir</translation>
+<translation id="4800589996161293643">Chromebook topluluğu</translation>
 <translation id="4804818685124855865">Bağlantıyı kes</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
 <translation id="4809927044794281115">Açık tema</translation>
@@ -488,6 +492,7 @@
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Çıkış</translation>
+<translation id="522307662484862935">E-posta adresini ekleme</translation>
 <translation id="5227902338748591677">Koyu tema programı</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5252456968953390977">Dolaşım</translation>
@@ -614,6 +619,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6284632978374966585">Koyu temayı aç</translation>
 <translation id="6295178529664209245">Onarıma devam edilsin mi?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
+<translation id="631063167932043783">Keşfet uygulaması</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
 <translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
 <translation id="6325525973963619867">Başarısız</translation>
@@ -720,6 +726,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7297226631177386107">HTTPS web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook Yardım Forumu'nda uzmanlara soru sorun</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Google Arama'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="7343649194310845056">Ağ Cihazları</translation>
@@ -762,6 +769,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
 <translation id="7747039790905080783">Önceden paylaşılan anahtar</translation>
 <translation id="7762130827864645708">Şifre değişikliğiniz başarıyla tamamlandı. Lütfen bundan sonra yeni şifreyi kullanın.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Sistem ve uygulama bilgileri<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />metrikleri<ph name="END_LINK2" /> gönder</translation>
 <translation id="7763470514545477072">Alan adı son eki eşleşmesi</translation>
 <translation id="7769672763586021400">Model kimliği</translation>
 <translation id="7784116172884276937">DNS sunucusu ayarlanmamış</translation>
@@ -831,6 +839,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8382302752385457774">Beyaz etiket</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
+<translation id="8420955526972171689">Donanım sorunlarına yönelik testler yapıp ve sorun giderme adımları uygulayın</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Dahili klavye</translation>
 <translation id="8431300646573772016">ChromeOS yenilikleri</translation>

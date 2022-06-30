@@ -341,6 +341,7 @@
 <translation id="3971140002794351170">Завантажити мобільний профіль, мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англійська (Велика Британія)</translation>
 <translation id="3975895378829046965">Бенгальська, фонетична розкладка</translation>
+<translation id="3991446849494482687">Також буде вимкнено параметр блокування SIM-карти на пристрої.</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4017788180641807848">Англійська (США), розкладка Workman</translation>
 <translation id="4040753847560036377">Неправильний PUK-код</translation>
@@ -770,6 +771,7 @@
 <translation id="7663224033570512922">Гінді</translation>
 <translation id="7693909743393669729">Якщо відформатувати диск, усі наявні на ньому дані та розділи (зокрема, невидимі) буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7695430100978772476">Не вдалося відформатувати диск "<ph name="DRIVE_NAME" />"</translation>
+<translation id="76959938259365003">Не вдалось очистити кошик.</translation>
 <translation id="770015031906360009">Грецька</translation>
 <translation id="7705251383879779343">Файл "<ph name="FILE_NAME" />" скопійовано.</translation>
 <translation id="7711920809702896782">Інформація про зображення</translation>

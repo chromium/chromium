@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
 <translation id="2177831236093724629">Se han encontrado <ph name="LINK_BEGIN" />componentes no verificados<ph name="LINK_END" />. Para asegurarte de que todos los componentes verificados se identifiquen, actualiza Chrome OS a la versión más reciente.</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
+<translation id="2182088270354640012">Gracias por los comentarios. Tus comentarios ayudan a mejorar ChromeOS. El equipo de ChromeOS los revisará. Recibimos muchos informes, por lo que no recibirás una respuesta directa.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Reiniciando...</translation>
 <translation id="2533048460510040082">Sugerencias de contenido de ayuda</translation>
 <translation id="2536159006530886390">No es posible conectarse a Internet.</translation>
+<translation id="256360469103926202">Tus comentarios ayudan a mejorar ChromeOS. Nuestro equipo los revisará. Recibimos muchos informes, por lo que no podremos enviarte una respuesta.</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
 <translation id="2619761439309613843">Actualiz. diaria</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
+<translation id="3275729367986477355">Imagen del avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Dirección de la clave</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Para obtener más ayuda, accede al <ph name="BEGIN_LINK" />Centro de Ayuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Si ejecutas una prueba de CPU, es posible que el rendimiento del sistema se vea afectado</translation>
+<translation id="4800589996161293643">Comunidad de Chromebook</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
 <translation id="4809927044794281115">Tema claro</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
+<translation id="522307662484862935">No incluir dirección de correo</translation>
 <translation id="5227902338748591677">Horario del tema oscuro</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">Activar tema oscuro</translation>
 <translation id="6295178529664209245">¿Continuar con la reparación?</translation>
 <translation id="6302401976930124515">La prueba <ph name="TEST_NAME" /> se ha cancelado</translation>
+<translation id="631063167932043783">Aplicación Explorar</translation>
 <translation id="6319207335391420837">Actualizar el firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar salvapantallas</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
@@ -641,6 +647,7 @@
 <translation id="6516990319416533844">Para comprobar la velocidad de carga de la batería, deja que se use un poco</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
+<translation id="6535178685492749208">No tienes conexión. Los comentarios se enviarán más tarde.</translation>
 <translation id="65587193855025101">Escáner de superficie plana</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
 <translation id="6566314079205407217">Escaneado multipágina</translation>
@@ -719,6 +726,7 @@
 <translation id="7297226631177386107">No se puede conectar con sitios web HTTPS usando un cortafuegos</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Pregunta a los expertos en el foro de ayuda de Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; pulsa Buscar y la barra espaciadora para ver el resultado en la Búsqueda de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
@@ -761,6 +769,7 @@
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Clave precompartida</translation>
 <translation id="7762130827864645708">Tu contraseña se ha cambiado correctamente. A partir de ahora, usa la nueva contraseña.</translation>
+<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />información del sistema y de las aplicaciones<ph name="END_LINK1" />, y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
 <translation id="7784116172884276937">No hay servidores DNS configurados</translation>
@@ -830,6 +839,7 @@
 <translation id="8382302752385457774">Marca blanca</translation>
 <translation id="8395584934117017006">Este dispositivo <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
+<translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado interno</translation>
 <translation id="8431300646573772016">Novedades de ChromeOS</translation>

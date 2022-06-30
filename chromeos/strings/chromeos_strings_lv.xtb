@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2177831236093724629">Tika atrasti <ph name="LINK_BEGIN" />neatbilstoši komponenti<ph name="LINK_END" />. Lai visi atbilstošie komponenti tiktu identificēti, pārejiet uz jaunāko Chrome OS versiju.</translation>
 <translation id="2180197493692062006">Radās kļūda. Mēģiniet atkārtoti atvērt lietotni.</translation>
+<translation id="2182088270354640012">Paldies par atsauksmēm! Jūsu atsauksmes palīdz uzlabot Chrome OS. Chrome OS komanda tās pārskatīs. Tā kā tiek iesniegts ļoti daudz ziņojumu, jūs nesaņemsiet tiešu atbildi.</translation>
 <translation id="2209788852729124853">Atiestatīt datplūsmas skaitītājus</translation>
 <translation id="2212733584906323460">Nosaukumu atrisināšana</translation>
 <translation id="2217935453350629363">Pašreizējais ātrums</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Notiek restartēšana...</translation>
 <translation id="2533048460510040082">Ieteiktais palīdzības saturs</translation>
 <translation id="2536159006530886390">Nevar izveidot savienojumu ar internetu.</translation>
+<translation id="256360469103926202">Jūsu atsauksmes palīdz uzlabot Chrome OS. Mūsu komanda tās pārskatīs. Tā kā mēs saņemam ļoti daudz ziņojumu, nevarēsim atbildēt uz tiem visiem.</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2584559707064218956">Lai iestatītu, pārejiet uz iestatījumiem.</translation>
 <translation id="2619761439309613843">Nomainīt katru dienu</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Notiek skeneru meklēšana…</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
 <translation id="3268178239013324452">Neizdevās — durtiņas ir atvērtas</translation>
+<translation id="3275729367986477355">Iemiesojuma attēls</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediģēt failu}zero{Rediģēt failus}one{Rediģēt failus}other{Rediģēt failus}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Atslēgas pozīcija</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Lai iegūtu papildu palīdzību, pārejiet uz <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Saspiešanas algoritms</translation>
 <translation id="4794140124556169553">Centrālā procesora pārbaudes veikšana var ietekmēt jūsu sistēmas veiktspēju</translation>
+<translation id="4800589996161293643">Chromebook datoru kopiena</translation>
 <translation id="4804818685124855865">Atvienot</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
 <translation id="4809927044794281115">Gaišais motīvs</translation>
@@ -488,6 +492,7 @@
 Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5212593641110061691">Neliela formāta laikraksts</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
+<translation id="522307662484862935">Neiekļaut e-pasta adresi</translation>
 <translation id="5227902338748591677">Tumšā motīva grafiks</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5252456968953390977">Viesabonēšana</translation>
@@ -614,6 +619,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6284632978374966585">Ieslēgt tumšo motīvu</translation>
 <translation id="6295178529664209245">Vai turpināt labošanu?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
+<translation id="631063167932043783">Lietotne Izpēte</translation>
 <translation id="6319207335391420837">Ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="6321407676395378991">Ieslēgt ekrānsaudzētāju</translation>
 <translation id="6325525973963619867">Neizdevās</translation>
@@ -720,6 +726,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7297226631177386107">Nevar izveidot savienojumu ar HTTPS vietnēm, ja ir iespējots ugunsmūris</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Uzdodiet jautājumus ekspertiem Chromebook datoru palīdzības forumā.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Google meklēšanā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
@@ -762,6 +769,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="773153675489693198">Ciklu laiks</translation>
 <translation id="7747039790905080783">Iepriekš kopīgota atslēga</translation>
 <translation id="7762130827864645708">Parole ir sekmīgi nomainīta. Lūdzu, turpmāk izmantojiet jauno paroli.</translation>
+<translation id="7762839321248874531">Sūtīt <ph name="BEGIN_LINK1" />sistēmas un lietotņu informāciju<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />rādītājus<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Domēna sufiksa atbilstība</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
 <translation id="7784116172884276937">Neviens DNS serveris nav iestatīts</translation>
@@ -831,6 +839,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8382302752385457774">Baltā etiķete</translation>
 <translation id="8395584934117017006">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda uzņēmums.</translation>
 <translation id="8398927464629426868">Ātrums, ar kādu pašlaik notiek ierīces uzlāde vai izlāde.</translation>
+<translation id="8420955526972171689">Veiciet aparatūras problēmu pārbaudes un novērsiet problēmas.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Iekšējā tastatūra</translation>
 <translation id="8431300646573772016">Chrome OS jaunumi</translation>

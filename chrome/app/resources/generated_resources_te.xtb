@@ -218,6 +218,7 @@
 <translation id="1197199342062592414">ప్రారంభించండి</translation>
 <translation id="11978075283960463">యాప్‌లో డేటా స్టోర్ చేయబడింది: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">డీయాక్టివేట్ చేయండి</translation>
+<translation id="1198066799963193307">చూపు సమస్య ఉన్న వారికి సహాయపడే స్పీచ్ టూల్స్</translation>
 <translation id="119944043368869598">అన్ని క్లియర్ చేయి</translation>
 <translation id="1199814941632954229">ఈ సర్టిఫికెట్ ప్రొఫైల్‌లకు సర్టిఫికెట్‌లు అందించబడుతాయి</translation>
 <translation id="120069043972472860">చూడదగినది కాదు</translation>
@@ -1510,6 +1511,7 @@
 <translation id="2371076942591664043">&amp;పూర్తవగానే తెరువు</translation>
 <translation id="2373666622366160481">కాగితానికి తగినట్లుగా అమర్చు</translation>
 <translation id="2375406435414127095">మీ ఫోన్‌కి కనెక్ట్ చేయండి</translation>
+<translation id="2376056713414548745">బిగ్గరగా చదవడం</translation>
 <translation id="2377588536920405462">మీరు మీ పరికరంలో ప్రధాన లొకేషన్ సెట్టింగ్‌ను ఆఫ్ చేయడం ద్వారా లొకేషన్‌ను ఆఫ్ చేయవచ్చు. మీరు లొకేషన్ సెట్టింగ్‌లలో లొకేషన్ కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు, సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="2377667304966270281">Hard Faultలు</translation>
 <translation id="237828693408258535">ఈ పేజీని అనువదించాలా?</translation>
@@ -2338,6 +2340,7 @@
 <translation id="3163511056918491211">ఏ సమయంలో అయినా మీ డేటాను సులభంగా రీస్టోర్ చేయండి లేదా పరికరాలను మార్చండి. మీ బ్యాకప్‌లు Googleకు అప్‌లోడ్ చేయబడతాయి, మీ Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి.</translation>
 <translation id="3164329792803560526">ఈ ట్యాబ్‌ను <ph name="APP_NAME" />తో షేర్ చేస్తోంది</translation>
 <translation id="3165390001037658081">కొన్ని క్యారియర్‌లు ఈ లక్షణాన్ని బ్లాక్ చేయవచ్చు.</translation>
+<translation id="3169930038976362151">మీ అవసరాలకు తగిన రూపాన్ని ఎంచుకోండి. మీ రూపాన్ని, వాల్‌పేపర్‌ను, స్క్రీన్ సేవర్‌ను, ఇంకా మరిన్నింటిని మార్చడానికి, డెస్క్‌టాప్‌పై తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="3170072451822350649">మీరు సైన్ ఇన్ చేయడాన్ని కూడా దాట వేయవచ్చు. <ph name="LINK_START" />అతిథిగా బ్రౌజ్ చేయవచ్చు<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">ఎడమ వైపున కొత్త ట్యాబ్</translation>
 <translation id="3177909033752230686">పేజీ భాష:</translation>
@@ -3211,8 +3214,8 @@
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">బిల్డ్ వివరాలను కాపీ చేయండి</translation>
 <translation id="4021941025609472374">ఎడమ వైపునకు ట్యాబ్‌లను మూసివేయండి</translation>
+<translation id="402211067068791756">దీని వలన ప్రదర్శించబడిన సైట్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది</translation>
 <translation id="4022426551683927403">నిఘంటువుకు &amp;జోడించు</translation>
-<translation id="4023146161712577481">పరికర కాన్ఫిగరేషన్‌ను గుర్తిస్తోంది.</translation>
 <translation id="4025039777635956441">ఎంపిక చేసిన సైట్‌ను మ్యూట్ చేయి</translation>
 <translation id="4028467762035011525">ఇన్‌పుట్ విధానాలను జోడించండి</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> పేజీ నుండి వెనక్కి వెళ్ళు</translation>
@@ -3462,6 +3465,7 @@
 <translation id="4281844954008187215">సర్వీస్ నియమాలు</translation>
 <translation id="4282196459431406533">Smart Lock ఆన్‌లో ఉంది</translation>
 <translation id="4284755288573763878">మెరుగుపరచబడిన సెక్యూరిటీని ఆఫ్ చేయాలా?</translation>
+<translation id="4284903252249997120">ChromeVox స్క్రీన్ రీడర్, వినడానికి ఎంచుకోండి ఫీచర్</translation>
 <translation id="4285418559658561636">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="428565720843367874">ఈ ఫైల్‌ను స్కాన్ చేస్తున్నప్పుడు ఊహించని విధంగా యాంటీ-వైరస్ సాఫ్ట్‌వేర్ విఫలమైంది.</translation>
@@ -5003,6 +5007,7 @@
 <translation id="5827733057563115968">తదుపరి పద సూచన</translation>
 <translation id="5828545842856466741">ప్రొఫైల్‌ను జోడించండి...</translation>
 <translation id="5828633471261496623">ముద్రిస్తోంది...</translation>
+<translation id="5828797982387013521">గైడ్‌లైన్ కిట్‌ను ఎంచుకోండి</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" />‌ను తెరవడం సాధ్యపడదు</translation>
 <translation id="5830720307094128296">&amp;లాగా పేజీని సేవ్ చేయి...</translation>
 <translation id="5832813618714645810">ప్రొఫైళ్లు</translation>
@@ -5093,6 +5098,7 @@
 
   పబ్లిక్ ఘాతాంశం (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> బిట్‌లు):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">ఆటోమేటిక్ రీడింగ్</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
 <translation id="5920543303088087579">ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడాన్ని మీ నిర్వాహకులు నిలిపివేశారు</translation>
@@ -5378,6 +5384,7 @@
 <translation id="6200151268994853226">ఎక్స్‌టెన్షన్‌ను మేనేజ్ చేయండి</translation>
 <translation id="6201608810045805374">ఈ ఖాతాను తీసివేయాలా?</translation>
 <translation id="6202304368170870640">మీరు మీ పిన్‌ని ఉపయోగించి మీ పరికరంలో సైన్ ఇన్ చేయవచ్చు లేదా అన్‌లాక్ చేయవచ్చు.</translation>
+<translation id="6206199626856438589">తెరిచిన ట్యాబ్‌లతో సహా ప్రదర్శించబడిన సైట్‌ల నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="6206311232642889873">చిత్రాన్ని కా&amp;పీ చేయండి</translation>
 <translation id="6207200176136643843">డిఫాల్ట్ జూమ్ స్థాయికి రీసెట్ చేయి</translation>
 <translation id="6207937957461833379">దేశం/ప్రాంతం</translation>
@@ -5924,6 +5931,7 @@
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' క్రియేట్ చేయబడింది.</translation>
 <translation id="6735304988756581115">కుక్కీలు మరియు ఇతర సైట్ డేటాను చూపించు...</translation>
 <translation id="6736243959894955139">అడ్రస్‌</translation>
+<translation id="6737393581255281855">ప్రదర్శించబడిన డేటాను క్లియర్ చేయాలా?</translation>
 <translation id="6737663862851963468">Kerberos టిక్కెట్‌ను తీసివేయండి</translation>
 <translation id="6738430949033571771">ఖాతాను వెరిఫై చేస్తోంది...</translation>
 <translation id="6739923123728562974">డెస్క్‌టాప్ షార్ట్‌క‌ట్‌ను చూపు</translation>
@@ -7215,6 +7223,7 @@
 <translation id="7988355189918024273">సులభంగా యాక్సెస్‌ చేసే ఫీచ‌ర్‌లను ప్రారంభించు</translation>
 <translation id="7988805580376093356">మీ OSను అలానే ఉంచి, USB నుండి <ph name="DEVICE_OS" />‌ను రన్ చేయండి.</translation>
 <translation id="7991296728590311172">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
+<translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
 <translation id="7999229196265990314">ఈ కింది ఫైళ్ళను సృష్టించింది:
 
@@ -7598,6 +7607,7 @@
 <translation id="8366396658833131068">మీ నెట్‌వర్క్ కనెక్టివిటీ పునరుద్ధరించబడింది. దయచేసి వేరే నెట్‌వర్క్‌ను ఎంచుకోండి లేదా మీ కియోస్క్ యాప్‌ను ప్రారంభించడానికి కింది 'కొనసాగించు' బటన్ నొక్కండి.</translation>
 <translation id="8366694425498033255">ఎంపిక కీలు</translation>
 <translation id="8368859634510605990">&amp;అన్ని బుక్‌మార్క్‌లను తెరువు</translation>
+<translation id="8369028061188107403">దీని వలన ప్రదర్శించబడిన సైట్‌లు, ఇన్‌స్టాల్ చేయబడిన యాప్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది</translation>
 <translation id="8370294614544004647">ల్యాప్‌టాప్ మూసి ఉన్నప్పుడు స్లీప్ స్థితికి వెళ్లు</translation>
 <translation id="8371695176452482769">ఇప్పుడు మాట్లాడండి</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{సైట్‌ను మ్యూట్ చేయి}other{సైట్‌లను మ్యూట్ చేయి}}</translation>

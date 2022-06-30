@@ -100,7 +100,6 @@
 <translation id="1687475363370981210">모두 읽음으로 표시</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1690731385917361335">항목 없음</translation>
-<translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 선택됨</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
 <translation id="1752547299766512813">비밀번호 저장</translation>
@@ -174,7 +173,6 @@
 <translation id="2469960372084740698">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2476359652512522418">선택되지 않음</translation>
-<translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="2500374554657206846">비밀번호 저장 옵션</translation>
 <translation id="2523363575747517183">다른 애플리케이션을 열려는 반복적인 시도가 실행되는 웹사이트입니다.</translation>
 <translation id="2529021024822217800">모두 열기</translation>
@@ -490,7 +488,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="509789154667432072">북마크 추가하기</translation>
 <translation id="5118713593561876160">관심분야</translation>
 <translation id="5118764316110575523">사용 안함</translation>
-<translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
 <translation id="5140288047769711648">Chrome에서 이 비밀번호를 기억합니다. 따라서 기억하지 않아도 됩니다.</translation>
 <translation id="5150492518600715772">기기로 보내기</translation>
@@ -602,7 +599,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="60829778314739003">동의 및 계속</translation>
 <translation id="6084848228346514841">탭 선택</translation>
 <translation id="6103540626693881831">기기 내 암호화</translation>
-<translation id="6108923351542677676">설정 진행 중...</translation>
 <translation id="6119050551270742952">현재 시크릿 모드에서 웹페이지 사용 중</translation>
 <translation id="6122191549521593678">온라인</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>

@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2177831236093724629">‏تم العثور على <ph name="LINK_BEGIN" />مكوّنات غير معتمَدة<ph name="LINK_END" />. للتأكُّد من تحديد جميع المكوّنات المعتمَدة، عليك تحديث نظام التشغيل Chrome إلى أحدث إصدار.</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
+<translation id="2182088270354640012">‏شكرًا على ملاحظاتك. تساعدنا ملاحظاتك في تحسين نظام التشغيل Chrome وسيراجعها فريق نظام التشغيل Chrome. بسبب العدد الكبير من البلاغات التي نتلقّاها، لن يصلك رد مباشر منّا.</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
 <translation id="2212733584906323460">تحليل الأسماء</translation>
 <translation id="2217935453350629363">السرعة الحالية</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">جارٍ إعادة التشغيل…</translation>
 <translation id="2533048460510040082">المحتوى المساعِد المُقترَح</translation>
 <translation id="2536159006530886390">تعذَّر الاتصال بالإنترنت.</translation>
+<translation id="256360469103926202">‏تساعدنا ملاحظاتك في تحسين نظام التشغيل ChromeOS وسيراجعها فريقنا. بسبب العدد الكبير من البلاغات التي نتلقّاها، لن نتمكن من إرسال رد إليك.</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
 <translation id="2619761439309613843">إعادة التحميل يوميًا</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
+<translation id="3275729367986477355">الصورة الرمزية</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> غيغاهرتز</translation>
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">للحصول على مزيد من المساعدة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">خوارزمية الضغط</translation>
 <translation id="4794140124556169553">‏إنّ إجراء اختبار لوحدة المعالجة المركزية (CPU) قد يؤثر في أداء نظامك.</translation>
+<translation id="4800589996161293643">‏منتدى Chromebook</translation>
 <translation id="4804818685124855865">إلغاء الربط</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4809927044794281115">المظهر الفاتح</translation>
@@ -488,6 +492,7 @@
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
+<translation id="522307662484862935">عدم تضمين عنوان بريد إلكتروني</translation>
 <translation id="5227902338748591677">الجدول الزمني للمظهر الداكن</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5252456968953390977">تجوال</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">تفعيل المظهر الداكن</translation>
 <translation id="6295178529664209245">هل تريد مواصلة الإصلاح؟</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
+<translation id="631063167932043783">تطبيق "استكشاف"</translation>
 <translation id="6319207335391420837">تحديث البرامج الثابتة على <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">تفعيل شاشة التوقف</translation>
 <translation id="6325525973963619867">إخفاق</translation>
@@ -721,6 +727,7 @@
 <translation id="7297226631177386107">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTPS.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
+<translation id="7308203371573257315">‏طرح الأسئلة على الخبراء في منتدى مساعدة Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
@@ -763,6 +770,7 @@
 <translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
 <translation id="7747039790905080783">المفتاح المشترَك مسبقًا</translation>
 <translation id="7762130827864645708">تم تغيير كلمة المرور بنجاح. يُرجى استخدام كلمة المرور الجديدة من الآن فصاعدًا.</translation>
+<translation id="7762839321248874531">إرسال <ph name="BEGIN_LINK1" />معلومات النظام والتطبيق<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">مطابقة لاحقة النطاق</translation>
 <translation id="7769672763586021400">رقم تعريف النموذج</translation>
 <translation id="7784116172884276937">لم يتم ضبط أي خوادم لنظام أسماء النطاقات.</translation>
@@ -832,6 +840,7 @@
 <translation id="8382302752385457774">العلامة التجارية الجديدة</translation>
 <translation id="8395584934117017006">تُدير المؤسسة جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="8398927464629426868">معدّل شحن الجهاز أو تفريغ شحنه حاليًا</translation>
+<translation id="8420955526972171689">يمكنك إجراء اختبارات وتحديد مشاكل الجهاز وحلّها.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">لوحة مفاتيح مدمَجة</translation>
 <translation id="8431300646573772016">‏الجديد في نظام Chrome</translation>

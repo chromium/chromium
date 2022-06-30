@@ -218,6 +218,7 @@
 <translation id="1197199342062592414">시작하기</translation>
 <translation id="11978075283960463">앱에 저장된 데이터: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">비활성화</translation>
+<translation id="1198066799963193307">저시력 음성 도구</translation>
 <translation id="119944043368869598">모두 삭제</translation>
 <translation id="1199814941632954229">다음 인증서 프로필의 인증서가 프로비저닝되는 중입니다</translation>
 <translation id="120069043972472860">시청이 불가능할 정도</translation>
@@ -1512,6 +1513,7 @@
 <translation id="2371076942591664043">완료되면 열기(&amp;D)</translation>
 <translation id="2373666622366160481">용지에 맞춤</translation>
 <translation id="2375406435414127095">휴대전화에 연결</translation>
+<translation id="2376056713414548745">소리내어 읽기</translation>
 <translation id="2377588536920405462">기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>
 <translation id="2377667304966270281">하드 결함</translation>
 <translation id="237828693408258535">이 페이지를 번역하시겠습니까?</translation>
@@ -2340,6 +2342,7 @@
 <translation id="3163511056918491211">언제든지 간편하게 데이터를 복원하거나 기기를 전환하세요. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="3164329792803560526">이 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
 <translation id="3165390001037658081">일부 이동통신사는 이 기능을 차단할 수도 있습니다.</translation>
+<translation id="3169930038976362151">나에게 적합한 테마를 선택하세요. 바탕화면에서 길게 터치하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
 <translation id="31774765611822736">새 좌측 탭</translation>
 <translation id="3177909033752230686">페이지 언어:</translation>
@@ -3213,8 +3216,8 @@
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">빌드 세부정보 복사</translation>
 <translation id="4021941025609472374">좌측 탭 닫기</translation>
+<translation id="402211067068791756">표시된 사이트에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="4022426551683927403">사전에 추가(&amp;A)</translation>
-<translation id="4023146161712577481">기기 설정을 확인합니다.</translation>
 <translation id="4025039777635956441">선택한 사이트 음소거</translation>
 <translation id="4028467762035011525">입력 방법 추가</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> 페이지에서 돌아오기</translation>
@@ -3462,6 +3465,7 @@
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4282196459431406533">Smart Lock이 사용 설정됨</translation>
 <translation id="4284755288573763878">강력한 보안 기능을 사용 중지하시겠습니까?</translation>
+<translation id="4284903252249997120">ChromeVox 스크린 리더 및 텍스트 읽어주기</translation>
 <translation id="4285418559658561636">비밀번호 업데이트</translation>
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428565720843367874">파일을 검사하는 동안 바이러스 백신 소프트웨어에 예기치 않은 오류가 발생했습니다.</translation>
@@ -5003,6 +5007,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5827733057563115968">다음 예상 단어</translation>
 <translation id="5828545842856466741">프로필 추가...</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
+<translation id="5828797982387013521">플레이북 선택</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> 앱을 열 수 없습니다</translation>
 <translation id="5830720307094128296">페이지를 다른 이름으로 저장(&amp;A)...</translation>
 <translation id="5832813618714645810">프로필</translation>
@@ -5093,6 +5098,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 
   Public Exponent(<ph name="PUBLIC_EXPONENT_NUM_BITS" />비트):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">자동 읽기</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="59174027418879706">사용 가능</translation>
 <translation id="5920543303088087579">관리자가 이 네트워크에 연결할 수 없도록 설정했습니다.</translation>
@@ -5378,6 +5384,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6200151268994853226">확장 프로그램 관리</translation>
 <translation id="6201608810045805374">계정을 삭제하시겠습니까?</translation>
 <translation id="6202304368170870640">PIN을 사용하여 로그인하거나 기기를 잠금 해제할 수 있습니다.</translation>
+<translation id="6206199626856438589">열려 있는 탭을 포함하여 표시된 사이트에서 로그아웃됩니다.</translation>
 <translation id="6206311232642889873">이미지 복사(&amp;Y)</translation>
 <translation id="6207200176136643843">기본 확대/축소 수준으로 재설정</translation>
 <translation id="6207937957461833379">국가/지역</translation>
@@ -5924,6 +5931,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' 항목이 생성되었습니다.</translation>
 <translation id="6735304988756581115">쿠키 및 기타 사이트 데이터 표시...</translation>
 <translation id="6736243959894955139">주소</translation>
+<translation id="6737393581255281855">표시된 데이터를 삭제하시겠습니까?</translation>
 <translation id="6737663862851963468">Kerberos 티켓 삭제</translation>
 <translation id="6738430949033571771">계정 확인 중...</translation>
 <translation id="6739923123728562974">바탕화면 바로가기 표시</translation>
@@ -7217,6 +7225,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7988355189918024273">접근성 기능 사용</translation>
 <translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
+<translation id="7992203134935383159">음성 합성</translation>
 <translation id="7997826902155442747">프로세스 우선순위</translation>
 <translation id="7999229196265990314">생성된 파일:
         
@@ -7603,6 +7612,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8366396658833131068">네트워크 연결이 복원되었습니다. 키오스크 앱을 실행하려면 다른 네트워크를 선택하거나 아래에서 '계속' 버튼을 누르세요.</translation>
 <translation id="8366694425498033255">선택 키</translation>
 <translation id="8368859634510605990">모든 북마크 열기(&amp;O)</translation>
+<translation id="8369028061188107403">표시된 사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="8370294614544004647">노트북을 닫으면 절전 모드 시작</translation>
 <translation id="8371695176452482769">말하세요</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{사이트 숨기기}other{사이트 숨기기}}</translation>

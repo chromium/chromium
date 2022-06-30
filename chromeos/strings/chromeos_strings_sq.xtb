@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
 <translation id="2177831236093724629">U gjetën <ph name="LINK_BEGIN" />komponentë të pakualifikuar<ph name="LINK_END" />. Për t'u siguruar që të gjithë komponentët janë identifikuar, përditëso Chrome OS me versionin më të fundit.</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
+<translation id="2182088270354640012">Faleminderit për komentet. Komentet e tua ndihmojnë në përmirësimin e Chrome OS dhe do të rishikohen nga ekipi i Chrome OS. Për shkak të numrit të raportimeve të dërguara, nuk do të marrësh një përgjigje të drejtpërdrejtë.</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
 <translation id="2212733584906323460">Zgjidhja e emrit</translation>
 <translation id="2217935453350629363">Shpejtësia aktuale</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Po riniset...</translation>
 <translation id="2533048460510040082">Përmbajtjet e sugjeruara të ndihmës</translation>
 <translation id="2536159006530886390">S'mund të lidhet me internetin.</translation>
+<translation id="256360469103926202">Komentet e tua ndihmojnë në përmirësimin e ChromeOS dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Për ta konfiguruar, shko te "Cilësimet"</translation>
 <translation id="2619761439309613843">Rifreskimi i përditshëm</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
+<translation id="3275729367986477355">Imazhi i simbolit</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifiko skedarin}other{Modifiko skedarët}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Drejtimi i çelësit</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Për më shumë ndihmë, shko te <ph name="BEGIN_LINK" />Qendra e ndihmës<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmi i ngjeshjes</translation>
 <translation id="4794140124556169553">Ekzekutimi i një testimi të CPU-së mund të ketë ndikim te cilësia e funksionimit të sistemit</translation>
+<translation id="4800589996161293643">Komuniteti i Chromebook</translation>
 <translation id="4804818685124855865">Shkëputu</translation>
 <translation id="4808449224298348341">U anulua printimi i "<ph name="DOCUMENT_TITLE" />"</translation>
 <translation id="4809927044794281115">Tema e ndriçuar</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Dil</translation>
+<translation id="522307662484862935">Mos e përfshi adresën e email-it</translation>
 <translation id="5227902338748591677">Planifikimi i temës së errët</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5252456968953390977">Në roaming</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
 <translation id="6295178529664209245">Të vazhdohet riparimi?</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
+<translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="6325525973963619867">Dështoi</translation>
@@ -719,6 +725,7 @@
 <translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Pyet ekspertët në forumin e ndihmës për Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin në "Kërko në Google".</translation>
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
@@ -761,6 +768,7 @@
 <translation id="773153675489693198">Numri i cikleve</translation>
 <translation id="7747039790905080783">Çelës i ndarë paraprakisht</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
+<translation id="7762839321248874531">Dërgo <ph name="BEGIN_LINK1" />informacionet e sistemit dhe të aplikacionit<ph name="END_LINK1" />, si dhe <ph name="BEGIN_LINK2" />metrikën<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
 <translation id="7784116172884276937">Nuk është konfiguruar asnjë server DNS</translation>
@@ -830,6 +838,7 @@
 <translation id="8382302752385457774">Etiketa e bardhë</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
+<translation id="8420955526972171689">Ekzekuto teste dhe zgjidhjen e problemeve për problemet e harduerit</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Tastierë e brendshme</translation>
 <translation id="8431300646573772016">Të rejat me ChromeOS</translation>

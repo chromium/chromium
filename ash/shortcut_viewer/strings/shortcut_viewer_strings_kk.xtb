@@ -65,11 +65,11 @@
 <translation id="2914313326123580426">Әзірлеуші құралдары панелін көрсету немесе жасыру</translation>
 <translation id="292495055542441795">Толық экранды қосу/өшіру</translation>
 <translation id="3020183492814296499">Перне тіркесімдері</translation>
-<translation id="3084301071537457911">Сөредегі келесі элементті бөлектеу</translation>
-<translation id="309173601632226815">Сөредегі іске қосу түймесін бөлектеу</translation>
+<translation id="3084301071537457911">Сөредегі келесі элементті ерекшелеу</translation>
+<translation id="309173601632226815">Сөредегі іске қосу түймесін ерекшелеу</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Мекенжай жолағына өту</translation>
-<translation id="3256109297135787951">Сөредегі элементтің бөлектенуін өшіру</translation>
+<translation id="3256109297135787951">Сөредегі элементтің ерекшеленуін өшіру</translation>
 <translation id="3288816184963444640">Ағымдағы терезені жабу</translation>
 <translation id="3322797428033495633">"Суреттегі сурет" терезесіне өтіңіз.</translation>
 <translation id="3350805006883559974">Белсенді терезені жоғары жылжыту</translation>
@@ -87,7 +87,7 @@
 <translation id="3720939646656082033">Сілтемені жаңа қойындыда ашу және жаңа қойындыға ауысу</translation>
 <translation id="3725795051337497754">Ағымдағы қойындыны жабу</translation>
 <translation id="3751033133896282964">Соңғы әрекетті қайтару</translation>
-<translation id="3792178297143798024">Сөредегі бөлектелген элементті ашу</translation>
+<translation id="3792178297143798024">Сөредегі ерекшеленген элементті ашу</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1-ден 8-ге дейін</translation>
 <translation id="3837047332182291558">Пернетақта жарықтығын арттыру (тек артқы жарығы бар пернетақталар үшін)</translation>
 <translation id="3949671998904569433">үтір</translation>
@@ -100,7 +100,7 @@
 <translation id="4092538597492297615">Таңдалған мазмұнды буферге көшіру</translation>
 <translation id="4101772068965291327">Негізгі бетті ашу</translation>
 <translation id="4123108089450197101">Сілтемені бетбелгі ретінде сақтау</translation>
-<translation id="4141203561740478845">Мекенжай жолағы бар жолды бөлектеу</translation>
+<translation id="4141203561740478845">Мекенжай жолағы бар жолды ерекшелеу</translation>
 <translation id="4148761611071495477"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="G" /> немесе <ph name="ENTER" /></translation>
 <translation id="4240486403425279990">Шолу режимі</translation>
 <translation id="4382340674111381977">Алдыңғы бетке өту</translation>
@@ -154,14 +154,14 @@
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Жолдың соңына енгізілетін мәтінді таңдау</translation>
 <translation id="6425378783626925378">Сөредегі 1-8 арасындағы белгішелерді басу</translation>
-<translation id="6435207348963613811">Сөредегі алдыңғы элементті бөлектеу</translation>
+<translation id="6435207348963613811">Сөредегі алдыңғы элементті ерекшелеу</translation>
 <translation id="6445033640292336367">Қойындыны бастапқы орнына қайтару</translation>
 <translation id="6474744297082284761">Кішірейту (қондырылған НЕМЕСЕ толық экран ұлғайтқышы қосылған кезде)</translation>
 <translation id="649811797655257835">Файлды таңдап, <ph name="SPACE" /> пернесін басыңыз</translation>
 <translation id="6515089016094047210">Calendar виджетін ашу немесе жабу.</translation>
 <translation id="6551886416582667425">Экранның бір бөлігінің скриншотын/жазбасын жасау</translation>
 <translation id="6556040137485212400">Ең ұзақ уақыт бойы пайдаланылмаған терезені ашу</translation>
-<translation id="666343722268997814">Бөлектелген элемент үшін контекстік мәзірді ашу</translation>
+<translation id="666343722268997814">Ерекшеленген элемент үшін контекстік мәзірді ашу</translation>
 <translation id="6671538777808758331">Іздеу нәтижелерінің келесі сәйкестігіне өту</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> немесе <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">Терезені сол жаққа бекіту</translation>
@@ -176,7 +176,7 @@
 <translation id="7020813747703216897">Сәйкес нәтижелер табылмады</translation>
 <translation id="7025325401470358758">Келесі тақта</translation>
 <translation id="7076878155205969899">Дыбысын өшіру</translation>
-<translation id="7077383985738259936">Бетбелгілер жолағын (көрсетіліп тұрса) ерекшелеу немесе бөлектеу</translation>
+<translation id="7077383985738259936">Бетбелгілер жолағын (көрсетіліп тұрса) ерекшелеу немесе ерекшелеу</translation>
 <translation id="7237562915163138771">Мекенжай жолағына веб-мекенжайды енгізіп, <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" /> пернелерін басыңыз.</translation>
 <translation id="7254764037241667478">Құрылғыны ұйқы (уақытша тоқтату) режиміне қою</translation>
 <translation id="7422707470576323858">Келесі енгізу әдісіне ауыстырады</translation>

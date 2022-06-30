@@ -100,7 +100,6 @@
 <translation id="1687475363370981210">အားလုံးကို ဖတ်ပြီးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
 <translation id="1690731385917361335">အကြောင်းအရာမရှိပါ</translation>
-<translation id="1692118695553449118">စင့်က်ကို ဖွင့်ထား</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ရွေးချယ်ထားသည်</translation>
 <translation id="1740468249224277719">ထည့်သွင်းရန် နှစ်ချက်တို့ပါ။</translation>
 <translation id="1752547299766512813">စကားဝှက်များ သိမ်ဆည်းမည်</translation>
@@ -174,7 +173,6 @@
 <translation id="2469960372084740698">ဘေးကင်းစွာ ကြည့်ရှုခြင်းကို ပိတ်မလား။</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> အတွက် စကားဝှက်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="2476359652512522418">ရွေးမထားပါ</translation>
-<translation id="2497852260688568942">စင့်ခ်ပြုလုပ်ခြင်းကို သင့်စီမံခန့်ခွဲသူက ပိတ်ဆို့ထားပါသည်</translation>
 <translation id="2500374554657206846">'စကားဝှက် သိမ်းရန်' ရွေးစရာများ</translation>
 <translation id="2523363575747517183">ဤဝဘ်ဆိုက်က နောက်ထပ် အပလီကေးရှင်းတစ်ခုကို ထပ်တလဲလဲ ဖွင့်နေပါသည်။</translation>
 <translation id="2529021024822217800">အားလုံးကို ဖွင့်ရန်</translation>
@@ -326,6 +324,7 @@
 <translation id="369349502275246497">စကားဝှက်သိမ်းရန် ကမ်းလှမ်းချက်</translation>
 <translation id="3709582977625132201">မဖတ်ရသေးအဖြစ် မှတ်သားရန်</translation>
 <translation id="371230970611282515">အန္တရာယ်ရှိသည့် ဖြစ်ရပ်များ မဖြစ်ပွားမီ ခန့်မှန်းပြီး သင့်အား သတိပေးသည်။</translation>
+<translation id="37207012422556617">ခေတ်စားနေသည့် ရှာဖွေမှုများ</translation>
 <translation id="3740397331642243698">ထည့်သွင်းထားသော URL များကို Google Chrome ရုပ်ဖျက်မုဒ်တွင် ဖွင့်သည်။</translation>
 <translation id="3762232513783804601">သင့် iPad အတွက် ပြုလုပ်ထားသည်</translation>
 <translation id="3771033907050503522">ကိုယ်ပျောက် တဲဘ်များ</translation>
@@ -489,7 +488,6 @@
 <translation id="509789154667432072">လိပ်စာထည့်ရန်</translation>
 <translation id="5118713593561876160">စိတ်ဝင်စားမှုများ</translation>
 <translation id="5118764316110575523">ပိတ်ထားသည်</translation>
-<translation id="5127805178023152808">စင့် ပိတ်ထား၏</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
 <translation id="5140288047769711648">Chrome က ဤစကားဝှက်ကို သင့်အတွက် မှတ်ထားပေးပါမည်။ သင်မှတ်ထားစရာ မလိုပါ။</translation>
 <translation id="5150492518600715772">သင့်စက်သို့ ပို့ရန်</translation>
@@ -600,7 +598,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="60829778314739003">လက်ခံပြီး ရှေ့ဆက်ရန်</translation>
 <translation id="6084848228346514841">တဘ်ရွေးပါ</translation>
 <translation id="6103540626693881831">စက်တွင်ပါသော အသွင်ဝှက်စနစ်</translation>
-<translation id="6108923351542677676">စဖွင့် သတ်မှတ်မှု လုပ်ကိုင်…</translation>
 <translation id="6119050551270742952">လက်ရှိဝဘ်စာမျက်နှာကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ထားသည်</translation>
 <translation id="6122191549521593678">အွန်လိုင်း</translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>

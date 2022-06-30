@@ -16,7 +16,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
-<translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks</translation>
+<translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks.</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Promedio (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Activar el modo oscuro</translation>
 <translation id="2177831236093724629">Se encontraron <ph name="LINK_BEGIN" />componentes no calificados<ph name="LINK_END" />. Actualiza Chrome OS a la versión más reciente para asegurarte de que se identifiquen todos los componentes calificados.</translation>
 <translation id="2180197493692062006">Se produjo un error. Intenta volver a abrir la app.</translation>
+<translation id="2182088270354640012">Gracias por los comentarios. Tus comentarios ayudan a mejorar Chrome OS. Nuestro equipo los revisará. Debido a la cantidad de informes enviados, no recibirás una respuesta directa.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Reiniciando…</translation>
 <translation id="2533048460510040082">Contenido de ayuda sugerido</translation>
 <translation id="2536159006530886390">No puedo conectarme a Internet.</translation>
+<translation id="256360469103926202">Tus comentarios ayudan a mejorar Chrome OS. Nuestro equipo los revisará. Debido a la gran cantidad de informes, no podremos enviarte una respuesta.</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
 <translation id="2619761439309613843">Cambiar diario</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
+<translation id="3275729367986477355">Imagen de avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Dirección de la clave</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Si tienes otros inconvenientes, visita el <ph name="BEGIN_LINK" />Centro de ayuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Ejecutar una prueba de CPU puede afectar el rendimiento de tu sistema.</translation>
+<translation id="4800589996161293643">Comunidad de Chromebook</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Tema claro</translation>
@@ -488,6 +492,7 @@
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Salir</translation>
+<translation id="522307662484862935">No incluir una dirección de correo electrónico</translation>
 <translation id="5227902338748591677">Programación del tema oscuro</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5252456968953390977">Itinerancia:</translation>
@@ -614,6 +619,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6284632978374966585">Activar el tema oscuro</translation>
 <translation id="6295178529664209245">¿Deseas continuar con la reparación?</translation>
 <translation id="6302401976930124515">Se canceló la prueba de <ph name="TEST_NAME" /></translation>
+<translation id="631063167932043783">App Explorar</translation>
 <translation id="6319207335391420837">Actualizar el firmware en <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar el protector de pantalla</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
@@ -720,6 +726,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7297226631177386107">No se puede establecer conexión con los sitios web HTTPS a través del firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Pregúntales a los expertos en el foro de ayuda de Chromebook.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Presiona la tecla de búsqueda+barra espaciadora para ver el resultado en la Búsqueda de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
@@ -762,6 +769,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="773153675489693198">Conteo de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
 <translation id="7762130827864645708">El cambio de contraseña se hizo correctamente. De ahora en más, utiliza la nueva contraseña.</translation>
+<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />información del sistema y las apps<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Coincidencia del sufijo de dominio</translation>
 <translation id="7769672763586021400">ID del modelo</translation>
 <translation id="7784116172884276937">No hay ningún servidor DNS configurado</translation>
@@ -831,6 +839,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8382302752385457774">Etiqueta blanca</translation>
 <translation id="8395584934117017006">Una empresa administra el dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
+<translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado interno</translation>
 <translation id="8431300646573772016">Novedades de Chrome OS</translation>

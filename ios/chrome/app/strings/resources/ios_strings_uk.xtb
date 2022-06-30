@@ -100,7 +100,6 @@
 <translation id="1687475363370981210">Позначити всі як прочитані</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1690731385917361335">Нічого немає</translation>
-<translation id="1692118695553449118">Синхронізацію ввімкнено</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
 <translation id="1752547299766512813">Зберігати паролі</translation>
@@ -174,7 +173,6 @@
 <translation id="2469960372084740698">Вимкнути Безпечний перегляд?</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не вибрано</translation>
-<translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="2500374554657206846">Опції для збереження паролів</translation>
 <translation id="2523363575747517183">Цей веб-сайт періодично намагається відкрити інший додаток.</translation>
 <translation id="2529021024822217800">Відкрити всі</translation>
@@ -326,6 +324,7 @@
 <translation id="369349502275246497">Пропонувати зберігати паролі</translation>
 <translation id="3709582977625132201">Позначити як непрочитане</translation>
 <translation id="371230970611282515">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться.</translation>
+<translation id="37207012422556617">Популярні запити</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3762232513783804601">Створено для iPad</translation>
 <translation id="3771033907050503522">Анонімні вкладки</translation>
@@ -489,7 +488,6 @@
 <translation id="509789154667432072">Додати закладку</translation>
 <translation id="5118713593561876160">Інтереси</translation>
 <translation id="5118764316110575523">Вимк.</translation>
-<translation id="5127805178023152808">Синхронізацію вимкнено</translation>
 <translation id="5132942445612118989">Синхронізуйте свої паролі, історію тощо на всіх пристроях</translation>
 <translation id="5140288047769711648">Chrome збереже цей пароль. Вам не потрібно його запам’ятовувати.</translation>
 <translation id="5150492518600715772">Надіслати на ваш пристрій</translation>
@@ -601,7 +599,6 @@
 <translation id="60829778314739003">Прийняти та продовжити</translation>
 <translation id="6084848228346514841">Виберіть вкладки</translation>
 <translation id="6103540626693881831">Шифрування на пристрої</translation>
-<translation id="6108923351542677676">Виконується налаштування…</translation>
 <translation id="6119050551270742952">Поточна сторінка в анонімному режимі</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6127379762771434464">Веб-сайт видалено</translation>

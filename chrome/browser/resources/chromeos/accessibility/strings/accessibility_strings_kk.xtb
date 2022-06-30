@@ -150,7 +150,7 @@
 <translation id="1923956950274750765">Орташа күлгін</translation>
 <translation id="1928932365747995741">Алдыңғы өзгертілетін мəтін өрісі жоқ.</translation>
 <translation id="1964135212174907577">Келесі нысан</translation>
-<translation id="1966649499058910679">Айтылған әр сөзді бөлектеу</translation>
+<translation id="1966649499058910679">Айтылған әр сөзді ерекшелеу</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox мәзірлерінде Брайль пәрмендерін көрсету</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{сол жақ тік жақша}other{# сол жақ тік жақша}}</translation>
@@ -984,11 +984,11 @@
 <translation id="7842115774595115751">Навигацияның басқару элементтерін іске қосу</translation>
 <translation id="7846634333498149051">Пернетақта</translation>
 <translation id="7851816175263618915">Кейбір тыныс белгілері</translation>
-<translation id="7871691770940645922">Виртуалды Браиль дисплейі</translation>
+<translation id="7871691770940645922">Виртуалдық Браиль дисплейі</translation>
 <translation id="7882421473871500483">Қоңыр</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Келесі 2-деңгей тақырыбы жоқ.</translation>
-<translation id="7914870167134465181">Бөлектеу</translation>
+<translation id="7914870167134465181">Ерекшелеу</translation>
 <translation id="7927711904086083099">Таңдалмаған</translation>
 <translation id="7935627501098484003">Уақытты бақылау</translation>
 <translation id="7939428177581522200">таңдауға қосылды</translation>

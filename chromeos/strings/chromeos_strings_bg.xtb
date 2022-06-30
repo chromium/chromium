@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Включване на тъмния режим</translation>
 <translation id="2177831236093724629">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. За да бъдат идентифицирани всички отговарящи на изискванията компоненти, актуализирайте до най-новата версия на Chrome OS.</translation>
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
+<translation id="2182088270354640012">Благодарим за отзивите. Те ще помогнат за подобряването на Chrome OS и ще бъдат прегледани от екипа на операционната система. Поради броя на подадените сигнали няма да получите директен отговор.</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
 <translation id="2212733584906323460">Преобразуване на името</translation>
 <translation id="2217935453350629363">Текуща скорост</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Рестартира се…</translation>
 <translation id="2533048460510040082">Предложено помощно съдържание</translation>
 <translation id="2536159006530886390">Няма връзка с интернет.</translation>
+<translation id="256360469103926202">Отзивите ви помагат за подобряването на ChromeOS и ще бъдат прегледани от екипа ни. Поради големия брой сигнали не можем да изпратим отговор.</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2584559707064218956">За настройване отворете „Настройки“</translation>
 <translation id="2619761439309613843">Ежедневно опресняване</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
+<translation id="3275729367986477355">Изображение на аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редактиране на файла}other{Редактиране на файловете}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГХц</translation>
 <translation id="3291996639387199448">Посока на ключа</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">За още помощ отворете <ph name="BEGIN_LINK" />Помощния център<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритъм за компресиране</translation>
 <translation id="4794140124556169553">Провеждането на тест за процесора може да повлияе на производителността на системата ви</translation>
+<translation id="4800589996161293643">Общността на Chromebook</translation>
 <translation id="4804818685124855865">Изключване</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>
 <translation id="4809927044794281115">Светла тема</translation>
@@ -488,6 +492,7 @@
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Изход</translation>
+<translation id="522307662484862935">Без имейл адрес</translation>
 <translation id="5227902338748591677">График за тъмната тема</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">Включване на тъмната тема</translation>
 <translation id="6295178529664209245">Искате ли да продължите ремонта?</translation>
 <translation id="6302401976930124515">Тестът „<ph name="TEST_NAME" />“ бе прекратен</translation>
+<translation id="631063167932043783">Приложение Explore</translation>
 <translation id="6319207335391420837">Актуализиране на фърмуера на <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Включване на скрийнсейвъра</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Попитайте експертите в Помощния форум за Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">Брой цикли</translation>
 <translation id="7747039790905080783">Предварително споделен ключ</translation>
 <translation id="7762130827864645708">Промяната на паролата ви беше успешна. Моля, използвайте новата парола от сега нататък.</translation>
+<translation id="7762839321248874531">Изпращане на <ph name="BEGIN_LINK1" />информация за системата и приложението<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Съответствие на суфикса на домейна</translation>
 <translation id="7769672763586021400">Идент. № на модела</translation>
 <translation id="7784116172884276937">Не са настроени DNS сървъри</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">Бял етикет</translation>
 <translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
 <translation id="8398927464629426868">Скоростта, с която устройството се зарежда или разрежда в момента</translation>
+<translation id="8420955526972171689">Извършвайте тестове и отстранявайте неизправности при проблеми с хардуера</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Вградена клавиатура</translation>
 <translation id="8431300646573772016">Новите неща в Chrome OS</translation>

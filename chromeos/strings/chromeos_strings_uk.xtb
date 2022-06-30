@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2177831236093724629">Виявлено <ph name="LINK_BEGIN" />неналежні компоненти<ph name="LINK_END" />. Щоб ідентифікувати всі належні компоненти, установіть останню версію ОС Chrome.</translation>
 <translation id="2180197493692062006">Сталася помилка. Відкрийте додаток ще раз.</translation>
+<translation id="2182088270354640012">Дякуємо за відгук. Наша команда розгляне його. Він допоможе покращити ОС Chrome. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="2209788852729124853">Скинути лічильники трафіку</translation>
 <translation id="2212733584906323460">Перетворення імені</translation>
 <translation id="2217935453350629363">Поточна швидкість</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Перезапускається…</translation>
 <translation id="2533048460510040082">Рекомендований довідковий контент</translation>
 <translation id="2536159006530886390">Не вдається підключитися до мережі.</translation>
+<translation id="256360469103926202">Наша команда розгляне ваш відгук. Він допоможе покращити ОС Chrome. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
 <translation id="2584559707064218956">Щоб вибрати параметри, перейдіть у налаштування</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
+<translation id="3275729367986477355">Зображення аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редагувати файл}one{Редагувати файли}few{Редагувати файли}many{Редагувати файли}other{Редагувати файли}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Напрямок ключа</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Щоб дізнатися більше, перейдіть у <ph name="BEGIN_LINK" />Довідковий центр<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритм стиснення</translation>
 <translation id="4794140124556169553">Активна перевірка ЦП може вплинути на ефективність системи</translation>
+<translation id="4800589996161293643">Спільнота Chromebook</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="4808449224298348341">Завдання друку "<ph name="DOCUMENT_TITLE" />" скасовано</translation>
 <translation id="4809927044794281115">Світла тема</translation>
@@ -488,6 +492,7 @@
 Торкніться значка мікрофона, щоб поставити запитання.</translation>
 <translation id="5212593641110061691">Таблоїд</translation>
 <translation id="5222676887888702881">Вийти</translation>
+<translation id="522307662484862935">Не вказувати електронну адресу</translation>
 <translation id="5227902338748591677">Розклад для темної теми</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5252456968953390977">Роумінг</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">Увімкнути темну тему</translation>
 <translation id="6295178529664209245">Продовжити ремонт?</translation>
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
+<translation id="631063167932043783">Додаток Можливості</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />: оновіть мікропрограму на пристрої</translation>
 <translation id="6321407676395378991">Увімкнути заставку</translation>
 <translation id="6325525973963619867">Помилка</translation>
@@ -642,6 +648,7 @@
 <translation id="6516990319416533844">Щоб перевірити швидкість заряджання акумулятора, максимально використайте його заряд протягом короткого періоду часу</translation>
 <translation id="6517239166834772319">Можливості</translation>
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
+<translation id="6535178685492749208">Ви не в мережі. Відгук буде надіслано пізніше.</translation>
 <translation id="65587193855025101">Планшетний сканер</translation>
 <translation id="6564646048574748301">Не надруковано – принтер недоступний</translation>
 <translation id="6566314079205407217">Сканування кількох сторінок</translation>
@@ -720,6 +727,7 @@
 <translation id="7297226631177386107">Не вдається підключитися до веб-сайтів HTTPS через брандмауер</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Ставте запитання спеціалістам на довідковому форуму Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
@@ -762,6 +770,7 @@
 <translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7747039790905080783">Спільний ключ</translation>
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>
+<translation id="7762839321248874531">Надсилати <ph name="BEGIN_LINK1" />інформацію про систему й додатки<ph name="END_LINK1" />, а також <ph name="BEGIN_LINK2" />показники<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
@@ -831,6 +840,7 @@
 <translation id="8382302752385457774">Бренд продавця</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
+<translation id="8420955526972171689">Проводьте тести й вирішуйте проблеми з апаратним забезпеченням</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Вбудована клавіатура</translation>
 <translation id="8431300646573772016">Нові функції ОС Chrome</translation>

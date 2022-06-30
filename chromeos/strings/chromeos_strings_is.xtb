@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Kveikja á dökku þema</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Ósamhæfir íhlutir<ph name="LINK_END" /> fundust. Til að tryggja að allir fullgildir íhlutir séu auðkenndir skaltu uppfæra Chrome OS í nýjustu útgáfuna.</translation>
 <translation id="2180197493692062006">Eitthvað fór úrskeiðis. Prófaðu að opna forritið aftur.</translation>
+<translation id="2182088270354640012">Takk fyrir ábendinguna. Ábendingin þín verður yfirfarin af starfsfólki Chrome OS og hún hjálpar okkur að bæta Chrome OS. Vegna fjölda innsendra tilkynninga muntu ekki fá beint svar.</translation>
 <translation id="2209788852729124853">Endurstilla talningu umferðar</translation>
 <translation id="2212733584906323460">Sundurgreining heita</translation>
 <translation id="2217935453350629363">Núverandi hraði</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Endurræsir…</translation>
 <translation id="2533048460510040082">Ráðlagt hjálparefni</translation>
 <translation id="2536159006530886390">Ekki er hægt að tengjast netinu.</translation>
+<translation id="256360469103926202">Ábendingin þín verður yfirfarin af starfsfólki okkar og hún hjálpar okkur að bæta ChromeOS. Vegna fjölda tilkynninga höfum við ekki tök á því að svara.</translation>
 <translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Opnaðu stillingarnar til að setja þetta upp.</translation>
 <translation id="2619761439309613843">Uppfæra daglega</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Leitar að skönnum</translation>
 <translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
+<translation id="3275729367986477355">Notandamynd</translation>
 <translation id="3283504360622356314">{0,plural, =1{Breyta skrá}one{Breyta skrám}other{Breyta skrám}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Lykilstefna</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Opnaðu <ph name="BEGIN_LINK" />hjálparmiðstöðina<ph name="END_LINK" /> til að fá frekari aðstoð.</translation>
 <translation id="4793756956024303490">Þjöppunarreiknirit</translation>
 <translation id="4794140124556169553">Keyrsla örgjörvaprófs kann að hafa áhrif á afköst kerfisins</translation>
+<translation id="4800589996161293643">Chromebook samfélagið</translation>
 <translation id="4804818685124855865">Aftengja</translation>
 <translation id="4808449224298348341">Hætt við prentverkið <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Ljóst þema</translation>
@@ -488,6 +492,7 @@
 Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Skrá út</translation>
+<translation id="522307662484862935">Ekki láta netfang fylgja</translation>
 <translation id="5227902338748591677">Áætlun dökks þema</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5252456968953390977">Í reiki</translation>
@@ -614,6 +619,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6284632978374966585">Kveikja á dökku þema</translation>
 <translation id="6295178529664209245">Halda viðgerð áfram?</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
+<translation id="631063167932043783">Skoða forrit</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Kveikja á skjávara</translation>
 <translation id="6325525973963619867">Mistókst</translation>
@@ -642,6 +648,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6516990319416533844">Til að prófa hleðsluhraða rafhlöðunnar skaltu láta rafhleðsluna minnka í stutta stund</translation>
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
+<translation id="6535178685492749208">Þú ert ekki á netinu. Ábending verður send síðar.</translation>
 <translation id="65587193855025101">Flatur skanni</translation>
 <translation id="6564646048574748301">Mistókst – ekki næst í prentara</translation>
 <translation id="6566314079205407217">Fjölsíðuskönnun</translation>
@@ -720,6 +727,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7297226631177386107">Ekki er hægt að tengjast HTTPS-vefsvæðum í gegnum eldvegg</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Spyrðu sérfræðingana á hjálparumræðusvæði Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ýttu á leitarhnappinn og bilslána til að skoða niðurstöður í Google leit.</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
@@ -762,6 +770,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="773153675489693198">Fjöldi endurhleðslna</translation>
 <translation id="7747039790905080783">Samnotalykill</translation>
 <translation id="7762130827864645708">Aðgangsorðinu þínu var breytt. Notaðu nýja aðgangsorðið framvegis.</translation>
+<translation id="7762839321248874531">Senda <ph name="BEGIN_LINK1" />upplýsingar um kerfi og forrit<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />mæligildi<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Samsvarandi lénsending</translation>
 <translation id="7769672763586021400">Auðkenni gerðar</translation>
 <translation id="7784116172884276937">Engir DNS-þjónar eru uppsettir</translation>
@@ -831,6 +840,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8382302752385457774">Hvítmiði</translation>
 <translation id="8395584934117017006">Þessu <ph name="DEVICE_TYPE" /> tæki er stjórnað af fyrirtæki</translation>
 <translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
+<translation id="8420955526972171689">Keyra prófanir og úrræðaleit fyrir vandamál í vélbúnaði</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Innbyggt lyklaborð</translation>
 <translation id="8431300646573772016">Nýjungar í ChromeOS</translation>

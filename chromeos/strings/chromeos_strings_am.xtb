@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />ብቁ ያልሆኑ ክፍለ-አካላት<ph name="LINK_END" /> ተገኝቷል። ሁሉም ብቁ ክፍለ-አካላት መለየታቸውን ለማረጋገጥ የእርስዎን Chrome OS ወደ የቅርብ ጊዜው ስሪት ያዘምኑት።</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
+<translation id="2182088270354640012">ለግብረመልሱ እናመሰግናለን። ግብረመልስዎ የChrome ስርዓተ ክወናን ለማሻሽል ይረዳል እና በChrome ስርዓተ ክወና ቡድን ይገመገማል። በገቡት የሪፖርቶች ቁጥር ብዛት ምክንያት ቀጥተኛ መልስ አይደርስዎትም።</translation>
 <translation id="2209788852729124853">የትራፊክ ቆጣሪዎችን ዳግም ያስጀምሩ</translation>
 <translation id="2212733584906323460">የስም ጥራት</translation>
 <translation id="2217935453350629363">የአሁኑ ፍጥነት</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">ዳግም በማስነሳት ላይ…</translation>
 <translation id="2533048460510040082">በአስተያየት የተጠቆመ የእገዛ ይዘት</translation>
 <translation id="2536159006530886390">ከበይነመረቡ ጋር መገናኘት አልተቻለም።</translation>
+<translation id="256360469103926202">ግብረመልስዎ ChromeOSን ለማሻሽል ይረዳል እና በእኛ ቡድን ይገመገማል። በሪፖርቶች ብዛት ምክንያት መልስ መላክ አንችልም።</translation>
 <translation id="2570743873672969996">የ<ph name="TEST_NAME" /> ሙከራን በማሄድ ላይ...</translation>
 <translation id="2584559707064218956">ለማዋቀር ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="2619761439309613843">ዕለታዊ ዕድሳት</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="3268178239013324452">አልተሳካም - በር ክፍት ነው</translation>
+<translation id="3275729367986477355">የአምሳያ ምስል</translation>
 <translation id="3283504360622356314">{0,plural, =1{ፋይል አርትዕ ያድርጉ}one{ፋይሎችን አርትዕ ያድርጉ}other{ፋይሎችን አርትዕ ያድርጉ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />ጊኸ</translation>
 <translation id="3291996639387199448">የቁልፍ አቅጣጫ</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">ለበለጠ እገዛ ወደ <ph name="BEGIN_LINK" />የእገዛ ማዕከል<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="4793756956024303490">የእመቃ ስልተ-ቀመር</translation>
 <translation id="4794140124556169553">የሲፒዩ ሙከራን ማካሄድ በሥርዓትዎ አፈጻጸም ላይ ተጽዕኖ ሊኖረው ይችላል</translation>
+<translation id="4800589996161293643">የChromebook ማህበረሰብ</translation>
 <translation id="4804818685124855865">ግንኙነት አቋርጥ</translation>
 <translation id="4808449224298348341">የተሰረዘ የሕትመት ሥራ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">ነጣ ያለ ገጽታ</translation>
@@ -488,6 +492,7 @@
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>
 <translation id="5212593641110061691">ታብሎይድ</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
+<translation id="522307662484862935">የኢሜይል አድራሻን አያካትቱ</translation>
 <translation id="5227902338748591677">የጠቆር ያለ ገጽታ መርሐግብር</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5252456968953390977">ውሂብን በማዛወር ላይ</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">ጠቆር ያለ ገጽታን አብራ</translation>
 <translation id="6295178529664209245">ጥገና ይቀጥል?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ሙከራ ተሰርዟል</translation>
+<translation id="631063167932043783">መተግበሪያን አስስ</translation>
 <translation id="6319207335391420837">ፊርምዌር በ<ph name="DEVICE_NAME" /> ላይ ያዘምኑ</translation>
 <translation id="6321407676395378991">የማያ ገጽ ማቆያን አብራ</translation>
 <translation id="6325525973963619867">አልተሳካም</translation>
@@ -642,6 +648,7 @@
 <translation id="6516990319416533844">የባትሪ ኃይል መሙያ መጠንን ለመሞከር ባትሪዎ ለአጭር ጊዜ እንዲያልቅ ያድርጉ</translation>
 <translation id="6517239166834772319">ያስሱ</translation>
 <translation id="6527081081771465939">ያልታወቀ የWiFi ደህንነት ፕሮቶኮል</translation>
+<translation id="6535178685492749208">ከመስመር ውጭ ነዎት። ግብረመልስ በኋላ ይላካል።</translation>
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>
 <translation id="6564646048574748301">አልተሳካም - አታሚ የማይደረስበት ነው</translation>
 <translation id="6566314079205407217">ባለብዙ ገጽ ቅኝት</translation>
@@ -720,6 +727,7 @@
 <translation id="7297226631177386107">በኬላ በኩል ወደ ኤችቲቲፒኤስ ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
+<translation id="7308203371573257315">በChromebook የእገዛ ውይይት መድረክ ላይ የሚገኙ ባለሙያዎችን ይጠይቁ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በGoogle ፍለጋ ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
@@ -762,6 +770,7 @@
 <translation id="773153675489693198">የዑደት ብዛት</translation>
 <translation id="7747039790905080783">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="7762130827864645708">የይለፍ ቃልዎ ለውጥ ተሳክቷል። እባክዎ ከአሁን በኋላ አዲሱን የይለፍ ቃል ይጠቀሙ።</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />የስርዓት እና መተግበሪያ መረጃ<ph name="END_LINK1" />ን እና <ph name="BEGIN_LINK2" />መለኪያዎች<ph name="END_LINK2" />ን ላክ</translation>
 <translation id="7763470514545477072">የጎራ ድኅረ ቅጥያ ዝምድና</translation>
 <translation id="7769672763586021400">የሞዴል መታወቂያ</translation>
 <translation id="7784116172884276937">ምንም የዲኤንኤስ አገልጋዮች አልተዋቀሩም</translation>
@@ -831,6 +840,7 @@
 <translation id="8382302752385457774">ነጭ-መሰየሚያ</translation>
 <translation id="8395584934117017006">ይህ <ph name="DEVICE_TYPE" /> በድርጅት የሚተዳደር ነው</translation>
 <translation id="8398927464629426868">መሣሪያው በአሁኑ ጊዜ ኃይል እየሞላ ወይም እያስወገደ ያለበት ፍጥነት</translation>
+<translation id="8420955526972171689">ለሃርድዌር ችግሮች ሙከራዎችን እና መላ ፍለጋን ያሂዱ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">የውስጥ የቁልፍ ሰሌዳ</translation>
 <translation id="8431300646573772016">በChromeOS ምን አዲስ ነገር አለ</translation>
