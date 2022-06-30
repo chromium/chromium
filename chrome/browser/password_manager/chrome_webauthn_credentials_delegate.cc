@@ -33,6 +33,18 @@ bool ChromeWebAuthnCredentialsDelegate::IsWebAuthnAutofillEnabled() const {
   return base::FeatureList::IsEnabled(features::kWebAuthConditionalUI);
 }
 
+void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
+#if !BUILDFLAG(IS_ANDROID)
+  ChromeAuthenticatorRequestDelegate* authenticator_delegate =
+      AuthenticatorRequestScheduler::GetRequestDelegate(
+          client_->web_contents());
+  if (!authenticator_delegate) {
+    return;
+  }
+  authenticator_delegate->dialog_model()->TransitionToModalWebAuthnRequest();
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::string backend_id) {
 #if BUILDFLAG(IS_ANDROID)
@@ -102,8 +114,7 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
         !credential.user.display_name->empty()) {
       name = base::UTF8ToUTF16(*credential.user.display_name);
     } else {
-      // TODO(crbug.com/1179014): go through UX review, choose a string, and
-      // i18n it.
+      // TODO(crbug.com/1329958): i18n this string.
       name = u"Unknown account";
     }
     autofill::Suggestion suggestion(std::move(name));

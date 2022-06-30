@@ -205,9 +205,23 @@ void AuthenticatorRequestDialogModel::StartOver() {
   SetCurrentStep(Step::kMechanismSelection);
 }
 
+void AuthenticatorRequestDialogModel::TransitionToModalWebAuthnRequest() {
+  DCHECK_EQ(current_step(), Step::kConditionalMediation);
+
+  // Dispatch requests to any plugged in authenticators.
+  for (auto& authenticator :
+       ephemeral_state_.saved_authenticators_.authenticator_list()) {
+    if (authenticator.transport != device::FidoTransportProtocol::kInternal) {
+      DispatchRequestAsync(&authenticator);
+    }
+  }
+  StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
+}
+
 void AuthenticatorRequestDialogModel::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
-  DCHECK(current_step() == Step::kNotStarted);
+  DCHECK(current_step() == Step::kNotStarted ||
+         current_step() == Step::kConditionalMediation);
 
   const auto priority_mechanism_it =
       std::find_if(mechanisms_.begin(), mechanisms_.end(),
@@ -396,17 +410,19 @@ void AuthenticatorRequestDialogModel::ShowCable() {
 }
 
 void AuthenticatorRequestDialogModel::Cancel() {
+  if (use_conditional_mediation_) {
+    // Conditional UI requests are never cancelled, they restart silently.
+    StartOver();
+    return;
+  }
+
   if (is_request_complete()) {
-    if (use_conditional_mediation_) {
-      // Conditional UI requests are never cancelled, they restart silently.
-      StartOver();
-      return;
-    }
     SetCurrentStep(Step::kClosed);
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnCancelRequest();
+  }
 }
 
 void AuthenticatorRequestDialogModel::ManageDevices() {
@@ -613,8 +629,8 @@ void AuthenticatorRequestDialogModel::SelectAccount(
   ephemeral_state_.responses_ = std::move(responses);
   ephemeral_state_.creds_ = {};
   for (const auto& response : ephemeral_state_.responses_) {
-    ephemeral_state_.creds_.emplace_back(device::DiscoverableCredentialMetadata(
-        response.credential->id, *response.user_entity));
+    ephemeral_state_.creds_.emplace_back(response.credential->id,
+                                         *response.user_entity);
   }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);
@@ -847,6 +863,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
          current_step() == Step::kAndroidAccessory ||
+         current_step() == Step::kConditionalMediation ||
          current_step() == Step::kNotStarted);
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:

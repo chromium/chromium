@@ -22,6 +22,10 @@ class WebAuthnCredentialsDelegate {
   // Returns true if integration between WebAuthn and Autofill is enabled.
   virtual bool IsWebAuthnAutofillEnabled() const = 0;
 
+  // Launches the normal WebAuthn flow that lets users use their phones or
+  // security keys to sign-in.
+  virtual void LaunchWebAuthnFlow() = 0;
+
   // Called when the user selects a WebAuthn credential from the autofill
   // suggestion list.
   virtual void SelectWebAuthnCredential(std::string backend_id) = 0;

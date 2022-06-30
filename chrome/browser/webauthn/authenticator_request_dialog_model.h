@@ -291,8 +291,8 @@ class AuthenticatorRequestDialogModel {
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
-  // If |use_location_bar_bubble| is true, a non-modal bubble will be displayed
-  // on the location bar instead of the full-blown page-modal UI.
+  // If |is_conditional_mediation| is true, credentials will be shown on the
+  // password autofill instead of the full-blown page-modal UI.
   //
   // |prefer_native_api| indicates that the UI should jump directly to the
   // system WebAuthn UI if there's no better option. This is currently only
@@ -301,11 +301,17 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action when at step: kNotStarted.
   void StartFlow(TransportAvailabilityInfo transport_availability,
-                 bool use_location_bar_bubble,
+                 bool is_conditional_mediation,
                  bool prefer_native_api);
 
   // Restarts the UX flow.
   void StartOver();
+
+  // Starts a modal WebAuthn flow (i.e. what you normally get if you call
+  // WebAuthn with no mediation parameter) from a conditional request.
+  //
+  // Valid action when at step: kConditionalMediation.
+  void TransitionToModalWebAuthnRequest();
 
   // Starts the UX flow. Tries to figure out the most likely transport to be
   // used, and starts the guided flow for that transport; or shows the manual
@@ -725,8 +731,8 @@ class AuthenticatorRequestDialogModel {
   // True if the modal dialog is being shown right now.
   bool showing_dialog_ = false;
 
-  // True if this request should use the non-modal location bar bubble UI
-  // instead of the page-modal, regular UI.
+  // True if this request should display credentials on the password autofill
+  // prompt instead of the page-modal, regular UI.
   bool use_conditional_mediation_ = false;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request

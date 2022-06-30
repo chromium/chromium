@@ -403,7 +403,9 @@ enum class PasswordDropdownSelectedOption {
   kResigninToUnlockAccountStore = 5,
   // User selected a WebAuthn credential.
   kWebAuthn = 6,
-  kMaxValue = kWebAuthn
+  // User selected the "Sign in with another device" button.
+  kWebAuthnSignInWithAnotherDevice = 7,
+  kMaxValue = kWebAuthnSignInWithAnotherDevice
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

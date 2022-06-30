@@ -73860,6 +73860,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Unlock account-store to generate password"/>
   <int value="5" label="Re-Signin to unlock account-stored passwords"/>
   <int value="6" label="WebAuthn credential"/>
+  <int value="7" label="Sign in with another WebAuthn device"/>
 </enum>
 
 <enum name="PasswordDropdownState">

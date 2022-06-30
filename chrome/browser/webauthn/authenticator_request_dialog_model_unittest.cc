@@ -302,7 +302,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     model.StartFlow(
         std::move(transports_info),
-        /*use_location_bar_bubble=*/false,
+        /*is_conditional_mediation=*/false,
         /*prefer_native_api=*/
         base::Contains(test.params,
                        TransportAvailabilityParam::kPreferNativeAPI));
@@ -343,7 +343,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
                                    "fido:/1234");
 
     model.StartFlow(std::move(tai),
-                    /*use_location_bar_bubble=*/false, prefer_native_api);
+                    /*is_conditional_mediation=*/false, prefer_native_api);
 
     if (prefer_native_api) {
       // The Windows native UI should have been triggered.
@@ -368,7 +368,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(TransportAvailabilityInfo(),
-                  /*use_location_bar_bubble=*/false,
+                  /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -446,7 +446,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
                                    absl::nullopt);
 
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
     ASSERT_EQ(model.mechanisms().size(), 2u);
 
@@ -508,7 +508,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
 
     EXPECT_CALL(mock_observer, OnStepTransition());
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
     EXPECT_EQ(Step::kMechanismSelection, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -549,7 +549,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
@@ -580,7 +580,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
@@ -622,7 +622,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
@@ -657,7 +657,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
 
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/false,
+                  /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kMechanismSelection,
             model.current_step());
@@ -701,7 +701,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       &dispatched_authenticator_ids));
 
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/false,
+                  /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
 
   EXPECT_TRUE(model.should_dialog_be_closed());
@@ -735,7 +735,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/true,
+                  /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
@@ -776,7 +776,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   transports_info.recognized_platform_authenticator_credentials = {cred_1,
                                                                    cred_2};
   model.StartFlow(std::move(transports_info),
-                  /*is_location_bar_bubble_ui==*/true,
+                  /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   EXPECT_TRUE(model.should_dialog_be_closed());
@@ -801,20 +801,13 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(std::move(TransportAvailabilityInfo()),
-                  /*is_location_bar_bubble_ui==*/true,
+                  /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  // Cancel an ongoing request. It should inform the observers to e.g. stop
-  // discoveries.
-  EXPECT_CALL(mock_observer, OnCancelRequest());
-  model.Cancel();
-  EXPECT_NE(model.current_step(), Step::kClosed);
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-
-  // Complete the request and then "cancel" it again (as if e.g. the user
-  // clicked the accept button). The request should be restarted.
+  // Cancel an ongoing request (as if e.g. the user clicked the accept button).
+  // The request should be restarted.
   EXPECT_CALL(mock_observer, OnStartOver());
   EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
   model.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
@@ -836,7 +829,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(std::move(TransportAvailabilityInfo()),
-                  /*is_location_bar_bubble_ui==*/true,
+                  /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);

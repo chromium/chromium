@@ -868,7 +868,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
   // Only the unlock button was available. After being clicked, it's in a
   // loading state which the DeleteFillData() call will end.
   Suggestion unlock_suggestion(
-      /*value=*/"Unlock passwords and fill", /*label=*/"", /*icon=*/"",
+      /*main_text=*/"Unlock passwords and fill", /*label=*/"", /*icon=*/"",
       /*frontend_id=*/
       autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN);
   unlock_suggestion.is_loading = Suggestion::IsLoading(true);
@@ -1862,6 +1862,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
               SuggestionVectorIdsAre(ElementsAre(
                   autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
                   autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+#if !BUILDFLAG(IS_ANDROID)
+                  autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
+#endif  // !BUILDFLAG(IS_ANDROID)
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
   EXPECT_EQ(absl::get<std::string>(open_args.suggestions[0].payload), kId);
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
@@ -1886,5 +1889,55 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   password_autofill_manager_->DidAcceptSuggestion(
       kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL, kId, /*position=*/1);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Enable WebAuthn autofill.
+  std::vector<autofill::Suggestion> webauthn_credentials;
+  ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate));
+  EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
+      .WillOnce(ReturnRef(webauthn_credentials));
+
+  // Show password suggestions including WebAuthn credentials.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, /*typed_username=*/std::u16string(),
+      autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
+      element_bounds);
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(ElementsAre(
+                  autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+                  autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
+                  autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+
+  // Check that the button shows the correct text.
+  // TODO(crbug.com/1329958): replace with a resource ID when i18n'd.
+  const std::u16string kSignInWithAnotherDeviceText =
+      u"Sign in with another device…";
+  EXPECT_EQ(open_args.suggestions[1].main_text.value,
+            kSignInWithAnotherDeviceText);
+
+  // Check that selecting the button reports back to the client.
+  EXPECT_CALL(webauthn_credentials_delegate, LaunchWebAuthnFlow());
+  EXPECT_CALL(
+      autofill_client,
+      HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
+  password_autofill_manager_->DidAcceptSuggestion(
+      kSignInWithAnotherDeviceText,
+      autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
+      /*payload=*/std::string(), /*position=*/1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

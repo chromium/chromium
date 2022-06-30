@@ -851,10 +851,23 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
   // request to an authenticator immediately after it has been
   // discovered, or whether the embedder/UI takes charge of that by
   // invoking its RequestCallback.
+  if (!IsWebAuthnUIEnabled()) {
+    // There is no UI to handle request dispatch.
+    return false;
+  }
+  if (is_conditional_ &&
+      (dialog_model_->current_step() ==
+           AuthenticatorRequestDialogModel::Step::kConditionalMediation ||
+       dialog_model_->current_step() ==
+           AuthenticatorRequestDialogModel::Step::kNotStarted)) {
+    // There is an active conditional request that is not showing any UI. The UI
+    // will dispatch to any plugged in authenticators after the user selects an
+    // option.
+    return true;
+  }
   auto transport = authenticator.AuthenticatorTransport();
-  return (is_conditional_ || IsWebAuthnUIEnabled()) &&
-         (!transport ||  // Windows
-          *transport == device::FidoTransportProtocol::kInternal);
+  return !transport ||  // Windows
+         *transport == device::FidoTransportProtocol::kInternal;
 }
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(

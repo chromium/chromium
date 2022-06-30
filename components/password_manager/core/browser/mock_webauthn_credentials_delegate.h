@@ -22,6 +22,7 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
       const MockWebAuthnCredentialsDelegate&) = delete;
 
   MOCK_METHOD(bool, IsWebAuthnAutofillEnabled, (), (const, override));
+  MOCK_METHOD(void, LaunchWebAuthnFlow, (), (override));
   MOCK_METHOD(void,
               SelectWebAuthnCredential,
               (std::string backend_id),
