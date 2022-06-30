@@ -5103,6 +5103,28 @@
             ]
         }
     ],
+    "JourneysHideSingleDomainClusters": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220518",
+                    "params": {
+                        "hide_single_domain_clusters_on_prominent_ui_surfaces": "true"
+                    },
+                    "enable_features": [
+                        "HistoryClustersOnDeviceClustering"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysKeywordFiltering": [
         {
             "platforms": [
