@@ -29,14 +29,6 @@ class WebState;
 namespace ios {
 namespace provider {
 
-// Returns true if any items were added to |menuElements| based on associated
-// |browserState|, |webState| and |params|.
-bool AddContextMenuElements(NSMutableArray<UIMenuElement*>* menu_elements,
-                            ChromeBrowserState* browser_state,
-                            web::WebState* web_state,
-                            web::ContextMenuParams params,
-                            UIViewController* presenting_view_controller);
-
 // Returns the elements to add to the context menu, with their title. If no
 // elements needs to be added, returns nil.
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(

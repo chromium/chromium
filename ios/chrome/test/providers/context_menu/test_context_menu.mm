@@ -11,15 +11,6 @@
 namespace ios {
 namespace provider {
 
-bool AddContextMenuElements(NSMutableArray<UIMenuElement*>* menu_elements,
-                            ChromeBrowserState* browser_state,
-                            web::WebState* web_state,
-                            web::ContextMenuParams params,
-                            UIViewController* presenting_view_controller) {
-  // No context menu elements added for tests.
-  return false;
-}
-
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     ChromeBrowserState* browser_state,
     web::WebState* web_state,

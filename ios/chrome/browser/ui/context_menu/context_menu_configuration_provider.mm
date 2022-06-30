@@ -328,9 +328,6 @@ NSString* const kContextMenuEllipsis = @"…";
       ios::provider::GetContextMenuElementsToAdd(
           self.browser->GetBrowserState(), webState, params,
           self.baseViewController);
-
-  // Check if result and result.elements are not nil, in that case copy the
-  // title in menuTitle and add the elements of result.elements in menuElements.
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;
