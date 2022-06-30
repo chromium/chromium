@@ -74,9 +74,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetUseDefaultLabelFont();
 
  private:
-  // Get text's color depending on the type used.
-  SkColor GetPillButtonTextColor(Type type);
-
   const Type type_;
   const gfx::VectorIcon* const icon_;
 
