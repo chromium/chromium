@@ -84,6 +84,8 @@ if (use_system_xcode && (use_goma || use_remoteexec)) {
     "--get_sdk_info",
     "--create_symlink_at",
     "sdk/xcode_links",
+    "--root_build_dir",
+    root_build_dir,
   ]
 }
 sdk_info_args += [ mac_sdk_name ]

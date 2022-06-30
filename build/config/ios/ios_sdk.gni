@@ -155,6 +155,8 @@ if (ios_sdk_path == "") {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",
+      "--root_build_dir",
+      root_build_dir,
     ]
   }
   script_name = "//build/config/apple/sdk_info.py"
