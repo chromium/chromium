@@ -6,8 +6,6 @@
 
 #include <string.h>
 #include <va/va.h>
-#include <va/va_enc_h264.h>
-#include <va/va_enc_vp8.h>
 
 #include <algorithm>
 #include <memory>
@@ -70,33 +68,6 @@ constexpr size_t kMinNumFramesInFlight = 4;
 // VASurfaceIDs internal format.
 constexpr unsigned int kVaSurfaceFormat = VA_RT_FORMAT_YUV420;
 
-void FillVAEncRateControlParams(
-    uint32_t bps,
-    uint32_t window_size,
-    uint32_t initial_qp,
-    uint32_t min_qp,
-    uint32_t max_qp,
-    uint32_t framerate,
-    uint32_t buffer_size,
-    VAEncMiscParameterRateControl& rate_control_param,
-    VAEncMiscParameterFrameRate& framerate_param,
-    VAEncMiscParameterHRD& hrd_param) {
-  memset(&rate_control_param, 0, sizeof(rate_control_param));
-  rate_control_param.bits_per_second = bps;
-  rate_control_param.window_size = window_size;
-  rate_control_param.initial_qp = initial_qp;
-  rate_control_param.min_qp = min_qp;
-  rate_control_param.max_qp = max_qp;
-  rate_control_param.rc_flags.bits.disable_frame_skip = true;
-
-  memset(&framerate_param, 0, sizeof(framerate_param));
-  framerate_param.framerate = framerate;
-
-  memset(&hrd_param, 0, sizeof(hrd_param));
-  hrd_param.buffer_size = buffer_size;
-  hrd_param.initial_buffer_fullness = buffer_size / 2;
-}
-
 // Creates one |encode_size| ScopedVASurface using |vaapi_wrapper|.
 std::unique_ptr<ScopedVASurface> CreateScopedSurface(
     VaapiWrapper& vaapi_wrapper,
@@ -108,6 +79,7 @@ std::unique_ptr<ScopedVASurface> CreateScopedSurface(
       /*va_fourcc=*/absl::nullopt);
   return surfaces.empty() ? nullptr : std::move(surfaces.front());
 }
+
 }  // namespace
 
 struct VaapiVideoEncodeAccelerator::InputFrameRef {
