@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
@@ -417,6 +419,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
 
   [self logMostVisitedOpening:mostVisitedItem atIndex:mostVisitedIndex];
+
+  // Make sure that the omnibox is unfocused to prevent having it visually
+  // focused after the page is loaded
+  id<OmniboxCommands> omniboxCommandHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  [omniboxCommandHandler cancelOmniboxEdit];
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(mostVisitedItem.URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;

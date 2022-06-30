@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -179,6 +181,11 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
 
 // Tests that the command is sent to the loader when opening a most visited.
 TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
+  id omniboxCommandsHandlerMock = OCMProtocolMock(@protocol(OmniboxCommands));
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:omniboxCommandsHandlerMock
+                   forProtocol:@protocol(OmniboxCommands)];
+
   GURL url = GURL("http://chromium.org");
   ContentSuggestionsMostVisitedItem* item =
       [[ContentSuggestionsMostVisitedItem alloc] initWithType:0];
