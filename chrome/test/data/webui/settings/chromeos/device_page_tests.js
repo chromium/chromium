@@ -470,6 +470,14 @@ suite('SettingsDevicePage', function() {
 
     DevicePageBrowserProxyImpl.setInstanceForTesting(
         new TestDevicePageBrowserProxy());
+
+    // Allow the light DOM to be distributed to settings-animated-pages.
+    setTimeout(done);
+  });
+
+  async function init() {
+    // await is necessary in order for setup() to complete.
+    await flushTasks();
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
 
@@ -478,10 +486,7 @@ suite('SettingsDevicePage', function() {
     basicPage.dataset.page = 'basic';
     basicPage.appendChild(devicePage);
     document.body.appendChild(basicPage);
-
-    // Allow the light DOM to be distributed to settings-animated-pages.
-    setTimeout(done);
-  });
+  }
 
   /** @return {!Promise<!HTMLElement>} */
   function showAndGetDeviceSubpage(subpage, expectedRoute) {
@@ -648,7 +653,8 @@ suite('SettingsDevicePage', function() {
         `${elementDesc} should be focused for settingId=${settingId}.`);
   }
 
-  test(assert(TestNames.DevicePage), function() {
+  test(assert(TestNames.DevicePage), async function() {
+    await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
@@ -669,7 +675,8 @@ suite('SettingsDevicePage', function() {
   suite(assert(TestNames.Pointers), function() {
     let pointersPage;
 
-    setup(function() {
+    setup(async function() {
+      await init();
       return showAndGetDeviceSubpage('pointers', routes.POINTERS)
           .then(function(page) {
             pointersPage = page;
@@ -909,6 +916,7 @@ suite('SettingsDevicePage', function() {
     let keyboardPage;
 
     setup(async () => {
+      await init();
       keyboardPage = await showAndGetDeviceSubpage('keyboard', routes.KEYBOARD);
     });
 
@@ -1064,6 +1072,7 @@ suite('SettingsDevicePage', function() {
     let browserProxy;
 
     setup(async () => {
+      await init();
       displayPage = await showAndGetDeviceSubpage('display', routes.DISPLAY);
       browserProxy = DevicePageBrowserProxyImpl.getInstance();
       await fakeSystemDisplay.getInfoCalled.promise;
@@ -1381,6 +1390,7 @@ suite('SettingsDevicePage', function() {
 
   test(assert(TestNames.NightLight), async function() {
     // Set up a single display.
+    await init();
     const displayPage =
         await showAndGetDeviceSubpage('display', routes.DISPLAY);
     await fakeSystemDisplay.getInfoCalled.promise;
@@ -1442,7 +1452,8 @@ suite('SettingsDevicePage', function() {
         });
       });
 
-      setup(function() {
+      setup(async function() {
+        await init();
         return showAndGetDeviceSubpage('power', routes.POWER)
             .then(function(page) {
               powerPage = page;
@@ -1482,7 +1493,8 @@ suite('SettingsDevicePage', function() {
             });
       });
 
-      test('no battery', function() {
+      test('no battery', async function() {
+        await init();
         const batteryStatus = {
           present: false,
           charging: false,
@@ -2043,7 +2055,8 @@ suite('SettingsDevicePage', function() {
       });
     });
 
-    setup(function() {
+    setup(async function() {
+      await init();
       return showAndGetDeviceSubpage('stylus', routes.STYLUS)
           .then(function(page) {
             stylusPage = page;
@@ -2623,7 +2636,8 @@ suite('SettingsDevicePage', function() {
       testing.Test.disableAnimationsAndTransitions();
     });
 
-    setup(function() {
+    setup(async function() {
+      await init();
       return showAndGetDeviceSubpage('storage', routes.STORAGE)
           .then(function(page) {
             storagePage = page;
