@@ -21,7 +21,6 @@ goog.require('OutputAction');
 goog.require('OutputContextOrder');
 goog.require('OutputEarconAction');
 goog.require('OutputEventType');
-goog.require('OutputFormatParser');
 goog.require('OutputFormatTree');
 goog.require('OutputNodeSpan');
 goog.require('OutputRoleInfo');
