@@ -74,10 +74,9 @@ struct StartTimeComparator {
 using SortedDownloadUIModelSet =
     std::multiset<DownloadUIModelPtrList::iterator, StartTimeComparator>;
 
-template <typename T>
-bool AddModelIfRequired(T model,
+bool AddModelIfRequired(DownloadUIModelPtr model,
                         base::Time cutoff_time,
-                        std::vector<T>& models_aggregate) {
+                        std::vector<DownloadUIModelPtr>& models_aggregate) {
   if (model->ShouldShowInBubble() &&
       DownloadUIModelIsRecent(model.get(), cutoff_time)) {
     models_aggregate.push_back(std::move(model));
@@ -86,8 +85,7 @@ bool AddModelIfRequired(T model,
   return false;
 }
 
-template <typename T>
-bool ShouldStopAddingModels(std::vector<T>& models_aggregate) {
+bool ShouldStopAddingModels(std::vector<DownloadUIModelPtr>& models_aggregate) {
   return (models_aggregate.size() >= kMaxDownloadsToShow);
 }
 
@@ -281,29 +279,6 @@ void DownloadBubbleUIController::PruneOfflineItems() {
       item_iter++;
     }
   }
-}
-
-std::vector<std::unique_ptr<DownloadUIModel>>
-DownloadBubbleUIController::GetAllItemsToDisplayWithoutTaskRunnerDeletion() {
-  base::Time cutoff_time =
-      base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
-  std::vector<std::unique_ptr<DownloadUIModel>> models_aggregate;
-  for (const OfflineItem& item : GetOfflineItems()) {
-    std::unique_ptr<DownloadUIModel> model(
-        new OfflineItemModel(offline_manager_, item));
-    if (AddModelIfRequired(std::move(model), cutoff_time, models_aggregate) &&
-        ShouldStopAddingModels(models_aggregate)) {
-      return models_aggregate;
-    }
-  }
-  for (download::DownloadItem* item : GetDownloadItems()) {
-    std::unique_ptr<DownloadUIModel> model(new DownloadItemModel(item));
-    if (AddModelIfRequired(std::move(model), cutoff_time, models_aggregate) &&
-        ShouldStopAddingModels(models_aggregate)) {
-      return models_aggregate;
-    }
-  }
-  return models_aggregate;
 }
 
 std::vector<DownloadUIModelPtr>

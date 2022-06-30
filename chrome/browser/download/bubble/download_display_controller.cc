@@ -79,7 +79,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
 
 void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion();
+      bubble_controller_->GetAllItemsToDisplay();
   // Hide the button if there is only one download item left and that item is
   // about to be removed.
   if (all_models.size() == 1 && all_models[0]->GetContentId() == id) {
@@ -129,7 +129,7 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
   bool has_deep_scanning_download = false;
 
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion();
+      bubble_controller_->GetAllItemsToDisplay();
   if (all_models.empty()) {
     HideToolbarButton();
     return;
@@ -206,8 +206,7 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
                                  last_complete_time)) {
     return;
   }
-  if (bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion()
-          .empty()) {
+  if (bubble_controller_->GetAllItemsToDisplay().empty()) {
     return;
   }
   // If the last download complete time is less than
@@ -246,7 +245,7 @@ DownloadDisplayController::GetProgress() {
   int64_t total_bytes = 0;
 
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion();
+      bubble_controller_->GetAllItemsToDisplay();
   for (const auto& model : all_models) {
     if (IsModelInProgress(model.get())) {
       ++progress_info.download_count;
