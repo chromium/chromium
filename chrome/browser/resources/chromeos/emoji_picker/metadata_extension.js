@@ -28,7 +28,7 @@ export const EMOJI_GROUP_TABS = [
     name: 'Recently Used',
     icon: 'emoji_picker:schedule',
     category: 'emoji',
-    groupId: 'emoji-history',
+    groupId: 'history',
     active: false,
     disabled: true,
     pagination: 1

@@ -187,7 +187,6 @@ suite('emoji-picker-extension', () => {
       async () => {
         EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
             new Promise((resolve) => resolve({incognito: false}));
-        emojiPicker.updateIncognitoState(false);
 
         const emoticonButton = findEmojiFirstButton(emoticonGroupSelector);
         emoticonButton.click();
