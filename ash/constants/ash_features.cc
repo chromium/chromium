@@ -812,10 +812,6 @@ const base::Feature kHibernate{"Hibernate", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherItemColorSync{"LauncherItemColorSync",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable the search service integration in the Help app.
-const base::Feature kHelpAppSearchServiceIntegration{
-    "HelpAppSearchServiceIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables a privacy improvement that removes wrongly configured hidden
 // networks and mitigates the creation of these networks. crbug/1327803.
 const base::Feature kHiddenNetworkMigration{"HiddenNetworkMigration",

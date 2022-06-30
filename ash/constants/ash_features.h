@@ -332,8 +332,6 @@ extern const base::Feature kHelpAppDiscoverTabNotificationAllChannels;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppLauncherSearch;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kHelpAppSearchServiceIntegration;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHibernate;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHiddenNetworkMigration;

@@ -3619,11 +3619,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "help-app-search-service-integration",
-    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "hidden-network-migration",
     "owners": [ "rudranshd", "chadduffin", "hsuregan", "cros-connectivity@google.com" ],
     "expiry_milestone": 110

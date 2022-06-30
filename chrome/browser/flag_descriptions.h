@@ -2923,9 +2923,6 @@ extern const char kHelpAppDiscoverTabDescription[];
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 
-extern const char kHelpAppSearchServiceIntegrationName[];
-extern const char kHelpAppSearchServiceIntegrationDescription[];
-
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 

@@ -34,7 +34,6 @@ var HelpAppUIGtestBrowserTest = class extends testing.Test {
     return {
       enabled: [
         'ash::features::kHelpAppLauncherSearch',
-        'ash::features::kHelpAppSearchServiceIntegration',
       ]
     };
   }

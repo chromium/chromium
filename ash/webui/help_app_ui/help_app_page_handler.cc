@@ -19,8 +19,6 @@ HelpAppPageHandler::HelpAppPageHandler(
     : receiver_(this, std::move(receiver)),
       help_app_ui_(help_app_ui),
       is_lss_enabled_(
-          base::FeatureList::IsEnabled(
-              features::kHelpAppSearchServiceIntegration) &&
           base::FeatureList::IsEnabled(features::kEnableLocalSearchService)),
       is_launcher_search_enabled_(
           base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&

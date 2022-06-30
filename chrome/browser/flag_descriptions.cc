@@ -5113,12 +5113,6 @@ const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";
 
-const char kHelpAppSearchServiceIntegrationName[] =
-    "Help App search service integration";
-const char kHelpAppSearchServiceIntegrationDescription[] =
-    "Enables the integration between the help app and the local search"
-    " service. Includes using the search service for in app search.";
-
 const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
     "Enable diacritics and variant character selection on PK longpress.";
 const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =
