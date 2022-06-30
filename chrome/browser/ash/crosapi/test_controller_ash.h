@@ -78,10 +78,12 @@ class TestControllerAsh : public mojom::TestController,
       const std::string& app_id,
       SetSelectedSharesheetAppCallback callback) override;
   void GetAshVersion(GetAshVersionCallback callback) override;
-
   void BindTestShillController(
       mojo::PendingReceiver<crosapi::mojom::TestShillController> receiver,
       BindTestShillControllerCallback callback) override;
+  void CreateAndCancelPrintJob(
+      const std::string& job_title,
+      CreateAndCancelPrintJobCallback callback) override;
 
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {

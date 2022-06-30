@@ -15,6 +15,8 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
@@ -34,6 +37,7 @@
 #include "components/version_info/version_info.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -46,6 +50,16 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+
+#if defined(USE_CUPS)
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
+#include "chrome/browser/ash/printing/history/test_print_job_database.h"
+#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
+#endif  // defined(USE_CUPS)
 
 namespace crosapi {
 
@@ -439,6 +453,65 @@ void TestControllerAsh::BindTestShillController(
   mojo::MakeSelfOwnedReceiver<crosapi::mojom::TestShillController>(
       std::make_unique<crosapi::TestShillControllerAsh>(), std::move(receiver));
   std::move(callback).Run();
+}
+
+#if defined(USE_CUPS)
+namespace {
+
+// Observer that destroys itself after receiving OnPrintJobFinished event.
+class SelfOwnedPrintJobHistoryServiceObserver
+    : public ash::PrintJobHistoryService::Observer {
+ public:
+  SelfOwnedPrintJobHistoryServiceObserver(
+      ash::PrintJobHistoryService* print_job_history_service,
+      base::OnceClosure on_print_job_finished)
+      : on_print_job_finished_(std::move(on_print_job_finished)) {
+    observation_.Observe(print_job_history_service);
+  }
+  ~SelfOwnedPrintJobHistoryServiceObserver() override = default;
+
+ private:
+  // PrintJobHistoryService::Observer:
+  void OnPrintJobFinished(const ash::printing::proto::PrintJobInfo&) override {
+    observation_.Reset();
+    std::move(on_print_job_finished_).Run();
+    delete this;
+  }
+
+  base::ScopedObservation<ash::PrintJobHistoryService,
+                          ash::PrintJobHistoryService::Observer>
+      observation_{this};
+  base::OnceClosure on_print_job_finished_;
+};
+
+}  // namespace
+
+#endif  // defined(USE_CUPS)
+
+void TestControllerAsh::CreateAndCancelPrintJob(
+    const std::string& job_title,
+    CreateAndCancelPrintJobCallback callback) {
+#if defined(USE_CUPS)
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+
+  auto* observer = new SelfOwnedPrintJobHistoryServiceObserver(
+      ash::PrintJobHistoryServiceFactory::GetForBrowserContext(profile),
+      std::move(callback));
+  DCHECK(observer);
+
+  std::unique_ptr<ash::CupsPrintJob> print_job =
+      std::make_unique<ash::CupsPrintJob>(
+          chromeos::Printer(), /*job_id=*/0, job_title, /*total_page_number=*/1,
+          ::printing::PrintJob::Source::PRINT_PREVIEW,
+          /*source_id=*/"", ash::printing::proto::PrintSettings());
+
+  ash::CupsPrintJobManager* print_job_manager =
+      ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  print_job->set_state(ash::CupsPrintJob::State::STATE_NONE);
+  print_job_manager->NotifyJobCreated(print_job->GetWeakPtr());
+  print_job->set_state(ash::CupsPrintJob::State::STATE_CANCELLED);
+  print_job_manager->NotifyJobCanceled(print_job->GetWeakPtr());
+#endif  // defined(USE_CUPS)
 }
 
 // This class waits for overview mode to either enter or exit and fires a

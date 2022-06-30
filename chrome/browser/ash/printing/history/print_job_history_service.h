@@ -22,6 +22,9 @@ class PrintJobHistoryService : public KeyedService {
         const printing::proto::PrintJobInfo& print_job_info) = 0;
 
     virtual void OnShutdown() {}
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   PrintJobHistoryService();

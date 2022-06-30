@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace crosapi {
+class TestControllerAsh;
+}  // namespace crosapi
+
 namespace ash {
 
 class CupsPrintJob;
@@ -93,6 +97,7 @@ class CupsPrintJobManager : public KeyedService {
   Profile* profile_;
 
  private:
+  friend class crosapi::TestControllerAsh;
   void RecordJobDuration(base::WeakPtr<CupsPrintJob> job);
 
   std::unique_ptr<CupsPrintJobNotificationManager> notification_manager_;

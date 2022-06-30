@@ -464,6 +464,13 @@ static_library("test_support") {
     deps += [ "//chromeos/dbus/constants" ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "../browser/extensions/policy_test_utils.cc",
+      "../browser/extensions/policy_test_utils.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "../browser/ash/accessibility/speech_monitor.cc",
@@ -502,6 +509,10 @@ static_library("test_support") {
       "../browser/ash/policy/core/device_policy_cros_browser_test.h",
       "../browser/ash/policy/login/signin_profile_extensions_policy_test_base.cc",
       "../browser/ash/policy/login/signin_profile_extensions_policy_test_base.h",
+      "../browser/ash/printing/history/test_print_job_database.cc",
+      "../browser/ash/printing/history/test_print_job_database.h",
+      "../browser/ash/printing/history/test_print_job_history_service_observer.cc",
+      "../browser/ash/printing/history/test_print_job_history_service_observer.h",
       "../browser/ash/settings/device_settings_test_helper.cc",
       "../browser/ash/settings/device_settings_test_helper.h",
       "../browser/ash/settings/scoped_cros_settings_test_helper.cc",
@@ -510,8 +521,6 @@ static_library("test_support") {
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.h",
       "../browser/component_updater/fake_cros_component_manager.cc",
       "../browser/component_updater/fake_cros_component_manager.h",
-      "../browser/extensions/policy_test_utils.cc",
-      "../browser/extensions/policy_test_utils.h",
       "../browser/ui/ash/accessibility/fake_accessibility_controller.cc",
       "../browser/ui/ash/accessibility/fake_accessibility_controller.h",
       "../browser/ui/webui/chromeos/login/fake_app_launch_splash_screen_handler.cc",
@@ -525,6 +534,7 @@ static_library("test_support") {
       "base/extension_js_browser_test.cc",
       "base/extension_js_browser_test.h",
     ]
+
     public_deps += [
       "//ash",
       "//ash:test_support",
@@ -553,6 +563,7 @@ static_library("test_support") {
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos:print_job_info_proto",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
@@ -3762,8 +3773,6 @@ if (!is_android) {
         "../browser/ash/policy/status_collector/device_status_collector_browsertest.cc",
         "../browser/ash/policy/status_collector/legacy_device_status_collector_browsertest.cc",
         "../browser/ash/preferences_browsertest.cc",
-        "../browser/ash/printing/history/test_print_job_history_service_observer.cc",
-        "../browser/ash/printing/history/test_print_job_history_service_observer.h",
         "../browser/ash/profiles/profile_helper_browsertest.cc",
         "../browser/ash/remote_apps/remote_apps_manager_browsertest.cc",
         "../browser/ash/scoped_test_system_nss_key_slot_mixin.cc",
@@ -3965,7 +3974,6 @@ if (!is_android) {
       }
       if (use_cups) {
         sources += [
-          "../browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher_apitest.cc",
           "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
           "../browser/extensions/api/printing/fake_print_job_controller_ash.cc",
           "../browser/extensions/api/printing/fake_print_job_controller_ash.h",
@@ -4669,6 +4677,11 @@ if (is_chromeos_lacros) {
       "//ui/gfx/codec",
       "//ui/platform_window",
     ]
+
+    if (use_cups) {
+      sources += [ "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc" ]
+      deps += [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
+    }
 
     data = [
       "data/extensions/",
