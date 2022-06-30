@@ -4012,7 +4012,7 @@
   {
     "name": "lightweight-reactions-android",
     "owners": [ "gujen", "sophey", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "link-capturing-infobar",
