@@ -645,8 +645,6 @@ const aura::Window* RootWindowController::GetContainer(int container_id) const {
 }
 
 void RootWindowController::Shutdown() {
-  Shell::Get()->OnRootWindowWillShutdown(GetRootWindow());
-
   auto targeter = GetRootWindow()->SetEventTargeter(
       std::make_unique<aura::NullWindowTargeter>());
 
