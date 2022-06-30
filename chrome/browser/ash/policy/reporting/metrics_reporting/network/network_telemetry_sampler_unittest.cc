@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/tether_constants.h"
@@ -49,9 +50,6 @@ constexpr RoutineVerdict kVerdict = RoutineVerdict::PROBLEM;
 constexpr HttpsLatencyProblem kLatencyProblem =
     HttpsLatencyProblem::VERY_HIGH_LATENCY;
 constexpr int64_t kLatencyMs = 3000;
-
-// Network service constants.
-constexpr char kProfilePath[] = "/profile/path";
 
 struct FakeNetworkData {
   std::string guid;
@@ -98,6 +96,15 @@ std::string DevicePath(const std::string& interface_name) {
 class NetworkTelemetrySamplerTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    ::chromeos::LoginState::Initialize();
+    ::chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+        ::chromeos::LoginState::LOGGED_IN_ACTIVE,
+        ::chromeos::LoginState::LOGGED_IN_USER_REGULAR,
+        network_handler_test_helper_.UserHash());
+
+    network_handler_test_helper_.AddDefaultProfiles();
+    network_handler_test_helper_.ResetDevicesAndServices();
+
     ::ash::cros_healthd::FakeCrosHealthd::Initialize();
     SetWifiInterfaceData();
 
@@ -112,18 +119,16 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
     https_latency_sampler_->SetMetricData(metric_data);
   }
 
-  void TearDown() override { ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
+  void TearDown() override {
+    ::chromeos::LoginState::Shutdown();
+    ash::cros_healthd::FakeCrosHealthd::Shutdown();
+  }
 
   void SetNetworkData(const std::vector<FakeNetworkData>& networks_data) {
     auto* const service_client = network_handler_test_helper_.service_test();
     auto* const device_client = network_handler_test_helper_.device_test();
     auto* const ip_config_client =
         network_handler_test_helper_.ip_config_test();
-    network_handler_test_helper_.profile_test()->AddProfile(kProfilePath,
-                                                            "user_hash");
-    base::RunLoop().RunUntilIdle();
-    network_handler_test_helper_.service_test()->ClearServices();
-    network_handler_test_helper_.device_test()->ClearDevices();
     network_handler_test_helper_.manager_test()->AddTechnology(
         ::chromeos::kTypeTether, true);
 
@@ -167,7 +172,8 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
       }
       if (network_data.is_configured) {
         service_client->SetServiceProperty(
-            service_path, shill::kProfileProperty, base::Value(kProfilePath));
+            service_path, shill::kProfileProperty,
+            base::Value(network_handler_test_helper_.ProfilePathUser()));
       }
     }
     base::RunLoop().RunUntilIdle();
@@ -175,7 +181,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
 
   std::unique_ptr<test::FakeSampler> https_latency_sampler_;
 
- private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
@@ -412,6 +417,14 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
        true /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
+
+  network_handler_test_helper_.ConfigureService(
+      R"({"GUID": "guid1", "Type": "wifi", "State": "ready",
+            "WiFi.SignalStrengthRssi": -70})");
+  network_handler_test_helper_.ConfigureService(
+      R"({"GUID": "guid2", "Type": "wifi", "State": "online",
+            "WiFi.SignalStrengthRssi": -60})");
+
   NetworkTelemetrySampler network_telemetry_sampler(
       https_latency_sampler_.get());
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
@@ -452,6 +465,9 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
             networks_data[1].gateway);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
             NetworkType::WIFI);
+  EXPECT_EQ(
+      result.networks_telemetry().network_telemetry(0).signal_strength_dbm(),
+      -60);
 
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).tx_bit_rate_mbps(),
             kTxBitRateMbps);
@@ -507,6 +523,9 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
        false /* is_portal */, true /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
+  network_handler_test_helper_.ConfigureService(
+      R"({"GUID": "guid1", "Type": "wifi", "State": "idle",
+            "WiFi.SignalStrengthRssi": -70})");
   NetworkTelemetrySampler network_telemetry_sampler(
       https_latency_sampler_.get());
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
@@ -537,6 +556,9 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
   EXPECT_FALSE(result.networks_telemetry().network_telemetry(0).has_gateway());
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
             NetworkType::WIFI);
+  EXPECT_EQ(
+      result.networks_telemetry().network_telemetry(0).signal_strength_dbm(),
+      -70);
 
   // Make sure wireless link info wasn't added since the network is not
   // connected.
