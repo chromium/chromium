@@ -137,11 +137,13 @@ ipcz_source_set("reference_drivers") {
   testonly = true
 
   public = [
+    "reference_drivers/async_reference_driver.h",
     "reference_drivers/blob.h",
     "reference_drivers/sync_reference_driver.h",
   ]
 
   sources = [
+    "reference_drivers/async_reference_driver.cc",
     "reference_drivers/blob.cc",
     "reference_drivers/object.cc",
     "reference_drivers/object.h",

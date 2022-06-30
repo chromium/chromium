@@ -307,6 +307,7 @@ class MultinodeTest : public TestNodeType,
   INSTANTIATE_TEST_SUITE_P(                       \
       , suite,                                    \
       ::testing::Values(                          \
-          ipcz::test::DriverMode::kSync IPCZ_EXTRA_DRIVER_MODES))
+          ipcz::test::DriverMode::kSync,          \
+          ipcz::test::DriverMode::kAsync IPCZ_EXTRA_DRIVER_MODES))
 
 #endif  // IPCZ_SRC_TEST_MULTINODE_TEST_H_

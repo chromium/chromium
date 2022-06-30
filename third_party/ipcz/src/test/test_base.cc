@@ -155,6 +155,16 @@ IpczResult TestBase::WaitToGet(IpczHandle portal,
   return Get(portal, message, handles);
 }
 
+void TestBase::PingPong(IpczHandle portal) {
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, {}));
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal));
+}
+
+void TestBase::WaitForPingAndReply(IpczHandle portal) {
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal));
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, {}));
+}
+
 void TestBase::VerifyEndToEnd(IpczHandle portal) {
   static const char kTestMessage[] = "Ping!!!";
   std::string message;

@@ -83,6 +83,13 @@ class TestBase {
                        std::string* message = nullptr,
                        absl::Span<IpczHandle> handles = {});
 
+  // Sends an empty parcel from `portal` and expects an empty parcel in return.
+  void PingPong(IpczHandle portal);
+
+  // Waits for an empty parcel on `portal` and then sends an empty parcel in
+  // return.
+  void WaitForPingAndReply(IpczHandle portal);
+
   // Sends a parcel from `portal` and expects to receive a parcel back with the
   // same contents. Typical usage is to call this from two different nodes, on
   // a pair of connected portals, in order to verify working communication

@@ -152,20 +152,19 @@ bool Router::AcceptOutboundParcel(Parcel& parcel) {
   return true;
 }
 
-bool Router::AcceptRouteClosureFrom(LinkType link_type,
-                                    SequenceNumber sequence_length) {
-  Ref<RouterLink> inward_forwarding_link;
+bool Router::AcceptRouteClosureFrom(
+    LinkType link_type,
+    absl::optional<SequenceNumber> sequence_length) {
   TrapEventDispatcher dispatcher;
   {
     absl::MutexLock lock(&mutex_);
     if (link_type.is_outward()) {
-      if (!inbound_parcels_.SetFinalSequenceLength(sequence_length)) {
+      if (!inbound_parcels_.SetFinalSequenceLength(sequence_length.value_or(
+              inbound_parcels_.GetCurrentSequenceLength()))) {
         return false;
       }
 
-      if (inward_link_) {
-        inward_forwarding_link = inward_link_;
-      } else {
+      if (!inward_link_) {
         status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
         if (inbound_parcels_.IsSequenceFullyConsumed()) {
           status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
@@ -174,14 +173,11 @@ bool Router::AcceptRouteClosureFrom(LinkType link_type,
                                   dispatcher);
       }
     } else if (link_type.is_peripheral_inward()) {
-      if (!outbound_parcels_.SetFinalSequenceLength(sequence_length)) {
+      if (!outbound_parcels_.SetFinalSequenceLength(sequence_length.value_or(
+              outbound_parcels_.GetCurrentSequenceLength()))) {
         return false;
       }
     }
-  }
-
-  if (inward_forwarding_link) {
-    inward_forwarding_link->AcceptRouteClosure(sequence_length);
   }
 
   Flush();
@@ -336,18 +332,16 @@ void Router::SerializeNewRouter(NodeLink& to_node_link,
 
 void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
                                       const RouterDescriptor& descriptor) {
-  // Acquire a reference to the sublink created by an earlier call to
-  // SerializeNewRouter().
-  const absl::optional<NodeLink::Sublink> new_sublink =
-      to_node_link.GetSublink(descriptor.new_sublink);
-  if (!new_sublink) {
-    // The sublink has been torn down, presumably because of node disconnection.
-    // Nowhere to proxy now, so we're done.
-    return;
+  // Acquire a reference to the RemoteRouterLink created by an earlier call to
+  // SerializeNewRouter(). If the NodeLink has already been disconnected, this
+  // may be null.
+  Ref<RemoteRouterLink> new_router_link;
+  if (auto new_sublink = to_node_link.GetSublink(descriptor.new_sublink)) {
+    new_router_link = new_sublink->router_link;
   }
 
   bool deactivate_link = false;
-  {
+  if (new_router_link) {
     absl::MutexLock lock(&mutex_);
     ABSL_ASSERT(!inward_link_);
 
@@ -359,12 +353,20 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
       deactivate_link = true;
     } else {
       // TODO: Initiate proxy removal ASAP now that we're proxying.
-      inward_link_ = new_sublink->router_link;
+      inward_link_ = new_router_link;
     }
   }
 
   if (deactivate_link) {
-    new_sublink->router_link->Deactivate();
+    new_router_link->Deactivate();
+    return;
+  }
+
+  if (!to_node_link.GetSublink(descriptor.new_sublink)) {
+    // If the NodeLink was disconnected since we entered this method but before
+    // `inward_link_` was set above, disconnection will not have been propagated
+    // inward. Remedy that.
+    AcceptRouteClosureFrom(LinkType::kPeripheralInward);
     return;
   }
 
@@ -409,6 +411,7 @@ void Router::Flush() {
   Ref<RouterLink> dead_outward_link;
   absl::InlinedVector<Parcel, 2> inbound_parcels;
   absl::InlinedVector<Parcel, 2> outbound_parcels;
+  absl::optional<SequenceNumber> final_inward_sequence_length;
   absl::optional<SequenceNumber> final_outward_sequence_length;
   {
     absl::MutexLock lock(&mutex_);
@@ -448,7 +451,20 @@ void Router::Flush() {
       // exists an ultimate destination for any forwarded inbound parcels. So we
       // drop both links now.
       dead_outward_link = std::move(outward_link_);
-      dead_inward_link = std::move(inward_link_);
+    } else if (!inbound_parcels_.ExpectsMoreElements()) {
+      // If the other end of the route is gone and we've received all its
+      // parcels, we can simply drop the outward link in that case.
+      dead_outward_link = std::move(outward_link_);
+    }
+
+    if (inbound_parcels_.IsSequenceFullyConsumed()) {
+      // We won't be receiving anything new from our peer, and if we're a proxy
+      // then we've also forwarded everything already. We can propagate closure
+      // inward and drop the inward link, if applicable.
+      final_inward_sequence_length = inbound_parcels_.final_sequence_length();
+      if (inward_link_) {
+        dead_inward_link = std::move(inward_link_);
+      }
     }
   }
 
@@ -460,15 +476,17 @@ void Router::Flush() {
     inward_link->AcceptParcel(parcel);
   }
 
-  if (final_outward_sequence_length) {
-    outward_link->AcceptRouteClosure(*final_outward_sequence_length);
-  }
-
   if (dead_outward_link) {
+    if (final_outward_sequence_length) {
+      dead_outward_link->AcceptRouteClosure(*final_outward_sequence_length);
+    }
     dead_outward_link->Deactivate();
   }
 
   if (dead_inward_link) {
+    if (final_inward_sequence_length) {
+      dead_inward_link->AcceptRouteClosure(*final_inward_sequence_length);
+    }
     dead_inward_link->Deactivate();
   }
 }

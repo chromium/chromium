@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "ipcz/ipcz.h"
+#include "reference_drivers/async_reference_driver.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,6 +114,9 @@ const IpczDriver& TestNode::GetDriver() const {
   switch (driver_mode_) {
     case DriverMode::kSync:
       return reference_drivers::kSyncReferenceDriver;
+
+    case DriverMode::kAsync:
+      return reference_drivers::kAsyncReferenceDriver;
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
     case DriverMode::kMultiprocess:

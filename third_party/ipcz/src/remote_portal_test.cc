@@ -80,6 +80,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, MultipleHopsClient1) {
     EXPECT_EQ(kTestMessage1, message);
   }
 
+  PingPong(b);
   CloseAll({q, b});
 }
 
@@ -99,6 +100,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, MultipleHopsClient2) {
     EXPECT_EQ(kTestMessage2, message);
   }
 
+  PingPong(b);
   CloseAll({p, b});
 }
 
@@ -110,6 +112,8 @@ TEST_P(RemotePortalTest, MultipleHops) {
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(c1, nullptr, {&p, 1}));
   EXPECT_EQ(IPCZ_RESULT_OK, Put(c2, "", {&p, 1}));
 
+  WaitForPingAndReply(c1);
+  WaitForPingAndReply(c2);
   CloseAll({c1, c2});
 }
 
