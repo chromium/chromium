@@ -374,6 +374,40 @@ Response* Response::redirect(ScriptState* script_state,
   return r;
 }
 
+Response* Response::staticJson(ScriptState* script_state,
+                               ScriptValue data,
+                               const ResponseInit* init,
+                               ExceptionState& exception_state) {
+  // "1. Let bytes the result of running serialize a JavaScript value to JSON
+  // bytes on data."
+  v8::Local<v8::String> v8_string;
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  if (!v8::JSON::Stringify(script_state->GetContext(), data.V8Value())
+           .ToLocal(&v8_string)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return nullptr;
+  }
+
+  String string = ToBlinkString<String>(v8_string, kDoNotExternalize);
+
+  // JSON.stringify can fail to produce a string value in one of two ways: it
+  // can throw an exception (as with unserializable objects), or it can return
+  // `undefined` (as with e.g. passing a function). If JSON.stringify returns
+  // `undefined`, the v8 API then coerces it to the string value "undefined".
+  // Check for this, and consider it a failure.
+  if (string == "undefined") {
+    exception_state.ThrowTypeError("The data is not JSON serializable");
+    return nullptr;
+  }
+
+  BodyStreamBuffer* body_buffer = BodyStreamBuffer::Create(
+      script_state, MakeGarbageCollected<FormDataBytesConsumer>(string),
+      /*abort_signal=*/nullptr, /*cached_metadata_handler=*/nullptr);
+  String content_type = "application/json";
+
+  return Create(script_state, body_buffer, content_type, init, exception_state);
+}
+
 FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
     ScriptState* script_state,
     mojom::blink::FetchAPIResponse& fetch_api_response) {

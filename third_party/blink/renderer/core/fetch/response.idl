@@ -15,6 +15,7 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque", "opaqueredire
     [CallWith=ScriptState, RaisesException] constructor(optional any body, optional ResponseInit init = {});
     [CallWith=ScriptState, NewObject] static Response error();
     [CallWith=ScriptState, NewObject, RaisesException] static Response redirect(USVString url, optional unsigned short status = 302);
+    [CallWith=ScriptState, NewObject, RaisesException, ImplementedAs=staticJson] static Response json(any data, optional ResponseInit init = {});
     readonly attribute ResponseType type;
     readonly attribute USVString url;
     readonly attribute boolean redirected;
