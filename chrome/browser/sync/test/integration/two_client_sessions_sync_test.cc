@@ -163,7 +163,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
   EXPECT_FALSE(GetSessionData(1, &sessions1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
+// TODO(crbug.com/1340790): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
+                       DISABLED_DeleteActiveSession) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   ASSERT_TRUE(CheckInitialState(0));
