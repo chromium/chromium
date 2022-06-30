@@ -646,18 +646,6 @@ bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {
   return !is_incognito_ || !FileSystemContext::IsSandboxFileSystem(url.type());
 }
 
-void FileSystemContext::OpenPluginPrivateFileSystem(
-    const url::Origin& origin,
-    FileSystemType type,
-    const std::string& filesystem_id,
-    const std::string& plugin_id,
-    OpenFileSystemMode mode,
-    StatusCallback callback) {
-  DCHECK(plugin_private_backend_);
-  plugin_private_backend_->OpenPrivateFileSystem(
-      origin, type, filesystem_id, plugin_id, mode, std::move(callback));
-}
-
 FileSystemContext::~FileSystemContext() {
   // TODO(crbug.com/823854) This is a leak. Delete env after the backends have
   // been deleted.

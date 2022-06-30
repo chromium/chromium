@@ -139,16 +139,6 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
                                 const storage::FileSystemURL& root,
                                 const std::string& name,
                                 base::File::Error error);
-    void OpenPluginPrivateFileSystem(
-        const GURL& origin,
-        const std::string& plugin_id,
-        ppapi::host::ReplyMessageContext reply_context,
-        const std::string& fsid,
-        scoped_refptr<storage::FileSystemContext> file_system_context);
-    void OpenPluginPrivateFileSystemComplete(
-        ppapi::host::ReplyMessageContext reply_context,
-        const std::string& fsid,
-        base::File::Error error);
 
     // Runs on |task_runner_.
     void RunCallbackIfHostAlive(base::OnceClosure callback);

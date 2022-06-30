@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -137,10 +138,6 @@
 #include "net/android/http_auth_negotiate_android.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/browser/plugin_private_storage_helper.h"
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "content/browser/media/media_license_manager.h"
@@ -757,6 +754,24 @@ base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
   DCHECK(!storage_key_origin_empty);
   return base::BindRepeating(std::equal_to<const url::Origin&>(),
                              storage_key.origin());
+}
+
+void ClearPluginPrivateDataOnFileTaskRunner(
+    scoped_refptr<storage::FileSystemContext> filesystem_context,
+    base::OnceClosure callback) {
+  DCHECK(filesystem_context->default_file_task_runner()
+             ->RunsTasksInCurrentSequence());
+  DVLOG(3) << "Clearing plugin data: " << filesystem_context;
+
+  // The Plugin Private File System has been deprecated. Delete all data at
+  // %profile/File System/Plugins.
+  auto plugin_path = filesystem_context->plugin_private_backend()->base_path();
+
+  filesystem_context->default_file_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     plugin_path),
+      std::move(callback));
 }
 
 }  // namespace
@@ -2523,17 +2538,14 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         CreateTaskCompletionClosure(TracingDataType::kAggregationService));
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  if (remove_mask_ & REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA) {
-    filesystem_context->default_file_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ClearPluginPrivateDataOnFileTaskRunner,
-            base::WrapRefCounted(filesystem_context), storage_key,
-            origin_matcher, storage_policy_ref, begin, end,
-            CreateTaskCompletionClosure(TracingDataType::kPluginPrivate)));
-  }
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+  // TODO(crbug.com/1340250): The Plugin Private File System is removed, but
+  // some devices may still have old data on their machine. For now greedily try
+  // to delete this data, but we'll want to remove this code at some point.
+  filesystem_context->default_file_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&ClearPluginPrivateDataOnFileTaskRunner,
+                                base::WrapRefCounted(filesystem_context),
+                                CreateTaskCompletionClosure(
+                                    TracingDataType::kPluginPrivate)));
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
       shared_storage_manager &&

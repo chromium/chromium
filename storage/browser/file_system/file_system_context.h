@@ -230,7 +230,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
                               const base::FilePath& file_path,
                               ResolvedEntryType type)>;
 
-  // Used for DeleteFileSystem and OpenPluginPrivateFileSystem.
+  // Used for DeleteFileSystem.
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
   // Opens the filesystem for the given `storage_key` and `type`, and dispatches
@@ -334,23 +334,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // (E.g. this returns false if the context is created for incognito mode)
   bool CanServeURLRequest(const FileSystemURL& url) const;
 
-  // This must be used to open 'plugin private' filesystem.
-  // See "plugin_private_file_system_backend.h" for more details.
-  //
-  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
-  // file system will be partitioned; if so, replace the url::Origin parameter
-  // with blink::StorageKey
-  void OpenPluginPrivateFileSystem(const url::Origin& origin,
-                                   FileSystemType type,
-                                   const std::string& filesystem_id,
-                                   const std::string& plugin_id,
-                                   OpenFileSystemMode mode,
-                                   StatusCallback callback);
-
   bool is_incognito() { return is_incognito_; }
 
-  // TODO(com/1231162): Remove this. Used only by test code and to migrate media
-  // license data to the new backend.
+  // TODO(crbug.com/1231162): Remove this. The Plugin Private File System is in
+  // the process of being removed.
   PluginPrivateFileSystemBackend* plugin_private_backend() const {
     return plugin_private_backend_.get();
   }

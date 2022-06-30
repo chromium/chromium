@@ -2695,8 +2695,6 @@ source_set("browser") {
       "media/session/pepper_player_delegate.h",
       "plugin_list.cc",
       "plugin_list.h",
-      "plugin_private_storage_helper.cc",
-      "plugin_private_storage_helper.h",
       "plugin_service_impl.cc",
       "plugin_service_impl.h",
       "ppapi_plugin_process_host.cc",
