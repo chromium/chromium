@@ -6016,7 +6016,7 @@
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8",
                         "ZeroSuggestCacheCounterfactual": "true",
-                        "ZeroSuggestCacheDurationSec": "180",
+                        "ZeroSuggestCacheDurationSec": "0",
                         "ZeroSuggestPrefetchBypassCache": "true"
                     },
                     "enable_features": [
@@ -6053,7 +6053,7 @@
                         "OmniboxMaxURLMatches": "8",
                         "UIMaxAutocompleteMatches": "10",
                         "ZeroSuggestCacheCounterfactual": "true",
-                        "ZeroSuggestCacheDurationSec": "180",
+                        "ZeroSuggestCacheDurationSec": "0",
                         "ZeroSuggestPrefetchBypassCache": "true"
                     },
                     "enable_features": [
