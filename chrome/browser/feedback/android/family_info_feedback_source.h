@@ -37,6 +37,8 @@ class FamilyInfoFeedbackSource : public FamilyInfoFetcher::Consumer {
   void GetFamilyMembers();
 
  private:
+  friend class FamilyInfoFeedbackSourceTest;
+
   // FamilyInfoFetcher::Consumer implementation.
   void OnGetFamilyMembersSuccess(
       const std::vector<FamilyInfoFetcher::FamilyMember>& members) override;

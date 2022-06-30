@@ -18,11 +18,11 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
     private static final String FAMILY_MEMBER_ROLE = "Family_Member_Role";
 
     private final Profile mProfile;
-    private Map<String, String> mFeedbackMap;
+    private Map<String, String> mFeedbackMap = new HashMap<>();
     private boolean mIsReady;
     private Runnable mCallback;
 
-    FamilyInfoFeedbackSource(Profile profile) {
+    public FamilyInfoFeedbackSource(Profile profile) {
         mProfile = profile;
     }
 
@@ -30,7 +30,6 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
     @Override
     public void start(final Runnable callback) {
         mCallback = callback;
-        mFeedbackMap = new HashMap<>();
         FamilyInfoFeedbackSourceJni.get().start(this, mProfile);
     }
 
@@ -41,7 +40,9 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
             mFeedbackMap.put(FAMILY_MEMBER_ROLE, familyRole);
         }
         mIsReady = true;
-        mCallback.run();
+        if (mCallback != null) {
+            mCallback.run();
+        }
     }
 
     @Override
