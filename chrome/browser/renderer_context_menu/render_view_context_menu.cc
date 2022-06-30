@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -143,6 +144,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -440,13 +442,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_UNFOLLOW, 120},
        {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
        {IDC_CONTENT_CONTEXT_RUN_PDF_OCR, 122},
+       {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 123}});
+       {0, 124}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -1008,6 +1011,12 @@ void RenderViewContextMenu::InitMenu() {
     AppendPrintItem();
   }
 
+  if (base::FeatureList::IsEnabled(translate::kDesktopPartialTranslate) &&
+      content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_PARTIAL_TRANSLATE)) {
+    AppendPartialTranslateItem();
+  }
+
   // Spell check and writing direction options are not currently supported by
   // pepper plugins.
   if (editable && params_.misspelled_word.empty() &&
@@ -1311,14 +1320,15 @@ const Extension* RenderViewContextMenu::GetExtension() const {
       ->GetExtensionForWebContents(source_web_contents_);
 }
 
-std::string RenderViewContextMenu::GetTargetLanguage() const {
+std::u16string RenderViewContextMenu::GetTargetLanguageDisplayName() const {
   std::unique_ptr<translate::TranslatePrefs> prefs(
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefs(browser_context_)));
   language::LanguageModel* language_model =
       LanguageModelManagerFactory::GetForBrowserContext(browser_context_)
           ->GetPrimaryModel();
-  return translate::TranslateManager::GetTargetLanguage(prefs.get(),
-                                                        language_model);
+  std::string locale = translate::TranslateManager::GetTargetLanguage(
+      prefs.get(), language_model);
+  return l10n_util::GetDisplayNameForLocale(locale, locale, true);
 }
 
 void RenderViewContextMenu::AppendDeveloperItems() {
@@ -1765,19 +1775,10 @@ void RenderViewContextMenu::AppendPageItems() {
       chrome_translate_client->GetTranslateManager()->CanManuallyTranslate(
           true);
   if (canTranslate) {
-    language::LanguageModel* language_model =
-        LanguageModelManagerFactory::GetForBrowserContext(browser_context_)
-            ->GetPrimaryModel();
-    std::unique_ptr<translate::TranslatePrefs> prefs(
-        ChromeTranslateClient::CreateTranslatePrefs(
-            GetPrefs(browser_context_)));
-    std::string locale = translate::TranslateManager::GetTargetLanguage(
-        prefs.get(), language_model);
-    std::u16string language =
-        l10n_util::GetDisplayNameForLocale(locale, locale, true);
     menu_model_.AddItem(
         IDC_CONTENT_CONTEXT_TRANSLATE,
-        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_TRANSLATE, language));
+        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_TRANSLATE,
+                                   GetTargetLanguageDisplayName()));
   }
 }
 
@@ -1833,6 +1834,13 @@ void RenderViewContextMenu::AppendPrintItem() {
     menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
+}
+
+void RenderViewContextMenu::AppendPartialTranslateItem() {
+  menu_model_.AddItem(
+      IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+      l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+                                 GetTargetLanguageDisplayName()));
 }
 
 void RenderViewContextMenu::AppendMediaRouterItem() {
@@ -2269,6 +2277,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_TRANSLATE:
       return IsTranslateEnabled();
+
+    case IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE:
+      return true;
 
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
@@ -2739,6 +2750,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_TRANSLATE:
       ExecTranslate();
+      break;
+
+    case IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE:
+      ExecPartialTranslate();
       break;
 
     case IDC_CONTENT_CONTEXT_RELOADFRAME:
@@ -3645,6 +3660,14 @@ void RenderViewContextMenu::ExecTranslate() {
   DCHECK(manager);
   manager->ShowTranslateUI(/*auto_translate=*/true,
                            /*triggered_from_menu=*/true);
+}
+
+void RenderViewContextMenu::ExecPartialTranslate() {
+  // TODO(crbug/1314825): When the PartialTranslateManager is added update this
+  // call to use language information from the page.
+  GetBrowser()->window()->ShowPartialTranslateBubble(
+      PartialTranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE, "fr",
+      "en", params_.selection_text, translate::TranslateErrors::Type::NONE);
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {

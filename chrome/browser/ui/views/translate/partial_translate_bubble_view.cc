@@ -74,6 +74,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -328,7 +329,7 @@ void PartialTranslateBubbleView::ExecuteCommand(int command_id,
 }
 
 void PartialTranslateBubbleView::OnWidgetDestroying(views::Widget* widget) {
-  // Nothing to do. When partial translate metrics get added we may want to log
+  // Nothing to do. When Partial Translate metrics get added we may want to log
   // when and how the bubble is closed similar to TranslateBubbleView.
   return;
 }
@@ -353,10 +354,12 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
     std::unique_ptr<PartialTranslateBubbleModel> model,
     translate::TranslateErrors::Type error_type,
     content::WebContents* web_contents,
+    const std::u16string& text_selection,
     base::OnceClosure on_closing)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       model_(std::move(model)),
       error_type_(error_type),
+      text_selection_(text_selection),
       on_closing_(std::move(on_closing)),
       web_contents_(web_contents) {
   UpdateInsets(PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
@@ -493,6 +496,25 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
   inner_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
   auto* horizontal_view = view->AddChildView(std::move(inner_view));
+
+  auto partial_text_row = std::make_unique<views::View>();
+  partial_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  auto partial_text_label = std::make_unique<views::Label>(
+      text_selection_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY);
+  const int vertical_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  partial_text_label->SetLineHeight(vertical_spacing * 5);
+  partial_text_label->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  partial_text_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  partial_text_label->SetProperty(views::kMarginsKey,
+                                  gfx::Insets::TLBR(0, 0, vertical_spacing, 0));
+  partial_text_row->AddChildView(std::move(partial_text_label));
+  view->AddChildView(std::move(partial_text_row));
 
   // Button to trigger full page translation.
   auto button_row = std::make_unique<views::BoxLayoutView>();

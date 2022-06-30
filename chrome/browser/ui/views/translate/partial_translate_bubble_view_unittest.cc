@@ -94,7 +94,8 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
     std::unique_ptr<PartialTranslateBubbleModel> model(mock_model_);
     bubble_ = new PartialTranslateBubbleView(
         anchor_widget_->GetContentsView(), std::move(model),
-        translate::TranslateErrors::NONE, nullptr, base::DoNothing());
+        translate::TranslateErrors::NONE, nullptr, std::u16string(),
+        base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 

@@ -41,6 +41,9 @@ const base::Feature kTFLiteLanguageDetectionEnabled{
 #endif
 };
 
+const base::Feature kDesktopPartialTranslate{"DesktopPartialTranslate",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

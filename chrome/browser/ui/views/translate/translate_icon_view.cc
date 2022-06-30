@@ -47,6 +47,28 @@ views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
   return nullptr;
 }
 
+views::BubbleDialogDelegate* TranslateIconView::GetPartialTranslateBubble()
+    const {
+  if (GetWebContents()) {
+    TranslateBubbleController* translate_bubble_controller =
+        TranslateBubbleController::FromWebContents(GetWebContents());
+
+    if (translate_bubble_controller)
+      return translate_bubble_controller->GetPartialTranslateBubble();
+  }
+
+  return nullptr;
+}
+
+bool TranslateIconView::IsBubbleShowing() const {
+  // We override the PageActionIconView implementation because there are two
+  // different bubbles that may be shown with the Translate icon, and so this
+  // function should return true if either the Full Page Translate or Partial
+  // Translate bubble are showing. If a bubble is being destroyed, it's
+  // considered showing though it may be already invisible currently.
+  return (GetBubble() != nullptr) || (GetPartialTranslateBubble() != nullptr);
+}
+
 void TranslateIconView::UpdateImpl() {
   if (!GetWebContents())
     return;

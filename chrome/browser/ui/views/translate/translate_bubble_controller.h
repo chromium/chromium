@@ -23,7 +23,7 @@ class TranslateBubbleController
   static TranslateBubbleController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Shows the full page Translate bubble. Returns the newly created bubble's
+  // Shows the Full Page Translate bubble. Returns the newly created bubble's
   // Widget or nullptr in cases when the bubble already exists or when the
   // bubble is not created.
   views::Widget* ShowTranslateBubble(
@@ -44,17 +44,18 @@ class TranslateBubbleController
       PartialTranslateBubbleModel::ViewState view_state,
       const std::string& source_language,
       const std::string& target_language,
+      const std::u16string& text_selection,
       translate::TranslateErrors::Type error_type);
 
-  // Closes the current partial or full page translate bubble, if it exists. At
+  // Closes the current Partial or Full Page Translate bubble, if it exists. At
   // most one of these bubble should be non-null at any given time.
   void CloseBubble();
 
-  // Returns the currently shown full page translate bubble view. Returns
+  // Returns the currently shown Full Page Translate bubble view. Returns
   // nullptr if the bubble is not currently shown.
   TranslateBubbleView* GetTranslateBubble() const;
 
-  // Returns the currently shown partial translate bubble view. Returns nullptr
+  // Returns the currently shown Partial Translate bubble view. Returns nullptr
   // if the bubble is not currently shown.
   PartialTranslateBubbleView* GetPartialTranslateBubble() const;
 
@@ -72,7 +73,7 @@ class TranslateBubbleController
   explicit TranslateBubbleController(content::WebContents* contents);
 
  private:
-  // Weak references for the two possible translate bubble views. These will be
+  // Weak references for the two possible Translate bubble views. These will be
   // nullptr if no bubble is currently shown. At most one of these pointers
   // should be non-null at any given time.
   raw_ptr<TranslateBubbleView> translate_bubble_view_ = nullptr;
@@ -87,7 +88,7 @@ class TranslateBubbleController
   base::RepeatingCallback<std::unique_ptr<PartialTranslateBubbleModel>()>
       partial_model_factory_callback_;
 
-  // Handlers for when translate bubbles are closed.
+  // Handlers for when Translate bubbles are closed.
   void OnTranslateBubbleClosed();
   void OnPartialTranslateBubbleClosed();
 

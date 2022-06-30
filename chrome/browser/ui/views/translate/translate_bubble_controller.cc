@@ -32,7 +32,7 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     LocationBarBubbleDelegateView::DisplayReason reason) {
-  // If the partial translate bubble is already being shown, close it before
+  // If the Partial Translate bubble is already being shown, close it before
   // showing the full translate bubble.
   if (partial_translate_bubble_view_)
     partial_translate_bubble_view_->CloseBubble();
@@ -98,8 +98,9 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
     PartialTranslateBubbleModel::ViewState view_state,
     const std::string& source_language,
     const std::string& target_language,
+    const std::u16string& text_selection,
     translate::TranslateErrors::Type error_type) {
-  // If the other translate bubble is already being shown, close it before
+  // If the other Translate bubble is already being shown, close it before
   // showing this one.
   if (translate_bubble_view_)
     translate_bubble_view_->CloseBubble();
@@ -135,7 +136,7 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
   auto partial_translate_bubble_view =
       std::make_unique<PartialTranslateBubbleView>(
           anchor_view, std::move(model), error_type, web_contents,
-          GetOnPartialTranslateBubbleClosedCallback());
+          text_selection, GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
 
   if (highlighted_button)

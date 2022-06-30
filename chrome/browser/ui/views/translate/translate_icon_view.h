@@ -25,12 +25,17 @@ class TranslateIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
+  bool IsBubbleShowing() const override;
 
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
+
+ private:
+  // Returns the Partial Translate bubble instance for the Translate icon.
+  views::BubbleDialogDelegate* GetPartialTranslateBubble() const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_

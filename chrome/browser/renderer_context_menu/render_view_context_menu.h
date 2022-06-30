@@ -190,9 +190,9 @@ class RenderViewContextMenu
   // Gets the extension (if any) associated with the WebContents that we're in.
   const extensions::Extension* GetExtension() const;
 
-  // Queries the translate service to obtain the user's transate target
-  // language.
-  std::string GetTargetLanguage() const;
+  // Queries the Translate service to obtain the user's Translate target
+  // language and returns the language name in its same locale.
+  std::u16string GetTargetLanguageDisplayName() const;
 
   void AppendDeveloperItems();
   void AppendDevtoolsForUnpackedExtensions();
@@ -215,6 +215,7 @@ class RenderViewContextMenu
   void AppendPdfOcrItem();
 #endif
   void AppendPrintItem();
+  void AppendPartialTranslateItem();
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
   void AppendRotationItems();
@@ -297,6 +298,7 @@ class RenderViewContextMenu
   void ExecPrint();
   void ExecRouteMedia();
   void ExecTranslate();
+  void ExecPartialTranslate();
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();

@@ -17,6 +17,9 @@ extern const base::Feature kTranslateSubFrames;
 // Controls whether the TFLite-based language detection is enabled.
 extern const base::Feature kTFLiteLanguageDetectionEnabled;
 
+// Controls whether the Partial Translate function is available.
+extern const base::Feature kDesktopPartialTranslate;
+
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];
 

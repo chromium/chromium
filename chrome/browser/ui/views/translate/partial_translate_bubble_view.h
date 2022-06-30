@@ -60,6 +60,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
                              std::unique_ptr<PartialTranslateBubbleModel> model,
                              translate::TranslateErrors::Type error_type,
                              content::WebContents* web_contents,
+                             const std::u16string& text_selection,
                              base::OnceClosure on_closing);
 
   PartialTranslateBubbleView(const PartialTranslateBubbleView&) = delete;
@@ -244,6 +245,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   translate::TranslateErrors::Type error_type_;
 
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
+
+  std::u16string text_selection_;
 
   base::OnceClosure on_closing_;
 

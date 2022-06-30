@@ -246,6 +246,13 @@ ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
   return ShowTranslateBubbleResult::SUCCESS;
 }
 
+void TestBrowserWindow::ShowPartialTranslateBubble(
+    PartialTranslateBubbleModel::ViewState view_state,
+    const std::string& source_language,
+    const std::string& target_language,
+    const std::u16string& text_selection,
+    translate::TranslateErrors::Type error_type) {}
+
 qrcode_generator::QRCodeGeneratorBubbleView*
 TestBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
                                              const GURL& url,
