@@ -1324,8 +1324,16 @@ IN_PROC_BROWSER_TEST_P(SideSearchExtensionsTest,
   EXPECT_EQ("", content::EvalJs(side_contents, "document.body.innerText;"));
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340903): Test is flaky on Mac.
+#define MAYBE_WebRequestInterceptsSidePanelNavigations \
+  DISABLED_WebRequestInterceptsSidePanelNavigations
+#else
+#define MAYBE_WebRequestInterceptsSidePanelNavigations \
+  WebRequestInterceptsSidePanelNavigations
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchExtensionsTest,
-                       WebRequestInterceptsSidePanelNavigations) {
+                       MAYBE_WebRequestInterceptsSidePanelNavigations) {
   const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
   const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
   const GURL third_url = embedded_test_server()->GetURL("third.example", "/");
