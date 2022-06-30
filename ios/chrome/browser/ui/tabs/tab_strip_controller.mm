@@ -1817,7 +1817,7 @@ UIColor* BackgroundColor() {
   // is non-clear to cover the WKWebView. In this case, make the tab strip
   // background clear as soon as view revealing begins so any animations that
   // should be visible behind the tab strip are visible. See the comment on
-  // `BackgroundColor()| for more details.
+  // `BackgroundColor()` for more details.
   self.view.backgroundColor = UIColor.clearColor;
   self.viewHiddenForThumbStrip = YES;
   [self updateViewHidden];
