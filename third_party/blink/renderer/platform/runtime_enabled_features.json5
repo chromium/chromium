@@ -2132,9 +2132,6 @@
       status: "stable",
     },
     {
-      name: "ScrollUnification",
-    },
-    {
       name: "SecureContextFixForSharedWorkers",
       status: "experimental",
     },

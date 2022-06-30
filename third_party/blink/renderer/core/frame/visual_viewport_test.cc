@@ -1846,7 +1846,7 @@ TEST_P(VisualViewportTest, SlowScrollAfterImplScroll) {
   // codepath which is extensively tested (including pinch interactions) in
   // cc/trees/layer_tree_host_unittest.cc and
   // cc/trees/layer_tree_host_unittest_scroll.cc.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification))
     return;
 
   InitializeWithDesktopSettings();

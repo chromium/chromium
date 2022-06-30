@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -495,8 +496,8 @@ void ScrollManager::RecordScrollRelatedMetrics(WebGestureDevice device) const {
 WebInputEventResult ScrollManager::HandleGestureScrollBegin(
     const WebGestureEvent& gesture_event) {
   TRACE_EVENT0("input", "ScrollManager::handleGestureScrollBegin");
-  DCHECK(!RuntimeEnabledFeatures::ScrollUnificationEnabled());
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
 
@@ -584,8 +585,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   TRACE_EVENT0("input", "ScrollManager::handleGestureScrollUpdate");
   DCHECK_EQ(gesture_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
 
-  DCHECK(!RuntimeEnabledFeatures::ScrollUnificationEnabled());
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
 
@@ -751,8 +752,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
     const WebGestureEvent& gesture_event) {
   TRACE_EVENT0("input", "ScrollManager::handleGestureScrollEnd");
 
-  DCHECK(!RuntimeEnabledFeatures::ScrollUnificationEnabled());
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
 

@@ -40,6 +40,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/base/features.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
@@ -3056,7 +3057,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   }
 
   Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     ForAllNonThrottledLocalFrameViews(
         [&scroll_translation_nodes](LocalFrameView& frame_view) {
           frame_view.GetUserScrollTranslationNodes(scroll_translation_nodes);

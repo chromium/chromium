@@ -2067,7 +2067,7 @@ TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
 
 class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
  public:
-  UnifiedScrollingSimTest() : scroll_unification_enabled_(true) {}
+  UnifiedScrollingSimTest() = default;
 
   void SetUp() override {
     SimTest::SetUp();
@@ -2105,10 +2105,6 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
                     ->GetLayoutBoxForScrolling();
     return box ? box->GetScrollableArea() : nullptr;
   }
-
- protected:
-  RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
-      scroll_unification_enabled_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(UnifiedScrollingSimTest);
@@ -2119,6 +2115,10 @@ INSTANTIATE_PAINT_TEST_SUITE_P(UnifiedScrollingSimTest);
 // noncomposited reasons set. It then removes the box-shadow property and
 // ensures the compositor node updates accordingly.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2182,6 +2182,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
 // IsComposited state updated accordingly.
 TEST_P(UnifiedScrollingSimTest,
        ScrollNodeForCompositedToNonCompositedScroller) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2244,6 +2248,10 @@ TEST_P(UnifiedScrollingSimTest,
 // scroller with an inset box shadow, and ensuring that scroller generates a
 // compositor scroll node with the proper noncomposited reasons set.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2330,6 +2338,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
 // Similar to the above test, but for deeper nesting iframes to ensure we
 // generate scroll nodes that are deeper than the main frame's children.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   SimRequest child_request_1("https://example.com/child1.html", "text/html");
   SimRequest child_request_2("https://example.com/child2.html", "text/html");
@@ -2420,6 +2432,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
 // is no scroll node for a display:none scroller, as there is no scrollable
 // area.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2482,6 +2498,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
 // which are unique as they are not a composited scroller but also do not have
 // NonCompositedMainThreadScrollingReasons.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2512,11 +2532,14 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
 class ScrollingSimTest : public SimTest,
                          public testing::WithParamInterface<bool> {
  public:
-  ScrollingSimTest() : scroll_unification_enabled_(GetParam()) {}
+  ScrollingSimTest() = default;
 
   void SetUp() override {
-    if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    if (GetParam())
       feature_list_.InitAndEnableFeature(::features::kScrollUnification);
+    else
+      feature_list_.InitAndDisableFeature(::features::kScrollUnification);
+
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
     ResizeView(gfx::Size(1000, 1000));
@@ -2563,8 +2586,6 @@ class ScrollingSimTest : public SimTest,
   }
 
  protected:
-  RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
-      scroll_unification_enabled_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2623,7 +2644,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
   ASSERT_EQ(0u, NumObjectsNeedingLayout());
 
   Element* box = GetDocument().getElementById("box");
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // Dirty the layout
     box->setAttribute(html_names::kStyleAttr, "height: 10px");
     GetDocument().UpdateStyleAndLayoutTree();

@@ -41,6 +41,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
@@ -3314,7 +3315,7 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
     ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
     blink::WebInputEvent::Type injected_type) {
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // create a GestureScroll Event and post it to the compositor thread
     // TODO(crbug.com/1126098) use original input event's timestamp.
     // TODO(crbug.com/1082590) ensure continuity in scroll metrics collection

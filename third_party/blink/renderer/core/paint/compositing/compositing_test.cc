@@ -617,19 +617,10 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
 
  private:
   void SetUp() override {
-    if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
-      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
-
     SimTest::SetUp();
     // Ensure a non-empty size so painting does not early-out.
     WebView().Resize(gfx::Size(800, 600));
   }
-  void TearDown() override {
-    SimTest::TearDown();
-    feature_list_.Reset();
-  }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CompositingSimTest);
@@ -1882,7 +1873,7 @@ TEST_P(CompositingSimTest, BuildTreeSetsScaleOnTransformTree) {
 
 TEST_P(CompositingSimTest, UnifiedScrollWithMainThreadReasonsNeedsCommit) {
   // This test requires scroll unification.
-  if (!RuntimeEnabledFeatures::ScrollUnificationEnabled())
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
     return;
 
   InitializeWithHTML(R"HTML(

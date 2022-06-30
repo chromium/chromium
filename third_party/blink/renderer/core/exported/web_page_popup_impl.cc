@@ -33,6 +33,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/ukm_manager.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -728,7 +729,7 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
         event.PositionInScreen(),
         WebFeature::kPopupGestureTapExceedsOwnerWindowBounds);
   }
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     if (event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
       HitTestLocation locationScroll(event.PositionInWidget());
       HitTestResult resultScroll =

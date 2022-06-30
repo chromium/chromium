@@ -113,9 +113,6 @@ class ScopedStubThemeEngine {
 class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
  public:
   void SetUp() override {
-    if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
-      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
-
     SimTest::SetUp();
     // We don't use the mock scrollbar theme in this file, but use the normal
     // scrollbar theme with mock WebThemeEngine, for better control of testing
@@ -131,7 +128,6 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     SetOverlayScrollbarsEnabled(original_overlay_scrollbars_enabled_);
     mock_overlay_scrollbars_.reset();
     SimTest::TearDown();
-    feature_list_.Reset();
   }
 
   void SetOverlayScrollbarsEnabled(bool enabled) {
@@ -272,7 +268,6 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
   ScopedStubThemeEngine scoped_theme_;
   std::unique_ptr<ScopedMockOverlayScrollbars> mock_overlay_scrollbars_;
   bool original_overlay_scrollbars_enabled_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ScrollbarsTest);

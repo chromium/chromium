@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "cc/base/features.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
@@ -621,10 +622,11 @@ void PaintArtifactCompositor::Update(
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
     Vector<std::unique_ptr<cc::DocumentTransitionRequest>>
         transition_requests) {
+  const bool unification_enabled =
+      base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
-  DCHECK(scroll_translation_nodes.IsEmpty() ||
-         RuntimeEnabledFeatures::ScrollUnificationEnabled());
+  DCHECK(scroll_translation_nodes.IsEmpty() || unification_enabled);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
@@ -661,7 +663,7 @@ void PaintArtifactCompositor::Update(
 
   // With ScrollUnification, we ensure a cc::ScrollNode for all
   // |scroll_translation_nodes|.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+  if (unification_enabled)
     property_tree_manager.EnsureCompositorScrollNodes(scroll_translation_nodes);
 
   for (auto& entry : synthesized_clip_cache_)
@@ -706,7 +708,7 @@ void PaintArtifactCompositor::Update(
     // property_tree_manager.SetCcScrollNodeIsComposited(scroll_translation);
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollNode(scroll_translation);
-    if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    if (unification_enabled)
       property_tree_manager.SetCcScrollNodeIsComposited(scroll_id);
 
     layer_list_builder.Add(&layer);

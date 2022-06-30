@@ -262,7 +262,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePushSubscriptionChangeEvent,
      features::kPushSubscriptionChangeEvent},
     {wf::EnableRestrictGamepadAccess, features::kRestrictGamepadAccess},
-    {wf::EnableScrollUnification, features::kScrollUnification},
     {wf::EnableSecurePaymentConfirmation, features::kSecurePaymentConfirmation},
     {wf::EnableSecurePaymentConfirmationDebug,
      features::kSecurePaymentConfirmationDebug},
