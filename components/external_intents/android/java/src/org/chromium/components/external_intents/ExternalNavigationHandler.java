@@ -2194,8 +2194,7 @@ public class ExternalNavigationHandler {
         boolean isOnEffectiveIntentRedirect = params.getRedirectHandler() == null
                 ? false
                 : params.getRedirectHandler().isOnEffectiveIntentRedirectChain();
-        return (params.isLinkTransition() && params.isFromIntent() && params.isRedirect())
-                || isOnEffectiveIntentRedirect;
+        return (params.isFromIntent() && params.isRedirect()) || isOnEffectiveIntentRedirect;
     }
 
     /**

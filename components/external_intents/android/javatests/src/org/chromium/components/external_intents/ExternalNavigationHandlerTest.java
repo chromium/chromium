@@ -788,6 +788,29 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testExternalRedirectForTwa() throws URISyntaxException {
+        mDelegate.add(new IntentActivity("imdb:", INTENT_APP_PACKAGE_NAME));
+
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        // TWAs use AUTO_TOPLEVEL for metrics reasons.
+        int transTypeTopLevelFromIntent = PageTransition.AUTO_TOPLEVEL | PageTransition.FROM_API;
+
+        Intent intent = Intent.parseUri(IMDB_APP_INTENT_FOR_TOM_HANKS, Intent.URI_INTENT_SCHEME);
+        redirectHandler.updateIntent(
+                intent, !IS_CUSTOM_TAB_INTENT, !SEND_TO_EXTERNAL_APPS, !INTENT_STARTED_TASK);
+        redirectHandler.updateNewUrlLoading(transTypeTopLevelFromIntent, false, false, 0, 0, true);
+        redirectHandler.updateNewUrlLoading(transTypeTopLevelFromIntent, true, false, 0, 0, false);
+        checkUrl(IMDB_APP_INTENT_FOR_TOM_HANKS)
+                .withPageTransition(transTypeTopLevelFromIntent)
+                .withIsRendererInitiated(false)
+                .withIsRedirect(true)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+    }
+
+    @Test
+    @SmallTest
     public void testInstantAppsIntent_customTabRedirect() throws Exception {
         RedirectHandler redirectHandler = RedirectHandler.create();
         int transTypeLinkFromIntent = PageTransition.LINK | PageTransition.FROM_API;

@@ -171,13 +171,6 @@ public class ExternalNavigationParams {
     }
 
     /**
-     * @return Whether the user got to the page by clicking a link on another page.
-     */
-    public boolean isLinkTransition() {
-        return (mPageTransition & PageTransition.CORE_MASK) == PageTransition.LINK;
-    }
-
-    /**
      * @return Whether the navigation is from an intent.
      */
     public boolean isFromIntent() {

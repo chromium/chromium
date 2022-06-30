@@ -179,8 +179,7 @@ public class RedirectHandler {
         int pageTransitionCore = pageTransType & PageTransition.CORE_MASK;
 
         boolean isNewLoadingStartedByUser = mNavigationState == null;
-        boolean isFromIntent = pageTransitionCore == PageTransition.LINK
-                && (pageTransType & PageTransition.FROM_API) != 0;
+        boolean isFromIntent = (pageTransType & PageTransition.FROM_API) != 0;
         if (!isRedirect) {
             if ((pageTransType & PageTransition.FORWARD_BACK) != 0) {
                 isNewLoadingStartedByUser = true;
