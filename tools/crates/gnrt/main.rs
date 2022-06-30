@@ -78,7 +78,7 @@ fn main() {
     // Compare cargo's dependency resolution with the crates we have on disk.
     let present_crates: HashSet<&ThirdPartyCrate> = crates.iter().collect();
     let mut unused_crates: HashSet<&ThirdPartyCrate> = present_crates.clone();
-    let mut missing_deps: Vec<&deps::Dependency> = Vec::new();
+    let mut missing_deps: Vec<&deps::ThirdPartyDep> = Vec::new();
     for dep in dependencies.iter() {
         let dep_crate = ThirdPartyCrate { name: dep.package_name.clone(), epoch: dep.epoch };
 

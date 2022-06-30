@@ -17,7 +17,7 @@ pub use cargo_metadata::Version;
 /// A single transitive third-party dependency. Includes information needed for
 /// generating build files later.
 #[derive(Clone, Debug)]
-pub struct Dependency {
+pub struct ThirdPartyDep {
     /// The package name as used by cargo.
     pub package_name: String,
     /// The normalized name we use in vendored crate paths.
@@ -27,6 +27,13 @@ pub struct Dependency {
     /// The epoch derived from the dependency version. Used for our vendored
     /// third-party crates.
     pub epoch: Epoch,
+    /// This package's dependencies. Each element cross-references another
+    /// `ThirdPartyDep` by name and epoch.
+    pub dependencies: Vec<DepOfDep>,
+    /// Same as the above, but for build script deps.
+    pub build_dependencies: Vec<DepOfDep>,
+    /// Same as the above, but for test deps.
+    pub dev_dependencies: Vec<DepOfDep>,
     /// A package can be depended upon in different ways: as a normal
     /// dependency, just for build scripts, or just for tests. `kinds` contains
     /// an entry for each way this package is depended on.
@@ -46,6 +53,19 @@ pub struct Dependency {
     /// valid packages. Returning `false` for a dependency allows better error
     /// messages later.
     pub is_local: bool,
+}
+
+/// A dependency of a `ThirdPartyDep`. Cross-references another `ThirdPartyDep`
+/// entry in the resolved list.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DepOfDep {
+    /// The normalized name of this dependency.
+    pub normalized_name: NormalizedName,
+    /// The requested epoch of this dependency.
+    pub epoch: Epoch,
+    /// A platform constraint for this dependency, or `None` if it's used on all
+    /// platforms.
+    pub platform: Option<Platform>,
 }
 
 /// Information specific to the dependency kind: for normal, build script, or
@@ -100,7 +120,7 @@ impl std::fmt::Display for LibType {
 /// package may have multiple crates, each of which corresponds to a single
 /// rustc invocation: e.g. a package may have a lib crate as well as multiple
 /// binary crates.
-pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<Dependency> {
+pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPartyDep> {
     // The metadata is split into two parts:
     // 1. A list of packages and associated info: targets (e.g. lib, bin,
     //    tests), source path, etc. This includes all workspace members and all
@@ -204,10 +224,25 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<Dependen
         }
 
         dep.version = package.version.clone();
-        dep.epoch = match package.version.major {
-            0 => Epoch::Minor(package.version.minor.try_into().unwrap()),
-            x => Epoch::Major(x.try_into().unwrap()),
-        };
+        dep.epoch = epoch_from_version(&package.version);
+
+        // Collect this package's list of resolved dependencies which will be
+        // needed for build file generation later.
+        for node_dep in iter_node_deps(node) {
+            let dep_pkg = dep_graph.packages.get(node_dep.pkg).unwrap();
+            let dep_of_dep = DepOfDep {
+                normalized_name: NormalizedName::from_crate_name(&dep_pkg.name),
+                epoch: epoch_from_version(&dep_pkg.version),
+                platform: node_dep.target,
+            };
+
+            match node_dep.kind {
+                DependencyKind::Normal => dep.dependencies.push(dep_of_dep),
+                DependencyKind::Build => dep.build_dependencies.push(dep_of_dep),
+                DependencyKind::Development => dep.dev_dependencies.push(dep_of_dep),
+                DependencyKind::Unknown => unreachable!(),
+            }
+        }
 
         // Make sure the package comes from our vendored source. If not, report the
         // error for later.
@@ -233,7 +268,7 @@ struct TraversalState<'a> {
     /// The path of package IDs to the current node. For human consumption.
     path: Vec<String>,
     /// The final set of dependencies.
-    dependencies: HashMap<&'a cargo_metadata::PackageId, Dependency>,
+    dependencies: HashMap<&'a cargo_metadata::PackageId, ThirdPartyDep>,
 }
 
 /// Recursively explore a particular node in the dependency graph. Fills data in
@@ -246,13 +281,14 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
 
     // Helper to insert a placeholder `Dependency` into a map. We fill in the
     // fields later.
-    let init_dep = |path| Dependency {
+    let init_dep = |path| ThirdPartyDep {
         package_name: String::new(),
         normalized_name: NormalizedName::from_crate_name(""),
-        // Dummy value to be filled in later.
         version: Version::new(0, 0, 0),
-        // Dummy value to be filled in later.
         epoch: Epoch::Minor(1),
+        dependencies: Vec::new(),
+        build_dependencies: Vec::new(),
+        dev_dependencies: Vec::new(),
         dependency_kinds: HashMap::new(),
         lib_target: None,
         bin_targets: Vec::new(),
@@ -273,7 +309,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         explore_node(state, target_node);
 
         // Merge this with the existing entry for the dep.
-        let dep: &mut Dependency =
+        let dep: &mut ThirdPartyDep =
             state.dependencies.entry(dep_edge.pkg).or_insert_with(|| init_dep(state.path.clone()));
         let info: &mut PerKindInfo = dep
             .dependency_kinds
@@ -392,5 +428,12 @@ impl std::fmt::Display for TargetType {
             Self::Bin => f.write_str("bin"),
             Self::BuildScript => f.write_str("custom-build"),
         }
+    }
+}
+
+fn epoch_from_version(version: &cargo_metadata::Version) -> Epoch {
+    match version.major {
+        0 => Epoch::Minor(version.minor.try_into().unwrap()),
+        x => Epoch::Major(x.try_into().unwrap()),
     }
 }
