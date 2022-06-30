@@ -479,8 +479,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // the handle view color needs updating to match it. This is a better way than running
         // PCCT's own scrim coordinator since it can apply shape-aware scrim to the handle view
         // that has the rounded corner.
-        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
-        GradientDrawable drawable = (GradientDrawable) handleView.getBackground();
+        View dragBar = mActivity.findViewById(R.id.drag_bar);
+        GradientDrawable drawable = (GradientDrawable) dragBar.getBackground();
         drawable.setColor(color);
     }
 
