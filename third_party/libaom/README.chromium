@@ -3,9 +3,9 @@ Short Name: libaom
 URL: https://aomedia.googlesource.com/aom/
 Version: 3.1.2
 CPEPrefix: cpe:/a:aomedia:aomedia:3.1.2
-Date: Wednesday June 22 2022
+Date: Wednesday June 29 2022
 Branch: main
-Commit: 42223eee8546d8f0d6a16c3f5f78a01298139976
+Commit: 7ace1184f1101e859e1cc9de317b48065f73d2c7
 License: BSD
 License File: source/libaom/LICENSE
 Security Critical: yes
