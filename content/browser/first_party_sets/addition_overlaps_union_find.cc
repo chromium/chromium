@@ -50,12 +50,9 @@ AdditionOverlapsUnionFind::SetsMap AdditionOverlapsUnionFind::SetsMapping() {
   // This improvement makes this method less straightforward however.
   for (size_t i = 0; i < representatives_.size(); i++) {
     size_t cur_rep = Find(i);
-    if (!sets.contains(cur_rep)) {
-      sets.emplace(cur_rep, base::flat_set<size_t>());
-    }
+    auto it = sets.emplace(cur_rep, base::flat_set<size_t>()).first;
     if (i != cur_rep) {
-      base::flat_set<size_t>& overlaps = sets.at(cur_rep);
-      overlaps.insert(i);
+      it->second.insert(i);
     }
   }
   return sets;
