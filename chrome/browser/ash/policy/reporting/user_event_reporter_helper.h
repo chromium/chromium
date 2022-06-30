@@ -49,6 +49,11 @@ class UserEventReporterHelper {
   // Must be called on UI task runner (returned by valid_task_runner() below).
   virtual bool ReportingEnabled(const std::string& policy_path) const;
 
+  // Returns whether the primary account is a kiosk.
+  // Usually called if |ShouldReportUser| returned false.
+  // Must be called on UI task runner (returned by valid_task_runner() below).
+  virtual bool IsKioskUser() const;
+
   // Reports an event to the queue.
   // Thread safe, can be called on any thread.
   virtual void ReportEvent(

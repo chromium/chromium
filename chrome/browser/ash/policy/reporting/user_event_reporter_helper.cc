@@ -42,6 +42,15 @@ bool UserEventReporterHelper::ReportingEnabled(
   return enabled;
 }
 
+bool UserEventReporterHelper::IsKioskUser() const {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  auto* const primary = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary) {
+    return false;
+  }
+  return primary->IsKioskType();
+}
+
 void UserEventReporterHelper::ReportEvent(
     std::unique_ptr<const google::protobuf::MessageLite> record,
     Priority priority,
