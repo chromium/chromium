@@ -5,7 +5,9 @@
 """Prints android-binary-size result for a given commit or commit range."""
 
 import argparse
+import collections
 import concurrent.futures
+import csv
 import json
 import os
 import posixpath
@@ -13,20 +15,35 @@ import re
 import subprocess
 import sys
 
+_COMMIT_LIMIT = 200
 _LOG_RE = re.compile(
     r'^commit (\S+).*?'
-    r'^\s*Reviewed-on: (\S+).*?'
-    r'^\s*Cr-Commit-Position:.*?(\d+)', re.DOTALL | re.MULTILINE)
+    r'^Date:\s+(.*?)$.*?'
+    r'^    (\S.*?)$.*?'
+    r'^    Reviewed-on: (\S+).*?'
+    r'^(?!commit)    Cr-Commit-Position:.*?(\d+)', re.DOTALL | re.MULTILINE)
 
 
-def _git_log(rev_list):
-  cmd = ['git', 'log', rev_list]
-  if '..' not in rev_list:
-    cmd += ['-n1']
+_CommitInfo = collections.namedtuple(
+    '_CommitInfo', 'git_hash date subject review_url cr_position')
+
+
+def _git_log(git_log_args):
+  cmd = ['git', 'log']
+
+  # Ensure there's a limit on number of commits.
+  if not any(x.startswith('-n') for x in git_log_args):
+    cmd += [f'-n{_COMMIT_LIMIT}']
+
+  cmd += git_log_args
 
   log_output = subprocess.check_output(cmd, encoding='utf8')
-  for git_hash, review_url, cr_position in _LOG_RE.findall(log_output):
-    yield git_hash, review_url, cr_position
+  ret = [_CommitInfo(*x) for x in _LOG_RE.findall(log_output)]
+
+  if len(ret) == _COMMIT_LIMIT:
+    sys.stderr.write(
+        f'Limiting to {_COMMIT_LIMIT} commits. Use -n## to override\n')
+  return ret
 
 
 def _query_size(review_url):
@@ -68,22 +85,36 @@ def _query_size(review_url):
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('rev_list')
-  args = parser.parse_args()
+  parser.add_argument('--csv', action='store_true', help='Print as CSV')
+  args, git_log_args = parser.parse_known_args()
 
   # Ensure user has authenticated.
   result = subprocess.run(['bb', 'auth-info'],
                           check=False,
                           stdout=subprocess.DEVNULL)
   if result.returncode:
-    print('First run: bb auth-login')
+    sys.stderr.write('First run: bb auth-login\n')
     sys.exit(1)
 
-  commit_infos = list(_git_log(args.rev_list))
+  commit_infos = _git_log(git_log_args)
+  if not commit_infos:
+    sys.stderr.write('Did not find any commits.\n')
+    sys.exit(1)
+
+  print(f'Fetching bot results for {len(commit_infos)} commits...')
+
+  if args.csv:
+    print_func = csv.writer(sys.stdout).writerow
+  else:
+    print_func = lambda v: print('{:12}{:14}{:12}{:32}{}'.format(*v))
+
+  print_func(('Commit #', 'Git Hash', 'Size', 'Date', 'Subject'))
   with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
-    sizes = [pool.submit(_query_size, url) for _, url, _ in commit_infos]
-    for (git_hash, _, cr_position), size in zip(commit_infos, sizes):
-      print(f'{cr_position}\t{git_hash}\t{size.result()}')
+    sizes = [pool.submit(_query_size, info.review_url) for info in commit_infos]
+    for info, size in zip(commit_infos, sizes):
+      size_str = size.result().replace(' bytes', '').lstrip('+')
+      print_func((info.cr_position, info.git_hash[:12], size_str, info.date,
+                  info.subject))
 
 
 if __name__ == '__main__':
