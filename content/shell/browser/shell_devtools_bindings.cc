@@ -261,20 +261,18 @@ void ShellDevToolsBindings::WebContentsDestroyed() {
 }
 
 void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
-    base::Value message) {
-  if (!message.is_dict())
-    return;
-  const std::string* method = message.FindStringKey("method");
+    base::Value::Dict message) {
+  const std::string* method = message.FindString("method");
   if (!method)
     return;
 
-  int request_id = message.FindIntKey("id").value_or(0);
-  base::Value* params_value = message.FindListKey("params");
+  int request_id = message.FindInt("id").value_or(0);
+  base::Value::List* params_value = message.FindList("params");
 
   // Since we've received message by value, we can take the list.
-  base::Value::ListStorage params;
+  base::Value::List params;
   if (params_value) {
-    params = std::move(*params_value).TakeListDeprecated();
+    params = std::move(*params_value);
   }
 
   if (*method == "dispatchProtocolMessage" && params.size() == 1) {
@@ -296,10 +294,10 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 
     GURL gurl(*url);
     if (!gurl.is_valid()) {
-      base::Value response(base::Value::Type::DICTIONARY);
-      response.SetIntKey("statusCode", 404);
-      response.SetBoolKey("urlValid", false);
-      SendMessageAck(request_id, std::move(response));
+      base::Value::Dict response;
+      response.Set("statusCode", 404);
+      response.Set("urlValid", false);
+      SendMessageAck(request_id, base::Value(std::move(response)));
       return;
     }
 

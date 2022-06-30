@@ -12,6 +12,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
@@ -107,7 +108,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
  private:
   using DevToolsUIBindingsList = std::vector<DevToolsUIBindings*>;
 
-  void HandleMessageFromDevToolsFrontend(base::Value);
+  void HandleMessageFromDevToolsFrontend(base::Value::Dict message);
 
   // content::DevToolsAgentHostClient implementation.
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,

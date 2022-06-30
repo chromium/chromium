@@ -90,17 +90,15 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
   }
 }
 
-void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
-  const std::string* method = nullptr;
-  if (!message.is_dict() || !(method = message.FindStringKey("method"))) {
+void DevToolsProtocolTestBindings::HandleMessageFromTest(
+    base::Value::Dict message) {
+  const std::string* method = message.FindString("method");
+  if (!method)
     return;
-  }
 
-  const base::Value* params = message.FindListKey("params");
-  if (*method == "dispatchProtocolMessage" && params &&
-      params->GetListDeprecated().size() == 1) {
-    const std::string* protocol_message =
-        params->GetListDeprecated()[0].GetIfString();
+  const base::Value::List* params = message.FindList("params");
+  if (*method == "dispatchProtocolMessage" && params && params->size() == 1) {
+    const std::string* protocol_message = (*params)[0].GetIfString();
     if (!protocol_message)
       return;
 

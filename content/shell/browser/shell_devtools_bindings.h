@@ -24,10 +24,6 @@
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
-namespace base {
-class Value;
-}
-
 namespace content {
 
 class NavigationHandle;
@@ -76,7 +72,7 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
 
-  void HandleMessageFromDevToolsFrontend(base::Value);
+  void HandleMessageFromDevToolsFrontend(base::Value::Dict message);
 
   // WebContentsObserver overrides
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
