@@ -33,6 +33,7 @@ generate_grd("build_grd") {
     "demos/cr_button_demo.html",
     "demos/cr_checkbox_demo.html",
     "demos/cr_dialog_demo.html",
+    "demos/cr_radio_demo.html",
     "webui_gallery.html",
   ]
   input_files_base_dir = rebase_path(".", "//")

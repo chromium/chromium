@@ -37,7 +37,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'cr-dialog demo',
               url: 'cr_dialog_demo.html',
-            }
+            },
+            {
+              name: 'cr-radio demo',
+              url: 'cr_radio_demo.html',
+            },
           ];
         },
       },
