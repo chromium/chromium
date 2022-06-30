@@ -474,34 +474,6 @@ TEST(ValuesTest, MoveList) {
   EXPECT_EQ(123, blank.GetListDeprecated().back().GetInt());
 }
 
-TEST(ValuesTest, TakeList) {
-  // Prepare a list with a value of each type.
-  ListValue value;
-  value.Append(Value(Value::Type::NONE));
-  value.Append(Value(true));
-  value.Append(Value(123));
-  value.Append(Value(123.456));
-  value.Append(Value("string"));
-  value.Append(Value(Value::Type::BINARY));
-  value.Append(Value(Value::Type::LIST));
-  value.Append(Value(Value::Type::DICTIONARY));
-
-  // Take ownership of the list and make sure its contents are what we expect.
-  auto list = std::move(value).TakeListDeprecated();
-  EXPECT_EQ(8u, list.size());
-  EXPECT_TRUE(list[0].is_none());
-  EXPECT_TRUE(list[1].is_bool());
-  EXPECT_TRUE(list[2].is_int());
-  EXPECT_TRUE(list[3].is_double());
-  EXPECT_TRUE(list[4].is_string());
-  EXPECT_TRUE(list[5].is_blob());
-  EXPECT_TRUE(list[6].is_list());
-  EXPECT_TRUE(list[7].is_dict());
-
-  // Validate that |value| no longer contains values.
-  EXPECT_TRUE(value.GetListDeprecated().empty());
-}
-
 TEST(ValuesTest, Append) {
   ListValue value;
   value.Append(true);

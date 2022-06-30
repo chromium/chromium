@@ -1031,10 +1031,6 @@ Value::ConstListView Value::GetListDeprecated() const {
   return list();
 }
 
-Value::ListStorage Value::TakeListDeprecated() && {
-  return std::exchange(list(), {});
-}
-
 void Value::Append(bool value) {
   GetList().Append(value);
 }

@@ -691,21 +691,12 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // Returns the Values in a list as a view. The mutable overload allows for
   // modification of the underlying values, but does not allow changing the
-  // structure of the list. If this is desired, use `TakeListDeprecated()`,
-  // perform the operations, and return the list back to the Value via move
-  // assignment.
+  // structure of the list.
   //
   // DEPRECATED: prefer direct use `base::Value::List` where possible, or
   // `GetList()` otherwise.
   DeprecatedListView GetListDeprecated();
   DeprecatedConstListView GetListDeprecated() const;
-
-  // Transfers ownership of the underlying list to the caller. Subsequent
-  // calls to `GetListDeprecated()` will return an empty list.
-  //
-  // DEPRECATED: prefer direct use of `base::Value::List` where possible, or
-  // `std::move(value.GetList())` otherwise.
-  DeprecatedListStorage TakeListDeprecated() &&;
 
   // Appends `value` to the end of the list.
   //

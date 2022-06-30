@@ -217,14 +217,13 @@ void TraceEventTestFixture::OnTraceDataCollected(
   }
 
   ASSERT_TRUE(root->is_list());
-  Value::ListStorage root_storage = std::move(*root).TakeListDeprecated();
+  Value::List& root_list = root->GetList();
 
   // Move items into our aggregate collection
-  Value::ListStorage storage = std::move(trace_parsed_).TakeListDeprecated();
-  storage.reserve(storage.size() + root_storage.size());
-  std::move(root_storage.begin(), root_storage.end(),
-            std::back_inserter(storage));
-  trace_parsed_ = Value(std::move(storage));
+  Value::List& trace_parsed_list = trace_parsed_.GetList();
+  trace_parsed_list.reserve(trace_parsed_list.size() + root_list.size());
+  for (auto& value : root_list)
+    trace_parsed_list.Append(std::move(value));
 
   if (!has_more_events)
     flush_complete_event->Signal();
@@ -283,14 +282,12 @@ const Value* TraceEventTestFixture::FindMatchingTraceEntry(
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
-  Value::ListStorage storage = std::move(trace_parsed_).TakeListDeprecated();
-  base::EraseIf(storage, [](const Value& value) {
+  trace_parsed_.GetList().EraseIf([](const Value& value) {
     if (!value.is_dict())
       return false;
-    const std::string* ph = value.FindStringKey("ph");
+    const std::string* ph = value.GetDict().FindString("ph");
     return ph && *ph == "M";
   });
-  trace_parsed_ = Value(std::move(storage));
 }
 
 const Value* TraceEventTestFixture::FindNamePhase(const char* name,
