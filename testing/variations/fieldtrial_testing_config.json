@@ -737,6 +737,22 @@
             ]
         }
     ],
+    "AutofillAssistantCupVerification": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAssistantSignGetActionsRequests",
+                        "AutofillAssistantVerifyGetActionsResponses"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAssistantDomAnnotation": [
         {
             "platforms": [
