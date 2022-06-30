@@ -145,6 +145,12 @@ LayoutUnit FlexItem::FlowAwareMarginBefore() const {
   return LayoutUnit();
 }
 
+LayoutUnit FlexItem::MarginBlockEnd() const {
+  NGBoxStrut margins = physical_margins_.ConvertToLogical(
+      algorithm_->Style()->GetWritingDirection());
+  return margins.block_end;
+}
+
 LayoutUnit FlexItem::MainAxisMarginExtent() const {
   return algorithm_->IsHorizontalFlow() ? physical_margins_.HorizontalSum()
                                         : physical_margins_.VerticalSum();

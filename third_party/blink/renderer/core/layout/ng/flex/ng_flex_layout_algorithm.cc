@@ -1253,6 +1253,7 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       flex_item.has_descendant_that_depends_on_percentage_block_size =
           layout_result->HasDescendantThatDependsOnPercentageBlockSize();
+      flex_item.margin_block_end = item->MarginBlockEnd();
 
       if (should_propagate_row_break_values) {
         const auto& item_style = flex_item.Style();
@@ -1378,6 +1379,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
     const auto* item_break_token = To<NGBlockBreakToken>(entry.token);
     bool last_item_in_line = flex_item_idx == line_output.line_items.size() - 1;
+    bool is_last_line = flex_line_idx == flex_line_outputs->size() - 1;
 
     // A child break in a parallel flow doesn't affect whether we should
     // break here or not. But if the break happened in the same flow, we'll now
@@ -1635,9 +1637,17 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
 
-    if (physical_fragment.BreakToken() &&
-        !physical_fragment.BreakToken()->IsAtBlockEnd())
+    bool is_at_block_end = !physical_fragment.BreakToken() ||
+                           physical_fragment.BreakToken()->IsAtBlockEnd();
+    LayoutUnit item_block_end = offset.block_offset + fragment.BlockSize();
+    if (is_at_block_end) {
+      // Only add the block-end margin if the item has reached the end of its
+      // content. Then re-set it to avoid adding it more than once.
+      item_block_end += flex_item->margin_block_end;
+      flex_item->margin_block_end = LayoutUnit();
+    } else {
       has_inflow_child_break_inside_line[flex_line_idx] = true;
+    }
 
     // This item may have expanded due to fragmentation. Record how large the
     // shift was (if any). Only do this if the item has completed layout.
@@ -1659,8 +1669,9 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           line_block_end >= LayoutUnit() &&
           previously_consumed_block_size != LayoutUnit::Max()) {
         LayoutUnit item_expansion;
-        if (physical_fragment.BreakToken() &&
-            !physical_fragment.BreakToken()->IsAtBlockEnd()) {
+        if (is_at_block_end) {
+          item_expansion = item_block_end - line_block_end;
+        } else {
           // We can't use the size of the fragment, as we don't
           // know how large the subsequent fragments will be (and how much
           // they'll expand the row).
@@ -1671,9 +1682,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           // the next fragmentainer. Without it we'd drop those subsequent
           // fragments.
           item_expansion = (fragmentainer_space - line_block_end).AddEpsilon();
-        } else {
-          item_expansion =
-              offset.block_offset + fragment.BlockSize() - line_block_end;
         }
 
         // If the item expanded past the row, adjust any subsequent row offsets
@@ -1700,16 +1708,12 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     if (current_column_break_info) {
       DCHECK(is_column_);
-      current_column_break_info->column_intrinsic_block_size +=
-          (offset.block_offset + fragment.BlockSize() -
-           current_column_break_info->column_intrinsic_block_size)
-              .ClampNegativeToZero();
+      current_column_break_info->column_intrinsic_block_size =
+          std::max(item_block_end,
+                   current_column_break_info->column_intrinsic_block_size);
     }
 
-    intrinsic_block_size_ +=
-        (offset.block_offset + fragment.BlockSize() - intrinsic_block_size_)
-            .ClampNegativeToZero();
-
+    intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
     container_builder_.AddResult(*layout_result, offset,
                                  /* relative_offset */ absl::nullopt,
                                  /* inline_container */ nullptr,
@@ -1719,7 +1723,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     // Only propagate baselines from children on the first flex-line.
     if ((!is_wrap_reverse && flex_line_idx == 0) ||
-        (is_wrap_reverse && flex_line_idx == flex_line_outputs->size() - 1)) {
+        (is_wrap_reverse && is_last_line)) {
       PropagateBaselineFromChild(flex_item->Style(), fragment,
                                  offset.block_offset, &fallback_baseline);
     }
