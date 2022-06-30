@@ -16,6 +16,7 @@ config("protobuf_config") {
   defines = [
     "GOOGLE_PROTOBUF_NO_RTTI",
     "GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER",
+    "GOOGLE_PROTOBUF_INTERNAL_DONATE_STEAL_INLINE=0",
   ]
   if (!is_win) {
     defines += [ "HAVE_PTHREAD" ]
