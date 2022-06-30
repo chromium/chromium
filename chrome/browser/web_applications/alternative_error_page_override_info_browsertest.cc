@@ -77,10 +77,10 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest, Manifest) {
 
   // Expect mojom struct with default background and theme colors.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
-                "customized_background_color"),
-            base::Value(kWhite));
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
+  EXPECT_EQ(
+      *info->alternative_error_page_params.Find("customized_background_color"),
+      base::Value(kWhite));
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
             base::Value(kBlack));
 }
 
@@ -94,11 +94,11 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with customized theme color and default background
   // color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
-                "customized_background_color"),
-            base::Value(kWhite));
   EXPECT_EQ(
-      *info->alternative_error_page_params.FindKey("theme_color"),
+      *info->alternative_error_page_params.Find("customized_background_color"),
+      base::Value(kWhite));
+  EXPECT_EQ(
+      *info->alternative_error_page_params.Find("theme_color"),
       base::Value(skia::SkColorToHexString(SkColorSetRGB(0xAA, 0xCC, 0xEE))));
 }
 
@@ -112,10 +112,10 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with default theme color and customized background
   // color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
-                "customized_background_color"),
-            base::Value(kBlue));
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
+  EXPECT_EQ(
+      *info->alternative_error_page_params.Find("customized_background_color"),
+      base::Value(kBlue));
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
             base::Value(kBlack));
 }
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct with custom app short name.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("app_short_name"),
+  EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
             base::Value("Manifest"));
 }
 
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct with customized with app name.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("app_short_name"),
+  EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
             base::Value("Manifest test app"));
 }
 
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("app_short_name"),
+  EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
             base::Value("Web app banner test page"));
 }
 
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("app_short_name"),
+  EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
             base::Value(url_formatter::FormatUrl(app_url)));
 }
 
@@ -213,10 +213,10 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct with custom theme and background color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
-                "customized_background_color"),
-            base::Value(kYellow));
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
+  EXPECT_EQ(
+      *info->alternative_error_page_params.Find("customized_background_color"),
+      base::Value(kYellow));
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
             base::Value(kGreen));
 }
 
@@ -231,12 +231,11 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with dark mode theme color and dark mode background
   // color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
-                "dark_mode_background_color"),
-            base::Value(kRed));
   EXPECT_EQ(
-      *info->alternative_error_page_params.FindKey("dark_mode_theme_color"),
+      *info->alternative_error_page_params.Find("dark_mode_background_color"),
       base::Value(kRed));
+  EXPECT_EQ(*info->alternative_error_page_params.Find("dark_mode_theme_color"),
+            base::Value(kRed));
 }
 
 // Testing app manifest with no dark mode theme or background color.
@@ -249,12 +248,11 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct light mode background and theme color stored.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
-                "dark_mode_background_color"),
-            base::Value(kYellow));
   EXPECT_EQ(
-      *info->alternative_error_page_params.FindKey("dark_mode_theme_color"),
-      base::Value(kGreen));
+      *info->alternative_error_page_params.Find("dark_mode_background_color"),
+      base::Value(kYellow));
+  EXPECT_EQ(*info->alternative_error_page_params.Find("dark_mode_theme_color"),
+            base::Value(kGreen));
 }
 
 // Testing manifest with icon.
@@ -282,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with icon url.
   EXPECT_TRUE(info);
   EXPECT_EQ(
-      *info->alternative_error_page_params.FindKey("icon_url"),
+      *info->alternative_error_page_params.Find("icon_url"),
       base::Value(
           "data:image/"
           "png;base64,"

@@ -846,12 +846,12 @@ TEST_F(NetErrorHelperCoreTest, AlternativeErrorPageNoUpdates) {
   // `chrome/browser/web_applications/web_app_offline.h`
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
-  dict.SetStringKey("customized_background_color",
-                    skia::SkColorToHexString(SK_ColorYELLOW));
-  dict.SetStringKey("app_short_name", "Test Short Name");
-  dict.SetStringKey(
+  base::Value::Dict dict;
+  dict.Set("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
+  dict.Set("customized_background_color",
+           skia::SkColorToHexString(SK_ColorYELLOW));
+  dict.Set("app_short_name", "Test Short Name");
+  dict.Set(
       "web_app_default_offline_message",
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);

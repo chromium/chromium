@@ -285,8 +285,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
                                   extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
   // "t" is the id of the template's root node.
-  *error_html =
-      webui::GetTemplatesHtml(template_html, &page_state.strings, "t");
+  *error_html = webui::GetTemplatesHtml(template_html, page_state.strings, "t");
   return page_state;
 }
 

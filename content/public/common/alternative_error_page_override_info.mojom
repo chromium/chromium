@@ -13,5 +13,5 @@ struct AlternativeErrorPageOverrideInfo {
   uint32 resource_id;
 
   // A dictionary containing information needed by alternative error page.
-  mojo_base.mojom.DeprecatedDictionaryValue alternative_error_page_params;
+  mojo_base.mojom.DictionaryValue alternative_error_page_params;
 };

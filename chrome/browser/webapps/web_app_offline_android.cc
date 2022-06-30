@@ -67,39 +67,36 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   for (size_t i = 0; i < resource_strings.size(); ++i) {
     WebApkDetailsForDefaultOfflinePage field_id =
         (WebApkDetailsForDefaultOfflinePage)fields[i];
     switch (field_id) {
       case WebApkDetailsForDefaultOfflinePage::SHORT_NAME:
-        dict.SetStringKey(default_offline::kAppShortName, resource_strings[i]);
+        dict.Set(default_offline::kAppShortName, resource_strings[i]);
         break;
       case WebApkDetailsForDefaultOfflinePage::ICON:
         // Converting to GURL is necessary to correctly interpret the data url,
         // in case it contains embedded carriage returns, etc.
-        dict.SetStringKey(default_offline::kIconUrl,
-                          GURL(resource_strings[i]).spec());
+        dict.Set(default_offline::kIconUrl, GURL(resource_strings[i]).spec());
         break;
       case WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR:
-        dict.SetStringKey(default_offline::kBackgroundColor,
-                          resource_strings[i]);
+        dict.Set(default_offline::kBackgroundColor, resource_strings[i]);
         break;
       case WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR_DARK_MODE:
-        dict.SetStringKey(default_offline::kDarkModeBackgroundColor,
-                          resource_strings[i]);
+        dict.Set(default_offline::kDarkModeBackgroundColor,
+                 resource_strings[i]);
         break;
       case WebApkDetailsForDefaultOfflinePage::THEME_COLOR:
-        dict.SetStringKey(default_offline::kThemeColor, resource_strings[i]);
+        dict.Set(default_offline::kThemeColor, resource_strings[i]);
         break;
       case WebApkDetailsForDefaultOfflinePage::THEME_COLOR_DARK_MODE:
-        dict.SetStringKey(default_offline::kDarkModeThemeColor,
-                          resource_strings[i]);
+        dict.Set(default_offline::kDarkModeThemeColor, resource_strings[i]);
         break;
     }
   }
 
-  dict.SetStringKey(
+  dict.Set(
       default_offline::kMessage,
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);

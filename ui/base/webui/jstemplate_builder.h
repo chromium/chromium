@@ -17,10 +17,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace webui {
 
@@ -36,7 +33,7 @@ std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
 // full page with support for both i18n Templates and JsTemplates.
 COMPONENT_EXPORT(UI_BASE)
 std::string GetTemplatesHtml(const base::StringPiece& html_template,
-                             const base::Value* json,
+                             const base::Value::Dict& json,
                              const base::StringPiece& template_id);
 
 // Assigns the given json data into |loadTimeData|, without a <script> tag.

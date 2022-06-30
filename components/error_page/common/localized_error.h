@@ -11,10 +11,6 @@
 #include "base/values.h"
 #include "url/gurl.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace error_page {
 
 class LocalizedError {
@@ -28,7 +24,7 @@ class LocalizedError {
     PageState& operator=(PageState&& other);
 
     // Strings used within the error page HTML/JS.
-    base::DictionaryValue strings;
+    base::Value::Dict strings;
 
     bool is_offline_error = false;
     bool reload_button_shown = false;
@@ -62,7 +58,7 @@ class LocalizedError {
   // Returns a |PageState| that describes the elements that should be shown on
   // when default offline page is shown.
   static PageState GetPageStateForOverriddenErrorPage(
-      base::Value string_dict,
+      base::Value::Dict string_dict,
       int error_code,
       const std::string& error_domain,
       const GURL& failed_url,
