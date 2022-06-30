@@ -2609,6 +2609,9 @@ void HistoryBackend::URLsNoLongerBookmarked(const std::set<GURL>& urls) {
 }
 
 void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
+  // TODO(tommycli): `error` == SQLITE_ERROR is usually caused by a statement
+  // that doesn't match the schema. We need to add some logging to learn which
+  // is the problematic statement to have a hope of diagnosing this error.
   if (!scheduled_kill_db_ && sql::IsErrorCatastrophic(error)) {
     sql::UmaHistogramSqliteResult("History.DatabaseSqliteError", error);
     scheduled_kill_db_ = true;

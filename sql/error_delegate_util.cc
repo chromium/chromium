@@ -42,16 +42,21 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
     case SQLITE_ERROR:
       // Generic/fallback error code.
       //
-      // In production, database corruption leads our SQL statements being
-      // flagged as invalid. For example, a SQL statement may reference a table
-      // or column whose name got corrupted.
+      // This error code is thrown when Chrome issues an invalid SQL statement.
+      // For instance, the SQL statement may reference a table or column which
+      // doesn't exist.
       //
-      // In development, this error code shows up most often when passing
-      // invalid SQL statements to SQLite. We have DCHECKs in sql::Statement and
-      // sql::Database::Execute() that catch obvious SQL syntax errors. We can't
-      // DCHECK when a SQL statement uses incorrect table/index/row names,
-      // because that can legitimately happen in production, due to corruption.
-      [[fallthrough]];
+      // This can happen in two scenarios:
+      //  1. There's a programmer error, and we have an outdated SQL statement
+      //     somewhere in the code.
+      //  2. The user's database got corrupted and the expected table or column
+      //     names are no longer there.
+      //
+      // TODO(https://crbug.com/1321483): In practice, we're logging a
+      // surprisingly lot of errors of this type, and the counts aren't going
+      // down, so there must be some instances of Case #1. Log and fix those
+      // cases, then turn this back to [[fallthrough]].
+      return false;
     case SQLITE_PERM:
       // Failed to get the requested access mode for a newly created database.
       // The database was just created, so error recovery will not cause data
