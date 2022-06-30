@@ -54,7 +54,9 @@ class ChromeWebClient : public web::WebClient {
   bool EnableLongPressAndForceTouchHandling() const override;
   bool EnableLongPressUIContextMenu() const override;
   web::UserAgentType GetDefaultUserAgent(web::WebState* web_state,
-                                         const GURL& url) override;
+                                         const GURL& url) const override;
+  void LogDefaultUserAgent(web::WebState* web_state,
+                           const GURL& url) const override;
   bool RestoreSessionFromCache(web::WebState* web_state) const override;
   void CleanupNativeRestoreURLs(web::WebState* web_state) const override;
   void WillDisplayMediaCapturePermissionPrompt(

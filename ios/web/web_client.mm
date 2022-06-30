@@ -115,8 +115,11 @@ void WebClient::WillDisplayMediaCapturePermissionPrompt(
     web::WebState* web_state) const {}
 
 UserAgentType WebClient::GetDefaultUserAgent(web::WebState* web_state,
-                                             const GURL& url) {
+                                             const GURL& url) const {
   return UserAgentType::MOBILE;
 }
+
+void WebClient::LogDefaultUserAgent(web::WebState* web_state,
+                                    const GURL& url) const {}
 
 }  // namespace web

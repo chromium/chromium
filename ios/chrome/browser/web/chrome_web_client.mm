@@ -198,6 +198,18 @@ std::string GetDesktopProduct() {
                             version_info::GetMajorVersionNumber().c_str());
 }
 
+// Whether the desktop user agent should be used by default.
+bool ShouldUseDesktop(web::WebState* web_state, const GURL& url) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+  ContentSetting setting = settings_map->GetContentSetting(
+      url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
+
+  return setting == CONTENT_SETTING_ALLOW;
+}
+
 }  // namespace
 
 ChromeWebClient::ChromeWebClient() {}
@@ -409,18 +421,17 @@ bool ChromeWebClient::EnableLongPressUIContextMenu() const {
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     web::WebState* web_state,
-    const GURL& url) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
-  HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
-  ContentSetting setting = settings_map->GetContentSetting(
-      url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
-  bool use_desktop_agent = setting == CONTENT_SETTING_ALLOW;
-  base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
-                            !use_desktop_agent);
+    const GURL& url) const {
+  bool use_desktop_agent = ShouldUseDesktop(web_state, url);
   return use_desktop_agent ? web::UserAgentType::DESKTOP
                            : web::UserAgentType::MOBILE;
+}
+
+void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
+                                          const GURL& url) const {
+  bool use_desktop_agent = ShouldUseDesktop(web_state, url);
+  base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
+                            !use_desktop_agent);
 }
 
 bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {
