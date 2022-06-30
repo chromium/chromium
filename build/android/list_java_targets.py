@@ -49,7 +49,7 @@ _VALID_TYPES = (
     'java_annotation_processor',
     'java_binary',
     'java_library',
-    'junit_binary',
+    'robolectric_binary',
     'system_java_library',
 )
 
