@@ -149,8 +149,8 @@
   // A WebStateList batch operation can result in batch changes to the
   // TabRestoreService (e.g., closing or restoring all tabs). Individual
   // TabRestoreService updates are ignored between
-  // |-webStateListWillBeginBatchOperation:| and
-  // |-webStateListBatchOperationEnded:|. The consumer is updated once after the
+  // `-webStateListWillBeginBatchOperation:` and
+  // `-webStateListBatchOperationEnded:`. The consumer is updated once after the
   // batch operation is complete.
   [self.consumer refreshRecentlyClosedTabs];
 }

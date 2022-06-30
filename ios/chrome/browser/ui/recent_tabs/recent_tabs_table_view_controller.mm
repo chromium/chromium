@@ -133,8 +133,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 // Section index for recently closed tabs.
 const int kRecentlyClosedTabsSectionIndex = 0;
 
-// A pair representing a single recently closed item. The |TableViewURLItem| is
-// used to display the item and the |SessionID| is used to restore the item if
+// A pair representing a single recently closed item. The `TableViewURLItem` is
+// used to display the item and the `SessionID` is used to restore the item if
 // selected by the user.
 typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
@@ -159,7 +159,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // The instance which owns the DistantTabs to display.
   std::unique_ptr<synced_sessions::SyncedSessions> _syncedSessions;
   // The displayed sessions and tabs. The sessions and tabs are owned by
-  // |_syncedSessions|, but |_displayedTabs| allows for filtering to display
+  // `_syncedSessions`, but `_displayedTabs` allows for filtering to display
   // only particular tabs.
   std::vector<synced_sessions::DistantTabsSet> _displayedTabs;
 
@@ -173,11 +173,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, strong) ActionSheetCoordinator* contextMenuCoordinator;
 @property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
 // The browser state used for many operations, derived from the one provided by
-// |self.browser|.
+// `self.browser`.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // YES if this ViewController is being presented on incognito mode.
 @property(nonatomic, readonly, getter=isIncognito) BOOL incognito;
-// Convenience getter for |self.browser|'s WebStateList
+// Convenience getter for `self.browser`'s WebStateList
 @property(nonatomic, readonly) WebStateList* webStateList;
 // Handler for URL drag interactions.
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
@@ -241,7 +241,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     ChromeBrowserState* browserState = browser->GetBrowserState();
     // Some RecentTabs services depend on objects not present in the
     // OffTheRecord BrowserState, in order to prevent crashes set
-    // |_browserState| to |browserState|->OriginalChromeBrowserState. While
+    // `_browserState` to `browserState->OriginalChromeBrowserState`. While
     // doing this check if incognito or not so that pages are loaded
     // accordingly.
     _browserState = browserState->GetOriginalChromeBrowserState();
@@ -453,8 +453,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Clean up any previously added SessionSections.
   [self removeSessionSections];
 
-  // Re-Add the session sections to |self.tableViewModel| and insert them into
-  // |self.tableView|.
+  // Re-Add the session sections to `self.tableViewModel` and insert them into
+  // `self.tableView`.
   [self addSessionSections];
   [self.tableView insertSections:[self sessionSectionIndexSet]
                 withRowAnimation:UITableViewRowAnimationNone];
@@ -494,14 +494,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   NSInteger sectionIdentifier = [self sectionIdentifierForSession:session];
   if (session_tabs_set->filtered_tabs) {
-    // Only add the items from |filtered_tabs|.
+    // Only add the items from `filtered_tabs`.
     for (synced_sessions::DistantTab* sessionTab :
          session_tabs_set->filtered_tabs.value()) {
       [self addItemForDistantTab:sessionTab
           toSectionWithIdentifier:sectionIdentifier];
     }
   } else {
-    // When |filtered_tabs| is null, all tabs in the session are included
+    // When `filtered_tabs` is null, all tabs in the session are included
     // in the set.
     for (auto&& sessionTab : session->tabs) {
       [self addItemForDistantTab:sessionTab.get()
@@ -522,12 +522,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
        toSectionWithIdentifier:sectionIdentifier];
 }
 
-// Remove all SessionSections from |self.tableViewModel| and |self.tableView|
+// Remove all SessionSections from `self.tableViewModel` and `self.tableView`
 // Needs to be called inside a performBatchUpdates block.
 - (void)removeSessionSections {
   if (!IsTabsSearchEnabled()) {
-    // |_displayedTabs| has been updated by now, that means that
-    // |self.tableViewModel| does not reflect |_displayedTabs| data.
+    // `_displayedTabs` has been updated by now, that means that
+    // `self.tableViewModel` does not reflect `_displayedTabs` data.
     NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
     NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
     while ([self.tableViewModel numberOfSections] >
@@ -548,8 +548,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return;
   }
 
-  // |_displayedTabs| has been updated by now, that means that
-  // |self.tableViewModel| does not reflect |_displayedTabs| data.
+  // `_displayedTabs` has been updated by now, that means that
+  // `self.tableViewModel` does not reflect `_displayedTabs` data.
   NSInteger firstSessionSectionIndex = 0;
   NSInteger sectionCountToRemove = [self.tableViewModel numberOfSections];
   if ([self.tableViewModel
@@ -722,7 +722,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)addSigninPromoViewItem {
-  // Init|_signinPromoViewMediator| if nil.
+  // Init|_signinPromoViewMediator` if nil.
   if (!self.signinPromoViewMediator && self.browserState) {
     self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
@@ -810,8 +810,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return allSessionSectionIdentifiers;
 }
 
-// Returns the TableViewModel SectionIdentifier for |distantSession|. Returns -1
-// if |distantSession| doesn't exists.
+// Returns the TableViewModel SectionIdentifier for `distantSession`. Returns -1
+// if `distantSession` doesn't exists.
 - (NSInteger)sectionIdentifierForSession:
     (synced_sessions::DistantSession const*)distantSession {
   for (NSUInteger i = 0; i < [self numberOfSessions]; i++) {
@@ -888,7 +888,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   if (_searchTerms == searchTerms ||
       // No need for an update if transitioning between nil and empty string.
-      // (Length of both |_searchTerms| and |searchTerms| will be zero.)
+      // (Length of both `_searchTerms` and `searchTerms` will be zero.)
       (!_searchTerms.length && !searchTerms.length)) {
     return;
   }
@@ -947,7 +947,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 // Helper to set the distant tabs to be displayed. The tabs referenced in
-// |displayedTabs| must be owned by |syncedSessions|.
+// `displayedTabs` must be owned by `syncedSessions`.
 - (void)setSyncedSessions:
             (std::unique_ptr<synced_sessions::SyncedSessions>)syncedSessions
        distantSessionTabs:
@@ -990,7 +990,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - Private
 
-// Returns YES if |sectionIdentifier| is a Sessions sectionIdentifier.
+// Returns YES if `sectionIdentifier` is a Sessions sectionIdentifier.
 - (BOOL)isSessionSectionIdentifier:(NSInteger)sectionIdentifier {
   NSArray* sessionSectionIdentifiers = [self allSessionSectionIdentifiers];
   NSNumber* sectionIdentifierObject = @(sectionIdentifier);
@@ -1029,7 +1029,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       displayedTabs.push_back(distant_tabs);
     }
 
-    // Reset |_displayedTabs| to contain all sessions and tabs.
+    // Reset `_displayedTabs` to contain all sessions and tabs.
     [self setSyncedSessions:std::move(syncedSessions)
          distantSessionTabs:displayedTabs];
   }
@@ -1055,7 +1055,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [UIView setAnimationsEnabled:animationsWereEnabled];
   }
 
-  // Table updates must happen before |sessionState| gets updated, since some
+  // Table updates must happen before `sessionState` gets updated, since some
   // table updates rely on knowing the previous state.
   self.sessionState = newSessionState;
 
@@ -1186,7 +1186,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       [super tableView:tableView cellForRowAtIndexPath:indexPath];
   NSInteger itemTypeSelected =
       [self.tableViewModel itemTypeForIndexPath:indexPath];
-  // If SigninPromo will be shown, |self.signinPromoViewMediator| must know.
+  // If SigninPromo will be shown, `self.signinPromoViewMediator` must know.
   if (itemTypeSelected == ItemTypeOtherDevicesSigninPromo) {
     [self.signinPromoViewMediator signinPromoViewIsVisible];
     TableViewSigninPromoCell* signinPromoCell =
@@ -1393,11 +1393,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return _displayedTabs.size();
 }
 
-// Returns the Session Index for a given Session Tab |indexPath|.
+// Returns the Session Index for a given Session Tab `indexPath`.
 - (size_t)indexOfSessionForTabAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ([self.tableViewModel itemTypeForIndexPath:indexPath],
             ItemTypeSessionTabData);
-  // Get the sectionIdentifier for |indexPath|,
+  // Get the sectionIdentifier for `indexPath`,
   NSNumber* sectionIdentifierForIndexPath = @(
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section]);
   // Get the index of this sectionIdentifier.
@@ -1428,7 +1428,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return tabs_set->filtered_tabs.value()[indexOfDistantTab];
   }
 
-  // If filtered_tabs is null, all tabs in |session| should be used.
+  // If filtered_tabs is null, all tabs in `session` should be used.
   DCHECK_LT(indexOfDistantTab, session->tabs.size());
   return session->tabs[indexOfDistantTab].get();
 }
@@ -1786,7 +1786,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if ([self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
                             sectionIdentifier:SectionIdentifierOtherDevices]) {
     // Update the TableViewSigninPromoItem configurator. It will be used by the
-    // item to configure the cell once |self.tableView| requests a cell on
+    // item to configure the cell once `self.tableView` requests a cell on
     // cellForRowAtIndexPath.
     NSIndexPath* indexPath = [self.tableViewModel
         indexPathForItemType:ItemTypeOtherDevicesSigninPromo
