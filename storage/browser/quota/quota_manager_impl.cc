@@ -2138,7 +2138,6 @@ void QuotaManagerImpl::AddBucketTableEntry(
       storage::mojom::BucketTableEntry::New();
   mojo_entry->bucket_id = entry.bucket_id.value();
   mojo_entry->storage_key = entry.storage_key.Serialize();
-  mojo_entry->host = entry.storage_key.origin().host();
   mojo_entry->type = StorageTypeEnumToString(entry.type);
   mojo_entry->name = entry.name;
   mojo_entry->use_count = entry.use_count;

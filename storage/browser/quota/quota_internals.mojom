@@ -11,7 +11,6 @@ import "url/mojom/origin.mojom";
 struct BucketTableEntry {
     int64 bucket_id;
     string storage_key;
-    string host;
     string type;
     string name;
     int64 usage;
