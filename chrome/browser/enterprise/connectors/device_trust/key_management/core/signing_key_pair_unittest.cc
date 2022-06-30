@@ -66,7 +66,7 @@ TEST_F(SigningKeyPairTest, Create_WithHwKey) {
   auto mocked_delegate = factory_.CreateMockedHardwareDelegate();
 
   EXPECT_CALL(*mocked_delegate, LoadKeyPair());
-  EXPECT_CALL(*mocked_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mocked_delegate, GetUnexportableKeyProvider());
 
   auto key_pair = SigningKeyPair::Create(mocked_delegate.get());
 

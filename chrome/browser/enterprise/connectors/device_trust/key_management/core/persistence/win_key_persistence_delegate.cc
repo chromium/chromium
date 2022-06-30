@@ -80,7 +80,7 @@ KeyPersistenceDelegate::KeyInfo WinKeyPersistenceDelegate::LoadKeyPair() {
 }
 
 std::unique_ptr<crypto::UnexportableKeyProvider>
-WinKeyPersistenceDelegate::GetTpmBackedKeyProvider() {
+WinKeyPersistenceDelegate::GetUnexportableKeyProvider() {
   return crypto::GetUnexportableKeyProvider();
 }
 

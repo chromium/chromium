@@ -99,7 +99,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_WithKey) {
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider()).Times(2);
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider())
+      .Times(2);
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, Not(original_key_wrapped)))
@@ -154,7 +155,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_NoKey) {
       .WillOnce(Return(CreateEmptyKeyPair()));
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
       .WillOnce(Return(true));
@@ -186,7 +187,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_NoKey) {
       .WillOnce(Return(CreateEmptyKeyPair()));
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
       .WillOnce(Return(true));
@@ -229,7 +230,7 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
       .WillOnce(Return(true));
@@ -281,7 +282,7 @@ TEST_P(
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
       .WillOnce(Return(true));
@@ -322,7 +323,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey) {
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
       .WillOnce(Return(true));
@@ -356,7 +357,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey_StoreFailed) {
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
@@ -390,7 +391,7 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
@@ -433,7 +434,7 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
@@ -473,7 +474,8 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider()).Times(0);
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider())
+      .Times(0);
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
       .Times(0);

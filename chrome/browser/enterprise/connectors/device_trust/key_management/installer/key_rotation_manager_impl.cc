@@ -83,7 +83,7 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
   };
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-      persistence_delegate_->GetTpmBackedKeyProvider();
+      persistence_delegate_->GetUnexportableKeyProvider();
   auto new_key_pair =
       provider ? provider->GenerateSigningKeySlowly(acceptable_algorithms)
                : nullptr;

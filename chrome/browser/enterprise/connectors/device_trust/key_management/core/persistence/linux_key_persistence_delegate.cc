@@ -191,7 +191,7 @@ KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
 }
 
 std::unique_ptr<crypto::UnexportableKeyProvider>
-LinuxKeyPersistenceDelegate::GetTpmBackedKeyProvider() {
+LinuxKeyPersistenceDelegate::GetUnexportableKeyProvider() {
   // TODO (http://b/210343211)
   return nullptr;
 }

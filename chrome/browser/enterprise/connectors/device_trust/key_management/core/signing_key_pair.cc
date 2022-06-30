@@ -31,7 +31,7 @@ std::unique_ptr<SigningKeyPair> SigningKeyPair::Create(
   std::unique_ptr<crypto::UnexportableSigningKey> key_pair;
   switch (trust_level) {
     case BPKUR::CHROME_BROWSER_HW_KEY: {
-      auto provider = persistence_delegate->GetTpmBackedKeyProvider();
+      auto provider = persistence_delegate->GetUnexportableKeyProvider();
       if (provider) {
         key_pair = provider->FromWrappedSigningKeySlowly(wrapped);
       }

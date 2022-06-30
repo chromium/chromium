@@ -37,9 +37,10 @@ class KeyPersistenceDelegate {
   // or wrapped bits could not be loaded.
   virtual KeyInfo LoadKeyPair() = 0;
 
-  // Returns the TPM-backed signing key provider for the platform if available.
+  // Returns the hardware-backed signing key provider for the platform if
+  // available.
   virtual std::unique_ptr<crypto::UnexportableKeyProvider>
-  GetTpmBackedKeyProvider() = 0;
+  GetUnexportableKeyProvider() = 0;
 
  protected:
   // Returns an invalid key info.

@@ -19,7 +19,7 @@ class MacKeyPersistenceDelegate : public KeyPersistenceDelegate {
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
   KeyPersistenceDelegate::KeyInfo LoadKeyPair() override;
-  std::unique_ptr<crypto::UnexportableKeyProvider> GetTpmBackedKeyProvider()
+  std::unique_ptr<crypto::UnexportableKeyProvider> GetUnexportableKeyProvider()
       override;
 };
 

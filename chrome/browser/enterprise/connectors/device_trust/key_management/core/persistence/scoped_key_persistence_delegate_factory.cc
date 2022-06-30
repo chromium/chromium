@@ -65,7 +65,7 @@ ScopedKeyPersistenceDelegateFactory::
           testing::Invoke([&side_effect]() { side_effect.Run(); }),
           testing::Return(KeyPersistenceDelegate::KeyInfo(
               BPKUR::CHROME_BROWSER_HW_KEY, hw_wrapped_key_))));
-  ON_CALL(*mocked_delegate.get(), GetTpmBackedKeyProvider)
+  ON_CALL(*mocked_delegate.get(), GetUnexportableKeyProvider)
       .WillByDefault(testing::Invoke([]() {
         // This is mocked via crypto::ScopedMockUnexportableKeyProvider.
         return crypto::GetUnexportableKeyProvider();
@@ -83,7 +83,7 @@ ScopedKeyPersistenceDelegateFactory::CreateMockedECDelegate() {
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
       .WillByDefault(testing::Return(KeyPersistenceDelegate::KeyInfo(
           BPKUR::CHROME_BROWSER_OS_KEY, ec_wrapped_key_)));
-  ON_CALL(*mocked_delegate.get(), GetTpmBackedKeyProvider)
+  ON_CALL(*mocked_delegate.get(), GetUnexportableKeyProvider)
       .WillByDefault(testing::Invoke([]() { return nullptr; }));
   return mocked_delegate;
 }
