@@ -1059,11 +1059,6 @@ void UiController::OnFeedbackSent() {
   execution_delegate_->ShutdownIfNecessary();
 }
 
-void UiController::OnStateChanged(AutofillAssistantState state) {}
-
-void UiController::OnKeyboardSuppressionStateChanged(
-    bool should_suppress_keyboard) {}
-void UiController::CloseCustomTab() {}
 void UiController::OnError(const std::string& error_message,
                            Metrics::DropOutReason reason) {
   show_feedback_chip_ = ShouldShowFeedbackChipForReason(reason);
@@ -1075,15 +1070,6 @@ void UiController::OnUserDataChanged(const UserData& user_data,
                                      UserDataFieldChange field_change) {
   UpdateCollectUserDataActions();
 }
-void UiController::OnTouchableAreaChanged(
-    const RectF& visual_viewport,
-    const std::vector<RectF>& touchable_areas,
-    const std::vector<RectF>& restricted_areas) {}
-void UiController::OnViewportModeChanged(ViewportMode mode) {}
-void UiController::OnOverlayColorsChanged(
-    const ExecutionDelegate::OverlayColors& colors) {}
-void UiController::OnClientSettingsChanged(const ClientSettings& settings) {}
-void UiController::OnShouldShowOverlayChanged(bool should_show) {}
 
 void UiController::OnExecuteScript(const std::string& start_message) {
   if (!start_message.empty())

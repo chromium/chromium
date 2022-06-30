@@ -2023,14 +2023,6 @@ UiControllerAndroid::CreateGenericUiControllerForProto(
       ui_delegate_->GetBasicInteractions());
 }
 
-void UiControllerAndroid::OnError(const std::string& error_message,
-                                  Metrics::DropOutReason reason) {}
-void UiControllerAndroid::OnExecuteScript(const std::string& start_message) {}
-void UiControllerAndroid::OnStart(const TriggerContext& trigger_context) {}
-void UiControllerAndroid::OnStop() {}
-void UiControllerAndroid::OnResetState() {}
-void UiControllerAndroid::OnUiShownChanged(bool shown) {}
-
 base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetGenericUiModel() {
   return Java_AssistantModel_getGenericUiModel(AttachCurrentThread(),

@@ -15,8 +15,8 @@
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/client.h"
-#include "components/autofill_assistant/browser/controller_observer.h"
 #include "components/autofill_assistant/browser/element_area.h"
+#include "components/autofill_assistant/browser/empty_controller_observer.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/metrics.h"
@@ -41,7 +41,7 @@ class UiControllerTest;
 class UiController : public ScriptExecutorUiDelegate,
                      public virtual UiDelegate,
                      public AutofillAssistantTtsController::TtsEventDelegate,
-                     public ControllerObserver,
+                     public EmptyControllerObserver,
                      private UserModel::Observer {
  public:
   // |client| and |execution_delegate| must remain valid for the lifetime of the
@@ -172,23 +172,10 @@ class UiController : public ScriptExecutorUiDelegate,
   void DispatchEvent(const EventHandler::EventKey& key) override;
 
   // Overrides ControllerObserver.
-  void OnStateChanged(AutofillAssistantState new_state) override;
-  void OnKeyboardSuppressionStateChanged(
-      bool should_suppress_keyboard) override;
-  void CloseCustomTab() override;
   void OnError(const std::string& error_message,
                Metrics::DropOutReason reason) override;
   void OnUserDataChanged(const UserData& user_data,
                          UserDataFieldChange field_change) override;
-  void OnTouchableAreaChanged(
-      const RectF& visual_viewport,
-      const std::vector<RectF>& touchable_areas,
-      const std::vector<RectF>& restricted_areas) override;
-  void OnViewportModeChanged(ViewportMode mode) override;
-  void OnOverlayColorsChanged(
-      const ExecutionDelegate::OverlayColors& colors) override;
-  void OnClientSettingsChanged(const ClientSettings& settings) override;
-  void OnShouldShowOverlayChanged(bool should_show) override;
   void OnExecuteScript(const std::string& start_message) override;
   void OnStart(const TriggerContext& trigger_context) override;
   void OnStop() override;
