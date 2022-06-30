@@ -216,6 +216,11 @@ void SharedStorageWorkletGlobalScope::Register(gin::Arguments* args) {
       class_definition->Get(context, gin::StringToV8(isolate, "prototype"))
           .ToLocalChecked();
 
+  if (!class_prototype->IsObject()) {
+    args->ThrowTypeError("Unexpected class prototype: not an object");
+    return;
+  }
+
   v8::Local<v8::Value> run_function =
       class_prototype.As<v8::Object>()
           ->Get(context, gin::StringToV8(isolate, "run"))

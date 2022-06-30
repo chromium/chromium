@@ -547,6 +547,21 @@ TEST_F(SharedStorageAddModuleTest, RegisterOperation_MissingRunFunction) {
             "function in the class.");
 }
 
+TEST_F(SharedStorageAddModuleTest,
+       RegisterOperation_ClassPrototypeNotAnObject) {
+  SimulateAddModule(R"(
+    function test() {};
+    test.prototype = 123;
+
+    register("test-operation", test);
+  )");
+
+  EXPECT_FALSE(success());
+  EXPECT_EQ(error_message(),
+            "https://example.test/:5 Uncaught TypeError: Unexpected class "
+            "prototype: not an object.");
+}
+
 TEST_F(SharedStorageAddModuleTest, RegisterOperation_Success) {
   SimulateAddModule(R"(
     class TestClass {
