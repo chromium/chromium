@@ -98,6 +98,8 @@ component("cpp") {
     "assistant/controller/assistant_suggestions_controller.h",
     "assistant/controller/assistant_ui_controller.cc",
     "assistant/controller/assistant_ui_controller.h",
+    "audio_config_service.cc",
+    "audio_config_service.h",
     "back_gesture_contextual_nudge_controller.h",
     "back_gesture_contextual_nudge_delegate.h",
     "bluetooth_config_service.cc",
@@ -364,6 +366,7 @@ component("cpp") {
 
   deps = [
     "//ash/components/audio",
+    "//ash/components/audio:in_process_audio_config",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
     "//ash/resources/vector_icons",

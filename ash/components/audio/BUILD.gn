@@ -40,6 +40,23 @@ component("audio") {
   ]
 }
 
+component("in_process_audio_config") {
+  sources = [
+    "in_process_instance.cc",
+    "in_process_instance.h",
+  ]
+
+  defines = [ "IS_IN_PROCESS_AUDIO_CONFIG_IMPL" ]
+
+  public_deps = [
+    "//ash/components/audio/public/mojom",
+    "//ash/constants",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [ ":audio" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
