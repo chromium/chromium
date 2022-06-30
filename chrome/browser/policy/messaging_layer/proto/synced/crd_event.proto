@@ -48,4 +48,6 @@ message CRDRecord {
     CRDClientDisconnected disconnected = 5;
     CRDHostEnded ended = 6;
   }
+
+  optional bool is_kiosk_session = 7;  // true if CRD session runs on Kiosk
 }
