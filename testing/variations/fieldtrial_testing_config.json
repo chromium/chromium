@@ -5117,6 +5117,21 @@
             ]
         }
     ],
+    "IntelVpSuperResolution": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IntelVpSuperResolution"
+                    ]
+                }
+            ]
+        }
+    ],
     "IsVoiceSearchEnabledCache": [
         {
             "platforms": [
