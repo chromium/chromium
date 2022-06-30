@@ -1256,6 +1256,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.ChimeDeviceRegistration"
+    enum="BooleanSuccess" expires_after="2023-07-01">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs whether the user's device was or was not able to successfully register
+    with Chime. The device is registered with Chime on the application's
+    start-up if the difference between the previous time the device was
+    registered with Chime and the current application start-up is greater than
+    the predefined time interval threshold (currently set at one day).
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
     expires_after="2022-08-14">
   <owner>olivierrobin@chromium.org</owner>
