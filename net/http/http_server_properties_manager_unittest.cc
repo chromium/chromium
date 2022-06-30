@@ -3050,4 +3050,153 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
   }
 }
 
+TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+
+  // Create and initialize an HttpServerProperties with no state.
+  std::unique_ptr<MockPrefDelegate> pref_delegate =
+      std::make_unique<MockPrefDelegate>();
+  MockPrefDelegate* unowned_pref_delegate = pref_delegate.get();
+  std::unique_ptr<HttpServerProperties> properties =
+      std::make_unique<HttpServerProperties>(std::move(pref_delegate),
+                                             /*net_log=*/nullptr,
+                                             GetMockTickClock());
+  unowned_pref_delegate->InitializePrefs(
+      base::Value(base::Value::Type::DICTIONARY));
+
+  // Set alternative_service info.
+  base::Time expiration = base::Time::Now() + base::Days(1);
+  AlternativeServiceInfo alt_service1 =
+      AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          AlternativeService(kProtoQUIC, "1.example", 1234), expiration,
+          DefaultSupportedQuicVersions());
+  AlternativeServiceInfo alt_service2 =
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          AlternativeService(kProtoHTTP2, "2.example", 443), expiration);
+  AlternativeServiceInfo alt_service3 =
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          AlternativeService(kProtoHTTP2, "3.example", 443), expiration);
+  const url::SchemeHostPort kServer1("https", "1.example", 443);
+  const url::SchemeHostPort kServer2("https", "2.example", 443);
+  const url::SchemeHostPort kServer3("https", "3.example", 443);
+  properties->SetAlternativeServices(kServer1, kNetworkIsolationKey1,
+                                     {alt_service1});
+  properties->SetAlternativeServices(kServer2, kNetworkIsolationKey1,
+                                     {alt_service2});
+  properties->SetAlternativeServices(kServer3, kNetworkIsolationKey2,
+                                     {alt_service3});
+
+  // Set quic_server_info.
+  quic::QuicServerId quic_server_id1("quic1.example", 80, false);
+  quic::QuicServerId quic_server_id2("quic2.example", 80, false);
+  quic::QuicServerId quic_server_id3("quic3.example", 80, false);
+  properties->SetQuicServerInfo(quic_server_id1, kNetworkIsolationKey1,
+                                "quic_server_info1");
+  properties->SetQuicServerInfo(quic_server_id2, kNetworkIsolationKey1,
+                                "quic_server_info2");
+  properties->SetQuicServerInfo(quic_server_id3, kNetworkIsolationKey2,
+                                "quic_server_info3");
+
+  // Set broken_alternative_service info.
+  AlternativeService broken_service1(kProtoQUIC, "broken1.example", 443);
+  AlternativeService broken_service2(kProtoQUIC, "broken2.example", 443);
+  AlternativeService broken_service3(kProtoQUIC, "broken3.example", 443);
+  properties->MarkAlternativeServiceBroken(broken_service1,
+                                           kNetworkIsolationKey1);
+  FastForwardBy(base::Milliseconds(1));
+  properties->MarkAlternativeServiceBroken(broken_service2,
+                                           kNetworkIsolationKey1);
+  FastForwardBy(base::Milliseconds(1));
+  properties->MarkAlternativeServiceBroken(broken_service3,
+                                           kNetworkIsolationKey2);
+
+  // The first item of `server_info_map` must be the latest item.
+  EXPECT_EQ(3u, properties->server_info_map_for_testing().size());
+  EXPECT_EQ(
+      properties->server_info_map_for_testing().begin()->first.server.host(),
+      "3.example");
+
+  // The first item of `recently_broken_alternative_services` must be the latest
+  // item.
+  EXPECT_EQ(3u, properties->broken_alternative_services_for_testing()
+                    .recently_broken_alternative_services()
+                    .size());
+  EXPECT_EQ("broken3.example",
+            properties->broken_alternative_services_for_testing()
+                .recently_broken_alternative_services()
+                .begin()
+                ->first.alternative_service.host);
+
+  // The first item of `quic_server_info_map` must be the latest item.
+  EXPECT_EQ(3u, properties->quic_server_info_map_for_testing().size());
+  EXPECT_EQ("quic3.example", properties->quic_server_info_map_for_testing()
+                                 .begin()
+                                 ->first.server_id.host());
+
+  // The first item of `broken_alternative_service_list` must be the oldest
+  // item.
+  EXPECT_EQ(3u, properties->broken_alternative_services_for_testing()
+                    .broken_alternative_service_list()
+                    .size());
+  EXPECT_EQ("broken1.example",
+            properties->broken_alternative_services_for_testing()
+                .broken_alternative_service_list()
+                .begin()
+                ->first.alternative_service.host);
+
+  // Wait until the data's been written to prefs, and then tear down the
+  // HttpServerProperties.
+  FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
+  base::Value saved_value =
+      unowned_pref_delegate->GetServerProperties()->Clone();
+
+  // Create a new HttpServerProperties using the value saved to prefs above.
+  pref_delegate = std::make_unique<MockPrefDelegate>();
+  unowned_pref_delegate = pref_delegate.get();
+  properties = std::make_unique<HttpServerProperties>(
+      std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
+  unowned_pref_delegate->InitializePrefs(saved_value);
+
+  // The first item of `server_info_map` must be the latest item.
+  EXPECT_EQ(3u, properties->server_info_map_for_testing().size());
+  EXPECT_EQ(
+      properties->server_info_map_for_testing().begin()->first.server.host(),
+      "3.example");
+
+  // The first item of `recently_broken_alternative_services` must be the latest
+  // item.
+  EXPECT_EQ(3u, properties->broken_alternative_services_for_testing()
+                    .recently_broken_alternative_services()
+                    .size());
+  EXPECT_EQ("broken3.example",
+            properties->broken_alternative_services_for_testing()
+                .recently_broken_alternative_services()
+                .begin()
+                ->first.alternative_service.host);
+
+  // The first item of `quic_server_info_map` must be the latest item.
+  EXPECT_EQ(3u, properties->quic_server_info_map_for_testing().size());
+  EXPECT_EQ("quic3.example", properties->quic_server_info_map_for_testing()
+                                 .begin()
+                                 ->first.server_id.host());
+
+  // The first item of `broken_alternative_service_list` must be the oldest
+  // item.
+  EXPECT_EQ(3u, properties->broken_alternative_services_for_testing()
+                    .broken_alternative_service_list()
+                    .size());
+  EXPECT_EQ("broken1.example",
+            properties->broken_alternative_services_for_testing()
+                .broken_alternative_service_list()
+                .begin()
+                ->first.alternative_service.host);
+}
+
 }  // namespace net

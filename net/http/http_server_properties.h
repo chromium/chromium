@@ -465,6 +465,15 @@ class NET_EXPORT HttpServerProperties
     return server_info_map_;
   }
 
+  const BrokenAlternativeServices& broken_alternative_services_for_testing()
+      const {
+    return broken_alternative_services_;
+  }
+
+  const QuicServerInfoMap& quic_server_info_map_for_testing() const {
+    return quic_server_info_map_;
+  }
+
   // TODO(mmenke): Look into removing this.
   HttpServerPropertiesManager* properties_manager_for_testing() {
     return properties_manager_.get();

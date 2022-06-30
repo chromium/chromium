@@ -246,9 +246,9 @@ void HttpServerPropertiesManager::ReadPrefs(
   }
 
   // For Version 5, data is stored in the following format.
-  // |servers| are saved in MRU order. |servers| are in the format flattened
-  // representation of (scheme/host/port) where port might be ignored if is
-  // default with scheme.
+  // `servers` are saved in LRU order (least-recently-used item is in the
+  // front). `servers` are in the format flattened representation of
+  // (scheme/host/port) where port might be ignored if is default with scheme.
   //
   // "http_server_properties": {
   //      "servers": [
@@ -276,16 +276,14 @@ void HttpServerPropertiesManager::ReadPrefs(
   bool use_network_isolation_key = base::FeatureList::IsEnabled(
       features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
 
-  // Iterate servers list in reverse MRU order so that entries are inserted
-  // into |spdy_servers_map|, |alternative_service_map|, and
-  // |server_network_stats_map| from oldest to newest.
-  for (auto it = servers_list->end(); it != servers_list->begin();) {
-    --it;
-    if (!it->is_dict()) {
+  // Iterate `servers_list` (least-recently-used item is in the front) so that
+  // entries are inserted into `server_info_map` from oldest to newest.
+  for (const auto& server_dict_value : *servers_list) {
+    if (!server_dict_value.is_dict()) {
       DVLOG(1) << "Malformed http_server_properties for servers dictionary.";
       continue;
     }
-    AddServerData(it->GetDict(), server_info_map->get(),
+    AddServerData(server_dict_value.GetDict(), server_info_map->get(),
                   use_network_isolation_key);
   }
 
@@ -303,16 +301,16 @@ void HttpServerPropertiesManager::ReadPrefs(
         std::make_unique<RecentlyBrokenAlternativeServices>(
             kMaxRecentlyBrokenAlternativeServiceEntries);
 
-    // Iterate list in reverse-MRU order
-    for (auto it = broken_alt_svc_list->end();
-         it != broken_alt_svc_list->begin();) {
-      --it;
-      if (!it->is_dict()) {
+    // Iterate `broken_alt_svc_list` (least-recently-used item is in the front)
+    // so that entries are inserted into `recently_broken_alternative_services`
+    // from oldest to newest.
+    for (const auto& broken_alt_svc_entry_dict_value : *broken_alt_svc_list) {
+      if (!broken_alt_svc_entry_dict_value.is_dict()) {
         DVLOG(1) << "Malformed broken alterantive service entry.";
         continue;
       }
       AddToBrokenAlternativeServices(
-          it->GetDict(), use_network_isolation_key,
+          broken_alt_svc_entry_dict_value.GetDict(), use_network_isolation_key,
           broken_alternative_service_list->get(),
           recently_broken_alternative_services->get());
     }
@@ -868,8 +866,8 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
     return;
   }
 
-  // JSON list will be in MRU order according to
-  // |recently_broken_alternative_services|.
+  // JSON list will be in LRU order (least-recently-used item is in the front)
+  // according to `recently_broken_alternative_services`.
   base::Value::List json_list;
 
   // Maps recently-broken alternative services to the index where it's stored
