@@ -28,7 +28,7 @@ StableVideoDecoderService::~StableVideoDecoderService() {
 void StableVideoDecoderService::GetSupportedConfigs(
     GetSupportedConfigsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  dst_video_decoder_remote_->GetSupportedConfigs(std::move(callback));
 }
 
 void StableVideoDecoderService::Construct(

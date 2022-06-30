@@ -384,6 +384,58 @@ TEST_F(StableVideoDecoderServiceTest,
                                           /*expect_construct_call=*/false));
 }
 
+// Tests that a call to stable::mojom::VideoDecoder::GetSupportedConfigs() gets
+// routed correctly to the underlying mojom::VideoDecoder. Also tests that the
+// underlying mojom::VideoDecoder's reply gets routed correctly back to the
+// client.
+TEST_F(StableVideoDecoderServiceTest,
+       StableVideoDecoderCanGetSupportedConfigs) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+
+  StrictMock<base::MockOnceCallback<void(
+      const std::vector<SupportedVideoDecoderConfig>& supported_configs,
+      VideoDecoderType decoder_type)>>
+      get_supported_configs_cb_to_send;
+  mojom::VideoDecoder::GetSupportedConfigsCallback
+      received_get_supported_configs_cb;
+  constexpr VideoDecoderType kDecoderTypeToReplyWith = VideoDecoderType::kVaapi;
+  const std::vector<SupportedVideoDecoderConfig>
+      supported_configs_to_reply_with({
+          {/*profile_min=*/H264PROFILE_MIN, /*profile_max=*/H264PROFILE_MAX,
+           /*coded_size_min=*/gfx::Size(320, 180),
+           /*coded_size_max=*/gfx::Size(1280, 720), /*allow_encrypted=*/false,
+           /*require_encrypted=*/false},
+          {/*profile_min=*/VP9PROFILE_MIN, /*profile_max=*/VP9PROFILE_MAX,
+           /*coded_size_min=*/gfx::Size(8, 8),
+           /*coded_size_max=*/gfx::Size(640, 360), /*allow_encrypted=*/true,
+           /*require_encrypted=*/true},
+      });
+  std::vector<SupportedVideoDecoderConfig> received_supported_configs;
+
+  EXPECT_CALL(*mock_video_decoder_raw, GetSupportedConfigs(/*callback=*/_))
+      .WillOnce([&](mojom::VideoDecoder::GetSupportedConfigsCallback callback) {
+        received_get_supported_configs_cb = std::move(callback);
+      });
+  EXPECT_CALL(get_supported_configs_cb_to_send, Run(_, kDecoderTypeToReplyWith))
+      .WillOnce(SaveArg<0>(&received_supported_configs));
+
+  stable_video_decoder_remote->GetSupportedConfigs(
+      get_supported_configs_cb_to_send.Get());
+  stable_video_decoder_remote.FlushForTesting();
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(mock_video_decoder_raw));
+
+  std::move(received_get_supported_configs_cb)
+      .Run(supported_configs_to_reply_with, kDecoderTypeToReplyWith);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(received_supported_configs, supported_configs_to_reply_with);
+}
+
 // Tests that a call to stable::mojom::VideoDecoder::Initialize() gets routed
 // correctly to the underlying mojom::VideoDecoder. Also tests that when the
 // underlying mojom::VideoDecoder calls the initialization callback, the call
