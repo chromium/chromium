@@ -36,7 +36,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -413,12 +412,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
   }
-  // Content Decryption Modules used by Encrypted Media store licenses in a
-  // private filesystem. These are different than content licenses used by
-  // Flash (which are deleted father down in this method).
   if (remove_mask & DATA_TYPE_MEDIA_LICENSES) {
     storage_partition_remove_mask |=
-        StoragePartition::REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA;
+        StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES;
   }
   if (remove_mask & DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED) {
     storage_partition_remove_mask |=

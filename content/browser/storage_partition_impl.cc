@@ -857,7 +857,7 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     quota_client_types.insert(storage::QuotaClientType::kServiceWorkerCache);
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH)
     quota_client_types.insert(storage::QuotaClientType::kBackgroundFetch);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA)
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES)
     quota_client_types.insert(storage::QuotaClientType::kMediaLicense);
   return quota_client_types;
 }
@@ -2464,7 +2464,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       remove_mask_ & REMOVE_DATA_MASK_FILE_SYSTEMS ||
       remove_mask_ & REMOVE_DATA_MASK_SERVICE_WORKERS ||
       remove_mask_ & REMOVE_DATA_MASK_CACHE_STORAGE ||
-      remove_mask_ & REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA) {
+      remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&DataDeletionHelper::ClearQuotaManagedDataOnIOThread,
