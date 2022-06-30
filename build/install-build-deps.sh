@@ -34,13 +34,13 @@ build_apt_package_list() {
   echo "Building apt package list." >&2
   apt-cache dumpavail | \
     python3 -c '\
-      import re,sys; \
-      o = sys.stdin.read(); \
-      p = {"i386": ":i386"}; \
-      f = re.M | re.S; \
-      r = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$", f); \
-      m = ["%s%s" % (x, p.get(y, "")) for x, y in re.findall(r, o)]; \
-      print("\n".join(m))'
+import re,sys; \
+o = sys.stdin.read(); \
+p = {"i386": ":i386"}; \
+f = re.M | re.S; \
+r = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$", f); \
+m = ["%s%s" % (x, p.get(y, "")) for x, y in re.findall(r, o)]; \
+print("\n".join(m))'
 }
 
 # Checks whether a particular package is available in the repos.
