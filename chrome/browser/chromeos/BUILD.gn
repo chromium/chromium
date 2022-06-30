@@ -2890,6 +2890,7 @@ source_set("unit_tests") {
     "../ash/printing/oauth2/authorization_server_data_unittest.cc",
     "../ash/printing/oauth2/authorization_server_session_unittest.cc",
     "../ash/printing/oauth2/authorization_zone_unittest.cc",
+    "../ash/printing/oauth2/authorization_zones_manager_unittest.cc",
     "../ash/printing/oauth2/http_exchange_unittest.cc",
     "../ash/printing/oauth2/ipp_endpoint_token_fetcher_unittest.cc",
     "../ash/printing/oauth2/profile_auth_servers_sync_bridge_unittest.cc",
