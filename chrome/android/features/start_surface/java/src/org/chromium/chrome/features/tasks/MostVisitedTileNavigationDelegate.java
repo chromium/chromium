@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -63,7 +62,6 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
                         windowOpenDisposition
                                 == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB,
                         /*incognito=*/null, mParentTabSupplier.get());
-                SuggestionsMetrics.recordTileTapped();
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
                 ReturnToChromeUtil.handleLoadUrlFromStartSurface(
