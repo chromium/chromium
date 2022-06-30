@@ -130,9 +130,15 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   if (disable_delegation())
     return false;
 
-  if (quad_list->size() >= kTooManyQuads ||
-      !render_pass_backdrop_filters.empty())
+  if (quad_list->size() >= kTooManyQuads) {
+    delegated_status_ = DelegationStatus::kCompositedTooManyQuads;
     return false;
+  }
+
+  if (!render_pass_backdrop_filters.empty()) {
+    delegated_status_ = DelegationStatus::kCompositedBackdropFilter;
+    return false;
+  }
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,

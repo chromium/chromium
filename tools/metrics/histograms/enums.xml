@@ -24173,6 +24173,8 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Composited Not Axis Aligned"/>
   <int value="3" label="Composited Check Overlay Fail"/>
   <int value="4" label="Composited Not Overlay"/>
+  <int value="5" label="Composited Too Many Quads"/>
+  <int value="6" label="Composited Backdrop Filter"/>
 </enum>
 
 <enum name="DeleteCorruptedPasswordsResult">
