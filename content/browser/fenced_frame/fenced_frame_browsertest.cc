@@ -6,6 +6,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -84,6 +85,7 @@ class FencedFrameBrowserTest : public ContentBrowserTest {
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+  base::HistogramTester histogram_tester_;
 
  private:
   test::FencedFrameTestHelper fenced_frame_test_helper_;
@@ -1396,7 +1398,12 @@ class FencedFrameNestedModesTest
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ContentBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(https_server());
+
+    ASSERT_TRUE(https_server()->Start());
   }
 
   WebContentsImpl* web_contents() {
@@ -1410,6 +1417,10 @@ class FencedFrameNestedModesTest
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return *fenced_frame_test_helper_.get();
   }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   std::string ModeToString(blink::mojom::FencedFrameMode mode) {
@@ -1428,6 +1439,7 @@ class FencedFrameNestedModesTest
   // and it automatically enables MPArch fenced frames when created.
   std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // This test runs the following steps:
@@ -1436,18 +1448,24 @@ class FencedFrameNestedModesTest
 //   3.) Asserts that creation of the child fenced frame either failed or
 //       succeeded depending on its mode.
 IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
-  const GURL main_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // 1.) Create the parent fenced frame.
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
   constexpr char kAddFencedFrameScript[] = R"({
       const fenced_frame = document.createElement('fencedframe');
+      fenced_frame.src = $2;
       fenced_frame.mode = $1;
       document.body.appendChild(fenced_frame);
     })";
-  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
-                     JsReplace(kAddFencedFrameScript, GetParentMode())));
+  EXPECT_TRUE(ExecJs(
+      primary_main_frame_host(),
+      JsReplace(kAddFencedFrameScript, GetParentMode(), fenced_frame_url)));
+
+  // Wait for page to load in order to have it know it's in a secure context.
+  WaitForLoadStop(web_contents());
 
   // Get the fenced frame's RFH.
   ASSERT_EQ(1u, primary_main_frame_host()->child_count());
@@ -1462,18 +1480,36 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   ASSERT_TRUE(parent_fenced_frame_rfh);
 
   // 2.) Attempt to create the child fenced frame.
-  EXPECT_TRUE(ExecJs(parent_fenced_frame_rfh,
-                     JsReplace(kAddFencedFrameScript, GetChildMode())));
+  EXPECT_TRUE(ExecJs(
+      parent_fenced_frame_rfh,
+      JsReplace(kAddFencedFrameScript, GetChildMode(), fenced_frame_url)));
 
   // 3.) Assert that the child fenced frame was created or not created depending
   //     on the test parameters.
+  content::FetchHistogramsFromChildProcesses();
   if (GetParentMode() != GetChildMode()) {
-    EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
     // Child fenced frame creation should have failed based on its mode.
+    EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+    // kIncompatibleMode
+    histogram_tester_.ExpectBucketCount(
+        "Blink.FencedFrame.CreationOrNavigationOutcome", 3, 1);
   } else {
-    EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
     // Child fenced frame creation should have succeeded because its mode is the
     // same as its parent.
+    EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+    if (GetChildMode() == "default") {
+      // kSuccessDefault
+      histogram_tester_.ExpectBucketCount(
+          "Blink.FencedFrame.CreationOrNavigationOutcome", 0, 2);
+    } else {
+      // kSuccessOpaque
+      histogram_tester_.ExpectBucketCount(
+          "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 2);
+    }
   }
 }
 

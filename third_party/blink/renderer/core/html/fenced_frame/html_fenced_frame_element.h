@@ -193,6 +193,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
                            FreezeSizePageZoomFactor);
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest, CoerceFrameSizeTest);
+  FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
+                           HistogramTestResizeAfterFreeze);
 };
 
 // Type casting. Custom since adoption could lead to an HTMLFencedFrameElement
