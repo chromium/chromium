@@ -34,7 +34,6 @@
 #include <atomic>
 
 #include "base/check_op.h"
-#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -119,30 +118,10 @@ class SCOPED_LOCKABLE MutexLocker final {
   Mutex& mutex_;
 };
 
-class MutexTryLocker final {
-  STACK_ALLOCATED();
-
- public:
-  MutexTryLocker(Mutex& mutex) : mutex_(mutex), locked_(mutex.TryLock()) {}
-  MutexTryLocker(const MutexTryLocker&) = delete;
-  MutexTryLocker& operator=(const MutexTryLocker&) = delete;
-  ~MutexTryLocker() {
-    if (locked_)
-      mutex_.unlock();
-  }
-
-  bool Locked() const { return locked_; }
-
- private:
-  Mutex& mutex_;
-  bool locked_;
-};
-
 }  // namespace WTF
 
 using WTF::Mutex;
 using WTF::MutexLocker;
-using WTF::MutexTryLocker;
 using WTF::RecursiveMutex;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_

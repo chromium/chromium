@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -48,7 +47,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   void unlock() UNLOCK_FUNCTION(GetProcessLock());
 
   // For thread safety analysis only.  Does not actually return mu.
-  Mutex* GetProcessLock() LOCK_RETURNED(process_lock_) {
+  base::Lock* GetProcessLock() LOCK_RETURNED(process_lock_) {
     NOTREACHED();
     return nullptr;
   }
@@ -79,7 +78,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   // It is accessed by both audio and main thread. TODO: we really should
   // try to minimize or avoid the audio thread touching this element.
   CrossThreadWeakPersistent<HTMLMediaElement> media_element_;
-  Mutex process_lock_;
+  base::Lock process_lock_;
 
   unsigned source_number_of_channels_ = 0;
   double source_sample_rate_ = 0;

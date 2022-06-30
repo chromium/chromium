@@ -35,6 +35,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "cc/layers/layer.h"
 #include "media/base/logging_override_if_enabled.h"
@@ -4593,7 +4594,7 @@ void HTMLMediaElement::OnRemovedFromDocumentTimerFired(TimerBase*) {
 
 void HTMLMediaElement::AudioSourceProviderImpl::Wrap(
     scoped_refptr<WebAudioSourceProviderImpl> provider) {
-  MutexLocker locker(provide_input_lock);
+  base::AutoLock locker(provide_input_lock);
 
   if (web_audio_source_provider_ && provider != web_audio_source_provider_)
     web_audio_source_provider_->SetClient(nullptr);
@@ -4605,7 +4606,7 @@ void HTMLMediaElement::AudioSourceProviderImpl::Wrap(
 
 void HTMLMediaElement::AudioSourceProviderImpl::SetClient(
     AudioSourceProviderClient* client) {
-  MutexLocker locker(provide_input_lock);
+  base::AutoLock locker(provide_input_lock);
 
   if (client)
     client_ = MakeGarbageCollected<HTMLMediaElement::AudioClientImpl>(client);
@@ -4621,8 +4622,9 @@ void HTMLMediaElement::AudioSourceProviderImpl::ProvideInput(
     int frames_to_process) {
   DCHECK(bus);
 
-  MutexTryLocker try_locker(provide_input_lock);
-  if (!try_locker.Locked() || !web_audio_source_provider_ || !client_.Get()) {
+  base::AutoTryLock try_locker(provide_input_lock);
+  if (!try_locker.is_acquired() || !web_audio_source_provider_ ||
+      !client_.Get()) {
     bus->Zero();
     return;
   }

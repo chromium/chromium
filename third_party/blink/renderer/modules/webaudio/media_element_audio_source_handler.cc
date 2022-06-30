@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_element_audio_source_options.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -185,8 +186,8 @@ void MediaElementAudioSourceHandler::Process(uint32_t number_of_frames) {
   // If we fail to acquire the lock then the HTMLMediaElement must be in the
   // middle of reconfiguring its playback engine, so we output silence in this
   // case.
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     if (!MediaElement() || !source_sample_rate_) {
       output_bus->Zero();
       return;
@@ -224,11 +225,11 @@ void MediaElementAudioSourceHandler::Process(uint32_t number_of_frames) {
 }
 
 void MediaElementAudioSourceHandler::lock() {
-  process_lock_.lock();
+  process_lock_.Acquire();
 }
 
 void MediaElementAudioSourceHandler::unlock() {
-  process_lock_.unlock();
+  process_lock_.Release();
 }
 
 }  // namespace blink

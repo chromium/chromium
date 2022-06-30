@@ -183,8 +183,8 @@ void BiquadDSPKernel::Process(const float* source,
   // The audio thread can't block on this lock; skip updating the coefficients
   // for this block if necessary. We'll get them the next time around.
   {
-    MutexTryLocker try_locker(process_lock_);
-    if (try_locker.Locked()) {
+    base::AutoTryLock try_locker(process_lock_);
+    if (try_locker.is_acquired()) {
       UpdateCoefficientsIfNecessary(frames_to_process);
     }
   }

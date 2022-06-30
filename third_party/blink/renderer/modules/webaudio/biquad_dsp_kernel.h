@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_DSP_KERNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_DSP_KERNEL_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/biquad.h"
@@ -77,7 +78,8 @@ class BiquadDSPKernel final : public AudioDSPKernel {
 
   // To prevent audio glitches when parameters are changed,
   // dezippering is used to slowly change the parameters.
-  void UpdateCoefficientsIfNecessary(int);
+  void UpdateCoefficientsIfNecessary(int)
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
  private:
   // Compute the tail time using the BiquadFilter coefficients at
@@ -85,7 +87,7 @@ class BiquadDSPKernel final : public AudioDSPKernel {
   void UpdateTailTime(int coef_index);
 
   // Synchronize process() with getting and setting the filter coefficients.
-  mutable Mutex process_lock_;
+  mutable base::Lock process_lock_;
 
   // The current tail time for biquad filter.
   double tail_time_;
