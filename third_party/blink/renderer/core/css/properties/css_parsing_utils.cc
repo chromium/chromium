@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
+#include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
-#include "third_party/blink/renderer/core/css/css_grid_line_names_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -79,8 +79,8 @@
 
 namespace blink {
 
+using cssvalue::CSSBracketedValueList;
 using cssvalue::CSSFontFeatureValue;
-using cssvalue::CSSGridLineNamesValue;
 
 namespace css_parsing_utils {
 namespace {
@@ -4427,19 +4427,19 @@ CSSCustomIdentValue* ConsumeCustomIdentForGridLine(
   return ConsumeCustomIdent(range, context);
 }
 
-// Appends to the passed in CSSGridLineNamesValue if any, otherwise creates a
+// Appends to the passed in CSSBracketedValueList if any, otherwise creates a
 // new one. Returns nullptr if an empty list is consumed.
-CSSGridLineNamesValue* ConsumeGridLineNames(
+CSSBracketedValueList* ConsumeGridLineNames(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     bool is_subgrid_track_list,
-    CSSGridLineNamesValue* line_names = nullptr) {
+    CSSBracketedValueList* line_names = nullptr) {
   CSSParserTokenRange range_copy = range;
   if (range_copy.ConsumeIncludingWhitespace().GetType() != kLeftBracketToken)
     return nullptr;
 
   if (!line_names)
-    line_names = MakeGarbageCollected<CSSGridLineNamesValue>();
+    line_names = MakeGarbageCollected<CSSBracketedValueList>();
 
   while (CSSCustomIdentValue* line_name =
              ConsumeCustomIdentForGridLine(range_copy, context)) {
@@ -4460,7 +4460,7 @@ bool AppendLineNames(CSSParserTokenRange& range,
                      const CSSParserContext& context,
                      bool is_subgrid_track_list,
                      CSSValueList* values) {
-  if (CSSGridLineNamesValue* line_names =
+  if (CSSBracketedValueList* line_names =
           ConsumeGridLineNames(range, context, is_subgrid_track_list)) {
     values->Append(*line_names);
     return true;
@@ -4566,7 +4566,7 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
 
   // Persists between loop iterations so we can use the same value for
   // consecutive <line-names> values
-  CSSGridLineNamesValue* line_names = nullptr;
+  CSSBracketedValueList* line_names = nullptr;
 
   do {
     // Handle leading <custom-ident>*.

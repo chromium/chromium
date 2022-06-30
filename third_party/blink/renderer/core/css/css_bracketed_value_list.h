@@ -28,19 +28,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/css/css_grid_line_names_value.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_BRACKETED_VALUE_LIST_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_BRACKETED_VALUE_LIST_H_
 
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 namespace cssvalue {
 
-String CSSGridLineNamesValue::CustomCSSText() const {
-  return "[" + CSSValueList::CustomCSSText() + "]";
-}
+class CSSBracketedValueList : public CSSValueList {
+ public:
+  CSSBracketedValueList();
 
-CSSGridLineNamesValue::CSSGridLineNamesValue()
-    : CSSValueList(kGridLineNamesClass, kSpaceSeparator) {}
+  String CustomCSSText() const;
+
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
+    CSSValueList::TraceAfterDispatch(visitor);
+  }
+};
 
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSBracketedValueList> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsGridLineNamesValue();
+  }
+};
+
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_BRACKETED_VALUE_LIST_H_
