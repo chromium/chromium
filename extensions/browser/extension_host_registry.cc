@@ -4,11 +4,13 @@
 
 #include "extensions/browser/extension_host_registry.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -159,6 +161,18 @@ std::vector<ExtensionHost*> ExtensionHostRegistry::GetHostsForExtension(
       hosts.push_back(host);
   }
   return hosts;
+}
+
+ExtensionHost* ExtensionHostRegistry::GetExtensionHostForPrimaryMainFrame(
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host->IsInPrimaryMainFrame())
+      << "GetExtensionHostForPrimaryMainFrame() should only be called with "
+      << "the primary main frame.";
+  for (ExtensionHost* host : extension_hosts_) {
+    if (host->main_frame_host() == render_frame_host)
+      return host;
+  }
+  return nullptr;
 }
 
 void ExtensionHostRegistry::AddObserver(Observer* observer) {

@@ -16,12 +16,12 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
@@ -105,7 +105,8 @@ bool ShouldBlockNavigationToPlatformAppResource(
   DCHECK(view_type == mojom::ViewType::kBackgroundContents ||
          view_type == mojom::ViewType::kComponent ||
          view_type == mojom::ViewType::kExtensionPopup ||
-         view_type == mojom::ViewType::kTabContents)
+         view_type == mojom::ViewType::kTabContents ||
+         view_type == mojom::ViewType::kOffscreenDocument)
       << "Unhandled view type: " << view_type;
 
   return true;
@@ -125,22 +126,21 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
 
-  // Prevent the extension's background page from being navigated away. See
-  // crbug.com/1130083.
+  // Prevent background extension contexts from being navigated away.
+  // See crbug.com/1130083.
   if (navigation_handle()->IsInPrimaryMainFrame()) {
-    ProcessManager* process_manager = ProcessManager::Get(browser_context);
-    DCHECK(process_manager);
-    ExtensionHost* host = process_manager->GetExtensionHostForRenderFrameHost(
+    ExtensionHostRegistry* host_registry =
+        ExtensionHostRegistry::Get(browser_context);
+    DCHECK(host_registry);
+    ExtensionHost* host = host_registry->GetExtensionHostForPrimaryMainFrame(
         web_contents->GetPrimaryMainFrame());
 
     // Navigation throttles don't intercept same document navigations, hence we
     // can ignore that case.
     DCHECK(!navigation_handle()->IsSameDocument());
 
-    if (host &&
-        host->extension_host_type() ==
-            mojom::ViewType::kExtensionBackgroundPage &&
-        host->initial_url() != navigation_handle()->GetURL()) {
+    if (host && host->initial_url() != navigation_handle()->GetURL() &&
+        !host->ShouldAllowNavigations()) {
       return content::NavigationThrottle::CANCEL;
     }
   }

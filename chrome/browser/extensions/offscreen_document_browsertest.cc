@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_result_queue.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
@@ -135,6 +137,18 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
     EXPECT_EQ(offscreen_url, frame_host->GetLastCommittedURL());
     EXPECT_EQ(contents, content::WebContents::FromRenderFrameHost(frame_host));
     EXPECT_EQ(extension, process_manager->GetExtensionForWebContents(contents));
+  }
+
+  {
+    // Check the registration in the ExtensionHostRegistry.
+    ExtensionHostRegistry* host_registry =
+        ExtensionHostRegistry::Get(profile());
+    std::vector<ExtensionHost*> hosts =
+        host_registry->GetHostsForExtension(extension->id());
+    EXPECT_THAT(hosts, testing::ElementsAre(offscreen_document.get()));
+    EXPECT_EQ(offscreen_document.get(),
+              host_registry->GetExtensionHostForPrimaryMainFrame(
+                  offscreen_document->main_frame_host()));
   }
 
   {
@@ -519,6 +533,50 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
   EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
+}
+
+// Tests that navigation is disallowed in offscreen documents.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, NavigationIsDisallowed) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("other.html"),
+                     "<html>other page</html>");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
+  content::WebContents* contents = offscreen_document->host_contents();
+
+  auto expect_navigation_failure = [contents, offscreen_url](const GURL& url) {
+    content::TestNavigationObserver navigation_observer(contents);
+    content::ExecuteScriptAsync(
+        contents, content::JsReplace("window.location.href = $1;", url));
+    navigation_observer.Wait();
+    EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+    EXPECT_EQ(offscreen_url,
+              contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+  };
+
+  // Try to navigate the offscreen document to a web URL. The navigation
+  // should fail (it's canceled).
+  expect_navigation_failure(
+      embedded_test_server()->GetURL("example.com", "/title1.html"));
+  // Repeat with an extension resource. This should also fail - we don't allow
+  // offscreen documents to navigate themselves, even to another extension
+  // resource.
+  expect_navigation_failure(extension->GetResourceURL("other.html"));
 }
 
 }  // namespace extensions

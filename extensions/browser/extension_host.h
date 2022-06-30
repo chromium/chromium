@@ -106,6 +106,9 @@ class ExtensionHost : public DeferredStartRenderHost,
   // finished.
   void OnNetworkRequestDone(uint64_t request_id);
 
+  // Returns true if the ExtensionHost is allowed to be navigated.
+  bool ShouldAllowNavigations() const;
+
   // content::WebContentsObserver:
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* host) override;

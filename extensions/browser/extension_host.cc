@@ -172,6 +172,12 @@ void ExtensionHost::OnNetworkRequestDone(uint64_t request_id) {
     observer.OnNetworkRequestDone(this, request_id);
 }
 
+bool ExtensionHost::ShouldAllowNavigations() const {
+  // Don't allow background pages or offscreen documents to navigate.
+  return extension_host_type_ != mojom::ViewType::kExtensionBackgroundPage &&
+         extension_host_type_ != mojom::ViewType::kOffscreenDocument;
+}
+
 const GURL& ExtensionHost::GetLastCommittedURL() const {
   return host_contents()->GetLastCommittedURL();
 }
