@@ -154,6 +154,8 @@ CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange&,
                                         const CSSParserContext&);
+CSSCustomIdentValue* ConsumeCustomIdentConservatively(CSSParserTokenRange&,
+                                                      const CSSParserContext&);
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange&,
                                         const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenRange&);

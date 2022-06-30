@@ -2400,29 +2400,68 @@ scoped_refptr<ToggleRootList> StyleBuilderConverter::ConvertToggleRoot(
 
     wtf_size_t index = 1u;
 
-    uint32_t initial_state = 0;
-    uint32_t maximum_state = 1;
+    ToggleRoot::States states(1u);
+    ToggleRoot::State initial_state(0u);
     if (index < item_list->length()) {
-      if (const auto* number_list =
-              DynamicTo<CSSValueList>(item_list->Item(index))) {
+      bool found_states = false;
+      const CSSValue& state_value = item_list->Item(index);
+      if (const auto* states_list = DynamicTo<CSSValueList>(state_value)) {
         ++index;
-        DCHECK_LE(1u, number_list->length());
-        DCHECK_LE(number_list->length(), 2u);
-        if (number_list->length() == 2u) {
-          initial_state =
-              To<CSSPrimitiveValue>(number_list->Item(0)).GetValue<uint32_t>();
+        found_states = true;
+        DCHECK_LE(1u, states_list->length());
+        ToggleRoot::States::NamesType states_vec;
+        states_vec.ReserveInitialCapacity(states_list->length());
+        for (const auto& item : *states_list) {
+          states_vec.push_back(To<CSSCustomIdentValue>(*item).Value());
         }
-        maximum_state =
-            To<CSSPrimitiveValue>(number_list->Last()).GetValue<uint32_t>();
+        states = ToggleRoot::States(std::move(states_vec));
+      } else if (const auto* maximum_state_number =
+                     DynamicTo<CSSPrimitiveValue>(state_value)) {
+        ++index;
+        found_states = true;
+        states = ToggleRoot::States(maximum_state_number->GetValue<uint32_t>());
+      }
+
+      if (found_states && index < item_list->length()) {
+        const auto* at_value =
+            DynamicTo<CSSIdentifierValue>(item_list->Item(index));
+        if (at_value && at_value->GetValueID() == CSSValueID::kAt) {
+          ++index;
+
+          DCHECK_LT(index, item_list->length());
+          const CSSValue& initial_state_value = item_list->Item(index);
+          ++index;
+          if (const auto* initial_state_ident =
+                  DynamicTo<CSSCustomIdentValue>(initial_state_value)) {
+            initial_state = ToggleRoot::State(initial_state_ident->Value());
+          } else {
+            const auto& initial_state_number =
+                To<CSSPrimitiveValue>(initial_state_value);
+            initial_state =
+                ToggleRoot::State(initial_state_number.GetValue<uint32_t>());
+          }
+        }
       }
     }
 
-    bool is_sticky = false;
-    if (index < item_list->length() &&
-        To<CSSIdentifierValue>(item_list->Item(index)).GetValueID() ==
-            CSSValueID::kSticky) {
-      ++index;
-      is_sticky = true;
+    ToggleOverflow overflow = ToggleOverflow::kCycle;
+    if (index < item_list->length()) {
+      switch (To<CSSIdentifierValue>(item_list->Item(index)).GetValueID()) {
+        case CSSValueID::kCycle:
+          overflow = ToggleOverflow::kCycle;
+          ++index;
+          break;
+        case CSSValueID::kCycleOn:
+          overflow = ToggleOverflow::kCycleOn;
+          ++index;
+          break;
+        case CSSValueID::kSticky:
+          overflow = ToggleOverflow::kSticky;
+          ++index;
+          break;
+        default:
+          break;
+      }
     }
 
     bool is_group = false;
@@ -2442,8 +2481,8 @@ scoped_refptr<ToggleRootList> StyleBuilderConverter::ConvertToggleRoot(
     }
     DCHECK_EQ(item_list->length(), index);
 
-    result->Append(ToggleRoot(name, initial_state, maximum_state, is_sticky,
-                              is_group, scope));
+    result->Append(
+        ToggleRoot(name, states, initial_state, overflow, is_group, scope));
   }
   return result;
 }
@@ -2459,17 +2498,39 @@ scoped_refptr<ToggleTriggerList> StyleBuilderConverter::ConvertToggleTrigger(
   for (const auto& item : To<CSSValueList>(value)) {
     const auto* item_list = To<CSSValueList>(item.Get());
     DCHECK_LE(1u, item_list->length());
-    DCHECK_LE(item_list->length(), 2u);
+    DCHECK_LE(item_list->length(), 3u);
     const AtomicString& name =
         To<CSSCustomIdentValue>(item_list->Item(0)).Value();
-    ToggleTriggerMode mode;
-    uint32_t value;
-    if (item_list->length() == 2u) {
-      mode = ToggleTriggerMode::kSet;
-      value = To<CSSPrimitiveValue>(item_list->Item(1)).GetValue<uint32_t>();
+
+    ToggleTriggerMode mode = ToggleTriggerMode::kNext;
+    if (item_list->length() > 1u) {
+      switch (To<CSSIdentifierValue>(item_list->Item(1)).GetValueID()) {
+        case CSSValueID::kPrev:
+          mode = ToggleTriggerMode::kPrev;
+          break;
+        case CSSValueID::kNext:
+          mode = ToggleTriggerMode::kNext;
+          break;
+        case CSSValueID::kSet:
+          mode = ToggleTriggerMode::kSet;
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+
+    ToggleTrigger::State value(1);
+    if (item_list->length() == 3u) {
+      const CSSValue& target_value = item_list->Item(2);
+      if (const auto* target_ident =
+              DynamicTo<CSSCustomIdentValue>(target_value)) {
+        value = ToggleTrigger::State(target_ident->Value());
+      } else {
+        const auto& target_number = To<CSSPrimitiveValue>(target_value);
+        value = ToggleTrigger::State(target_number.GetValue<uint32_t>());
+      }
     } else {
-      mode = ToggleTriggerMode::kAdd;
-      value = 1;
+      DCHECK_NE(mode, ToggleTriggerMode::kSet);
     }
 
     result->Append(ToggleTrigger(name, mode, value));

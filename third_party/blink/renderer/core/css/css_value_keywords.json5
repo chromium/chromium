@@ -1482,6 +1482,13 @@
     // toggle-root
     "group",
     "self",
+    "cycle",
+    "cycle-on",
+
+    // toggle-trigger
+    "prev",
+    "next",
+    "set",
 
     // color-contrast()
     "color-contrast",

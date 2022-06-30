@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_type.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
+#include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
@@ -8775,18 +8776,62 @@ const CSSValue* ToggleRoot::CSSValueFromComputedStyleInternal(
   for (const auto& item : toggle_root->Roots()) {
     CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
     item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(item.Name()));
-    if (item.MaximumState() != 1 || item.InitialState() != 0) {
-      CSSValueList* number_list = CSSValueList::CreateSlashSeparated();
-      if (item.InitialState() != 0) {
-        number_list->Append(*CSSNumericLiteralValue::Create(
-            item.InitialState(), CSSPrimitiveValue::UnitType::kInteger));
+    const auto& states = item.StateSet();
+    bool states_is_default = states.IsInteger() && states.AsInteger() == 1u;
+    const auto& initial_state = item.InitialState();
+    bool initial_is_default =
+        initial_state.IsInteger() && initial_state.AsInteger() == 0u;
+    if (!states_is_default || !initial_is_default) {
+      switch (states.GetType()) {
+        using Type = decltype(states.GetType());
+        case Type::Integer: {
+          auto maximum_state = states.AsInteger();
+          item_list->Append(*CSSNumericLiteralValue::Create(
+              maximum_state, CSSPrimitiveValue::UnitType::kInteger));
+          break;
+        }
+        case Type::Names: {
+          auto* state_list =
+              MakeGarbageCollected<cssvalue::CSSBracketedValueList>();
+          for (const auto& state_name : states.AsNames()) {
+            state_list->Append(
+                *MakeGarbageCollected<CSSCustomIdentValue>(state_name));
+          }
+          item_list->Append(*state_list);
+          break;
+        }
       }
-      number_list->Append(*CSSNumericLiteralValue::Create(
-          item.MaximumState(), CSSPrimitiveValue::UnitType::kInteger));
-      item_list->Append(*number_list);
+
+      if (!initial_is_default) {
+        item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kAt));
+        switch (initial_state.GetType()) {
+          using Type = decltype(initial_state.GetType());
+          case Type::Integer: {
+            auto initial_state_index = initial_state.AsInteger();
+            item_list->Append(*CSSNumericLiteralValue::Create(
+                initial_state_index, CSSPrimitiveValue::UnitType::kInteger));
+            break;
+          }
+          case Type::Name: {
+            const AtomicString& initial_state_name = initial_state.AsName();
+            item_list->Append(
+                *MakeGarbageCollected<CSSCustomIdentValue>(initial_state_name));
+            break;
+          }
+        }
+      }
     }
-    if (item.IsSticky())
-      item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
+    switch (item.Overflow()) {
+      case ToggleOverflow::kCycle:
+        // serialize nothing since it's the default
+        break;
+      case ToggleOverflow::kCycleOn:
+        item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kCycleOn));
+        break;
+      case ToggleOverflow::kSticky:
+        item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
+        break;
+    }
     if (item.IsGroup())
       item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kGroup));
     switch (item.Scope()) {
@@ -8823,14 +8868,39 @@ const CSSValue* ToggleTrigger::CSSValueFromComputedStyleInternal(
   for (const auto& item : toggle_trigger->Triggers()) {
     CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
     item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(item.Name()));
+    CSSValueID id = CSSValueID::kInvalid;
     switch (item.Mode()) {
-      case ToggleTriggerMode::kAdd:
-        DCHECK_EQ(item.Value(), 1u);
+      case ToggleTriggerMode::kPrev:
+        id = CSSValueID::kPrev;
+        break;
+      case ToggleTriggerMode::kNext:
+        id = CSSValueID::kNext;
         break;
       case ToggleTriggerMode::kSet:
-        item_list->Append(*CSSNumericLiteralValue::Create(
-            item.Value(), CSSPrimitiveValue::UnitType::kInteger));
+        id = CSSValueID::kSet;
         break;
+    }
+    const auto& value = item.Value();
+    switch (value.GetType()) {
+      using Type = decltype(value.GetType());
+      case Type::Integer: {
+        auto int_value = value.AsInteger();
+        if (id == CSSValueID::kSet || int_value != 1u) {
+          item_list->Append(*CSSIdentifierValue::Create(id));
+          item_list->Append(*CSSNumericLiteralValue::Create(
+              int_value, CSSPrimitiveValue::UnitType::kInteger));
+        } else if (id != CSSValueID::kNext) {
+          item_list->Append(*CSSIdentifierValue::Create(id));
+        }
+        break;
+      }
+      case Type::Name: {
+        DCHECK_EQ(id, CSSValueID::kSet);
+        item_list->Append(*CSSIdentifierValue::Create(id));
+        item_list->Append(
+            *MakeGarbageCollected<CSSCustomIdentValue>(value.AsName()));
+        break;
+      }
     }
     result_list->Append(*item_list);
   }
