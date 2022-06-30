@@ -760,7 +760,8 @@ mojom::GpuChannel& GpuChannel::GetGpuChannelForTesting() {
   return *filter_;
 }
 
-ImageDecodeAcceleratorStub* GpuChannel::GetImageDecodeAcceleratorStub() const {
+ImageDecodeAcceleratorStub*
+GpuChannel::GetImageDecodeAcceleratorStubForTesting() const {
   DCHECK(filter_);
   return filter_->image_decode_accelerator_stub();
 }

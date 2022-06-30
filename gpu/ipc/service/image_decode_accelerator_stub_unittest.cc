@@ -304,9 +304,9 @@ class ImageDecodeAcceleratorStubTest
 
     GpuChannel* channel = CreateChannel(kChannelId, false /* is_gpu_host */);
     ASSERT_TRUE(channel);
-    ASSERT_TRUE(channel->GetImageDecodeAcceleratorStub());
-    channel->GetImageDecodeAcceleratorStub()->SetImageFactoryForTesting(
-        &image_factory_);
+    ASSERT_TRUE(channel->GetImageDecodeAcceleratorStubForTesting());
+    channel->GetImageDecodeAcceleratorStubForTesting()
+        ->SetImageFactoryForTesting(&image_factory_);
 
     // Create a raster command buffer so that the ImageDecodeAcceleratorStub can
     // have access to a TransferBufferManager. Note that we mock the
