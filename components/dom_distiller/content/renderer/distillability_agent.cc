@@ -83,36 +83,37 @@ void DumpDistillability(content::RenderFrame* render_frame,
                         double long_score,
                         bool long_page,
                         bool filtered) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   std::string msg;
 
-  base::DictionaryValue raw_features;
-  raw_features.SetInteger("is_mobile_friendly", features.is_mobile_friendly);
-  raw_features.SetInteger("open_graph", features.open_graph);
-  raw_features.SetInteger("element_count", features.element_count);
-  raw_features.SetInteger("anchor_count", features.anchor_count);
-  raw_features.SetInteger("form_count", features.form_count);
-  raw_features.SetInteger("text_input_count", features.text_input_count);
-  raw_features.SetInteger("password_input_count",
-                          features.password_input_count);
-  raw_features.SetInteger("p_count", features.p_count);
-  raw_features.SetInteger("pre_count", features.pre_count);
-  raw_features.SetDouble("moz_score", features.moz_score);
-  raw_features.SetDouble("moz_score_all_sqrt", features.moz_score_all_sqrt);
-  raw_features.SetDouble("moz_score_all_linear", features.moz_score_all_linear);
-  dict.SetKey("features", std::move(raw_features));
+  base::Value::Dict raw_features;
+  raw_features.Set("is_mobile_friendly", features.is_mobile_friendly);
+  raw_features.Set("open_graph", features.open_graph);
+  raw_features.Set("element_count", static_cast<int>(features.element_count));
+  raw_features.Set("anchor_count", static_cast<int>(features.anchor_count));
+  raw_features.Set("form_count", static_cast<int>(features.form_count));
+  raw_features.Set("text_input_count",
+                   static_cast<int>(features.text_input_count));
+  raw_features.Set("password_input_count",
+                   static_cast<int>(features.password_input_count));
+  raw_features.Set("p_count", static_cast<int>(features.p_count));
+  raw_features.Set("pre_count", static_cast<int>(features.pre_count));
+  raw_features.Set("moz_score", features.moz_score);
+  raw_features.Set("moz_score_all_sqrt", features.moz_score_all_sqrt);
+  raw_features.Set("moz_score_all_linear", features.moz_score_all_linear);
+  dict.Set("features", std::move(raw_features));
 
   base::ListValue derived_features;
   for (double value : derived) {
     derived_features.Append(value);
   }
-  dict.SetKey("derived_features", std::move(derived_features));
+  dict.Set("derived_features", std::move(derived_features));
 
-  dict.SetDouble("score", score);
-  dict.SetInteger("distillable", distillable);
-  dict.SetDouble("long_score", long_score);
-  dict.SetInteger("long_page", long_page);
-  dict.SetInteger("filtered", filtered);
+  dict.Set("score", score);
+  dict.Set("distillable", distillable);
+  dict.Set("long_score", long_score);
+  dict.Set("long_page", long_page);
+  dict.Set("filtered", filtered);
   base::JSONWriter::WriteWithOptions(
       dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &msg);
   msg = "adaboost_classification = " + msg;

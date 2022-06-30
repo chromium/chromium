@@ -279,15 +279,18 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
       resolution + latency +
       kNumTimeMeasurements * base::Milliseconds(kTicksResolutionMs);
 
-  base::DictionaryValue time_mapping;
-  time_mapping.SetDouble(kPrefTime, time_at_last_measurement_.ToJsTime());
-  time_mapping.SetDouble(kPrefTicks, static_cast<double>(
-      ticks_at_last_measurement_.ToInternalValue()));
-  time_mapping.SetDouble(kPrefUncertainty, static_cast<double>(
-      network_time_uncertainty_.ToInternalValue()));
-  time_mapping.SetDouble(kPrefNetworkTime,
-      network_time_at_last_measurement_.ToJsTime());
-  pref_service_->Set(prefs::kNetworkTimeMapping, time_mapping);
+  base::Value::Dict time_mapping;
+  time_mapping.Set(kPrefTime, time_at_last_measurement_.ToJsTime());
+  time_mapping.Set(
+      kPrefTicks,
+      static_cast<double>(ticks_at_last_measurement_.ToInternalValue()));
+  time_mapping.Set(
+      kPrefUncertainty,
+      static_cast<double>(network_time_uncertainty_.ToInternalValue()));
+  time_mapping.Set(kPrefNetworkTime,
+                   network_time_at_last_measurement_.ToJsTime());
+  pref_service_->Set(prefs::kNetworkTimeMapping,
+                     base::Value(std::move(time_mapping)));
 }
 
 bool NetworkTimeTracker::AreTimeFetchesEnabled() const {
