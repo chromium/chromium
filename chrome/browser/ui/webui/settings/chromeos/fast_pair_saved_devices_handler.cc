@@ -24,13 +24,6 @@ const char kRemoveSavedDevice[] = "removeSavedDevice";
 const char kOptInStatusMessage[] = "fast-pair-saved-devices-opt-in-status";
 const char kSavedDevicesListMessage[] = "fast-pair-saved-devices-list";
 
-std::string DecodeKey(const std::string& encoded_key) {
-  std::string key;
-  base::Base64Decode(encoded_key, &key);
-  QP_LOG(ERROR) << __func__ << ": " << encoded_key << " " << key;
-  return key;
-}
-
 std::string EncodeKey(const std::string& decoded_key) {
   return base::HexEncode(
       std::vector<uint8_t>(decoded_key.begin(), decoded_key.end()));
@@ -81,6 +74,7 @@ void FastPairSavedDevicesHandler::RegisterMessages() {
 
 void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
     const base::Value::List& args) {
+  QP_LOG(VERBOSE) << __func__;
   std::vector<uint8_t> account_key;
   base::HexStringToBytes(args[0].GetString(), &account_key);
   ash::quick_pair::FastPairRepository::Get()
@@ -91,11 +85,12 @@ void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
 }
 
 void FastPairSavedDevicesHandler::OnSavedDeviceDeleted(bool success) {
-  QP_LOG(ERROR) << __func__ << ": " << (success ? "success" : "failed");
+  QP_LOG(INFO) << __func__ << ": " << (success ? "success" : "failed");
 }
 
 void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
     const base::Value::List& args) {
+  QP_LOG(VERBOSE) << __func__;
   AllowJavascript();
 
   // If the page is already loading, we ignore any new requests to load the
@@ -112,14 +107,18 @@ void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
 void FastPairSavedDevicesHandler::OnGetSavedDevices(
     nearby::fastpair::OptInStatus status,
     std::vector<nearby::fastpair::FastPairDevice> devices) {
+  QP_LOG(VERBOSE) << __func__;
+
   // The JavaScript WebUI layer needs an enum to stay in sync with the
   // nearby::fastpair::OptInStatus enum from ash/quick_pair/proto/enums.proto
   // to properly handle this message.
   FireWebUIListener(kOptInStatusMessage, base::Value(static_cast<int>(status)));
+  QP_LOG(VERBOSE) << __func__ << ": Sending opt-in status";
 
   // If the device list is empty, we communicate it to the settings page to
   // stop the loading UX screen.
   if (devices.empty()) {
+    QP_LOG(VERBOSE) << __func__ << ": No devices saved to the user's account";
     base::Value::List saved_devices_list;
     FireWebUIListener(kSavedDevicesListMessage,
                       base::Value(std::move(saved_devices_list)));
@@ -178,6 +177,8 @@ void FastPairSavedDevicesHandler::SaveImageAsBase64(
 }
 
 void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
+  QP_LOG(VERBOSE) << __func__;
+
   // We initialize a list of the saved devices that we will parse with the
   // decoded urls we have.
   base::Value::List saved_devices_list;
@@ -211,6 +212,7 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
 
   FireWebUIListener(kSavedDevicesListMessage,
                     base::Value(std::move(saved_devices_list)));
+  QP_LOG(VERBOSE) << __func__ << ": Sending device list";
 
   // We reset the state here for another page load that may happened while
   // chrome://os-settings is open, since our decoding tasks are completed.
