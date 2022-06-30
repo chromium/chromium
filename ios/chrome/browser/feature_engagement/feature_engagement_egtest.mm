@@ -283,7 +283,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
 // Verifies that the Badged Manual Translate Trigger feature does not show if
 // the entry has already been used.
-- (void)testBadgedTranslateManualTriggerFeatureAlreadyUsed {
+// TODO(crbug.com/1321264): This is failing flakily on several configurations.
+- (void)DISABLED_testBadgedTranslateManualTriggerFeatureAlreadyUsed {
   // Set up the test server.
   self.testServer->RegisterDefaultHandler(base::BindRepeating(
       net::test_server::HandlePrefixedRequest, kFrenchPageURLPath,
