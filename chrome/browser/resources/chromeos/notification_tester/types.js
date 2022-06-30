@@ -11,7 +11,6 @@
  *   message: string,
  *   icon: string,
  *   richDataImage: string,
- *   richDataSmallImage: string,
  * }}
  */
 export let Notification;

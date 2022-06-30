@@ -47,13 +47,6 @@ export class NotificationTester extends PolymerElement {
       /*
        * @private
        */
-      badgeSelectList: {
-        type: Array,
-        value: FormSelectOptions.BADGE_OPTIONS,
-      },
-      /*
-       * @private
-       */
       imageSelectList: {
         type: Array,
         value: FormSelectOptions.IMAGE_OPTIONS,

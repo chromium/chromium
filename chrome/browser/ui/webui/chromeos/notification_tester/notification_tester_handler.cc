@@ -12,6 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/grit/notification_tester_resources.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -33,22 +37,31 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
     const base::Value::List& args) {
   AllowJavascript();
 
-  // Parse JS args.
-  std::u16string title = base::UTF8ToUTF16(args[0].GetString());
-  std::u16string message = base::UTF8ToUTF16(args[1].GetString());
+  // Unpack JS args.
+  const base::Value::Dict* notifObj = args[0].GetIfDict();
+  DCHECK(notifObj);
 
-  GenerateNotification(title, message);
-}
+  const std::string* title = notifObj->FindString("title");
+  DCHECK(title);
 
-void NotificationTesterHandler::GenerateNotification(
-    const std::u16string& title,
-    const std::u16string& message) {
+  const std::string* message = notifObj->FindString("message");
+  DCHECK(message);
+
+  const std::string* icon = notifObj->FindString("icon");
+  DCHECK(icon);
+
+  const std::string* image = notifObj->FindString("richDataImage");
+  DCHECK(image);
+
+  // Generate Notification.
   std::u16string display_source = u"Sample Display Source";
   GURL origin_url("https://test-url.xyz");
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, "test notifier id",
       ash::NotificationCatalogName::kTestCatalogName);
+
   message_center::RichNotificationData optional_fields;
+  SetNotificationImage(*image, optional_fields);
 
   // Delegate does nothing.
   auto delegate =
@@ -62,13 +75,37 @@ void NotificationTesterHandler::GenerateNotification(
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          message, display_source, origin_url, notifier_id, optional_fields,
-          delegate, kTerminalSshIcon,
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+          base::UTF8ToUTF16(*title), base::UTF8ToUTF16(*message),
+          display_source, origin_url, notifier_id, optional_fields, delegate,
+          GetNotificationIcon(*icon),
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
+}
+
+const gfx::VectorIcon& NotificationTesterHandler::GetNotificationIcon(
+    const std::string& icon) {
+  if (icon == "kTerminalSshIcon") {
+    return kTerminalSshIcon;
+  } else if (icon == "kCreditCardIcon") {
+    return kCreditCardIcon;
+  } else if (icon == "kSmartphoneIcon") {
+    return kSmartphoneIcon;
+  }
+
+  return gfx::kNoneIcon;  // Default Case
+}
+
+void NotificationTesterHandler::SetNotificationImage(
+    const std::string& image,
+    message_center::RichNotificationData& optional_fields) {
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  if (image == "chromeos_logo_main") {
+    optional_fields.image = rb.GetNativeImageNamed(
+        IDR_NOTIFICATION_TESTER_IMAGES_CHROMEOS_LOGO_MAIN_PNG);
+  }
 }
 
 }  // namespace chromeos

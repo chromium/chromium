@@ -7,6 +7,14 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
+namespace message_center {
+class RichNotificationData;
+}  // namespace message_center
+
 namespace chromeos {
 
 // WebUI message handler for chrome://notification-tester from the front-end to
@@ -27,10 +35,15 @@ class NotificationTesterHandler : public content::WebUIMessageHandler {
   // message to generate a notification from the front-end.
   void HandleGenerateNotificationForm(const base::Value::List& args);
 
-  // Generates a notification via the message center with the given title and
-  // body.
-  void GenerateNotification(const std::u16string& title,
-                            const std::u16string& message);
+  // Given the name of an icon such as 'kTerminalSshIcon', return the
+  // corresponding gfx::VectorIcon.
+  const gfx::VectorIcon& GetNotificationIcon(const std::string& icon);
+
+  // Given the name of an image within the notification tester resources, return
+  // the corresponding gfx::Image.
+  void SetNotificationImage(
+      const std::string& image,
+      message_center::RichNotificationData& optional_fields);
 };
 
 }  // namespace chromeos

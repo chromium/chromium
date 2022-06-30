@@ -61,20 +61,14 @@ export const FormSelectOptions = {
     {displayText: 'Unicode Emojis', value: '🌇😃🍈😆🍜🍻😋⛅⛳😚ඞ'},
     {displayText: 'Empty', value: ''},
   ],
-  BADGE_OPTIONS: [
-    {displayText: 'Cat Badge', value: 'cat'},
-    {displayText: 'No Badge', value: 'none'}
+  ICON_OPTIONS: [
+    {displayText: 'Default Icon', value: 'kProductIcon'},
+    {displayText: 'Terminal Icon', value: 'kTerminalSshIcon'},
+    {displayText: 'Credit Card Icon', value: 'kCreditCardIcon'},
+    {displayText: 'Smartphone Icon', value: 'kSmartphoneIcon'},
   ],
   IMAGE_OPTIONS: [
     {displayText: 'No Image', value: 'none'},
-    {displayText: 'Cat Image (JPEG, 3072x1728)', value: 'cat'},
-  ],
-  ICON_OPTIONS: [
-    {displayText: 'No Icon', value: 'none'},
-    {displayText: 'Normal PNG Icon (256x256)', value: 'normal_png'},
-    {displayText: 'Static GIF Icon (256x256)', value: 'static_gif'},
-    {displayText: 'Animated GIF Icon (256x256)', value: 'animated_gif'},
-    {displayText: 'Tiny Icon (PNG, 32x32)', value: 'tiny_icon'},
-    {displayText: 'Huge Icon (PNG, 3333x5230)', value: 'huge_icon'},
+    {displayText: 'ChromeOS Logo (1218x317, PNG)', value: 'chromeos_logo_main'},
   ],
 };
