@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_device_motion_event_init.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_acceleration.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate.h"
@@ -64,6 +66,19 @@ double DeviceMotionEvent::interval() const {
   return device_motion_data_->Interval();
 }
 
+// static
+ScriptPromise DeviceMotionEvent::requestPermission(ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return ScriptPromise();
+
+  auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
+  if (!window) {
+    NOTREACHED();
+    return ScriptPromise();
+  }
+
+  return DeviceMotionController::From(*window).RequestPermission(script_state);
+}
 const AtomicString& DeviceMotionEvent::InterfaceName() const {
   return event_interface_names::kDeviceMotionEvent;
 }

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_MOTION_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_MOTION_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -36,6 +37,7 @@ class DeviceMotionEventAcceleration;
 class DeviceMotionData;
 class DeviceMotionEventInit;
 class DeviceMotionEventRotationRate;
+class ScriptState;
 
 class DeviceMotionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -67,6 +69,8 @@ class DeviceMotionEvent final : public Event {
   DeviceMotionEventAcceleration* accelerationIncludingGravity();
   DeviceMotionEventRotationRate* rotationRate();
   double interval() const;
+
+  static ScriptPromise requestPermission(ScriptState*);
 
   const AtomicString& InterfaceName() const override;
 

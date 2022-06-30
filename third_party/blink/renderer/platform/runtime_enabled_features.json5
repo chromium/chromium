@@ -856,6 +856,10 @@
       status: "experimental",
     },
     {
+      name: "DeviceOrientationRequestPermission",
+      status: "experimental",
+    },
+    {
       name: "DevicePosture",
       status: "experimental",
     },

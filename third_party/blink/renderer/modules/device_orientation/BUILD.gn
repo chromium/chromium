@@ -40,6 +40,7 @@ blink_modules_sources("device_orientation") {
   deps = [
     "//services/device/public/cpp/generic_sensor",
     "//services/device/public/mojom:generic_sensor",
+    "//third_party/blink/renderer/modules/permissions",
     "//third_party/blink/renderer/modules/sensor",
   ]
 }

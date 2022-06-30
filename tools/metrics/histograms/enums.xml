@@ -40556,6 +40556,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4286" label="AutomaticLazyAds"/>
   <int value="4287" label="AutomaticLazyEmbeds"/>
   <int value="4288" label="TouchActionChangedAtPointerDown"/>
+  <int value="4289" label="DeviceOrientationPermissionRequested"/>
+  <int value="4290" label="DeviceOrientationUsedWithoutPermissionRequest"/>
+  <int value="4291" label="DeviceMotionPermissionRequested"/>
+  <int value="4292" label="DeviceMotionUsedWithoutPermissionRequest"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

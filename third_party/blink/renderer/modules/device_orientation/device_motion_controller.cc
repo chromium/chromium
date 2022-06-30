@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
@@ -13,13 +14,16 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_pump.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
+#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 DeviceMotionController::DeviceMotionController(LocalDOMWindow& window)
     : DeviceSingleWindowEventController(window),
-      Supplement<LocalDOMWindow>(window) {}
+      Supplement<LocalDOMWindow>(window),
+      permission_service_(&window) {}
 
 DeviceMotionController::~DeviceMotionController() = default;
 
@@ -57,6 +61,11 @@ void DeviceMotionController::DidAddEventListener(
     return;
 
   UseCounter::Count(GetWindow(), WebFeature::kDeviceMotionSecureOrigin);
+
+  if (!has_requested_permission_) {
+    UseCounter::Count(GetWindow(),
+                      WebFeature::kDeviceMotionUsedWithoutPermissionRequest);
+  }
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
@@ -109,7 +118,47 @@ const AtomicString& DeviceMotionController::EventTypeName() const {
 void DeviceMotionController::Trace(Visitor* visitor) const {
   DeviceSingleWindowEventController::Trace(visitor);
   visitor->Trace(motion_event_pump_);
+  visitor->Trace(permission_service_);
   Supplement<LocalDOMWindow>::Trace(visitor);
+}
+
+ScriptPromise DeviceMotionController::RequestPermission(
+    ScriptState* script_state) {
+  ExecutionContext* context = GetSupplementable();
+  DCHECK_EQ(context, ExecutionContext::From(script_state));
+
+  has_requested_permission_ = true;
+
+  if (!permission_service_.is_bound()) {
+    ConnectToPermissionService(context,
+                               permission_service_.BindNewPipeAndPassReceiver(
+                                   context->GetTaskRunner(TaskType::kSensor)));
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  permission_service_->HasPermission(
+      CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind([](ScriptPromiseResolver* resolver,
+                       mojom::blink::PermissionStatus status) {
+            switch (status) {
+              case mojom::blink::PermissionStatus::GRANTED:
+              case mojom::blink::PermissionStatus::DENIED:
+                resolver->Resolve(PermissionStatusToString(status));
+                break;
+              case mojom::blink::PermissionStatus::ASK:
+                // At the moment, this state is not reachable because there
+                // is no "ask" or "prompt" state in the Chromium
+                // permissions UI for sensors, so HasPermissionStatus() will
+                // always return GRANTED or DENIED.
+                NOTREACHED();
+                break;
+            }
+          })));
+
+  return promise;
 }
 
 }  // namespace blink
