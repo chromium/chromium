@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
@@ -33,9 +34,15 @@ void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
   // reporting and at most report once per thread.
   static std::atomic<bool> has_dumped = false;
   if (!has_dumped.load(std::memory_order_relaxed)) {
+    const std::string str = log_message->str();
     // Copy the LogMessage string to stack memory to make sure it can be
     // recovered in crash dumps.
-    DEBUG_ALIAS_FOR_CSTR(log_message_str, log_message->str().c_str(), 1024);
+    // TODO(pbos): Surface DCHECK_MESSAGE well in crash reporting to make this
+    // redundant, then remove it.
+    DEBUG_ALIAS_FOR_CSTR(log_message_str, str.c_str(), 1024);
+
+    // Report the log message as DCHECK_MESSAGE in the dump we're about to do.
+    SCOPED_CRASH_KEY_STRING256("Logging", "DCHECK_MESSAGE", str);
 
     // Note that dumping may fail if the crash handler hasn't been set yet. In
     // that case we want to try again on the next failing DCHECK.
