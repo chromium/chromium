@@ -713,6 +713,7 @@ public class PortalsTest {
     @Test
     @LargeTest
     @Feature({"Portals"})
+    @DisabledTest(message = "https://crbug.com/1340918")
     public void testPermissionDeniedInPortalAfterBeingGrantedInPortalHost() throws Exception {
         String mainUrl = mTestServer.getURL("/chrome/test/data/android/portals/geolocation.html");
         mActivityTestRule.startMainActivityWithURL(mainUrl);
