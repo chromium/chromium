@@ -1953,22 +1953,21 @@ void LocalDOMWindow::DispatchLoadEvent() {
     DispatchEvent(load_event, document());
   }
 
-  if (GetFrame()) {
+  if (LocalFrame* frame = GetFrame()) {
     WindowPerformance* performance = DOMWindowPerformance::performance(*this);
     DCHECK(performance);
     performance->NotifyNavigationTimingToObservers();
+
+    // For load events, send a separate load event to the enclosing frame only.
+    // This is a DOM extension and is independent of bubbling/capturing rules of
+    // the DOM.
+    if (FrameOwner* owner = frame->Owner())
+      owner->DispatchLoad();
+
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+        "MarkLoad", inspector_mark_load_event::Data, frame);
+    probe::LoadEventFired(frame);
   }
-
-  // For load events, send a separate load event to the enclosing frame only.
-  // This is a DOM extension and is independent of bubbling/capturing rules of
-  // the DOM.
-  FrameOwner* owner = GetFrame() ? GetFrame()->Owner() : nullptr;
-  if (owner)
-    owner->DispatchLoad();
-
-  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-      "MarkLoad", inspector_mark_load_event::Data, GetFrame());
-  probe::LoadEventFired(GetFrame());
 }
 
 DispatchEventResult LocalDOMWindow::DispatchEvent(Event& event,

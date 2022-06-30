@@ -1127,6 +1127,7 @@ void inspector_paint_event::Data(perfetto::TracedValue context,
 }
 
 void FrameEventData(perfetto::TracedDictionary& dict, LocalFrame* frame) {
+  DCHECK(frame);
   dict.Add("isMainFrame", frame->IsMainFrame());
   dict.Add("isOutermostMainFrame", frame->IsOutermostMainFrame());
   // TODO(dgozman): this does not work with OOPIF, so everyone who
@@ -1135,6 +1136,7 @@ void FrameEventData(perfetto::TracedDictionary& dict, LocalFrame* frame) {
 }
 
 void FillCommonFrameData(perfetto::TracedDictionary& dict, LocalFrame* frame) {
+  DCHECK(frame);
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("url", UrlForFrame(frame));
   dict.Add("name", frame->Tree().GetName());
