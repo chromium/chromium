@@ -337,11 +337,9 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   base::FilePath old_updater_path = exe_path.Append("old_updater");
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  old_updater_path =
-      old_updater_path.Append("chromium_mac_arm64").Append("updater");
+  old_updater_path = old_updater_path.Append("chromium_mac_arm64");
 #elif defined(ARCH_CPU_X86_64)
-  old_updater_path =
-      old_updater_path.Append("chromium_mac_amd64").Append("updater");
+  old_updater_path = old_updater_path.Append("chromium_mac_amd64");
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("chrome_mac_universal");

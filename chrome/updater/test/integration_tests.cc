@@ -665,16 +665,8 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-// TODO(crbug.com/1292189): Temporarily disable this test until we can make an
-// old real version that uses last_checked instead of update_time.
-TEST_F(IntegrationTest, DISABLED_SelfUpdateFromOldReal) {
+TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
-
-  // TODO(crbug.com/1308856): Current versions of the updater do not send an
-  // eventtype=2 event for their own registration, but the old version of the
-  // updater does. When the old version is rolled to a more current version,
-  // this test may start to fail and this expectation can be safely removed.
-  ExpectInstallEvent(&test_server, kUpdaterAppId);
 
   SetupRealUpdaterLowerVersion();
   ExpectVersionNotActive(kUpdaterVersion);
