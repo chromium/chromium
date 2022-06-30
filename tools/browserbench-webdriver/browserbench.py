@@ -37,6 +37,12 @@ class BrowserBench(object):
     if optargs.arguments:
       for arg in optargs.arguments.split(','):
         options.add_argument(arg)
+    else:
+      # If no arguments were given, enable field trial config and no first run.
+      # These ensure a consistent set of flags.
+      options.add_argument('--no-first-run')
+      options.add_argument('--enable-field-trial-config')
+
     if optargs.chrome_path:
       options.binary_location = optargs.chrome_path
     service = webdriver.chrome.service.Service(
@@ -189,10 +195,11 @@ class BrowserBench(object):
                       dest='executable',
                       help="""Path to the executable to the driver binary. For
                               safari this is the path to safaridriver.""")
-    parser.add_option('-a',
-                      '--arguments',
-                      dest='arguments',
-                      help='Extra arguments to pass to the browser.')
+    parser.add_option(
+        '-a',
+        '--arguments',
+        dest='arguments',
+        help='Extra arguments to pass to the browser (chrome only).')
     parser.add_option('-g',
                       '--githash',
                       dest='githash',

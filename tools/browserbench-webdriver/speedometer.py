@@ -49,7 +49,7 @@ class Speedometer(browserbench.BrowserBench):
         break
     if not finished:
       logging.info('Test did not complete in time, restarting')
-      raise RuntimError('Test did not complete in time')
+      raise RuntimeError('Test did not complete in time')
 
     logging.info('Test done, extracting measurements')
     results = driver.execute_script('''
