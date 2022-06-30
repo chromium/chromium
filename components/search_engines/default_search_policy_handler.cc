@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -26,35 +27,30 @@ namespace {
 void SetListInPref(const PolicyMap& policies,
                    const char* policy_name,
                    const char* key,
-                   base::DictionaryValue* dict) {
-  DCHECK(dict);
+                   base::Value::Dict& dict) {
   const base::Value* policy_value =
       policies.GetValue(policy_name, base::Value::Type::LIST);
-  dict->Set(key, policy_value
-                     ? std::make_unique<base::Value>(policy_value->Clone())
-                     : std::make_unique<base::Value>(base::Value::Type::LIST));
+  dict.Set(key, policy_value ? policy_value->Clone()
+                             : base::Value(base::Value::Type::LIST));
 }
 
 // Extracts a string from a policy value and adds it to a pref dictionary.
 void SetStringInPref(const PolicyMap& policies,
                      const char* policy_name,
                      const char* key,
-                     base::DictionaryValue* dict) {
-  DCHECK(dict);
+                     base::Value::Dict& dict) {
   const base::Value* policy_value =
       policies.GetValue(policy_name, base::Value::Type::STRING);
-  dict->SetStringKey(key,
-                     policy_value ? policy_value->GetString() : std::string());
+  dict.Set(key, policy_value ? policy_value->GetString() : std::string());
 }
 
 void SetBooleanInPref(const PolicyMap& policies,
                       const char* policy_name,
                       const char* key,
-                      base::DictionaryValue* dict) {
-  DCHECK(dict);
+                      base::Value::Dict& dict) {
   const base::Value* policy_value =
       policies.GetValue(policy_name, base::Value::Type::BOOLEAN);
-  dict->SetBoolPath(key, policy_value && policy_value->GetBool());
+  dict.SetByDottedPath(key, policy_value && policy_value->GetBool());
 }
 
 }  // namespace
@@ -140,8 +136,8 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
 
   if (DefaultSearchProviderIsDisabled(policies)) {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    dict->SetBoolean(DefaultSearchManager::kDisabledByPolicy, true);
+    base::Value::Dict dict;
+    dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
     DefaultSearchManager::AddPrefValueToMap(std::move(dict), prefs);
     return;
   }
@@ -154,75 +150,76 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (!DefaultSearchURLIsValid(policies, &dummy, &url))
     return;
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+  base::Value::Dict dict;
 
   // Set pref values for policies affecting the default
   // search provider, which are listed in kDefaultSearchPolicyDataMap.
   // Set or remove pref accordingly when kDefaultSearchPolicyDataMap has a
   // change, then revise the number in the check below to be correct.
   SetBooleanInPref(policies, key::kDefaultSearchProviderEnabled,
-                   prefs::kDefaultSearchProviderEnabled, dict.get());
+                   prefs::kDefaultSearchProviderEnabled, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderName,
-                  DefaultSearchManager::kShortName, dict.get());
+                  DefaultSearchManager::kShortName, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderKeyword,
-                  DefaultSearchManager::kKeyword, dict.get());
+                  DefaultSearchManager::kKeyword, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderSearchURL,
-                  DefaultSearchManager::kURL, dict.get());
+                  DefaultSearchManager::kURL, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderSuggestURL,
-                  DefaultSearchManager::kSuggestionsURL, dict.get());
+                  DefaultSearchManager::kSuggestionsURL, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderIconURL,
-                  DefaultSearchManager::kFaviconURL, dict.get());
+                  DefaultSearchManager::kFaviconURL, dict);
   SetListInPref(policies, key::kDefaultSearchProviderEncodings,
-                DefaultSearchManager::kInputEncodings, dict.get());
+                DefaultSearchManager::kInputEncodings, dict);
   SetListInPref(policies, key::kDefaultSearchProviderAlternateURLs,
-                DefaultSearchManager::kAlternateURLs, dict.get());
+                DefaultSearchManager::kAlternateURLs, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderImageURL,
-                  DefaultSearchManager::kImageURL, dict.get());
+                  DefaultSearchManager::kImageURL, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderNewTabURL,
-                  DefaultSearchManager::kNewTabURL, dict.get());
+                  DefaultSearchManager::kNewTabURL, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderSearchURLPostParams,
-                  DefaultSearchManager::kSearchURLPostParams, dict.get());
+                  DefaultSearchManager::kSearchURLPostParams, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderSuggestURLPostParams,
-                  DefaultSearchManager::kSuggestionsURLPostParams, dict.get());
+                  DefaultSearchManager::kSuggestionsURLPostParams, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderImageURLPostParams,
-                  DefaultSearchManager::kImageURLPostParams, dict.get());
-  SetBooleanInPref(
-      policies, key::kDefaultSearchProviderContextMenuAccessAllowed,
-      prefs::kDefaultSearchProviderContextMenuAccessAllowed, dict.get());
+                  DefaultSearchManager::kImageURLPostParams, dict);
+  SetBooleanInPref(policies,
+                   key::kDefaultSearchProviderContextMenuAccessAllowed,
+                   prefs::kDefaultSearchProviderContextMenuAccessAllowed, dict);
 
   size_t policyCount = 14;
   CHECK_EQ(policyCount, std::size(kDefaultSearchPolicyDataMap));
 
   // Set the fields which are not specified by the policy to default values.
-  dict->SetString(DefaultSearchManager::kID,
-                  base::NumberToString(kInvalidTemplateURLID));
-  dict->SetInteger(DefaultSearchManager::kPrepopulateID, 0);
-  dict->SetInteger(DefaultSearchManager::kStarterPackId, 0);
-  dict->SetString(DefaultSearchManager::kSyncGUID, std::string());
-  dict->SetString(DefaultSearchManager::kOriginatingURL, std::string());
-  dict->SetBoolean(DefaultSearchManager::kSafeForAutoReplace, true);
-  dict->SetDouble(DefaultSearchManager::kDateCreated,
-                  base::Time::Now().ToInternalValue());
-  dict->SetDouble(DefaultSearchManager::kLastModified,
-                  base::Time::Now().ToInternalValue());
-  dict->SetInteger(DefaultSearchManager::kUsageCount, 0);
-  dict->SetBoolean(DefaultSearchManager::kCreatedByPolicy, true);
+  dict.Set(DefaultSearchManager::kID,
+           base::NumberToString(kInvalidTemplateURLID));
+  dict.Set(DefaultSearchManager::kPrepopulateID, 0);
+  dict.Set(DefaultSearchManager::kStarterPackId, 0);
+  dict.Set(DefaultSearchManager::kSyncGUID, std::string());
+  dict.Set(DefaultSearchManager::kOriginatingURL, std::string());
+  dict.Set(DefaultSearchManager::kSafeForAutoReplace, true);
+  dict.Set(DefaultSearchManager::kDateCreated,
+           static_cast<double>(base::Time::Now().ToInternalValue()));
+  dict.Set(DefaultSearchManager::kLastModified,
+           static_cast<double>(base::Time::Now().ToInternalValue()));
+  dict.Set(DefaultSearchManager::kUsageCount, 0);
+  dict.Set(DefaultSearchManager::kCreatedByPolicy, true);
 
   // For the name and keyword, default to the host if not specified.  If
   // there is no host (as is the case with file URLs of the form:
   // "file:///c:/..."), use "_" to guarantee that the keyword is non-empty.
-  std::string name, keyword;
-  dict->GetString(DefaultSearchManager::kKeyword, &keyword);
-  dict->GetString(DefaultSearchManager::kShortName, &name);
-  dict->GetString(DefaultSearchManager::kURL, &url);
+  std::string* keyword = dict.FindString(DefaultSearchManager::kKeyword);
+  std::string* name = dict.FindString(DefaultSearchManager::kShortName);
+  std::string* url_str = dict.FindString(DefaultSearchManager::kURL);
+  if (url_str)
+    url = *url_str;
 
   std::string host(GURL(url).host());
   if (host.empty())
     host = "_";
-  if (name.empty())
-    dict->SetString(DefaultSearchManager::kShortName, host);
-  if (keyword.empty())
-    dict->SetString(DefaultSearchManager::kKeyword, host);
+  if (!name || name->empty())
+    dict.Set(DefaultSearchManager::kShortName, host);
+  if (!keyword || keyword->empty())
+    dict.Set(DefaultSearchManager::kKeyword, host);
 
   DefaultSearchManager::AddPrefValueToMap(std::move(dict), prefs);
 }

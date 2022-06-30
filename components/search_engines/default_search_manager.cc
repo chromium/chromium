@@ -114,12 +114,10 @@ void DefaultSearchManager::RegisterProfilePrefs(
 }
 
 // static
-void DefaultSearchManager::AddPrefValueToMap(
-    std::unique_ptr<base::DictionaryValue> value,
-    PrefValueMap* pref_value_map) {
-  DCHECK(value);
+void DefaultSearchManager::AddPrefValueToMap(base::Value::Dict value,
+                                             PrefValueMap* pref_value_map) {
   pref_value_map->SetValue(kDefaultSearchProviderDataPrefName,
-                           base::Value::FromUniquePtrValue(std::move(value)));
+                           base::Value(std::move(value)));
 }
 
 // static

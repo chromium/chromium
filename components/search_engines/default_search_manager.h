@@ -9,11 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -98,7 +95,7 @@ class DefaultSearchManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Save default search provider pref values into the map provided.
-  static void AddPrefValueToMap(std::unique_ptr<base::DictionaryValue> value,
+  static void AddPrefValueToMap(base::Value::Dict value,
                                 PrefValueMap* pref_value_map);
 
   // Testing code can call this with |disabled| set to true to cause
