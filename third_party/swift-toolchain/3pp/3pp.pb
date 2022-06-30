@@ -21,6 +21,6 @@ create {
 }
 
 upload {
-  pkg_prefix: "infra/tools"
+  pkg_prefix: "chromium/tools"
   pkg_name_override: "swift-toolchain"
 }
