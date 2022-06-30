@@ -33,6 +33,7 @@ class HttpsUpgradeService : public KeyedService {
   // tests are using an HTTP server that pretends to serve HTTPS responses.
   void SetHttpsPortForTesting(int https_port_for_testing,
                               bool use_fake_https_for_testing);
+  void SetFallbackHttpPortForTesting(int http_port_for_testing);
 
   // Returns the HTTPS port used by the embedded test server (real or fake).
   int GetHttpsPortForTesting() const;
@@ -53,10 +54,22 @@ class HttpsUpgradeService : public KeyedService {
 
   // Returns the upgraded HTTPS version of the given url.
   GURL GetUpgradedHttpsUrl(const GURL& http_url) const;
+  GURL GetHttpUrl(const GURL& url) const;
+
+  // Returns the delay before a fallback navigation is started for a slow HTTPS
+  // load.
+  base::TimeDelta GetFallbackDelay() const;
+  // Sets the fallback delay for tests. If set to zero, a fallback navigation
+  // will be immediately started after the navigation is upgraded to HTTPS.
+  void SetFallbackDelayForTesting(base::TimeDelta delay);
 
  private:
   int https_port_for_testing_ = 0;
+  int http_port_for_testing_ = 0;
   bool use_fake_https_for_testing_ = false;
+
+  // Delay before a fallback navigation is initiated.
+  base::TimeDelta fallback_delay_ = base::Seconds(3);
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_UPGRADE_SERVICE_H_

@@ -11,6 +11,8 @@ source_set("https_upgrades") {
     "https_upgrade_service_factory.mm",
     "https_upgrade_service_impl.h",
     "https_upgrade_service_impl.mm",
+    "typed_navigation_upgrade_tab_helper.h",
+    "typed_navigation_upgrade_tab_helper.mm",
   ]
   deps = [
     "//base",
@@ -90,7 +92,6 @@ source_set("eg_app_support+eg2") {
     ":https_upgrades",
     "//base",
     "//components/content_settings/core/browser",
-    "//components/lookalikes/core",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/test/app:test_support",
@@ -113,12 +114,14 @@ source_set("eg2_tests") {
     "https_only_mode_egtest.mm",
     "https_upgrade_test_helper.h",
     "https_upgrade_test_helper.mm",
+    "typed_navigation_upgrade_tab_helper_egtest.mm",
   ]
 
   deps = [
     ":eg_test_support+eg2",
-    "//components/content_settings/core/common",
+    "//components/omnibox/common",
     "//components/security_interstitials/core",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",

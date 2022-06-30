@@ -53,11 +53,6 @@ void HttpsOnlyModeUpgradeTabHelper::WebStateDestroyed(
 
 void HttpsOnlyModeUpgradeTabHelper::WebStateDestroyed() {}
 
-void HttpsOnlyModeUpgradeTabHelper::SetFallbackDelayForTesting(
-    base::TimeDelta delay) {
-  fallback_delay_ = delay;
-}
-
 bool HttpsOnlyModeUpgradeTabHelper::IsTimerRunningForTesting() const {
   return timer_.IsRunning();
 }
@@ -115,7 +110,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
     // |timer_| is deleted when the tab helper is deleted, so it's safe to use
     // Unretained here.
     timer_.Start(
-        FROM_HERE, fallback_delay_,
+        FROM_HERE, service_->GetFallbackDelay(),
         base::BindOnce(&HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout,
                        base::Unretained(this)));
     return;
@@ -312,6 +307,16 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
       return;
     }
     StopToUpgrade(url, item_pending->GetReferrer(), std::move(callback));
+    return;
+  }
+
+  // Omnibox upgrade failures are handled in TypedNavigationUpgradeTabHelper.
+  // Ignore them here.
+  if (item_pending->GetHttpsUpgradeType() !=
+      web::HttpsUpgradeType::kHttpsOnlyMode) {
+    DCHECK(state_ == State::kNone);
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
 

@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -12,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
@@ -93,8 +95,7 @@ AutocompleteClassifier* ChromeOmniboxClientIOS::GetAutocompleteClassifier() {
 }
 
 bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
-  // Defaulting omnibox navigations to HTTPS not yet supported on iOS.
-  return false;
+  return base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps);
 }
 
 int ChromeOmniboxClientIOS::GetHttpsPortForTesting() const {

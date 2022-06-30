@@ -656,9 +656,18 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
     // This needs to be in scope when ReplaceComponents() is called:
     const std::string port_str = base::NumberToString(https_port_for_testing);
     if (https_port_for_testing) {
-      // We'll only get here in tests. Tests should always have a non-default
-      // port on the input text.
+      // We'll only get here in tests.
+#if BUILDFLAG(IS_IOS)
+      if (url.port().empty()) {
+        // On iOS, if the URL doesn't have a port, this is probably an
+        // incomplete URL that's still being typed. Ignore.
+        return false;
+      }
+#else
+      // On other platforms, tests should always have a non-default port on the
+      // input text.
       DCHECK(!url.port().empty());
+#endif
       replacements.SetPortStr(port_str);
     }
     *upgraded_url = url.ReplaceComponents(replacements);

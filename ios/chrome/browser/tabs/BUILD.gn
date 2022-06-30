@@ -49,6 +49,7 @@ source_set("tabs_internal") {
     "//components/history/core/browser",
     "//components/history/ios/browser",
     "//components/language/ios/browser",
+    "//components/omnibox/common",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_state/ios",

@@ -30,9 +30,24 @@
       ->SetHttpsPortForTesting(HTTPSPort, useFakeHTTPS);
 }
 
++ (void)setFallbackHttpPortForTesting:(int)HTTPPort {
+  HttpsUpgradeServiceFactory::GetForBrowserState(
+      chrome_test_util::GetOriginalBrowserState())
+      ->SetFallbackHttpPortForTesting(HTTPPort);
+
+  HttpsUpgradeServiceFactory::GetForBrowserState(
+      chrome_test_util::GetCurrentIncognitoBrowserState())
+      ->SetFallbackHttpPortForTesting(HTTPPort);
+}
+
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
+  HttpsUpgradeServiceFactory::GetForBrowserState(
+      chrome_test_util::GetOriginalBrowserState())
+      ->SetFallbackDelayForTesting(
+          base::Milliseconds(fallbackDelayInMilliseconds));
+
+  HttpsUpgradeServiceFactory::GetForBrowserState(
+      chrome_test_util::GetCurrentIncognitoBrowserState())
       ->SetFallbackDelayForTesting(
           base::Milliseconds(fallbackDelayInMilliseconds));
 }
