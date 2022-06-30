@@ -8,9 +8,11 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
@@ -91,6 +93,21 @@ void WaitforPDFExtensionView() {
 
 - (void)setUp {
   [super setUp];
+
+  // Disable translate to avoid the info bar that block the top toolbar.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
+}
+
+- (void)tearDown {
+  // Reactivate translation.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
+  [super tearDown];
 }
 
 // Verifies that the content offset of the web view is set up at the correct
@@ -341,8 +358,7 @@ void WaitforPDFExtensionView() {
 
 // Tests that the header is shown when a native page is loaded from a page where
 // the header was not seen before.
-// TODO(crbug.com/1329265): failing on waterfall
-- (void)DISABLED_testShowHeaderOnNativePageLoad {
+- (void)testShowHeaderOnNativePageLoad {
   std::map<GURL, std::string> responses;
   const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
 
