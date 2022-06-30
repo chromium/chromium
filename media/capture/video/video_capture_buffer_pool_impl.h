@@ -33,15 +33,12 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
     : public VideoCaptureBufferPool {
  public:
   VideoCaptureBufferPoolImpl() = delete;
-#if BUILDFLAG(IS_WIN)
+  explicit VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type);
+  VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type, int count);
   VideoCaptureBufferPoolImpl(
       VideoCaptureBufferType buffer_type,
       int count,
-      scoped_refptr<DXGIDeviceManager> dxgi_device_manager = nullptr);
-#else
-  VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type, int count);
-#endif
-  explicit VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type);
+      std::unique_ptr<VideoCaptureBufferTrackerFactory> buffer_tracker_factory);
 
   VideoCaptureBufferPoolImpl(const VideoCaptureBufferPoolImpl&) = delete;
   VideoCaptureBufferPoolImpl& operator=(const VideoCaptureBufferPoolImpl&) =
