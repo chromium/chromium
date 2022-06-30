@@ -2231,7 +2231,7 @@ crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape
 crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html [ Failure Pass ]
 crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html [ Failure Pass ]
 
-crbug.com/1339541 [ Linux ] compositing/framesets/composited-frame-alignment.html [ Pass Failure ]
+crbug.com/1339541 [ Linux ] compositing/framesets/composited-frame-alignment.html [ Failure Pass ]
 
 crbug.com/424365 external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-024.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-008.html [ Failure ]
@@ -3367,6 +3367,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-005.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/debug-key-test.sub.https.html?include=source [ Timeout ]
