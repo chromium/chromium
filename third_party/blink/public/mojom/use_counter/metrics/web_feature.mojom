@@ -2664,7 +2664,7 @@ enum WebFeature {
   kOBSOLETE_CommaSeparatorInAllowAttribute = 3355,
   kMainFrameCSPViaHTTP = 3359,
   kMainFrameCSPViaMeta = 3360,
-  kMainFrameCSPViaOriginPolicy = 3361,
+  kOBSOLETE_MainFrameCSPViaOriginPolicy = 3361,
   kHtmlClipboardApiRead = 3362,
   kHtmlClipboardApiWrite = 3363,
   kCSSSystemColorComputeToSelf = 3364,

@@ -81,17 +81,6 @@ component("network_service") {
     "network_service_network_delegate.h",
     "network_service_proxy_delegate.cc",
     "network_service_proxy_delegate.h",
-    "origin_policy/origin_policy_constants.h",
-    "origin_policy/origin_policy_fetcher.cc",
-    "origin_policy/origin_policy_fetcher.h",
-    "origin_policy/origin_policy_header_values.cc",
-    "origin_policy/origin_policy_header_values.h",
-    "origin_policy/origin_policy_manager.cc",
-    "origin_policy/origin_policy_manager.h",
-    "origin_policy/origin_policy_parsed_header.cc",
-    "origin_policy/origin_policy_parsed_header.h",
-    "origin_policy/origin_policy_parser.cc",
-    "origin_policy/origin_policy_parser.h",
     "pending_callback_chain.cc",
     "pending_callback_chain.h",
     "private_network_access_checker.cc",
@@ -370,9 +359,6 @@ source_set("tests") {
     "network_quality_estimator_manager_unittest.cc",
     "network_service_proxy_delegate_unittest.cc",
     "network_service_unittest.cc",
-    "origin_policy/origin_policy_manager_unittest.cc",
-    "origin_policy/origin_policy_parsed_header_unittest.cc",
-    "origin_policy/origin_policy_parser_unittest.cc",
     "pending_callback_chain_unittest.cc",
     "private_network_access_checker_unittest.cc",
     "proxy_auto_config_library_unittest.cc",
@@ -586,17 +572,4 @@ fuzzer_test("network_content_security_policy_fuzzer") {
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
   seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
-}
-
-fuzzer_test("origin_policy_parser_fuzzer") {
-  sources = [ "origin_policy/origin_policy_parser_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-  ]
-  dict = "origin_policy/origin_policy_parser_fuzzer.dict"
-  seed_corpus = "origin_policy/origin_policy_parser_fuzzer_corpus"
 }

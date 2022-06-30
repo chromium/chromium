@@ -67,16 +67,11 @@ namespace cors {
 class OriginAccessList;
 }
 
-namespace mojom {
-class OriginPolicyManager;
-}
-
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
 class NetToMojoPendingBuffer;
 class KeepaliveStatisticsRecorder;
 class ScopedThrottlingToken;
-struct OriginPolicy;
 class URLLoaderFactory;
 
 // When a request matches a pervasive payload url and checksum a value from this
@@ -144,9 +139,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   };
 
   // |delete_callback| tells the URLLoader's owner to destroy the URLLoader.
-  //
-  // The |context.origin_policy_manager| must always be provided for requests
-  // that have the |obey_origin_policy| flag set.
   //
   // |trust_token_helper_factory| must be non-null exactly when the request has
   // Trust Tokens parameters.
@@ -427,7 +419,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void ReportFlaggedResponseCookies();
   void StartReading();
-  void OnOriginPolicyManagerRetrieveDone(const OriginPolicy& origin_policy);
 
   // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
   bool ShouldForceIgnoreSiteForCookies(const ResourceRequest& request);
@@ -587,9 +578,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
-
-  // Will only be set for requests that have |obey_origin_policy| set.
-  raw_ptr<mojom::OriginPolicyManager> origin_policy_manager_ = nullptr;
 
   // If the request is configured for Trust Tokens
   // (https://github.com/WICG/trust-token-api) protocol operations, annotates

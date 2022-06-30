@@ -323,10 +323,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
   void queueMicrotask(V8VoidFunction*);
 
-  // https://wicg.github.io/origin-policy/#monkeypatch-html-windoworworkerglobalscope
-  const Vector<String>& originPolicyIds() const;
-  void SetOriginPolicyIds(const Vector<String>&);
-
   // https://html.spec.whatwg.org/C/#dom-originagentcluster
   bool originAgentCluster() const;
 
@@ -534,8 +530,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   String status_;
   String default_status_;
-
-  Vector<String> origin_policy_ids_;
 
   scoped_refptr<SerializedScriptValue> pending_state_object_;
 

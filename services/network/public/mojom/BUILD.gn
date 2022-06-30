@@ -276,7 +276,6 @@ mojom("url_loader_base") {
     "network_change_manager.mojom",
     "network_interface.mojom",
     "network_types.mojom",
-    "origin_policy_manager.mojom",
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",

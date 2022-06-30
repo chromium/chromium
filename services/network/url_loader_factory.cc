@@ -160,10 +160,6 @@ URLLoaderFactory::GetUrlLoaderHeaderClient() const {
   return header_client_.is_bound() ? header_client_.get() : nullptr;
 }
 
-mojom::OriginPolicyManager* URLLoaderFactory::GetOriginPolicyManager() const {
-  return context_->origin_policy_manager();
-}
-
 const cors::OriginAccessList& URLLoaderFactory::GetOriginAccessList() const {
   return context_->cors_origin_access_list();
 }

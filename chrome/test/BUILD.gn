@@ -2300,7 +2300,6 @@ if (!is_android) {
       "data/webui/webui_resource_browsertest.cc",
       "gpu/webgl_infobar_browsertest.cc",
       "interaction/interaction_sequence_browser_util_browsertest.cc",
-      "origin_policy/origin_policy_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 

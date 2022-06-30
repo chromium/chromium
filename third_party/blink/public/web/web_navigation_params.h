@@ -44,7 +44,6 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_origin_policy.h"
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
@@ -394,8 +393,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // The origin trial features activated in the document initiating this
   // navigation that should be applied in the document being navigated to.
   WebVector<int> initiator_origin_trial_features;
-
-  absl::optional<WebOriginPolicy> origin_policy;
 
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.

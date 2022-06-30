@@ -55,7 +55,6 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
-#include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"

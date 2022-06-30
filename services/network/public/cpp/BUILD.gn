@@ -314,8 +314,6 @@ component("cpp_base") {
     "network_isolation_key_mojom_traits.h",
     "optional_trust_token_params.cc",
     "optional_trust_token_params.h",
-    "origin_policy.cc",
-    "origin_policy.h",
     "resource_request.cc",
     "resource_request.h",
     "resource_request_body.cc",

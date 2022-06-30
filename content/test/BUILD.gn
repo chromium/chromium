@@ -2337,7 +2337,6 @@ test("content_unittests") {
     "../browser/renderer_host/navigation_request_unittest.cc",
     "../browser/renderer_host/navigation_throttle_runner_unittest.cc",
     "../browser/renderer_host/navigator_unittest.cc",
-    "../browser/renderer_host/origin_policy_throttle_unittest.cc",
     "../browser/renderer_host/overscroll_controller_unittest.cc",
     "../browser/renderer_host/policy_container_host_unittest.cc",
     "../browser/renderer_host/recently_destroyed_hosts_unittest.cc",

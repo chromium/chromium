@@ -121,55 +121,6 @@ class DeclarativeApiTest : public ExtensionApiTest {
   }
 };
 
-// Copied from origin_policy_browsertest.cc.
-const base::FilePath::CharType kDataRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data/origin_policy_browsertest");
-
-class DeclarativeApiTestWithOriginPolicy : public DeclarativeApiTest {
- protected:
-  std::u16string NavigateToAndReturnTitle(const char* url) {
-    EXPECT_TRUE(server());
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url))));
-    std::u16string title;
-    ui_test_utils::GetCurrentTabTitle(browser(), &title);
-    return title;
-  }
-
- private:
-  void SetUpInProcessBrowserTestFixture() override {
-    server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-    server_->AddDefaultHandlers(base::FilePath(kDataRoot));
-    feature_list_.InitAndEnableFeature(features::kOriginPolicy);
-    EXPECT_TRUE(server()->Start());
-    DeclarativeApiTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override { server_.reset(); }
-
-  net::test_server::EmbeddedTestServer* server() { return server_.get(); }
-
-  std::unique_ptr<net::test_server::EmbeddedTestServer> server_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Regression test for crbug.com/1047275.
-IN_PROC_BROWSER_TEST_F(DeclarativeApiTestWithOriginPolicy,
-                       OriginPolicyEnabled) {
-  // Navigate to a page with an origin policy. It should load correctly.
-  EXPECT_EQ(u"Page With Policy",
-            NavigateToAndReturnTitle("/page-with-policy.html"));
-
-  // Load an extension that has the |declarativeWebRequest| permission.
-  ASSERT_TRUE(RunExtensionTest("declarative/api")) << message_;
-
-  // Future navigations to the page with the origin policy should still work,
-  // and not throw an interstitial.
-  EXPECT_EQ(u"Page With Policy",
-            NavigateToAndReturnTitle("/page-with-policy.html"));
-}
-
 IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, DeclarativeApi) {
   ASSERT_TRUE(RunExtensionTest("declarative/api")) << message_;
 

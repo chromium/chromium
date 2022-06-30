@@ -11698,7 +11698,6 @@ namespace CSS
     getter opener
     getter origin
     getter originAgentCluster
-    getter originPolicyIds
     getter outerHeight
     getter outerWidth
     getter pageXOffset

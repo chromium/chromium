@@ -43,17 +43,13 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Use the 'hash' value to pick header_type and header_source input.
   // 1st bit: header type.
   // 2nd bit: header source: HTTP (or other)
-  // 3rd bit: header source: Meta or OriginPolicy (if not HTTP)
   network::mojom::ContentSecurityPolicyType header_type =
       hash & 0x01 ? network::mojom::ContentSecurityPolicyType::kEnforce
                   : network::mojom::ContentSecurityPolicyType::kReport;
   network::mojom::ContentSecurityPolicySource header_source =
       network::mojom::ContentSecurityPolicySource::kHTTP;
   if (hash & 0x02) {
-    header_source =
-        (hash & 0x04)
-            ? network::mojom::ContentSecurityPolicySource::kMeta
-            : network::mojom::ContentSecurityPolicySource::kOriginPolicy;
+    header_source = network::mojom::ContentSecurityPolicySource::kMeta;
   }
 
   // Construct a policy from the string.

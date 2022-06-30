@@ -17,7 +17,6 @@
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
-#include "content/browser/renderer_host/origin_policy_throttle.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {
@@ -153,9 +152,6 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // console about CSP blocking the load.
   AddThrottle(
       MixedContentNavigationThrottle::CreateThrottleForNavigation(request));
-
-  // Handle Origin Policy (if enabled)
-  AddThrottle(OriginPolicyThrottle::MaybeCreateThrottleFor(request));
 
   // Block certain requests that are not permitted for portals.
   AddThrottle(PortalNavigationThrottle::MaybeCreateThrottleFor(request));

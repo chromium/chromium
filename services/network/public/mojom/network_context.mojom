@@ -34,7 +34,6 @@ import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
@@ -1460,10 +1459,6 @@ interface NetworkContext {
   // Forces all pending Domain Reliability uploads to run now, even if their
   // minimum delay has not yet passed.
   ForceDomainReliabilityUploadsForTesting() => ();
-
-  // Gets the OriginPolicyManager associated with this network context.
-  GetOriginPolicyManager(
-      pending_receiver<OriginPolicyManager> origin_policy_manager);
 
   // Set the SCT auditing mode for this NetworkContext.
   [EnableIf=is_ct_supported]

@@ -1090,12 +1090,6 @@ void ContentBrowserClient::RegisterRendererPreferenceWatcher(
   // |browser_context| may be null (e.g. during shutdown of a service worker).
 }
 
-absl::optional<std::string> ContentBrowserClient::GetOriginPolicyErrorPage(
-    network::OriginPolicyState error_reason,
-    content::NavigationHandle* handle) {
-  return absl::nullopt;
-}
-
 bool ContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
   return false;
 }

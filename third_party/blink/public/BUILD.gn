@@ -357,7 +357,6 @@ source_set("blink_headers") {
     "web/web_node.h",
     "web/web_non_composited_widget_client.h",
     "web/web_option_element.h",
-    "web/web_origin_policy.h",
     "web/web_page_popup.h",
     "web/web_pepper_socket.h",
     "web/web_pepper_socket_client.h",

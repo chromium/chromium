@@ -204,52 +204,6 @@ bool IsPagePopupRunningInWebTest(LocalFrame* frame) {
          WebTestSupport::IsRunningWebTest();
 }
 
-// TODO(https://crbug.com/1041379): This should be moved out of blink.
-void ApplyOriginPolicy(ContentSecurityPolicy* csp,
-                       const KURL& response_url,
-                       const WebOriginPolicy& origin_policy,
-                       PolicyContainer& policy_container) {
-  // When this function is called. The following lines of code happen
-  // consecutively:
-  // 1) A new empty set of CSP is created.
-  // 2) CSP(s) from the HTTP response are appended.
-  // 3) CSP(s) from the OriginPolicy are appended. [HERE]
-  //
-  // As a result, at the beginning of this function, the set of CSP must not
-  // contain any OriginPolicy's CSP yet.
-  //
-  // TODO(arthursonzogni): HasPolicyFromSource(...) is used only in this DCHECK,
-  // consider removing this function.
-  DCHECK(!csp->HasPolicyFromSource(
-      network::mojom::ContentSecurityPolicySource::kOriginPolicy));
-
-  DCHECK(response_url.ProtocolIsInHTTPFamily());
-
-  scoped_refptr<SecurityOrigin> self_origin =
-      SecurityOrigin::Create(response_url);
-
-  for (const auto& policy : origin_policy.content_security_policies) {
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-        ParseContentSecurityPolicies(
-            policy, network::mojom::ContentSecurityPolicyType::kEnforce,
-            network::mojom::ContentSecurityPolicySource::kOriginPolicy,
-            *self_origin);
-    policy_container.AddContentSecurityPolicies(mojo::Clone(parsed_policies));
-    csp->AddPolicies(std::move(parsed_policies));
-  }
-
-  for (const auto& policy :
-       origin_policy.content_security_policies_report_only) {
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-        ParseContentSecurityPolicies(
-            policy, network::mojom::ContentSecurityPolicyType::kReport,
-            network::mojom::ContentSecurityPolicySource::kOriginPolicy,
-            *self_origin);
-    policy_container.AddContentSecurityPolicies(mojo::Clone(parsed_policies));
-    csp->AddPolicies(std::move(parsed_policies));
-  }
-}
-
 struct SameSizeAsDocumentLoader
     : public GarbageCollected<SameSizeAsDocumentLoader>,
       public WebDocumentLoader,
@@ -264,7 +218,6 @@ struct SameSizeAsDocumentLoader
   AtomicString referrer;
   scoped_refptr<EncodedFormData> http_body;
   AtomicString http_content_type;
-  absl::optional<WebOriginPolicy> origin_policy;
   scoped_refptr<const SecurityOrigin> requestor_origin;
   KURL unreachable_url;
   KURL pre_redirect_url_for_failed_navigations;
@@ -368,7 +321,6 @@ DocumentLoader::DocumentLoader(
       referrer_(static_cast<String>(params_->referrer)),
       http_body_(params_->http_body),
       http_content_type_(static_cast<String>(params_->http_content_type)),
-      origin_policy_(params_->origin_policy),
       requestor_origin_(params_->requestor_origin),
       unreachable_url_(params_->unreachable_url),
       pre_redirect_url_for_failed_navigations_(
@@ -1180,8 +1132,6 @@ void DocumentLoader::HandleRedirect(
 
   referrer_ = redirect.new_referrer;
 
-  // TODO(dgozman): check whether clearing origin policy is intended behavior.
-  origin_policy_ = absl::nullopt;
   probe::WillSendNavigationRequest(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
@@ -2215,16 +2165,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
         origin_agent_cluster_left_as_default_);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
 
-    if (origin_policy_.has_value()) {
-      // Convert from WebVector<WebString> to WTF::Vector<WTF::String>
-      Vector<String> ids;
-      for (const auto& id : origin_policy_->ids) {
-        ids.push_back(id);
-      }
-
-      frame_->DomWindow()->SetOriginPolicyIds(ids);
-    }
-
     // TODO(https://crbug.com/1111897): This call is likely to happen happen
     // multiple times per agent, since navigations can happen multiple times per
     // agent. This is subpar.
@@ -2370,7 +2310,7 @@ void DocumentLoader::CommitNavigation() {
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
     security_init.ApplyPermissionsPolicy(
-        *frame_.Get(), response_, origin_policy_, frame_policy_,
+        *frame_.Get(), response_, frame_policy_,
         Agent::IsDirectSocketEnabled() ? initial_permissions_policy_
                                        : absl::nullopt);
 
@@ -2950,12 +2890,6 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
     policy_container_->AddContentSecurityPolicies(
         mojo::Clone(parsed_embedder_policies));
     csp->AddPolicies(std::move(parsed_embedder_policies));
-  }
-
-  // Retrieve CSP stored in the OriginPolicy and add them to the policy
-  // container.
-  if (origin_policy_) {
-    ApplyOriginPolicy(csp, Url(), origin_policy_.value(), *policy_container_);
   }
 
   return csp;

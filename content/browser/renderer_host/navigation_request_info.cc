@@ -25,7 +25,6 @@ NavigationRequestInfo::NavigationRequestInfo(
         blob_url_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
     const base::UnguessableToken& devtools_frame_token,
-    bool obey_origin_policy,
     net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const absl::optional<std::vector<net::SourceStream::SourceType>>&
@@ -46,7 +45,6 @@ NavigationRequestInfo::NavigationRequestInfo(
       blob_url_loader_factory(std::move(blob_url_loader_factory)),
       devtools_navigation_token(devtools_navigation_token),
       devtools_frame_token(devtools_frame_token),
-      obey_origin_policy(obey_origin_policy),
       cors_exempt_headers(std::move(cors_exempt_headers)),
       client_security_state(std::move(client_security_state)),
       devtools_accepted_stream_types(devtools_accepted_stream_types),

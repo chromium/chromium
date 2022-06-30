@@ -305,8 +305,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override {}
 #endif
-  void GetOriginPolicyManager(
-      mojo::PendingReceiver<mojom::OriginPolicyManager> receiver) override {}
 };
 
 }  // namespace network

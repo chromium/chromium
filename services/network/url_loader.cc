@@ -63,8 +63,6 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
-#include "services/network/origin_policy/origin_policy_constants.h"
-#include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
@@ -77,7 +75,6 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
@@ -88,7 +85,6 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
-#include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
@@ -720,10 +716,7 @@ URLLoader::URLLoader(
   // they should be ignored by CORS checks.
   net::HttpRequestHeaders merged_headers = request.headers;
   merged_headers.MergeFrom(request.cors_exempt_headers);
-  if (request.obey_origin_policy) {
-    origin_policy_manager_ = context.GetOriginPolicyManager();
-    DCHECK(origin_policy_manager_);
-  }
+
   // This should be ensured by the CorsURLLoaderFactory(), which is called
   // before URLLoaders are created.
   DCHECK(AreRequestHeadersSafe(merged_headers));
@@ -1682,42 +1675,6 @@ void URLLoader::ContinueOnResponseStarted() {
     }
   }
 
-  // If necessary, retrieve the associated origin policy, before sending the
-  // response to the client.
-  if (origin_policy_manager_ && url_request_->response_headers()) {
-    // The request should have been rejected in IsolationInfo if this were
-    // empty.
-    DCHECK(!url_request_->isolation_info().IsEmpty());
-
-    absl::optional<std::string> origin_policy_header;
-    std::string origin_policy_header_value;
-    if (url_request_->response_headers()->GetNormalizedHeader(
-            "origin-policy", &origin_policy_header_value)) {
-      origin_policy_header = origin_policy_header_value;
-    }
-
-    OriginPolicyManager::RetrieveOriginPolicyCallback
-        origin_policy_manager_done =
-            base::BindOnce(&URLLoader::OnOriginPolicyManagerRetrieveDone,
-                           weak_ptr_factory_.GetWeakPtr());
-
-    // Create IsolationInfo as if this were an uncredentialed subresource
-    // request of the original URL.
-    net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RequestType::kOther,
-        url_request_->isolation_info().top_frame_origin().value(),
-        url_request_->isolation_info().frame_origin().value(),
-        net::SiteForCookies());
-    origin_policy_manager_->RetrieveOriginPolicy(
-        url::Origin::Create(url_request_->url()), isolation_info,
-        origin_policy_header, std::move(origin_policy_manager_done));
-
-    // The callback will continue by calling
-    // `StartReading()` after retrieving the origin
-    // policy.
-    return;
-  }
-
   StartReading();
 }
 
@@ -2525,13 +2482,6 @@ void URLLoader::StartReading() {
 
   // Start reading...
   ReadMore();
-}
-
-void URLLoader::OnOriginPolicyManagerRetrieveDone(
-    const OriginPolicy& origin_policy) {
-  response_->origin_policy = origin_policy;
-
-  StartReading();
 }
 
 bool URLLoader::ShouldForceIgnoreSiteForCookies(

@@ -367,15 +367,6 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  if (request.obey_origin_policy &&
-      (!request.trusted_params ||
-       request.trusted_params->isolation_info.IsEmpty())) {
-    mojo::ReportBadMessage(
-        "Origin policy only allowed on trusted requests with IsolationInfo");
-    return false;
-  }
-
-  // Reject request if the restricted prefetch load flag is set but the
   // request's NetworkIsolationKey is not present. This is because the
   // restricted prefetch flag is only used when the browser sets the request's
   // NetworkIsolationKey to correctly cache-partition the resource.

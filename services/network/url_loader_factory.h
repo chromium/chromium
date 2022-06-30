@@ -74,7 +74,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const override;
   mojom::DevToolsObserver* GetDevToolsObserver() const override;
   mojom::NetworkContextClient* GetNetworkContextClient() const override;
-  mojom::OriginPolicyManager* GetOriginPolicyManager() const override;
   mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
       const override;
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()

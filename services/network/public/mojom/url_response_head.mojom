@@ -12,7 +12,6 @@ import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
@@ -210,10 +209,6 @@ struct URLResponseHead {
   // This can be null. It means the URLLoader didn't parsed the headers. Either
   // it wasn't implemented or not allowed from its process.
   ParsedHeaders? parsed_headers;
-
-  // Origin Policy associated with this response or nullptr if not applicable.
-  // Spec: https://wicg.github.io/origin-policy/
-  OriginPolicy? origin_policy;
 
   // Set by the browser process on cross-origin prefetch responses. This token
   // is propagated to the renderer and set on recursive prefetch requests

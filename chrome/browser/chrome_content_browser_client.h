@@ -644,9 +644,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher)
       override;
-  absl::optional<std::string> GetOriginPolicyErrorPage(
-      network::OriginPolicyState error_reason,
-      content::NavigationHandle* handle) override;
   bool CanAcceptUntrustedExchangesIfNeeded() override;
   void OnNetworkServiceDataUseUpdate(
       content::GlobalRenderFrameHostId render_frame_host_id,

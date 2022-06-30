@@ -533,8 +533,6 @@ NetworkContext::NetworkContext(
       url_request_context_->net_log(), url_request_context_);
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
 
-  origin_policy_manager_ = std::make_unique<OriginPolicyManager>(this);
-
   if (params_->http_auth_static_network_context_params) {
     http_auth_merged_preferences_.SetAllowDefaultCredentials(
         params_->http_auth_static_network_context_params
@@ -614,8 +612,6 @@ NetworkContext::NetworkContext(
 
   for (const auto& key : cors_exempt_header_list)
     cors_exempt_header_list_.insert(key);
-
-  origin_policy_manager_ = std::make_unique<OriginPolicyManager>(this);
 }
 
 NetworkContext::~NetworkContext() {
@@ -2891,11 +2887,6 @@ bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
     const url::SchemeHostPort& scheme_host_port) {
   DCHECK(url_matcher_);
   return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
-}
-
-void NetworkContext::GetOriginPolicyManager(
-    mojo::PendingReceiver<mojom::OriginPolicyManager> receiver) {
-  origin_policy_manager_->AddReceiver(std::move(receiver));
 }
 
 void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(

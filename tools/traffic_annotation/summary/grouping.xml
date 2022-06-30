@@ -233,7 +233,6 @@ after discussions on the right group.
       <annotation id="certificate_verifier_url_loader"/>
       <annotation id="expect_ct_reporter"/>
       <annotation id="domain_security_policy"/>
-      <annotation id="origin_policy_loader"/>
       <annotation id="services_http_server_error_response"/>
       <annotation id="webrtc_peer_connection"/>
       <annotation id="direct_sockets"/>

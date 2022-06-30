@@ -56,7 +56,6 @@
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_origin_policy.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
@@ -539,7 +538,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   AtomicString referrer_;
   scoped_refptr<EncodedFormData> http_body_;
   AtomicString http_content_type_;
-  absl::optional<WebOriginPolicy> origin_policy_;
   const scoped_refptr<const SecurityOrigin> requestor_origin_;
   const KURL unreachable_url_;
   const KURL pre_redirect_url_for_failed_navigations_;

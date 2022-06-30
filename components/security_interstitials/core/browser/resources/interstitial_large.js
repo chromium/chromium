@@ -72,7 +72,6 @@ function setupEvents() {
   const lookalike = interstitialType === 'LOOKALIKE';
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
-  const originPolicy = interstitialType === 'ORIGIN_POLICY';
   const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
   const insecureForm = interstitialType == 'INSECURE_FORM';
   const httpsOnly = interstitialType == 'HTTPS_ONLY';
@@ -80,7 +79,7 @@ function setupEvents() {
   const showRecurrentErrorParagraph = loadTimeData.getBoolean(
     'show_recurrent_error_paragraph');
 
-  if (ssl || originPolicy || blockedInterception) {
+  if (ssl || blockedInterception) {
     $('body').classList.add(badClock ? 'bad-clock' : 'ssl');
     if (loadTimeData.valueExists('errorCode')) {
       $('error-code').textContent = loadTimeData.getString('errorCode');

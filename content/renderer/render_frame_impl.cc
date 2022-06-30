@@ -1058,41 +1058,6 @@ void FillMiscNavigationParams(
   }
 }
 
-// Fills in the origin policy associated with this response, if any is present.
-// Converts it into a format that blink understands: WebOriginPolicy.
-void FillNavigationParamsOriginPolicy(
-    const network::mojom::URLResponseHead& head,
-    blink::WebNavigationParams* navigation_params) {
-  if (head.origin_policy.has_value() && head.origin_policy.value().contents) {
-    navigation_params->origin_policy = blink::WebOriginPolicy();
-
-    for (const auto& id : head.origin_policy.value().contents->ids) {
-      navigation_params->origin_policy->ids.emplace_back(
-          WebString::FromUTF8(id));
-    }
-
-    const absl::optional<std::string>& permissions_policy =
-        head.origin_policy.value().contents->permissions_policy;
-    if (permissions_policy) {
-      navigation_params->origin_policy->permissions_policy =
-          WebString::FromUTF8(*permissions_policy);
-    }
-
-    for (const auto& csp :
-         head.origin_policy.value().contents->content_security_policies) {
-      navigation_params->origin_policy->content_security_policies.emplace_back(
-          WebString::FromUTF8(csp));
-    }
-
-    for (const auto& csp_report_only :
-         head.origin_policy.value()
-             .contents->content_security_policies_report_only) {
-      navigation_params->origin_policy->content_security_policies_report_only
-          .emplace_back(WebString::FromUTF8(csp_report_only));
-    }
-  }
-}
-
 std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
     blink::mojom::PolicyContainerPtr in) {
   if (!in)
@@ -2718,8 +2683,6 @@ void RenderFrameImpl::CommitNavigation(
         CreateResourceLoadInfoNotifierWrapper(), !frame_->Parent(),
         navigation_params.get());
   }
-
-  FillNavigationParamsOriginPolicy(*response_head, navigation_params.get());
 
   // The MHTML mime type should be same as the one we check in the browser
   // process's download_utils::MustDownload.

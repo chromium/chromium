@@ -26,7 +26,6 @@ class CookieAccessObserver;
 class CrossOriginEmbedderPolicyReporter;
 class DevToolsObserver;
 class NetworkContextClient;
-class OriginPolicyManager;
 class TrustedURLLoaderHeaderClient;
 class URLLoaderFactoryParams;
 class URLLoaderNetworkServiceObserver;
@@ -43,7 +42,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const = 0;
   virtual mojom::DevToolsObserver* GetDevToolsObserver() const = 0;
   virtual mojom::NetworkContextClient* GetNetworkContextClient() const = 0;
-  virtual mojom::OriginPolicyManager* GetOriginPolicyManager() const = 0;
   virtual mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
       const = 0;
   virtual mojom::URLLoaderNetworkServiceObserver*

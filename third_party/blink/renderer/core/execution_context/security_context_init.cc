@@ -50,23 +50,6 @@ DocumentPolicy::ParsedDocumentPolicy FilterByOriginTrial(
   return filtered_policy;
 }
 
-// Helper function: Merge the permissions policy strings from HTTP headers and
-// the origin policy (if any). Headers go first, which means that the per-page
-// headers override the origin policy features.
-//
-// TODO(domenic): we want to treat origin policy permissions policy as a single
-// permissions policy, not a header serialization, so it should be processed
-// differently.
-void MergeFeaturesFromOriginPolicy(WTF::StringBuilder& permissions_policy,
-                                   const WebOriginPolicy& origin_policy) {
-  if (!origin_policy.permissions_policy.IsNull()) {
-    if (!permissions_policy.IsEmpty()) {
-      permissions_policy.Append(',');
-    }
-    permissions_policy.Append(origin_policy.permissions_policy);
-  }
-}
-
 }  // namespace
 
 // A helper class that allows the security context be initialized in the
@@ -122,7 +105,6 @@ void SecurityContextInit::ApplyDocumentPolicy(
 void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame& frame,
     const ResourceResponse& response,
-    const absl::optional<WebOriginPolicy>& origin_policy,
     const FramePolicy& frame_policy,
     const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy) {
   const url::Origin origin =
@@ -158,8 +140,6 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
   WTF::StringBuilder policy_builder;
   policy_builder.Append(response.HttpHeaderField(http_names::kFeaturePolicy));
-  if (origin_policy.has_value())
-    MergeFeaturesFromOriginPolicy(policy_builder, origin_policy.value());
   String feature_policy_header = policy_builder.ToString();
   if (!feature_policy_header.IsEmpty())
     UseCounter::Count(execution_context_, WebFeature::kFeaturePolicyHeader);

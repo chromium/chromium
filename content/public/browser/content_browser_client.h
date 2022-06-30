@@ -132,7 +132,6 @@ class BinderMapWithContext;
 }  // namespace mojo
 
 namespace network {
-enum class OriginPolicyState;
 class SharedURLLoaderFactory;
 namespace mojom {
 class TrustedHeaderClient;
@@ -1925,12 +1924,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RegisterRendererPreferenceWatcher(
       BrowserContext* browser_context,
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher);
-
-  // Returns the HTML content of the error page for Origin Policy related
-  // errors.
-  virtual absl::optional<std::string> GetOriginPolicyErrorPage(
-      network::OriginPolicyState error_reason,
-      content::NavigationHandle* navigation_handle);
 
   // Returns true if it is OK to accept untrusted exchanges, such as expired
   // signed exchanges, and unsigned Web Bundles.

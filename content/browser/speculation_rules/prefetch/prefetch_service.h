@@ -27,6 +27,10 @@ namespace network::mojom {
 class URLLoaderFactory;
 }  // namespace network::mojom
 
+namespace net {
+class IsolationInfo;
+}  // namespace net
+
 namespace content {
 
 class BrowserContext;

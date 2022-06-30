@@ -366,7 +366,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           // the feature is in stable with no issues.
           {"OffsetParentNewSpecBehavior",
            blink::features::kOffsetParentNewSpecBehavior},
-          {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"Parakeet", blink::features::kParakeet},
           {"PendingBeaconAPI", blink::features::kPendingBeaconAPI},

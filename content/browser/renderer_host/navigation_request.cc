@@ -62,7 +62,6 @@
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
-#include "content/browser/renderer_host/origin_policy_throttle.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -4238,7 +4237,6 @@ void NavigationRequest::OnStartChecksComplete(
           blob_url_loader_factory_ ? blob_url_loader_factory_->Clone()
                                    : nullptr,
           devtools_navigation_token(), frame_tree_node_->devtools_frame_token(),
-          OriginPolicyThrottle::ShouldRequestOriginPolicy(common_params_->url),
           std::move(cors_exempt_headers), std::move(client_security_state),
           devtools_accepted_stream_types, is_pdf_, initiator_document_),
       std::move(navigation_ui_data), service_worker_handle_.get(),

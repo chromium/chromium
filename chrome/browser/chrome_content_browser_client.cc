@@ -235,7 +235,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
-#include "components/security_interstitials/content/origin_policy_ui.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
@@ -5902,14 +5901,6 @@ ChromeContentBrowserClient::GetUrlLookupService(
         profile);
   }
   return nullptr;
-}
-
-absl::optional<std::string>
-ChromeContentBrowserClient::GetOriginPolicyErrorPage(
-    network::OriginPolicyState error_reason,
-    content::NavigationHandle* handle) {
-  return security_interstitials::OriginPolicyUI::GetErrorPageAsHTML(
-      error_reason, handle);
 }
 
 bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {

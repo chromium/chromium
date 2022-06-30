@@ -636,10 +636,6 @@ const base::Feature kNotificationTriggers{"NotificationTriggers",
 const base::Feature kOriginIsolationHeader{"OriginIsolationHeader",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Origin Policy. See https://crbug.com/751996
-const base::Feature kOriginPolicy{"OriginPolicy",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 // History navigation in response to horizontal overscroll (aka gesture-nav).
 const base::Feature kOverscrollHistoryNavigation{
     "OverscrollHistoryNavigation", base::FEATURE_ENABLED_BY_DEFAULT};

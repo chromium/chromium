@@ -94,7 +94,6 @@
     // https://wicg.github.io/origin-policy/#monkeypatch-html-windoworworkerglobalscope
     [Replaceable] readonly attribute DOMString origin;
     void queueMicrotask(VoidFunction callback);
-    [RuntimeEnabled=OriginPolicy, SameObject, SaveSameObject] readonly attribute FrozenArray<DOMString> originPolicyIds;
 
     // AnimationFrameProvider mixin
     // https://html.spec.whatwg.org/C/#animation-frames

@@ -42,11 +42,6 @@ mojom::NetworkContextClient* URLLoaderContextForTests::GetNetworkContextClient()
   return network_context_client_;
 }
 
-mojom::OriginPolicyManager* URLLoaderContextForTests::GetOriginPolicyManager()
-    const {
-  return origin_policy_manager_;
-}
-
 mojom::TrustedURLLoaderHeaderClient*
 URLLoaderContextForTests::GetUrlLoaderHeaderClient() const {
   return nullptr;

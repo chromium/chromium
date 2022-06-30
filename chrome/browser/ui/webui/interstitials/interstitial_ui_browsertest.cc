@@ -179,12 +179,6 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, CaptivePortalInterstitialWifi) {
                    "Connect to Wi-Fi");
 }
 
-IN_PROC_BROWSER_TEST_F(InterstitialUITest, OriginPolicyErrorInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/origin_policy"),
-                   "Origin Policy Error",
-                   u"has requested that an origin policy");
-}
-
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/blocked-interception"),
                    "Your activity on example.com is being monitored",

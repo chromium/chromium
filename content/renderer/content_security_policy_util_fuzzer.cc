@@ -91,7 +91,6 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   static const uint8_t kEnforcementBit = 0x01;
   static const uint8_t kSourceBit1 = 0x02;
-  static const uint8_t kSourceBit2 = 0x04;
 
   // Generate pseudo-random |header_type| and |header_source|.
   network::mojom::ContentSecurityPolicyType header_type =
@@ -100,13 +99,9 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           : network::mojom::ContentSecurityPolicyType::kReport;
 
   network::mojom::ContentSecurityPolicySource header_source =
-      network::mojom::ContentSecurityPolicySource::kHTTP;
-  if (data[0] & kSourceBit1) {
-    header_source =
-        (data[0] & kSourceBit2)
-            ? network::mojom::ContentSecurityPolicySource::kMeta
-            : network::mojom::ContentSecurityPolicySource::kOriginPolicy;
-  }
+      data[0] & kSourceBit1
+          ? network::mojom::ContentSecurityPolicySource::kMeta
+          : network::mojom::ContentSecurityPolicySource::kHTTP;
 
   // Parse the Content Security Policy string.
   std::vector<network::mojom::ContentSecurityPolicyPtr> csp =
