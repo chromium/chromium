@@ -105,7 +105,6 @@ blink::mojom::FileSystemType ToMojoFileSystemType(
     case storage::FileSystemType::kFileSystemTypeSyncableForInternalSync:
     case storage::FileSystemType::kFileSystemTypeLocalForPlatformApp:
     case storage::FileSystemType::kFileSystemTypeForTransientFile:
-    case storage::FileSystemType::kFileSystemTypePluginPrivate:
     case storage::FileSystemType::kFileSystemTypeProvided:
     case storage::FileSystemType::kFileSystemTypeDeviceMediaAsFileStorage:
     case storage::FileSystemType::kFileSystemTypeArcContent:
@@ -1279,12 +1278,6 @@ absl::optional<base::File::Error> FileSystemManagerImpl::ValidateFileSystemURL(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!FileSystemURLIsValid(context_.get(), url))
     return base::File::FILE_ERROR_INVALID_URL;
-
-  // Deny access to files in PluginPrivate FileSystem from JavaScript.
-  // TODO(nhiroki): Move this filter somewhere else since this is not for
-  // validation.
-  if (url.type() == storage::kFileSystemTypePluginPrivate)
-    return base::File::FILE_ERROR_SECURITY;
 
   return absl::nullopt;
 }

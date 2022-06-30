@@ -765,7 +765,9 @@ void ClearPluginPrivateDataOnFileTaskRunner(
 
   // The Plugin Private File System has been deprecated. Delete all data at
   // %profile/File System/Plugins.
-  auto plugin_path = filesystem_context->plugin_private_backend()->base_path();
+  auto plugin_path = filesystem_context->partition_path()
+                         .Append(storage::kFileSystemDirectory)
+                         .Append(FILE_PATH_LITERAL("Plugins"));
 
   filesystem_context->default_file_task_runner()->PostTaskAndReply(
       FROM_HERE,

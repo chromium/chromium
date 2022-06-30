@@ -28,7 +28,6 @@
 #include "storage/browser/file_system/file_system_request_info.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
-#include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -336,12 +335,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   bool is_incognito() { return is_incognito_; }
 
-  // TODO(crbug.com/1231162): Remove this. The Plugin Private File System is in
-  // the process of being removed.
-  PluginPrivateFileSystemBackend* plugin_private_backend() const {
-    return plugin_private_backend_.get();
-  }
-
   void ResolveURLOnOpenFileSystemForTesting(
       const blink::StorageKey& storage_key,
       const absl::optional<storage::BucketLocator>& bucket,
@@ -358,9 +351,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // For sandbox_backend().
   friend class SandboxFileSystemTestHelper;
-
-  // For plugin_private_backend().
-  friend class PluginPrivateFileSystemBackendTest;
 
   // Deleters.
   friend class base::DeleteHelper<FileSystemContext>;
@@ -451,7 +441,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   std::unique_ptr<IsolatedFileSystemBackend> isolated_backend_;
 
   // Additional file system backends.
-  const std::unique_ptr<PluginPrivateFileSystemBackend> plugin_private_backend_;
   const std::vector<std::unique_ptr<FileSystemBackend>> additional_backends_;
 
   std::vector<URLRequestAutoMountHandler> auto_mount_handlers_;

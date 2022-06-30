@@ -26,8 +26,6 @@ blink::mojom::StorageType FileSystemTypeToQuotaStorageType(
     case kFileSystemTypeSyncable:
     case kFileSystemTypeSyncableForInternalSync:
       return blink::mojom::StorageType::kSyncable;
-    case kFileSystemTypePluginPrivate:
-      return blink::mojom::StorageType::kQuotaNotManaged;
     default:
       return blink::mojom::StorageType::kUnknown;
   }

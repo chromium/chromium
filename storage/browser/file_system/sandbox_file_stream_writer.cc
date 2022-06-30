@@ -22,7 +22,6 @@
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/memory_file_stream_writer.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
-#include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -147,17 +146,8 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
   DCHECK(!file_writer_.get());
 
   if (file_system_context_->is_incognito()) {
-    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate;
-    if (url_.type() == kFileSystemTypePluginPrivate) {
-      auto* backend = static_cast<PluginPrivateFileSystemBackend*>(
-          file_system_context_->GetFileSystemBackend(
-              kFileSystemTypePluginPrivate));
-      memory_file_util_delegate =
-          backend->obfuscated_file_util_memory_delegate()->GetWeakPtr();
-    } else {
-      memory_file_util_delegate =
-          file_system_context_->sandbox_delegate()->memory_file_util_delegate();
-    }
+    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate =
+        file_system_context_->sandbox_delegate()->memory_file_util_delegate();
     file_writer_ = std::make_unique<MemoryFileStreamWriter>(
         file_system_context_->default_file_task_runner(),
         memory_file_util_delegate, platform_path, initial_offset_);
