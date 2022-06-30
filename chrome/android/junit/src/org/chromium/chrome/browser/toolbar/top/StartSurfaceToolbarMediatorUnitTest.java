@@ -343,7 +343,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
                 /*onLongClickListener*/ null, /*contentDescriptionResId=*/5,
                 /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
-                AdaptiveToolbarButtonVariant.UNKNOWN));
+                AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -357,7 +357,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mButtonData.setButtonSpec(new ButtonSpec(testDrawable2, mOnClickListener,
                 /*onLongClickListener*/ null, /*contentDescriptionResId=*/5,
                 /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
-                AdaptiveToolbarButtonVariant.UNKNOWN));
+                AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(testDrawable2, mPropertyModel.get(IDENTITY_DISC_IMAGE));
 
@@ -397,7 +397,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
                 /*onLongClickListener*/ null, /*contentDescriptionResId=*/0,
                 /*supportsTinting=*/false, /*iphCommandBuilder=*/iphCommandBuilder,
-                AdaptiveToolbarButtonVariant.UNKNOWN));
+                AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
 
         mMediator.updateIdentityDisc(mButtonData);
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));

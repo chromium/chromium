@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -29,7 +30,8 @@ public class ButtonDataImpl implements ButtonData {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
         mButtonSpec = new ButtonSpec(drawable, onClickListener, /*onLongClickListener=*/null,
-                contentDescriptionResId, supportsTinting, iphCommandBuilder, buttonVariant);
+                contentDescriptionResId, supportsTinting, iphCommandBuilder, buttonVariant,
+                /* actionChipLabelResId= */ Resources.ID_NULL);
     }
 
     @Override
@@ -65,7 +67,8 @@ public class ButtonDataImpl implements ButtonData {
         ButtonSpec newSpec = new ButtonSpec(currentSpec.getDrawable(),
                 currentSpec.getOnClickListener(), currentSpec.getOnLongClickListener(),
                 currentSpec.getContentDescriptionResId(), currentSpec.getSupportsTinting(),
-                iphCommandBuilder, currentSpec.getButtonVariant());
+                iphCommandBuilder, currentSpec.getButtonVariant(),
+                currentSpec.getActionChipLabelResId());
         setButtonSpec(newSpec);
     }
 }

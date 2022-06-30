@@ -192,7 +192,8 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
                     mMenuHandler, receivedButtonSpec.getContentDescriptionResId(),
                     receivedButtonSpec.getSupportsTinting(),
                     receivedButtonSpec.getIPHCommandBuilder(),
-                    receivedButtonSpec.getButtonVariant()));
+                    receivedButtonSpec.getButtonVariant(),
+                    receivedButtonSpec.getActionChipLabelResId()));
         }
         return mButtonData;
     }

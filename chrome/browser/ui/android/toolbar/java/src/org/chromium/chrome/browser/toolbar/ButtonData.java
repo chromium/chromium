@@ -51,11 +51,13 @@ public interface ButtonData {
         @AdaptiveToolbarButtonVariant
         private final int mButtonVariant;
         private final boolean mIsDynamicAction;
+        @StringRes
+        private final int mActionChipLabelResId;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
                 @Nullable View.OnLongClickListener onLongClickListener, int contentDescriptionResId,
                 boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
-                @AdaptiveToolbarButtonVariant int buttonVariant) {
+                @AdaptiveToolbarButtonVariant int buttonVariant, int actionChipLabelResId) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -64,6 +66,7 @@ public interface ButtonData {
             mIPHCommandBuilder = iphCommandBuilder;
             mButtonVariant = buttonVariant;
             mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
+            mActionChipLabelResId = actionChipLabelResId;
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -88,6 +91,12 @@ public interface ButtonData {
         @StringRes
         public int getContentDescriptionResId() {
             return mContentDescriptionResId;
+        }
+
+        /** Returns the resource ID of the string for the button's action chip label. */
+        @StringRes
+        public int getActionChipLabelResId() {
+            return mActionChipLabelResId;
         }
 
         /** Returns {@code true} if the button supports tinting. */

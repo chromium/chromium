@@ -290,6 +290,6 @@ public class AdaptiveToolbarButtonControllerTest {
         return new ButtonSpec(/*drawable=*/null, mock(View.OnClickListener.class),
                 /*onLongClickListener=*/null,
                 /*contentDescriptionResId=*/101, /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, variant);
+                /*iphCommandBuilder=*/null, variant, /*actionChipLabelResId=*/0);
     }
 }

@@ -185,7 +185,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
                 /*onLongClickListener=*/null, buttonSpec.getContentDescriptionResId(),
                 buttonSpec.getSupportsTinting(), buttonSpec.getIPHCommandBuilder(),
-                AdaptiveToolbarButtonVariant.UNKNOWN);
+                AdaptiveToolbarButtonVariant.UNKNOWN, buttonSpec.getActionChipLabelResId());
     }
 
     /**
