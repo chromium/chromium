@@ -340,13 +340,22 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
   RenderFrameHostImpl* frame_host = host()->frame_tree()->GetMainFrame();
   if (!frame_host || !frame_host->GetPage().virtual_keyboard_overlays_content())
     return;
-  gfx::Rect keyboard_rect_copy = keyboard_rect;
-  if (!keyboard_rect_copy.IsEmpty()) {
+  gfx::Rect keyboard_rect_with_scale;
+  if (!keyboard_rect.IsEmpty()) {
+    // This is necessary because the receiver of this rect in the renderer
+    // expects the rect to be in device-independnet pixels, but |keyboard_rect|
+    // is in device pixels. See
+    // LocalFrameMojoHandler::NotifyVirtualKeyboardOverlayRect.
+    // To trigger this code, follow the steps in
+    // .../external/wpt/virtual-keyboard/virtual-keyboard-css-env-manual.html
+    float scale = 1 / view_.GetDipScale();
+    keyboard_rect_with_scale = ScaleToEnclosedRect(keyboard_rect, scale);
     // Intersect the keyboard rect with the `this` bounds which will be sent
     // to the renderer.
-    keyboard_rect_copy.Intersect(GetViewBounds());
+    keyboard_rect_with_scale.Intersect(GetViewBounds());
   }
-  frame_host->GetPage().NotifyVirtualKeyboardOverlayRect(keyboard_rect_copy);
+  frame_host->GetPage().NotifyVirtualKeyboardOverlayRect(
+      keyboard_rect_with_scale);
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
