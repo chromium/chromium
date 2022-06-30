@@ -469,7 +469,7 @@ void KeySystemsImpl::OnSupportedKeySystemsUpdated(
   is_updating_ = false;
 
   // Clear Key is always supported.
-  key_systems.emplace_back(new ClearKeyProperties());
+  key_systems.emplace_back(std::make_unique<ClearKeyProperties>());
 
   ProcessSupportedKeySystems(std::move(key_systems));
 

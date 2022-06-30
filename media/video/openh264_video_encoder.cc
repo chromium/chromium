@@ -172,7 +172,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 
   DCHECK_GT(frame_info.iFrameSizeInBytes, 0);
   size_t total_chunk_size = frame_info.iFrameSizeInBytes;
-  result.data.reset(new uint8_t[total_chunk_size]);
+  result.data = std::make_unique<uint8_t[]>(total_chunk_size);
   auto* gather_buffer = result.data.get();
 
   if (h264_converter_) {

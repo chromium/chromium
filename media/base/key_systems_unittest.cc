@@ -303,10 +303,10 @@ TestMediaClient::GetAudioRendererAlgorithmParameters(
 KeySystemPropertiesVector TestMediaClient::GetSupportedKeySystemsInternal() {
   KeySystemPropertiesVector key_systems;
 
-  key_systems.emplace_back(new AesKeySystemProperties(kUsesAes));
+  key_systems.emplace_back(std::make_unique<AesKeySystemProperties>(kUsesAes));
 
   if (supports_external_key_system_)
-    key_systems.emplace_back(new ExternalKeySystemProperties());
+    key_systems.emplace_back(std::make_unique<ExternalKeySystemProperties>());
 
   return key_systems;
 }

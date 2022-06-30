@@ -149,7 +149,7 @@ bool PCMWaveOutAudioOutputStream::Open() {
 }
 
 void PCMWaveOutAudioOutputStream::SetupBuffers() {
-  buffers_.reset(new char[BufferSize() * num_buffers_]);
+  buffers_ = std::make_unique<char[]>(BufferSize() * num_buffers_);
   for (int ix = 0; ix != num_buffers_; ++ix) {
     WAVEHDR* buffer = GetBuffer(ix);
     buffer->lpData = reinterpret_cast<char*>(buffer) + sizeof(WAVEHDR);

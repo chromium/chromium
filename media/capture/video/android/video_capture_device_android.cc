@@ -350,7 +350,7 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
   const int y_plane_length = width * height;
   const int uv_plane_length = y_plane_length / 4;
   const int buffer_length = y_plane_length + uv_plane_length * 2;
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[buffer_length]);
+  auto buffer = std::make_unique<uint8_t[]>(buffer_length);
 
   libyuv::Android420ToI420(y_src, y_stride, u_src, uv_row_stride, v_src,
                            uv_row_stride, uv_pixel_stride, buffer.get(), width,
@@ -677,8 +677,7 @@ void VideoCaptureDeviceAndroid::DoTakePhoto(TakePhotoCallback callback) {
   JNIEnv* env = AttachCurrentThread();
 
   // Make copy on the heap so we can pass the pointer through JNI.
-  std::unique_ptr<TakePhotoCallback> heap_callback(
-      new TakePhotoCallback(std::move(callback)));
+  auto heap_callback = std::make_unique<TakePhotoCallback>(std::move(callback));
   const intptr_t callback_id = reinterpret_cast<intptr_t>(heap_callback.get());
   {
     base::AutoLock lock(photo_callbacks_lock_);
@@ -700,8 +699,8 @@ void VideoCaptureDeviceAndroid::DoGetPhotoState(
   JNIEnv* env = AttachCurrentThread();
 
   // Make copy on the heap so we can pass the pointer through JNI.
-  std::unique_ptr<GetPhotoStateCallback> heap_callback(
-      new GetPhotoStateCallback(std::move(callback)));
+  auto heap_callback =
+      std::make_unique<GetPhotoStateCallback>(std::move(callback));
   const intptr_t callback_id = reinterpret_cast<intptr_t>(heap_callback.get());
   {
     base::AutoLock lock(photo_callbacks_lock_);

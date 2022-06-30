@@ -196,23 +196,21 @@ class KeyProvidingApp : public FakeEncryptedMedia::AppBase {
   }
 
   std::unique_ptr<SimpleCdmPromise> CreatePromise(PromiseResult expected) {
-    std::unique_ptr<media::SimpleCdmPromise> promise(
-        new media::CdmCallbackPromise<>(
-            base::BindOnce(&KeyProvidingApp::OnResolve, base::Unretained(this),
-                           expected),
-            base::BindOnce(&KeyProvidingApp::OnReject, base::Unretained(this),
-                           expected)));
+    auto promise = std::make_unique<media::CdmCallbackPromise<>>(
+        base::BindOnce(&KeyProvidingApp::OnResolve, base::Unretained(this),
+                       expected),
+        base::BindOnce(&KeyProvidingApp::OnReject, base::Unretained(this),
+                       expected));
     return promise;
   }
 
   std::unique_ptr<NewSessionCdmPromise> CreateSessionPromise(
       PromiseResult expected) {
-    std::unique_ptr<media::NewSessionCdmPromise> promise(
-        new media::CdmCallbackPromise<std::string>(
-            base::BindOnce(&KeyProvidingApp::OnResolveWithSession,
-                           base::Unretained(this), expected),
-            base::BindOnce(&KeyProvidingApp::OnReject, base::Unretained(this),
-                           expected)));
+    auto promise = std::make_unique<media::CdmCallbackPromise<std::string>>(
+        base::BindOnce(&KeyProvidingApp::OnResolveWithSession,
+                       base::Unretained(this), expected),
+        base::BindOnce(&KeyProvidingApp::OnReject, base::Unretained(this),
+                       expected));
     return promise;
   }
 

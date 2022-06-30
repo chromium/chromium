@@ -41,8 +41,8 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryAndroid::CreateDevice(
         VideoCaptureError::
             kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 
-  std::unique_ptr<VideoCaptureDeviceAndroid> video_capture_device(
-      new VideoCaptureDeviceAndroid(device_descriptor));
+  auto video_capture_device =
+      std::make_unique<VideoCaptureDeviceAndroid>(device_descriptor);
 
   if (video_capture_device->Init()) {
     if (test_mode_)

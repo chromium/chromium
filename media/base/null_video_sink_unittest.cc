@@ -40,11 +40,11 @@ class NullVideoSinkTest : public testing::Test,
 
   std::unique_ptr<NullVideoSink> ConstructSink(bool clockless,
                                                base::TimeDelta interval) {
-    std::unique_ptr<NullVideoSink> new_sink(
-        new NullVideoSink(clockless, interval,
-                          base::BindRepeating(&NullVideoSinkTest::FrameReceived,
-                                              base::Unretained(this)),
-                          task_environment_.GetMainThreadTaskRunner()));
+    auto new_sink = std::make_unique<NullVideoSink>(
+        clockless, interval,
+        base::BindRepeating(&NullVideoSinkTest::FrameReceived,
+                            base::Unretained(this)),
+        task_environment_.GetMainThreadTaskRunner());
     new_sink->set_tick_clock_for_testing(&tick_clock_);
     return new_sink;
   }

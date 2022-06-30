@@ -417,8 +417,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       InProgressExternalVideoFrameEncode& request =
           in_progress_frame_encodes_.front();
 
-      std::unique_ptr<SenderEncodedFrame> encoded_frame(
-          new SenderEncodedFrame());
+      auto encoded_frame = std::make_unique<SenderEncodedFrame>();
       encoded_frame->dependency =
           metadata.key_frame ? EncodedFrame::KEY : EncodedFrame::DEPENDENT;
       encoded_frame->frame_id = next_frame_id_++;
@@ -904,7 +903,8 @@ double QuantizerEstimator::EstimateForKeyFrame(const VideoFrame& frame) {
   const int rows_in_subset =
       std::max(1, size.height() * kFrameSamplingPercentage / 100);
   if (last_frame_size_ != size || !last_frame_pixel_buffer_) {
-    last_frame_pixel_buffer_.reset(new uint8_t[size.width() * rows_in_subset]);
+    last_frame_pixel_buffer_ =
+        std::make_unique<uint8_t[]>(size.width() * rows_in_subset);
     last_frame_size_ = size;
   }
 

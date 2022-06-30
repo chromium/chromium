@@ -65,7 +65,7 @@ TEST(DecoderBufferTest, CopyFrom) {
 TEST(DecoderBufferTest, FromArray) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
-  std::unique_ptr<uint8_t[]> ptr(new uint8_t[kDataSize]);
+  auto ptr = std::make_unique<uint8_t[]>(kDataSize);
   memcpy(ptr.get(), kData, kDataSize);
 
   scoped_refptr<DecoderBuffer> buffer(

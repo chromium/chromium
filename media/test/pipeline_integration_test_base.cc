@@ -489,11 +489,11 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
       task_environment_.GetMainThreadTaskRunner());
 
   // Disable frame dropping if hashing is enabled.
-  std::unique_ptr<VideoRenderer> video_renderer(new VideoRendererImpl(
+  auto video_renderer = std::make_unique<VideoRendererImpl>(
       task_environment_.GetMainThreadTaskRunner(), video_sink_.get(),
       base::BindRepeating(&CreateVideoDecodersForTest, &media_log_,
                           prepend_video_decoders_cb_),
-      false, &media_log_, nullptr));
+      false, &media_log_, nullptr);
 
   if (!clockless_playback_) {
     DCHECK(!mono_output_) << " NullAudioSink doesn't specify output parameters";
@@ -518,7 +518,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
     }
   }
 
-  std::unique_ptr<AudioRenderer> audio_renderer(new AudioRendererImpl(
+  auto audio_renderer = std::make_unique<AudioRendererImpl>(
       task_environment_.GetMainThreadTaskRunner(),
       (clockless_playback_)
           ? static_cast<AudioRendererSink*>(clockless_audio_sink_.get())
@@ -526,7 +526,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
       base::BindRepeating(&CreateAudioDecodersForTest, &media_log_,
                           task_environment_.GetMainThreadTaskRunner(),
                           prepend_audio_decoders_cb_),
-      &media_log_, nullptr));
+      &media_log_, nullptr);
   if (hashing_enabled_) {
     if (clockless_playback_)
       clockless_audio_sink_->StartAudioHashForTesting();
@@ -537,9 +537,9 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
   static_cast<AudioRendererImpl*>(audio_renderer.get())
       ->SetPlayDelayCBForTesting(std::move(audio_play_delay_cb_));
 
-  std::unique_ptr<RendererImpl> renderer_impl(
-      new RendererImpl(task_environment_.GetMainThreadTaskRunner(),
-                       std::move(audio_renderer), std::move(video_renderer)));
+  std::unique_ptr<RendererImpl> renderer_impl = std::make_unique<RendererImpl>(
+      task_environment_.GetMainThreadTaskRunner(), std::move(audio_renderer),
+      std::move(video_renderer));
 
   // Prevent non-deterministic buffering state callbacks from firing (e.g., slow
   // machine, valgrind).

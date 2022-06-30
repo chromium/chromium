@@ -113,7 +113,7 @@ class AudioProcessorTest : public ::testing::Test {
     const int packet_size =
         input_params.frames_per_buffer() * 2 * input_params.channels();
     const size_t length = packet_size * kNumberOfPacketsForTest;
-    std::unique_ptr<char[]> capture_data(new char[length]);
+    auto capture_data = std::make_unique<char[]>(length);
     ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
     const int16_t* data_ptr =
         reinterpret_cast<const int16_t*>(capture_data.get());

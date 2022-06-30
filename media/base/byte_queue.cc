@@ -43,14 +43,14 @@ void ByteQueue::Push(const uint8_t* data, int size) {
       //
       // In local tests on a few top video sites that ends up being the common
       // case, so just prefer to copy and pack ourselves.
-      std::unique_ptr<uint8_t[]> new_buffer(new uint8_t[new_size]);
+      auto new_buffer = std::make_unique<uint8_t[]>(new_size);
       memcpy(new_buffer.get(), Front(), used_);
       buffer_ = std::move(new_buffer);
     } else {
       // Free the existing |data| first so that the memory can be reused, if
       // possible. Note that the new array is purposely not initialized.
       buffer_.reset();
-      buffer_.reset(new uint8_t[new_size]);
+      buffer_ = std::make_unique<uint8_t[]>(new_size);
     }
 
     size_ = new_size;
