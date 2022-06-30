@@ -69,7 +69,7 @@ class Operation : public RequestManager::HandlerInterface {
                                    int request_id,
                                    extensions::events::HistogramValue,
                                    const std::string&,
-                                   std::vector<base::Value>)>;
+                                   base::Value::List)>;
   DispatchEventInternalCallback dispatch_event_impl_;
 };
 

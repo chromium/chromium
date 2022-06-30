@@ -51,12 +51,26 @@ LacrosFileSystemProvider::LacrosFileSystemProvider() : receiver_{this} {
 }
 LacrosFileSystemProvider::~LacrosFileSystemProvider() = default;
 
-void LacrosFileSystemProvider::DeprecatedForwardOperation(
+void LacrosFileSystemProvider::DeprecatedDeprecatedForwardOperation(
     const std::string& provider,
     int32_t histogram_value,
     const std::string& event_name,
     std::vector<base::Value> args) {
-  ForwardOperation(provider, histogram_value, event_name, std::move(args),
+  DeprecatedForwardOperation(provider, histogram_value, event_name,
+                             std::move(args), base::DoNothing());
+}
+
+void LacrosFileSystemProvider::DeprecatedForwardOperation(
+    const std::string& provider,
+    int32_t histogram_value,
+    const std::string& event_name,
+    std::vector<base::Value> args,
+    ForwardOperationCallback callback) {
+  base::Value::List list;
+  for (auto& value : args) {
+    list.Append(std::move(value));
+  }
+  ForwardOperation(provider, histogram_value, event_name, std::move(list),
                    base::DoNothing());
 }
 
@@ -64,7 +78,7 @@ void LacrosFileSystemProvider::ForwardOperation(
     const std::string& provider,
     int32_t histogram_value,
     const std::string& event_name,
-    std::vector<base::Value> args,
+    base::Value::List args,
     ForwardOperationCallback callback) {
   Profile* main_profile = GetMainProfile();
   if (!main_profile) {
@@ -101,8 +115,8 @@ void LacrosFileSystemProvider::ForwardOperation(
   extensions::events::HistogramValue histogram =
       static_cast<extensions::events::HistogramValue>(histogram_value);
 
-  auto event = std::make_unique<extensions::Event>(
-      histogram, event_name, std::move(base::Value(std::move(args)).GetList()));
+  auto event = std::make_unique<extensions::Event>(histogram, event_name,
+                                                   std::move(args));
   router->DispatchEventToExtension(provider, std::move(event));
   std::move(callback).Run(/*delivery_failure=*/false);
 }

@@ -46,10 +46,15 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
               mojom::FSPChangeType type,
               std::vector<mojom::FSPChangePtr> changes,
               NotifyCallback callback) override;
+  void DeprecatedOperationFinished(mojom::FSPOperationResponse response,
+                                   mojom::FileSystemIdPtr file_system_id,
+                                   int64_t request_id,
+                                   std::vector<base::Value> args,
+                                   OperationFinishedCallback callback) override;
   void OperationFinished(mojom::FSPOperationResponse response,
                          mojom::FileSystemIdPtr file_system_id,
                          int64_t request_id,
-                         std::vector<base::Value> args,
+                         base::Value::List args,
                          OperationFinishedCallback callback) override;
   void ExtensionLoaded(bool configurable,
                        bool watchable,

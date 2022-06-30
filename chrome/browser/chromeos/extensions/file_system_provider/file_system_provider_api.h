@@ -134,9 +134,9 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
 #else
     if (!InterfaceAvailable())
       return false;
-    GetRemote()->OperationFinished(
-        response, std::move(file_system_id), request_id,
-        base::Value(std::move(args)).TakeListDeprecated(), std::move(callback));
+    GetRemote()->OperationFinished(response, std::move(file_system_id),
+                                   request_id, std::move(args),
+                                   std::move(callback));
     return true;
 #endif
   }
