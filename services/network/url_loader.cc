@@ -1632,6 +1632,21 @@ void URLLoader::ContinueOnResponseStarted() {
     return;
   }
 
+  // Enforce FLEDGE auction-only signals -- the renderer process isn't allowed
+  // to read auction-only signals for FLEDGE auctions; only the browser process
+  // is allowed to read those, and only the browser process can issue trusted
+  // requests.
+  std::string fledge_auction_only_signals;
+  if (!factory_params_.is_trusted && response_->headers &&
+      response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only",
+                                              &fledge_auction_only_signals) &&
+      base::EqualsCaseInsensitiveASCII(fledge_auction_only_signals, "true")) {
+    CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false);
+    url_request_->AbortAndCloseConnection();
+    DeleteSelf();
+    return;
+  }
+
   // Figure out if we need to sniff (for MIME type detection or for Cross-Origin
   // Read Blocking / CORB).
   if (factory_params_.is_corb_enabled) {

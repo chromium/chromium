@@ -189,6 +189,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
         request_initiator_(request.request_initiator),
         request_destination_(request.destination),
         devtools_request_id_(request.devtools_request_id),
+        is_trusted_(request.trusted_params),
         receiver_(this, std::move(loader)),
         client_(std::move(client)),
         trusted_header_client_(std::move(trusted_header_client)) {
@@ -269,6 +270,8 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     CompleteBlockedResponse(net::OK, absl::nullopt);
   }
 
+  bool is_trusted() const { return is_trusted_; }
+
   void CompleteBlockedResponse(
       int error_code,
       absl::optional<mojom::BlockedByResponseReason> reason) {
@@ -324,6 +327,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   absl::optional<url::Origin> request_initiator_;
   mojom::RequestDestination request_destination_;
   absl::optional<std::string> devtools_request_id_;
+  const bool is_trusted_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
   mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client_;
@@ -829,6 +833,20 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
               coep_reporter_)) {
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
                                     blocked_reason);
+    return;
+  }
+
+  // Enforce FLEDGE auction-only signals -- the renderer process isn't allowed
+  // to read auction-only signals for FLEDGE auctions; only the browser process
+  // is allowed to read those, and only the browser process can issue trusted
+  // requests.
+  std::string fledge_auction_only_signals;
+  if (!loader->is_trusted() && response_head->headers &&
+      response_head->headers->GetNormalizedHeader(
+          "X-FLEDGE-Auction-Only", &fledge_auction_only_signals) &&
+      base::EqualsCaseInsensitiveASCII(fledge_auction_only_signals, "true")) {
+    loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
+                                    /*reason=*/absl::nullopt);
     return;
   }
 
