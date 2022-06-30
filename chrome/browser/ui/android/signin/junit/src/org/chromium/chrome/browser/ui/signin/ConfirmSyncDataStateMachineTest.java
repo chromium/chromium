@@ -123,7 +123,8 @@ public class ConfirmSyncDataStateMachineTest {
                 mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock)
                 .showSignInToManagedAccountDialog(
-                        any(ConfirmManagedSyncDataDialog.Listener.class), eq(mNewAccountName));
+                        any(ConfirmManagedSyncDataDialogCoordinator.Listener.class),
+                        eq(mNewAccountName));
     }
 
     @Test
@@ -135,14 +136,14 @@ public class ConfirmSyncDataStateMachineTest {
                 mDelegateMock, null, newAccountName, mStateMachineListenerMock);
         verify(mDelegateMock, never())
                 .showSignInToManagedAccountDialog(
-                        any(ConfirmManagedSyncDataDialog.Listener.class), anyString());
+                        any(ConfirmManagedSyncDataDialogCoordinator.Listener.class), anyString());
         verify(mSigninManagerMock)
                 .isAccountManaged(eq(newAccountName), mCallbackArgument.capture());
         Callback<Boolean> callback = mCallbackArgument.getValue();
         callback.onResult(true);
         verify(mDelegateMock)
                 .showSignInToManagedAccountDialog(
-                        any(ConfirmManagedSyncDataDialog.Listener.class), eq(domain));
+                        any(ConfirmManagedSyncDataDialogCoordinator.Listener.class), eq(domain));
     }
 
     @Test

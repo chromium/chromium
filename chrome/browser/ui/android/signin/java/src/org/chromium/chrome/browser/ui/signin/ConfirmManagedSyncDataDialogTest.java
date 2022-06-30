@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -15,11 +16,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.support.test.InstrumentationRegistry;
+import android.app.Activity;
+import android.support.test.runner.lifecycle.Stage;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,15 +33,16 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
- * Test for {@link ConfirmManagedSyncDataDialog}
+ * Test for {@link ConfirmManagedSyncDataDialogCoordinator}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -54,9 +58,7 @@ public class ConfirmManagedSyncDataDialogTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock
-    private ConfirmManagedSyncDataDialog.Listener mListenerMock;
-
-    private ConfirmManagedSyncDataDialog mDialog;
+    private ConfirmManagedSyncDataDialogCoordinator.Listener mListenerMock;
 
     @Before
     public void setUp() {
@@ -85,38 +87,41 @@ public class ConfirmManagedSyncDataDialogTest {
 
     @Test
     @MediumTest
-    public void testListenerOnCancelNotCalledWhenDialogDismissed() {
+    public void testListenerOnCancelWhenBackPressed() {
         showManagedSyncDataDialog();
-        // TODO(https://crbug.com/1197194): Try to use espresso pressBack() instead of
-        //  mDialog.dismiss() once the dialog is converted to a modal dialog.
+
+        onView(withText(R.string.sign_in_managed_account))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(pressBack());
+
+        onView(withText(R.string.sign_in_managed_account)).check(doesNotExist());
+        verify(mListenerMock).onCancel();
+    }
+
+    @Test
+    @LargeTest
+    public void testDialogIsDismissedAndOnCancelNotCalledWhenRecreated() {
+        showManagedSyncDataDialog();
         onView(withText(R.string.sign_in_managed_account))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
 
-        mDialog.getDialog().dismiss();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        Activity activity = mActivityTestRule.getActivity();
+        mActivityTestRule.recreateActivity();
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+        Assert.assertTrue("The recreated activity should not be the same as the old activity",
+                mActivityTestRule.getActivity() != activity);
 
         onView(withText(R.string.sign_in_managed_account)).check(doesNotExist());
         verify(mListenerMock, never()).onCancel();
     }
 
-    @Test
-    @LargeTest
-    @DisableIf.Build(sdk_is_greater_than = 25, message = "https://crbug.com/1336718 - failing on O")
-    public void testDialogIsDismissedWhenRecreated() throws Exception {
-        showManagedSyncDataDialog();
-        onView(withText(R.string.sign_in_managed_account))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-
-        mActivityTestRule.recreateActivity();
-
-        onView(withText(R.string.sign_in_managed_account)).check(doesNotExist());
-    }
-
     private void showManagedSyncDataDialog() {
-        mDialog = ConfirmManagedSyncDataDialog.create(mListenerMock, TEST_DOMAIN);
-        mDialog.show(mActivityTestRule.getActivity().getSupportFragmentManager(), null);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            new ConfirmManagedSyncDataDialogCoordinator(mActivityTestRule.getActivity(),
+                    mActivityTestRule.getActivity().getModalDialogManager(), mListenerMock,
+                    TEST_DOMAIN);
+        });
     }
 }

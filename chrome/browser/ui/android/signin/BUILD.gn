@@ -43,7 +43,7 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialog.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachine.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConsentTextTracker.java",

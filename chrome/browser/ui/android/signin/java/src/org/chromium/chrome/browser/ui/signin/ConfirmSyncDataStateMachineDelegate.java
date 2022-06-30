@@ -10,10 +10,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -166,20 +165,18 @@ public class ConfirmSyncDataStateMachineDelegate {
         }
     }
 
-    private static final String CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG =
-            "ConfirmManagedSyncDataDialog";
-
-    private final FragmentManager mFragmentManager;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
-    private ProgressDialogCoordinator mProgressDialogCoordinator;
-    private TimeoutDialogCoordinator mTimeoutDialogCoordinator;
-    private ConfirmImportSyncDataDialogCoordinator mConfirmImportSyncDataDialogCoordinator;
+    private @Nullable ProgressDialogCoordinator mProgressDialogCoordinator;
+    private @Nullable TimeoutDialogCoordinator mTimeoutDialogCoordinator;
+    private @Nullable ConfirmImportSyncDataDialogCoordinator
+            mConfirmImportSyncDataDialogCoordinator;
+    private @Nullable ConfirmManagedSyncDataDialogCoordinator
+            mConfirmManagedSyncDataDialogCoordinator;
 
     public ConfirmSyncDataStateMachineDelegate(Context context, FragmentManager fragmentManager,
             ModalDialogManager modalDialogManager) {
         mContext = context;
-        mFragmentManager = fragmentManager;
         mModalDialogManager = modalDialogManager;
     }
 
@@ -224,22 +221,16 @@ public class ConfirmSyncDataStateMachineDelegate {
     }
 
     /**
-     * Shows {@link ConfirmManagedSyncDataDialog} when signing in to a managed account
+     * Shows {@link ConfirmManagedSyncDataDialogCoordinator} when signing in to a managed account
      * (either through sign in or when switching accounts).
      * @param listener Callback for result.
      * @param domain The domain of the managed account.
      */
     void showSignInToManagedAccountDialog(
-            ConfirmManagedSyncDataDialog.Listener listener, String domain) {
+            ConfirmManagedSyncDataDialogCoordinator.Listener listener, String domain) {
         dismissAllDialogs();
-        showAllowingStateLoss(ConfirmManagedSyncDataDialog.create(listener, domain),
-                CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG);
-    }
-
-    private void showAllowingStateLoss(DialogFragment dialogFragment, String tag) {
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        transaction.add(dialogFragment, tag);
-        transaction.commitAllowingStateLoss();
+        mConfirmManagedSyncDataDialogCoordinator = new ConfirmManagedSyncDataDialogCoordinator(
+                mContext, mModalDialogManager, listener, domain);
     }
 
     /**
@@ -258,13 +249,10 @@ public class ConfirmSyncDataStateMachineDelegate {
             mConfirmImportSyncDataDialogCoordinator.dismissDialog();
             mConfirmImportSyncDataDialogCoordinator = null;
         }
-        dismissDialog(CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG);
-    }
-
-    private void dismissDialog(String tag) {
-        DialogFragment fragment = (DialogFragment) mFragmentManager.findFragmentByTag(tag);
-        if (fragment == null) return;
-        fragment.dismissAllowingStateLoss();
+        if (mConfirmManagedSyncDataDialogCoordinator != null) {
+            mConfirmManagedSyncDataDialogCoordinator.dismissDialog();
+            mConfirmManagedSyncDataDialogCoordinator = null;
+        }
     }
 
     @VisibleForTesting
