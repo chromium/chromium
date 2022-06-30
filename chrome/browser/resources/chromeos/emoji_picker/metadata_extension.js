@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const RECENTLY_USED_NAME = 'Recently used';
-
 export const CATEGORY_METADATA = [
   {
     name: 'emoji',
@@ -27,7 +25,7 @@ export const CATEGORY_METADATA = [
 // TODO(b/233271528): Remove the list and load it from the input data.
 export const EMOJI_GROUP_TABS = [
   {
-    name: RECENTLY_USED_NAME,
+    name: 'Recently Used',
     icon: 'emoji_picker:schedule',
     category: 'emoji',
     groupId: 'emoji-history',
@@ -36,7 +34,7 @@ export const EMOJI_GROUP_TABS = [
     pagination: 1
   },
   {
-    name: 'Smileys & Emotions',
+    name: 'Smileys & Emotion',
     icon: 'emoji_picker:insert_emoticon',
     category: 'emoji',
     groupId: '0',
@@ -76,7 +74,7 @@ export const EMOJI_GROUP_TABS = [
     disabled: false
   },
   {
-    name: 'Activities & Events',
+    name: 'Activities',
     icon: 'emoji_picker:emoji_events',
     category: 'emoji',
     groupId: '5',
@@ -113,7 +111,7 @@ export const EMOJI_GROUP_TABS = [
 // TODO(b/233271528): Remove the list and load it from the input data.
 export const EMOTICON_GROUP_TABS = [
   {
-    name: RECENTLY_USED_NAME,
+    name: 'Recently Used',
     icon: 'emoji_picker:schedule',
     category: 'emoticon',
     groupId: 'emoticon-history',
@@ -194,7 +192,7 @@ export const EMOTICON_GROUP_TABS = [
     pagination: 2
   },
   {
-    name: 'Table Flipping',
+    name: 'Table flipping',
     category: 'emoticon',
     groupId: '18',
     active: false,
@@ -246,9 +244,3 @@ export const EMOTICON_GROUP_TABS = [
 // TODO(b/233271528): The concat order must be based on CATEGORY_METADATA.
 export const V2_SUBCATEGORY_TABS =
     EMOJI_GROUP_TABS.concat(EMOTICON_GROUP_TABS);
-
-// TODO(b/233271528): This should be calculated based on concat order.
-export const V2_TABS_CATEGORY_START_INDEX = {
-  'emoji': 0,
-  'emoticon': EMOJI_GROUP_TABS.length,
-};
