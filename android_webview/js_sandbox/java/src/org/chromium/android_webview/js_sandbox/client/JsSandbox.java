@@ -9,11 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.core.content.ContextCompat;
@@ -39,6 +39,7 @@ public class JsSandbox implements AutoCloseable {
     private static final String JS_SANDBOX_SERVICE_NAME =
             "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
     private final Object mLock = new Object();
+    private CloseGuardHelper mGuard = CloseGuardHelper.create();
 
     @GuardedBy("mLock")
     private IJsSandboxService mJsSandboxService;
@@ -51,7 +52,7 @@ public class JsSandbox implements AutoCloseable {
     static class ConnectionSetup implements ServiceConnection {
         private CallbackToFutureAdapter.Completer<JsSandbox> mCompleter;
         private JsSandbox mJsSandbox;
-        private Context mContext;
+        Context mContext;
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -106,7 +107,8 @@ public class JsSandbox implements AutoCloseable {
      *         application
      *     context if the connection is expected to outlive a single activity/service.
      */
-    public static ListenableFuture<JsSandbox> newConnectedInstance(Context context) {
+    @NonNull
+    public static ListenableFuture<JsSandbox> newConnectedInstanceAsync(@NonNull Context context) {
         PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
         ComponentName compName =
                 new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
@@ -114,13 +116,16 @@ public class JsSandbox implements AutoCloseable {
         return bindToServiceWithCallback(context, compName, flag);
     }
 
+    @NonNull
     @VisibleForTesting
-    public static ListenableFuture<JsSandbox> newConnectedInstanceForTesting(Context context) {
+    public static ListenableFuture<JsSandbox> newConnectedInstanceForTestingAsync(
+            @NonNull Context context) {
         ComponentName compName = new ComponentName(context, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE;
         return bindToServiceWithCallback(context, compName, flag);
     }
 
+    @NonNull
     private static ListenableFuture<JsSandbox> bindToServiceWithCallback(
             Context context, ComponentName compName, int flag) {
         Intent intent = new Intent();
@@ -131,11 +136,7 @@ public class JsSandbox implements AutoCloseable {
                 boolean isBinding = context.bindService(intent, connectionSetup, flag);
                 if (isBinding) {
                     Executor mainExecutor;
-                    if (Build.VERSION.SDK_INT >= 28) {
-                        mainExecutor = context.getMainExecutor();
-                    } else {
-                        mainExecutor = ContextCompat.getMainExecutor(context);
-                    }
+                    mainExecutor = ContextCompat.getMainExecutor(context);
                     completer.addCancellationListener(
                             () -> context.unbindService(connectionSetup), mainExecutor);
                 } else {
@@ -154,12 +155,15 @@ public class JsSandbox implements AutoCloseable {
     }
 
     // We prevent direct initializations of this class. Use JsSandbox.newConnectedInstance().
-    private JsSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
+    JsSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
         mConnection = connectionSetup;
         mJsSandboxService = jsSandboxService;
+        mGuard.open("close");
+        // This should be at the end of the constructor.
     }
 
     /** Creates an execution isolate within which JS can be executed multiple times. */
+    @NonNull
     public JsIsolate createIsolate() {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
@@ -169,12 +173,7 @@ public class JsSandbox implements AutoCloseable {
             try {
                 IJsSandboxIsolate isolateStub = mJsSandboxService.createIsolate();
                 Executor mainExecutor;
-                if (Build.VERSION.SDK_INT >= 28) {
-                    mainExecutor = mConnection.mContext.getMainExecutor();
-                } else {
-                    mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
-                }
-
+                mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
                 JsIsolate isolate = new JsIsolate(isolateStub, this, mainExecutor);
                 mActiveIsolateSet.add(isolate);
                 return isolate;
@@ -233,5 +232,21 @@ public class JsSandbox implements AutoCloseable {
             ele.cancelAllPendingEvaluations(e);
         }
         mActiveIsolateSet = null;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            if (mGuard != null) {
+                mGuard.warnIfOpen();
+            }
+            synchronized (mLock) {
+                if (mJsSandboxService != null) {
+                    close();
+                }
+            }
+        } finally {
+            super.finalize();
+        }
     }
 }

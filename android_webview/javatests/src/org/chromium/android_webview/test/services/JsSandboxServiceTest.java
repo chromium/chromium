@@ -37,10 +37,10 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
         String result = resultFuture.get(5, TimeUnit.SECONDS);
         jsIsolate.close();
         jsSandbox.close();
@@ -56,12 +56,12 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate1 = jsSandbox.createIsolate();
         JsIsolate jsIsolate2 = jsSandbox.createIsolate();
         jsIsolate1.close();
-        ListenableFuture<String> resultFuture = jsIsolate2.evaluateJavascript(code);
+        ListenableFuture<String> resultFuture = jsIsolate2.evaluateJavascriptAsync(code);
         String result = resultFuture.get(5, TimeUnit.SECONDS);
         jsIsolate2.close();
         jsSandbox.close();
@@ -80,13 +80,13 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascript(code1);
+        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
         String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate2 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascript(code2);
+        ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascriptAsync(code2);
         String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
         jsIsolate1.close();
         jsIsolate2.close();
@@ -106,13 +106,13 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascript(code1);
+        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
         String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate2 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascript(code2);
+        ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascriptAsync(code2);
         String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
         jsIsolate1.close();
         jsIsolate2.close();
@@ -132,12 +132,12 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascript(code1);
+        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
         String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
-        ListenableFuture<String> resultFuture2 = jsIsolate1.evaluateJavascript(code2);
+        ListenableFuture<String> resultFuture2 = jsIsolate1.evaluateJavascriptAsync(code2);
         String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
         jsIsolate1.close();
         jsSandbox.close();
@@ -154,10 +154,10 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
         boolean isOfCorrectType = false;
         String error = "";
         try {
@@ -180,10 +180,10 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
         boolean isOfCorrectType = false;
         try {
             jsIsolate.close();
@@ -204,12 +204,12 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate = jsSandbox.createIsolate();
         Vector<ListenableFuture<String>> resultFutures = new Vector<ListenableFuture<String>>();
         for (int i = 0; i < num_of_evaluations; i++) {
-            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
             resultFutures.add(resultFuture);
         }
         jsIsolate.close();
@@ -240,12 +240,12 @@ public class JsSandboxServiceTest {
                 + "});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
             Assert.assertTrue(provideNamedDataReturn);
-            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code);
+            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(provideString, result);
@@ -266,12 +266,12 @@ public class JsSandboxServiceTest {
                 + "});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
             Assert.assertTrue(provideNamedDataReturn);
-            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code);
+            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(success, result);
@@ -285,10 +285,10 @@ public class JsSandboxServiceTest {
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JsIsolate jsIsolate = jsSandbox.createIsolate()) {
-            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
             String result = resultFuture.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(expected, result);
@@ -308,11 +308,11 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JsIsolate jsIsolate = jsSandbox.createIsolate()) {
-            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code1);
-            ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavascript(code2);
+            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascriptAsync(code1);
+            ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavascriptAsync(code2);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(expected, result);
@@ -341,7 +341,7 @@ public class JsSandboxServiceTest {
                 + "});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             jsIsolate.provideNamedData("id-1", bytes);
@@ -350,7 +350,7 @@ public class JsSandboxServiceTest {
             jsIsolate.provideNamedData("id-4", bytes);
             jsIsolate.provideNamedData("id-5", bytes);
             Thread.sleep(1000);
-            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code);
+            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(success, result);
@@ -370,10 +370,10 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JsIsolate jsIsolate = jsSandbox.createIsolate()) {
-            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
             try {
                 String result = resultFuture.get(5, TimeUnit.SECONDS);
                 Assert.fail("Should have thrown.");
@@ -393,10 +393,10 @@ public class JsSandboxServiceTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture =
-                JsSandbox.newConnectedInstanceForTesting(context);
+                JsSandbox.newConnectedInstanceForTestingAsync(context);
         JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
         JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
         try {
             jsSandbox.close();
             resultFuture.get(5, TimeUnit.SECONDS);

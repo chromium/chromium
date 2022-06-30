@@ -9,6 +9,7 @@ import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 
 /**
  * Used by the embedding app to execute JavaScript in a sandboxed environment.
+ * @hide
  */
 interface IJsSandboxIsolate {
     /**

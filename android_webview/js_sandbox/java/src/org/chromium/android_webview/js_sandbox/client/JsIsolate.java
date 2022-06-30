@@ -5,7 +5,6 @@
 package org.chromium.android_webview.js_sandbox.client;
 
 import android.content.res.AssetFileDescriptor;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
@@ -35,7 +34,7 @@ public class JsIsolate implements AutoCloseable {
     private static final String TAG = "JsIsolate";
     private final Object mSetLock = new Object();
     private IJsSandboxIsolate mJsIsolateStub;
-    private android.util.CloseGuard mGuard;
+    private CloseGuardHelper mGuard = CloseGuardHelper.create();
     private Executor mMainExecutor;
     private final Executor mThreadPoolTaskExecutor =
             Executors.newCachedThreadPool(new ThreadFactory() {
@@ -77,10 +76,7 @@ public class JsIsolate implements AutoCloseable {
         mMainExecutor = executor;
         mJsSandbox = sandbox;
         mJsIsolateStub = jsIsolateStub;
-        if (Build.VERSION.SDK_INT >= 30) {
-            mGuard = new android.util.CloseGuard();
-            mGuard.open("close");
-        }
+        mGuard.open("close");
         // This should be at the end of the constructor.
     }
 
@@ -88,7 +84,8 @@ public class JsIsolate implements AutoCloseable {
      * Evaluates the Javascript code and returns a ListenableFuture for the result of execution.
      * TODO(crbug.com/1297672): Add timeouts for requests.
      */
-    public ListenableFuture<String> evaluateJavascript(String code) {
+    @NonNull
+    public ListenableFuture<String> evaluateJavascriptAsync(@NonNull String code) {
         if (mJsIsolateStub == null) {
             throw new IllegalStateException(
                     "Calling evaluateJavascript() after closing the Isolate");
@@ -132,12 +129,10 @@ public class JsIsolate implements AutoCloseable {
         }
         mJsIsolateStub = null;
         mJsSandbox.removeFromIsolateSet(this);
-        if (Build.VERSION.SDK_INT >= 30) {
-            mGuard.close();
-        }
+        mGuard.close();
     }
 
-    public boolean provideNamedData(@NonNull String name, byte[] inputBytes) {
+    public boolean provideNamedData(@NonNull String name, @NonNull byte[] inputBytes) {
         if (mJsIsolateStub == null) {
             throw new IllegalStateException("Calling provideNamedData() after closing the Isolate");
         }
@@ -145,16 +140,15 @@ public class JsIsolate implements AutoCloseable {
             throw new NullPointerException("name parameter cannot be null");
         }
         try {
+            final long offset = 0;
+            final long length = inputBytes.length;
             ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
             ParcelFileDescriptor readSide = pipe[0];
             ParcelFileDescriptor writeSide = pipe[1];
             OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide);
-
             mThreadPoolTaskExecutor.execute(
                     () -> { convertByteArrayToStream(inputBytes, outputStream); });
 
-            final long offset = 0;
-            final long length = inputBytes.length;
             AssetFileDescriptor asd = new AssetFileDescriptor(readSide, offset, length);
             return mJsIsolateStub.provideNamedData(name, asd);
         } catch (RemoteException e) {
@@ -188,7 +182,7 @@ public class JsIsolate implements AutoCloseable {
         }
     }
 
-    private void removePending(CallbackToFutureAdapter.Completer<String> completer) {
+    void removePending(CallbackToFutureAdapter.Completer<String> completer) {
         synchronized (mSetLock) {
             if (mPendingCompleterSet != null) {
                 mPendingCompleterSet.remove(completer);
@@ -208,10 +202,8 @@ public class JsIsolate implements AutoCloseable {
     @Override
     protected void finalize() throws Throwable {
         try {
-            if (Build.VERSION.SDK_INT >= 30) {
-                if (mGuard != null) {
-                    mGuard.warnIfOpen();
-                }
+            if (mGuard != null) {
+                mGuard.warnIfOpen();
             }
             if (mJsIsolateStub != null) {
                 close();

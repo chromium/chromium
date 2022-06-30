@@ -4,9 +4,11 @@
 
 package org.chromium.android_webview.js_sandbox.client;
 
+import androidx.annotation.NonNull;
+
 /** Wrapper for the exception thrown by the JS evaluation engine. */
 public class EvaluationFailedException extends JsException {
-    public EvaluationFailedException(String error) {
+    public EvaluationFailedException(@NonNull String error) {
         super(error);
     }
 }

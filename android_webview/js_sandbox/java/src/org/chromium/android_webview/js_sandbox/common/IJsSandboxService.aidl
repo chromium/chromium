@@ -7,6 +7,7 @@ import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 
 /**
  * Used by the embedding app to execute JavaScript in a sandboxed environment.
+ * @hide
  */
 interface IJsSandboxService {
     IJsSandboxIsolate createIsolate() = 0;

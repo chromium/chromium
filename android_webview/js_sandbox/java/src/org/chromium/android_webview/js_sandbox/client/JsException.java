@@ -4,9 +4,11 @@
 
 package org.chromium.android_webview.js_sandbox.client;
 
+import androidx.annotation.NonNull;
+
 /** Super class for all exceptions thrown during evaluation. */
 public class JsException extends Exception {
-    public JsException(String error) {
+    public JsException(@NonNull String error) {
         super(error);
     }
 
