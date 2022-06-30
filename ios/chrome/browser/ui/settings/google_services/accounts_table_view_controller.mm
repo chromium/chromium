@@ -704,7 +704,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     DCHECK(!self.signoutCoordinator);
     // TODO(crbug.com/1221066): Need to add a completion block in
     // `dismissAccountDetailsViewControllerBlock` callback, to trigger
-    // `popAccountsTableViewController()|.
+    // `popAccountsTableViewController()`.
     // Once we have a completion block, we can set `animated` to YES.
     self.dismissAccountDetailsViewControllerBlock(/*animated=*/NO);
     self.dismissAccountDetailsViewControllerBlock = nil;

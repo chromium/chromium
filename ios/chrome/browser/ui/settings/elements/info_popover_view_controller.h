@@ -11,14 +11,14 @@
 @interface InfoPopoverViewController : PopoverLabelViewController
 
 // Init with only a main message shown as the primary label. By default,
-// the value of |isPresentingFromButton| is set to YES.
+// the value of `isPresentingFromButton` is set to YES.
 - (instancetype)initWithMessage:(NSString*)message;
 
 // Init with the primary text, the secondary text with an attributed string,
-// an |icon| at the left of the secondary text, and a boolean
-// |isPresentingFromButton| to determine if it is shown from a button. The size
+// an `icon` at the left of the secondary text, and a boolean
+// `isPresentingFromButton` to determine if it is shown from a button. The size
 // of the icon will be of equal height and width. There won't be an icon if
-// |icon| is left empty. The icon won't be shown if |secondaryAttributedString|
+// `icon` is left empty. The icon won't be shown if `secondaryAttributedString`
 // is empty.
 - (instancetype)initWithPrimaryAttributedString:
                     (NSAttributedString*)primaryAttributedString

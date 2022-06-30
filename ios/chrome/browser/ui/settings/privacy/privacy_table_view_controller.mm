@@ -630,7 +630,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }
 
 // Called from the Incognito interstitial setting's UIControlEventTouchUpInside.
-// When this is called, |switchView| already has the updated value:
+// When this is called, `switchView` already has the updated value:
 // If the switch was off, and user taps it, when this method is called,
 // switchView.on is YES.
 - (void)incognitoInterstitialSwitchTapped:(UISwitch*)switchView {

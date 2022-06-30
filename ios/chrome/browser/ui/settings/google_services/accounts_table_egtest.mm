@@ -121,7 +121,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
 
-  // Check that `fakeIdentity2| isn't available anymore on the Account Settings.
+  // Check that `fakeIdentity2` isn't available anymore on the Account Settings.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
                                               fakeIdentity2.userEmail),
