@@ -58,6 +58,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
@@ -467,6 +468,16 @@ id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {
     DCHECK(single_sign_on_service_);
   }
   return single_sign_on_service_;
+}
+
+segmentation_platform::OTRWebStateObserver*
+ApplicationContextImpl::GetSegmentationOTRWebStateObserver() {
+  if (!segmentation_otr_web_state_observer_) {
+    segmentation_otr_web_state_observer_ =
+        std::make_unique<segmentation_platform::OTRWebStateObserver>(
+            GetChromeBrowserStateManager());
+  }
+  return segmentation_otr_web_state_observer_.get();
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {

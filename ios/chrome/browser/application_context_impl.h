@@ -81,6 +81,8 @@ class ApplicationContextImpl : public ApplicationContext {
   breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() override;
   id<SingleSignOnService> GetSSOService() override;
+  segmentation_platform::OTRWebStateObserver*
+  GetSegmentationOTRWebStateObserver() override;
 
  private:
   // Sets the locale used by the application.
@@ -125,6 +127,9 @@ class ApplicationContextImpl : public ApplicationContext {
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+
+  std::unique_ptr<segmentation_platform::OTRWebStateObserver>
+      segmentation_otr_web_state_observer_;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_
