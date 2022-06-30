@@ -964,6 +964,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
   if (is_kiosk_mode) {
     options.suggestions &= ~SUGGEST_DIAGNOSE_TOOL;
     options.suggestions &= ~SUGGEST_LEARNMORE;
+    options.suggestions &= ~SUGGEST_CONTACT_ADMINISTRATOR;
   }
 
   std::u16string failed_url_string(url_formatter::FormatUrl(

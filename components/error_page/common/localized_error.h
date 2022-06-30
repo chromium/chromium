@@ -39,21 +39,20 @@ class LocalizedError {
 
   // Returns a |PageState| that describes the elements that should be shown on
   // on HTTP errors, like 404 or connection reset.
-  static PageState GetPageState(
-      int error_code,
-      const std::string& error_domain,
-      const GURL& failed_url,
-      bool is_post,
-      bool is_secure_dns_network_error,
-      bool stale_copy_in_cache,
-      bool can_show_network_diagnostics_dialog,
-      bool is_incognito,
-      bool offline_content_feature_enabled,
-      bool auto_fetch_feature_enabled,
-      bool is_kiosk_mode,  // whether device is currently in single app (kiosk)
-                           // mode
-      const std::string& locale,
-      bool is_blocked_by_extension);
+  // |is_kiosk_mode| whether device is currently in the Kiosk session mode.
+  static PageState GetPageState(int error_code,
+                                const std::string& error_domain,
+                                const GURL& failed_url,
+                                bool is_post,
+                                bool is_secure_dns_network_error,
+                                bool stale_copy_in_cache,
+                                bool can_show_network_diagnostics_dialog,
+                                bool is_incognito,
+                                bool offline_content_feature_enabled,
+                                bool auto_fetch_feature_enabled,
+                                bool is_kiosk_mode,
+                                const std::string& locale,
+                                bool is_blocked_by_extension);
 
   // Returns a |PageState| that describes the elements that should be shown on
   // when default offline page is shown.

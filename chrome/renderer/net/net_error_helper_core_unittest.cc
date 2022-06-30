@@ -87,6 +87,19 @@ std::string NetErrorString(net::Error net_error) {
   return ErrorToString(NetError(net_error), false);
 }
 
+error_page::LocalizedError::PageState GetErrorPageState(int error_code,
+                                                        bool is_kiosk_mode) {
+  return error_page::LocalizedError::GetPageState(
+      error_code, error_page::Error::kNetErrorDomain, GURL(kFailedUrl),
+      /*is_post=*/false,
+      /*is_secure_dns_network_error=*/false, /*stale_copy_in_cache=*/false,
+      /*can_show_network_diagnostics_dialog=*/false, /*is_incognito=*/false,
+      /*offline_content_feature_enabled=*/false,
+      /*auto_fetch_feature_enabled=*/false, /*is_kiosk_mode=*/is_kiosk_mode,
+      /*locale=*/"",
+      /*is_blocked_by_extension=*/false);
+}
+
 class NetErrorHelperCoreTest : public testing::Test,
                                public NetErrorHelperCore::Delegate {
  public:
@@ -356,6 +369,36 @@ TEST_F(NetErrorHelperCoreTest, MainFrameNonDnsErrorSpuriousStatus) {
   core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
 
   EXPECT_EQ(0, update_count());
+}
+
+TEST_F(NetErrorHelperCoreTest,
+       UserModeErrBlockedByAdministratorContainsDetails) {
+  error_page::LocalizedError::PageState page_state = GetErrorPageState(
+      net::ERR_BLOCKED_BY_ADMINISTRATOR, /*is_kiosk_mode=*/false);
+
+  auto* suggestions_details = page_state.strings.FindList("suggestionsDetails");
+  ASSERT_TRUE(suggestions_details);
+  EXPECT_FALSE(suggestions_details->empty());
+
+  auto* suggestions_summary_list =
+      page_state.strings.FindList("suggestionsSummaryList");
+  ASSERT_TRUE(suggestions_summary_list);
+  EXPECT_FALSE(suggestions_summary_list->empty());
+}
+
+TEST_F(NetErrorHelperCoreTest,
+       KioskModeErrBlockedByAdministratorDoenNotContainDetails) {
+  error_page::LocalizedError::PageState page_state = GetErrorPageState(
+      net::ERR_BLOCKED_BY_ADMINISTRATOR, /*is_kiosk_mode=*/true);
+
+  auto* suggestions_details = page_state.strings.FindList("suggestionsDetails");
+  ASSERT_TRUE(suggestions_details);
+  EXPECT_TRUE(suggestions_details->empty());
+
+  auto* suggestions_summary_list =
+      page_state.strings.FindList("suggestionsSummaryList");
+  ASSERT_TRUE(suggestions_summary_list);
+  EXPECT_TRUE(suggestions_summary_list->empty());
 }
 
 TEST_F(NetErrorHelperCoreTest, SubFrameErrorWithCustomErrorPage) {
