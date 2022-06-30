@@ -6133,14 +6133,25 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="OmniboxProviderTime" separator=".">
   <suffix name="Bookmark" label=""/>
   <suffix name="Builtin" label=""/>
+  <suffix name="Clipboard" label=""/>
   <suffix name="Contact" label=""/>
+  <suffix name="Document" label=""/>
   <suffix name="ExtensionApp" label=""/>
+  <suffix name="HistoryCluster" label=""/>
   <suffix name="HistoryContents" label=""/>
+  <suffix name="HistoryFuzzy" label=""/>
   <suffix name="HistoryQuick" label=""/>
   <suffix name="HistoryURL" label=""/>
   <suffix name="Keyword" label=""/>
+  <suffix name="LocalHistoryZeroSuggest" label=""/>
+  <suffix name="MostVisitedSites" label=""/>
+  <suffix name="OnDeviceHead" label=""/>
+  <suffix name="OpenTab" label=""/>
+  <suffix name="QueryTile" label=""/>
   <suffix name="Search" label=""/>
   <suffix name="Shortcuts" label=""/>
+  <suffix name="VerbatimMatch" label=""/>
+  <suffix name="VoiceSuggest" label=""/>
   <suffix name="ZeroSuggest" label=""/>
   <affected-histogram name="Omnibox.ProviderTime"/>
   <affected-histogram name="Omnibox.ProviderTime2"/>
