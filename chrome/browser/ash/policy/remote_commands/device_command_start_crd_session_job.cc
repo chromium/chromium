@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,6 +24,7 @@
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
+#include "remoting/host/chromeos/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -48,6 +50,11 @@ const char kIdlenessCutoffFieldName[] = "idlenessCutoffSec";
 // True if the admin has confirmed that they want to start the CRD session
 // while a user is currently using the device.
 const char kAckedUserPresenceFieldName[] = "ackedUserPresence";
+
+// True if the admin wants to start a private remote access session where the
+// physical displays are curtained off so the local user can not see what the
+// admin is doing.
+const char kCurtainLocalUserSession[] = "curtainLocalUserSession";
 
 // Result payload fields:
 
@@ -258,6 +265,18 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   acked_user_presence_ =
       root->FindBoolKey(kAckedUserPresenceFieldName).value_or(false);
 
+  curtain_local_user_session_ =
+      root->FindBoolKey(kCurtainLocalUserSession).value_or(false);
+
+  if (curtain_local_user_session_ &&
+      !base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdAdminRemoteAccess)) {
+    LOG(WARNING)
+        << "Rejecting curtain_local_user_session as CRD remote access feature "
+           "is not enabled";
+    return false;
+  }
+
   return true;
 }
 
@@ -321,10 +340,11 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
     const std::string& token) {
   CRD_DVLOG(1) << "Received OAuth token, now retrieving CRD access code";
   Delegate::SessionParameters parameters{
-      /*oauth_token=*/token,
-      /*user_name=*/GetRobotAccountUserName(),
-      /*terminate_upon_input=*/ShouldTerminateUponInput(),
-      /*show_confirmation_dialog=*/ShouldShowConfirmationDialog()};
+      .oauth_token = token,
+      .user_name = GetRobotAccountUserName(),
+      .terminate_upon_input = ShouldTerminateUponInput(),
+      .show_confirmation_dialog = ShouldShowConfirmationDialog(),
+      .curtain_local_user_session = curtain_local_user_session_};
   delegate_->StartCrdHostAndGetCode(
       parameters,
       base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithSuccess,
@@ -386,6 +406,10 @@ bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
 
   CRD_DVLOG(2) << "User is of type " << UserTypeToString(current_user_type);
 
+  if (curtain_local_user_session_) {
+    return current_user_type == UserType::kNoUser;
+  }
+
   switch (current_user_type) {
     case UserType::kAffiliatedUser:
     case UserType::kAutoLaunchedKiosk:
@@ -432,9 +456,11 @@ DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
       return UmaSessionType::kAffiliatedUser;
     case UserType::kManagedGuestSession:
       return UmaSessionType::kManagedGuestSession;
+    case UserType::kNoUser:
+      // TODO(b/236689277): Introduce UmaSessionType::kNoLocalUser.
+      return UmaSessionType::kMaxValue;
     case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
-    case UserType::kNoUser:
       NOTREACHED();
       return UmaSessionType::kMaxValue;
   }
@@ -484,6 +510,9 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
+  if (curtain_local_user_session_)
+    return false;
+
   switch (GetUserType()) {
     case UserType::kAffiliatedUser:
     case UserType::kManagedGuestSession:

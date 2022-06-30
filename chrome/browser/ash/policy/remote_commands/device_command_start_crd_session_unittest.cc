@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,6 +37,7 @@ namespace {
 using ::base::test::TestFuture;
 using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
+using remoting::features::kEnableCrdAdminRemoteAccess;
 namespace em = ::enterprise_management;
 
 constexpr char kResultCodeFieldName[] = "resultCode";
@@ -195,7 +199,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   }
 
   Result RunJobAndWaitForResult(const DictBuilder& payload = DictBuilder()) {
-    bool launched = InitializeAndRunJob(payload.ToString());
+    bool launched = InitializeAndRunJob(payload);
     EXPECT_TRUE(launched) << "Failed to launch the job";
     // Do not wait for the result if the job was never launched in the first
     // place.
@@ -287,11 +291,11 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   StubCrdHostDelegate& crd_host_delegate() { return crd_host_delegate_; }
   DeviceCommandStartCrdSessionJob& job() { return job_; }
 
-  bool InitializeJob(std::string payload) {
-    bool success =
-        job().Init(base::TimeTicks::Now(),
-                   GenerateCommandProto(kUniqueID, base::TimeDelta(), payload),
-                   em::SignedData());
+  bool InitializeJob(const DictBuilder& payload) {
+    bool success = job().Init(
+        base::TimeTicks::Now(),
+        GenerateCommandProto(kUniqueID, base::TimeDelta(), payload.ToString()),
+        em::SignedData());
 
     if (oauth_token_)
       job().SetOAuthTokenForTest(oauth_token_.value());
@@ -305,7 +309,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   // Initialize and run the remote command job.
   // The result will be stored in |future_result_|.
-  bool InitializeAndRunJob(std::string payload) {
+  bool InitializeAndRunJob(const DictBuilder& payload) {
     bool success = InitializeJob(payload);
     EXPECT_TRUE(success) << "Failed to initialize the job";
     if (!success)
@@ -779,6 +783,170 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_CRD_HOST_ERROR, 1);
+}
+
+class DeviceCommandStartCrdSessionJobCurtainSessionTest
+    : public DeviceCommandStartCrdSessionJobTest {
+ public:
+  void EnableFeature(const base::Feature& feature) {
+    feature_.InitAndEnableFeature(feature);
+  }
+
+  void DisableFeature(const base::Feature& feature) {
+    feature_.InitAndDisableFeature(feature);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldUseCurtainLocalUserSessionFalseIfFeatureIsDisabled) {
+  DisableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsAutoLaunchedKioskAppUser();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+  EXPECT_FALSE(
+      crd_host_delegate().session_parameters().curtain_local_user_session);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldDefaultCurtainLocalUserSessionToFalseIfUnspecifiedInPayload) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+  LogInAsAutoLaunchedKioskAppUser();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult(Payload()));
+  EXPECT_FALSE(
+      crd_host_delegate().session_parameters().curtain_local_user_session);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldRejectCurtainLocalUserSessionTrueInPayloadIfFeatureIsDisabled) {
+  DisableFeature(kEnableCrdAdminRemoteAccess);
+
+  bool success = InitializeJob(Payload().Set("curtainLocalUserSession", true));
+
+  EXPECT_FALSE(success);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldFailForGuestUser) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsGuestUser();
+
+  EXPECT_ERROR(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
+      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldFailForManagedGuestSessionUser) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsManagedGuestSessionUser();
+
+  EXPECT_ERROR(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
+      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldFailForRegularUser) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsRegularUser();
+
+  EXPECT_ERROR(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
+      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldFailForAffiliatedUser) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsAffiliatedUser();
+
+  EXPECT_ERROR(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
+      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldFailForKioskUserWithoutAutoLaunch) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsAutoLaunchedKioskAppUser();
+
+  EXPECT_ERROR(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
+      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldFailForKioskUserWithAutoLaunch) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsKioskAppUser();
+
+  EXPECT_ERROR(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
+      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldSucceedIfNoUserIsLoggedIn) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)));
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldSetCurtainLocalUserSessionTrue) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)));
+  EXPECT_TRUE(
+      crd_host_delegate().session_parameters().curtain_local_user_session);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldSetCurtainLocalUserSessionFalse) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  LogInAsAutoLaunchedKioskAppUser();
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", false)));
+  EXPECT_FALSE(
+      crd_host_delegate().session_parameters().curtain_local_user_session);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldNotTerminateUponInput) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload()
+                                 .Set("curtainLocalUserSession", true)
+                                 // This would enable terminate upon input in
+                                 // a non-curtained job.
+                                 .Set("ackedUserPresense", false)));
+  EXPECT_FALSE(crd_host_delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
+       ShouldNotShowConfirmationDialog) {
+  EnableFeature(kEnableCrdAdminRemoteAccess);
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)));
+  EXPECT_FALSE(
+      crd_host_delegate().session_parameters().show_confirmation_dialog);
 }
 
 }  // namespace policy

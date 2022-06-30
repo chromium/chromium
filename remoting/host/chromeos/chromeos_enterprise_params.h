@@ -14,6 +14,7 @@ struct ChromeOsEnterpriseParams {
   bool suppress_user_dialogs = false;
   bool suppress_notifications = false;
   bool terminate_upon_input = false;
+  bool curtain_local_user_session = false;
 };
 
 }  // namespace remoting

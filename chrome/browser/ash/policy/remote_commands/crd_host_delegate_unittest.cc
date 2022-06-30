@@ -316,6 +316,36 @@ TEST_F(CrdHostDelegateTest, ShouldPassTerminateUponInputTrueToRemotingService) {
   EXPECT_EQ(actual_parameters.terminate_upon_input, true);
 }
 
+TEST_F(CrdHostDelegateTest,
+       ShouldPassCurtainLocalUserSessionFalseToRemotingService) {
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = false;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback());
+
+  EXPECT_EQ(actual_parameters.curtain_local_user_session, false);
+}
+
+TEST_F(CrdHostDelegateTest,
+       ShouldPassCurtainLocalUserSessionTrueToRemotingService) {
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = true;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback());
+
+  EXPECT_EQ(actual_parameters.curtain_local_user_session, true);
+}
+
 TEST_F(CrdHostDelegateTest, ShouldReportErrorIfStartSessionReturnsError) {
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce([](SupportSessionParamsPtr params,

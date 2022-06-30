@@ -484,6 +484,7 @@ source_set("chromeos") {
     "//extensions/browser/api:api_implementations",
     "//extensions/browser/updater",
     "//media/capture/video/chromeos/public:public",
+    "//remoting/host/chromeos:features",
 
     # This depends directly on the variations target, rather than just
     # transitively via the common target because the proto sources need to

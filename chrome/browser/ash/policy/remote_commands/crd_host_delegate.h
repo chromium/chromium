@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/mojom/remote_support.mojom-forward.h"
 
