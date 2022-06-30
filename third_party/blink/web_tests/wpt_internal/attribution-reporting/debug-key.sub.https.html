@@ -9,20 +9,18 @@
 <script>
 const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
-    const debugKey = '246';
-
     registerAttributionSrc(t, {
       source: {
         source_event_id: '1',
         destination: `https://{{host}}`,
-        debug_key: forSource ? debugKey : undefined,
+        debug_key: forSource ? testCase.debugKey : undefined,
       },
       cookie: testCase.cookie,
     });
 
     registerAttributionSrc(t, {trigger: {
       event_trigger_data: [{trigger_data: '0'}],
-      debug_key: forSource ? undefined : debugKey,
+      debug_key: forSource ? undefined : testCase.debugKey,
     }});
 
     const payload = await pollEventLevelReports();
@@ -36,7 +34,7 @@ const debug_key_promise_test = (testCase, forSource) =>
     }
 
     if (testCase.keyExpected) {
-      assert_equals(report[keyUnderTest], debugKey);
+      assert_equals(report[keyUnderTest], testCase.debugKey);
     } else {
       assert_not_own_property(report, keyUnderTest);
     }
@@ -47,32 +45,50 @@ const debug_key_promise_test = (testCase, forSource) =>
 [
   {
     testName: 'Valid cookie propagates debug key.',
+    debugKey: '246',
     cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
     keyExpected: true,
   },
   {
     testName: 'Missing cookie clears debug key.',
+    debugKey: '246',
     cookie: 'foo=1;Secure;HttpOnly;SameSite=None;Path=/',
     keyExpected: false,
   },
   {
     testName: 'Cookie without Secure clears debug key.',
+    debugKey: '246',
     cookie: 'ar_debug=1;HttpOnly;SameSite=None;Path=/',
     keyExpected: false,
   },
   {
     testName: 'Cookie without HttpOnly clears debug key.',
+    debugKey: '246',
     cookie: 'ar_debug=1;Secure;SameSite=None;Path=/',
     keyExpected: false,
   },
   {
     testName: 'Cookie without SameSite=None clears debug key.',
+    debugKey: '246',
     cookie: 'ar_debug=1;Secure;HttpOnly;Path=/',
     keyExpected: false,
   },
   {
     testName: 'Cookie with narrow Path clears debug key.',
+    debugKey: '246',
     cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None',
+    keyExpected: false,
+  },
+  {
+    testName: 'Field with wrong type is ignored.',
+    debugKey: 246,
+    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    keyExpected: false,
+  },
+  {
+    testName: 'Field with invalid format is ignored.',
+    debugKey: '-246',
+    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
     keyExpected: false,
   },
 ].forEach(testCase => {
