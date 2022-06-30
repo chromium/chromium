@@ -180,7 +180,8 @@ function processPhase(isResponseToAck = false) {
     case testPhase.kInitial:
       assert(Number.isNaN(util.mediaSource.duration), "Initial unattached MediaSource duration must be NaN, but instead is " + util.mediaSource.duration);
       phase = testPhase.kAttaching;
-      postMessage({ subject: messageSubject.HANDLE, info: util.mediaSource.getHandle() });
+      let handle = util.mediaSource.getHandle();
+      postMessage({ subject: messageSubject.HANDLE, info: handle }, { transfer: [handle] } );
       break;
 
     case testPhase.kAttaching:

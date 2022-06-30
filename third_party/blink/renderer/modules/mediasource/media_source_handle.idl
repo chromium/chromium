@@ -9,7 +9,7 @@
 [
     Exposed=(Window,DedicatedWorker),
     ImplementedAs=MediaSourceHandleImpl,
-    Serializable,
+    Transferable,
     RuntimeEnabled=MediaSourceInWorkersUsingHandle
 ] interface MediaSourceHandle {
   // Trivial handle object useful for attaching a DedicatedWorker MediaSource

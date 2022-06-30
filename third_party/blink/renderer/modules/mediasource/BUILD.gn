@@ -22,6 +22,8 @@ blink_modules_sources("mediasource") {
     "media_source_handle_attachment.h",
     "media_source_handle_impl.cc",
     "media_source_handle_impl.h",
+    "media_source_handle_transfer_list.cc",
+    "media_source_handle_transfer_list.h",
     "media_source_registry_impl.cc",
     "media_source_registry_impl.h",
     "same_thread_media_source_attachment.cc",

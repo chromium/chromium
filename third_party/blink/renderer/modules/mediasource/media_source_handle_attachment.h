@@ -25,8 +25,8 @@ class MODULES_EXPORT MediaSourceHandleAttachment
   using MediaSourceHandleVector = Vector<HandleInternals>;
 
   static const void* const kAttachmentKey;
-  MediaSourceHandleAttachment() = default;
-  ~MediaSourceHandleAttachment() override = default;
+  MediaSourceHandleAttachment();
+  ~MediaSourceHandleAttachment() override;
 
   bool IsLockedToAgentCluster() const override {
     return !attachments_.IsEmpty();

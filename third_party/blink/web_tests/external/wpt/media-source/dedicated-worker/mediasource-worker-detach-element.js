@@ -32,7 +32,9 @@ util.mediaSource.addEventListener("sourceopen", () => {
                              err => { postMessage({ subject: messageSubject.ERROR, info: err }) } );
 }, { once : true });
 
-postMessage({ subject: messageSubject.HANDLE, info: util.mediaSource.getHandle() } );
+let handle = util.mediaSource.getHandle();
+
+postMessage({ subject: messageSubject.HANDLE, info: handle }, { transfer: [handle] } );
 
 // Append increasingly large pieces at a time, starting/continuing at |position|.
 // This allows buffering the test media without timeout, but also with enough

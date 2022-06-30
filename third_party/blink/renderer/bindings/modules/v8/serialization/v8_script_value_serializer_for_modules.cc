@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_handle_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_handle_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_handle_transfer_list.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
@@ -100,6 +101,41 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
       return false;
     }
     transferables.media_stream_tracks.push_back(track);
+    return true;
+  }
+
+  if (V8MediaSourceHandle::HasInstance(object, isolate) &&
+      RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+          CurrentExecutionContext(isolate)) &&
+      RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+          CurrentExecutionContext(isolate))) {
+    MediaSourceHandleImpl* media_source_handle =
+        V8MediaSourceHandle::ToImpl(v8::Local<v8::Object>::Cast(object));
+    MediaSourceHandleTransferList* transfer_list =
+        transferables.GetOrCreateTransferList<MediaSourceHandleTransferList>();
+    if (transfer_list->media_source_handles.Contains(media_source_handle)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "MediaSourceHandle at index " + String::Number(object_index) +
+              " is a duplicate of an earlier MediaSourceHandle.");
+      return false;
+    }
+    if (media_source_handle->is_detached()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "MediaSourceHandle at index " + String::Number(object_index) +
+              " is detached and cannot be transferred.");
+      return false;
+    }
+    if (media_source_handle->is_used()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "MediaSourceHandle at index " + String::Number(object_index) +
+              " has been used as srcObject of media element already, and "
+              "cannot be transferred.");
+      return false;
+    }
+    transfer_list->media_source_handles.push_back(media_source_handle);
     return true;
   }
 
@@ -269,8 +305,27 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
       return false;
     }
 
-    return WriteMediaSourceHandle(wrappable->ToImpl<MediaSourceHandleImpl>(),
-                                  exception_state);
+    const Transferables* transferables = GetTransferables();
+    const MediaSourceHandleTransferList* transfer_list = nullptr;
+
+    if (transferables) {
+      transfer_list =
+          transferables
+              ->GetTransferListIfExists<MediaSourceHandleTransferList>();
+      if (transfer_list) {
+        MediaSourceHandleImpl* media_source_handle =
+            wrappable->ToImpl<MediaSourceHandleImpl>();
+        if (transfer_list->media_source_handles.Find(media_source_handle) !=
+            kNotFound) {
+          return WriteMediaSourceHandle(media_source_handle, exception_state);
+        }
+      }
+    }
+
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      "A MediaSourceHandle could not be cloned "
+                                      "because it was not transferred.");
+    return false;
   }
 
   return false;

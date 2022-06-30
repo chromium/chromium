@@ -42,4 +42,5 @@ util.mediaSource.addEventListener("sourceopen", () => {
                              err => { postMessage({ subject: messageSubject.ERROR, info: err }) });
 }, { once : true });
 
-postMessage({ subject: messageSubject.HANDLE, info: util.mediaSource.getHandle() });
+let handle = util.mediaSource.getHandle();
+postMessage({ subject: messageSubject.HANDLE, info: handle }, { transfer: [handle] });

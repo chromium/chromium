@@ -29,13 +29,24 @@ class MediaSourceHandleImpl final : public ScriptWrappable,
   scoped_refptr<MediaSourceAttachment> TakeAttachment() override;
   String GetInternalBlobURL() override;
 
+  // Occurs during serialization, and prevents further serialization success.
   void mark_serialized();
+
+  // Occurs during transfer finalization, and prevents further transfer attempt.
+  // Note, this is needed because an app may transfer without serialization,
+  // e.g. postMessage(null, [handle]), and this must prevent successful transfer
+  // again of the same handle instance, even though the way the message was
+  // posted prevents successful serialization and deserialization of the handle.
+  // This also prevents successful use of the handle instance for attachment.
+  void mark_detached();
+  bool is_detached() const { return detached_; }
 
   void Trace(Visitor*) const override;
 
  private:
   scoped_refptr<HandleAttachmentProvider> attachment_provider_;
   String internal_blob_url_;
+  bool detached_ = false;
 };
 
 }  // namespace blink

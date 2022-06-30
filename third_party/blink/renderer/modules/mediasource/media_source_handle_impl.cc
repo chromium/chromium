@@ -31,23 +31,25 @@ MediaSourceHandleImpl::~MediaSourceHandleImpl() {
 
 scoped_refptr<HandleAttachmentProvider>
 MediaSourceHandleImpl::TakeAttachmentProvider() {
+  DVLOG(1) << __func__ << " this=" << this;
   return std::move(attachment_provider_);
 }
 
 scoped_refptr<MediaSourceAttachment> MediaSourceHandleImpl::TakeAttachment() {
+  DVLOG(1) << __func__ << " this=" << this;
   if (!attachment_provider_) {
-    // Either this handle instance has already been serialized, or it has been
-    // assigned as srcObject on an HTMLMediaElement and used later to begin
-    // asynchronous attachment start.
-    DCHECK(is_serialized() || is_used());
+    // Either this handle instance has already been serialized, has been
+    // transferred, or it has been assigned as srcObject on an HTMLMediaElement
+    // and used later to begin asynchronous attachment start.
+    DCHECK(is_serialized() || detached_ || is_used());
     return nullptr;
   }
 
-  // Otherwise, this handle instance must not yet have been serialized or used
-  // to begin an attachment. The only case we should be here is when this
-  // instance is being used to attempt asynchronous attachment start after it
-  // was set as srcObject on an HTMLMediaElement.
-  DCHECK(is_used() && !is_serialized());
+  // Otherwise, this handle instance must not yet have been serialized,
+  // transferred or used to begin an attachment. The only case we should be here
+  // is when this instance is being used to attempt asynchronous attachment
+  // start after it was set as srcObject on an HTMLMediaElement.
+  DCHECK(is_used() && !is_serialized() && !detached_);
   scoped_refptr<MediaSourceAttachment> result =
       attachment_provider_->TakeAttachment();
   attachment_provider_ = nullptr;
@@ -60,10 +62,12 @@ scoped_refptr<MediaSourceAttachment> MediaSourceHandleImpl::TakeAttachment() {
 }
 
 String MediaSourceHandleImpl::GetInternalBlobURL() {
+  DVLOG(1) << __func__ << " this=" << this;
   return internal_blob_url_;
 }
 
 void MediaSourceHandleImpl::mark_serialized() {
+  DVLOG(1) << __func__ << " this=" << this;
   DCHECK(!serialized_);
   serialized_ = true;
 
@@ -73,6 +77,13 @@ void MediaSourceHandleImpl::mark_serialized() {
   // instance can no longer be serialized and there will be at most one async
   // media element load that retrieves our provider's attachment reference.
   DCHECK(!attachment_provider_);
+}
+
+void MediaSourceHandleImpl::mark_detached() {
+  DVLOG(1) << __func__ << " this=" << this;
+  DCHECK(!detached_);
+  detached_ = true;
+  attachment_provider_ = nullptr;
 }
 
 void MediaSourceHandleImpl::Trace(Visitor* visitor) const {
