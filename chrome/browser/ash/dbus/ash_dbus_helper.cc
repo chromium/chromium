@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
+#include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -58,7 +59,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
-#include "chromeos/dbus/federated/federated_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
@@ -139,7 +139,7 @@ void InitializeDBus() {
   InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<chromeos::DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
-  InitializeDBusClient<chromeos::FederatedClient>(bus);
+  InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<FuseBoxReverseClient>(bus);
   chromeos::hermes_clients::Initialize(bus);
 #if BUILDFLAG(ENABLE_HIBERNATE)
@@ -269,7 +269,7 @@ void ShutdownDBus() {
 #endif
   chromeos::hermes_clients::Shutdown();
   FuseBoxReverseClient::Shutdown();
-  chromeos::FederatedClient::Shutdown();
+  FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
   CupsProxyClient::Shutdown();

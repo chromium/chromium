@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/federated/fake_federated_client.h"
+#include "chromeos/ash/components/dbus/federated/fake_federated_client.h"
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeFederatedClient::FakeFederatedClient() = default;
 
@@ -19,4 +19,4 @@ void FakeFederatedClient::BootstrapMojoConnection(
   std::move(result_callback).Run(success);
 }
 
-}  // namespace chromeos
+}  // namespace ash

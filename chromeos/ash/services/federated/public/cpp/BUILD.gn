@@ -15,8 +15,8 @@ source_set("cpp") {
   ]
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/services/federated/public/mojom",
-    "//chromeos/dbus/federated",
   ]
 }
 
@@ -41,8 +41,8 @@ source_set("unit_tests") {
     ":cpp",
     ":test_support",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/services/federated/public/mojom",
-    "//chromeos/dbus/federated",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
-#define CHROMEOS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
@@ -13,7 +13,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // D-Bus client for federated service. Its only purpose is to bootstrap a Mojo
 // connection to the federated service daemon.
@@ -51,11 +51,6 @@ class COMPONENT_EXPORT(FEDERATED) FederatedClient {
   FederatedClient& operator=(const FederatedClient&) = delete;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::FederatedClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FEDERATED_CLIENT_H_

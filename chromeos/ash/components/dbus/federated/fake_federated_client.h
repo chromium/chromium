@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FEDERATED_FAKE_FEDERATED_CLIENT_H_
-#define CHROMEOS_DBUS_FEDERATED_FAKE_FEDERATED_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FAKE_FEDERATED_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FAKE_FEDERATED_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/dbus/federated/federated_client.h"
+#include "chromeos/ash/components/dbus/federated/federated_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of FederatedClient. This is currently a no-op fake.
 class FakeFederatedClient : public FederatedClient {
@@ -25,6 +25,6 @@ class FakeFederatedClient : public FederatedClient {
       base::OnceCallback<void(bool success)> result_callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FEDERATED_FAKE_FEDERATED_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FAKE_FEDERATED_CLIENT_H_
