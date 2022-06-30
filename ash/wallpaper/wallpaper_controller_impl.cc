@@ -31,6 +31,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
@@ -664,8 +665,9 @@ WallpaperControllerImpl::WallpaperControllerImpl(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   DCHECK(!color_profiles_.empty());
-  prominent_colors_ =
-      std::vector<SkColor>(color_profiles_.size(), kInvalidWallpaperColor);
+  calculated_colors_ = WallpaperCalculatedColors(
+      std::vector<SkColor>(color_profiles_.size(), kInvalidWallpaperColor),
+      kInvalidWallpaperColor);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
@@ -712,7 +714,11 @@ base::FilePath WallpaperControllerImpl::GetCustomWallpaperDir(
 SkColor WallpaperControllerImpl::GetProminentColor(
     ColorProfile color_profile) const {
   ColorProfileType type = GetColorProfileType(color_profile);
-  return prominent_colors_[static_cast<int>(type)];
+  return calculated_colors_.prominent_colors[static_cast<int>(type)];
+}
+
+SkColor WallpaperControllerImpl::GetKMeanColor() const {
+  return calculated_colors_.k_mean_color;
 }
 
 gfx::ImageSkia WallpaperControllerImpl::GetWallpaper() const {
@@ -1579,7 +1585,7 @@ gfx::ImageSkia WallpaperControllerImpl::GetWallpaperImage() {
 }
 
 const std::vector<SkColor>& WallpaperControllerImpl::GetWallpaperColors() {
-  return prominent_colors_;
+  return calculated_colors_.prominent_colors;
 }
 
 bool WallpaperControllerImpl::IsWallpaperBlurredForLockState() const {
@@ -1679,7 +1685,8 @@ void WallpaperControllerImpl::OnWallpaperResized() {
 }
 
 void WallpaperControllerImpl::OnColorCalculationComplete() {
-  const std::vector<SkColor> colors = color_calculator_->prominent_colors();
+  WallpaperCalculatedColors wallpaper_calculated_colors =
+      color_calculator_->get_calculated_colors();
   color_calculator_.reset();
   // Use |WallpaperInfo::location| as the key for storing |prominent_colors_| in
   // the |kWallpaperColors| pref.
@@ -1687,8 +1694,11 @@ void WallpaperControllerImpl::OnColorCalculationComplete() {
   // location should be cached as well.
   // TODO(skau): This does not guarantee that the current wallpaper is the same
   // wallpaper for which the colors were calculated.
-  pref_manager_->CacheProminentColors(GetActiveAccountId(), colors);
-  SetProminentColors(colors);
+  pref_manager_->CacheProminentColors(
+      GetActiveAccountId(), wallpaper_calculated_colors.prominent_colors);
+  pref_manager_->CacheKMeanColor(GetActiveAccountId(),
+                                 wallpaper_calculated_colors.k_mean_color);
+  SetCalculatedColors(wallpaper_calculated_colors);
 }
 
 void WallpaperControllerImpl::OnActiveUserSessionChanged(
@@ -1828,7 +1838,7 @@ void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
 }
 
 void WallpaperControllerImpl::CreateEmptyWallpaperForTesting() {
-  ResetProminentColors();
+  ResetCalculatedColors();
   current_wallpaper_.reset();
   wallpaper_mode_ = WALLPAPER_IMAGE;
   UpdateWallpaperForAllRootWindows(/*lock_state_changed=*/false);
@@ -2617,20 +2627,22 @@ void WallpaperControllerImpl::ReloadWallpaper(bool clear_cache) {
     ShowSigninWallpaper();
 }
 
-void WallpaperControllerImpl::SetProminentColors(
-    const std::vector<SkColor>& colors) {
-  if (prominent_colors_ == colors)
+void WallpaperControllerImpl::SetCalculatedColors(
+    const WallpaperCalculatedColors& calculated_colors) {
+  if (calculated_colors == calculated_colors_) {
     return;
+  }
 
-  prominent_colors_ = colors;
+  calculated_colors_ = calculated_colors;
   for (auto& observer : observers_)
     observer.OnWallpaperColorsChanged();
 }
 
-void WallpaperControllerImpl::ResetProminentColors() {
+void WallpaperControllerImpl::ResetCalculatedColors() {
   static const std::vector<SkColor> kInvalidColors(color_profiles_.size(),
                                                    kInvalidWallpaperColor);
-  SetProminentColors(kInvalidColors);
+  SetCalculatedColors(
+      WallpaperCalculatedColors(kInvalidColors, kInvalidWallpaperColor));
 }
 
 void WallpaperControllerImpl::CalculateWallpaperColors() {
@@ -2647,9 +2659,12 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
     // The cache is only available if we have an active session.
     // Fetch the color cache if it exists.
     absl::optional<std::vector<SkColor>> cached_colors =
-        pref_manager_->GetCachedColors(GetActiveAccountId());
-    if (cached_colors.has_value()) {
-      SetProminentColors(cached_colors.value());
+        pref_manager_->GetCachedProminentColors(GetActiveAccountId());
+    absl::optional<SkColor> cached_k_mean_color =
+        pref_manager_->GetCachedKMeanColor(GetActiveAccountId());
+    if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
+      SetCalculatedColors(WallpaperCalculatedColors(
+          cached_colors.value(), cached_k_mean_color.value()));
       return;
     }
   }
@@ -2658,7 +2673,7 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
   // reasons. Observers outside an active session are notified of the cache, or
   // an invalid color if a previous calculation during active session failed.
   if (!ShouldCalculateColors()) {
-    ResetProminentColors();
+    ResetCalculatedColors();
     return;
   }
 
@@ -2666,7 +2681,7 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
       GetWallpaper(), color_profiles_, sequenced_task_runner_);
   color_calculator_->AddObserver(this);
   if (!color_calculator_->StartCalculation()) {
-    ResetProminentColors();
+    ResetCalculatedColors();
   }
 }
 

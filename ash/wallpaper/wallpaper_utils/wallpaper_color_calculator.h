@@ -6,6 +6,7 @@
 #define ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_COLOR_CALCULATOR_H_
 
 #include "ash/ash_export.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -49,11 +50,13 @@ class ASH_EXPORT WallpaperColorCalculator {
   // Callers should be aware that this will make |image_| read-only.
   [[nodiscard]] bool StartCalculation();
 
-  std::vector<SkColor> prominent_colors() const { return prominent_colors_; }
+  WallpaperCalculatedColors const get_calculated_colors() {
+    return calculated_colors_;
+  }
 
-  void set_prominent_colors_for_test(
-      const std::vector<SkColor>& prominent_colors) {
-    prominent_colors_ = prominent_colors;
+  void set_calculated_colors_for_test(
+      const WallpaperCalculatedColors& calculated_colors) {
+    calculated_colors_ = calculated_colors;
   }
 
   // Explicitly sets the |task_runner_| for testing.
@@ -62,15 +65,17 @@ class ASH_EXPORT WallpaperColorCalculator {
  private:
   // Handles asynchronous calculation results. |async_start_time| is used to
   // record duration metrics.
-  void OnAsyncCalculationComplete(base::TimeTicks async_start_time,
-                                  const std::vector<SkColor>& prominent_colors);
+  void OnAsyncCalculationComplete(
+      base::TimeTicks async_start_time,
+      const WallpaperCalculatedColors& calculated_colors);
 
   // Notifies observers that a color calulation has completed. Called on the
   // same thread that constructed |this|.
-  void NotifyCalculationComplete(const std::vector<SkColor>& prominent_colors);
+  void NotifyCalculationComplete(
+      const WallpaperCalculatedColors& calculated_colors);
 
   // The result of the color calculation.
-  std::vector<SkColor> prominent_colors_;
+  WallpaperCalculatedColors calculated_colors_;
 
   // The image to calculate colors from.
   gfx::ImageSkia image_;

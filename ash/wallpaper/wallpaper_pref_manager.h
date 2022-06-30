@@ -114,8 +114,16 @@ class ASH_EXPORT WallpaperPrefManager
 
   virtual void RemoveProminentColors(const AccountId& account_id) = 0;
 
-  virtual absl::optional<std::vector<SkColor>> GetCachedColors(
+  virtual absl::optional<std::vector<SkColor>> GetCachedProminentColors(
       const AccountId& account_id) const = 0;
+
+  virtual void CacheKMeanColor(const AccountId& account_id,
+                               SkColor k_mean_color) = 0;
+
+  virtual absl::optional<SkColor> GetCachedKMeanColor(
+      const AccountId& account_id) const = 0;
+
+  virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
   virtual bool SetDailyGooglePhotosWallpaperIdCache(
       const AccountId& account_id,

@@ -18,22 +18,7 @@ SkColor ConvertBacklightColorToSkColor(
     case personalization_app::mojom::BacklightColor::kWallpaper: {
       auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
       DCHECK(wallpaper_controller);
-      // Attempt to get the prominent colors by using different |LumaRange| and
-      // |SaturationRange|. Depending on the combination of these values and the
-      // current wallpaper, the |color| may be invalid.
-      SkColor color = wallpaper_controller->GetProminentColor(
-          color_utils::ColorProfile(color_utils::LumaRange::NORMAL,
-                                    color_utils::SaturationRange::VIBRANT));
-      if (color == kInvalidWallpaperColor) {
-        color = wallpaper_controller->GetProminentColor(
-            color_utils::ColorProfile(color_utils::LumaRange::LIGHT,
-                                      color_utils::SaturationRange::VIBRANT));
-      }
-      if (color == kInvalidWallpaperColor) {
-        color = wallpaper_controller->GetProminentColor(
-            color_utils::ColorProfile(color_utils::LumaRange::DARK,
-                                      color_utils::SaturationRange::VIBRANT));
-      }
+      SkColor color = wallpaper_controller->GetKMeanColor();
       return color;
     }
     case personalization_app::mojom::BacklightColor::kWhite:

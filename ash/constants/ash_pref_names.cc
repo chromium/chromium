@@ -704,6 +704,9 @@ const char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";
 // A dictionary pref that maps wallpaper file paths to their prominent colors.
 const char kWallpaperColors[] = "ash.wallpaper.prominent_colors";
 
+// A dictionary pref that maps wallpaper file paths to their k mean colors.
+const char kWallpaperMeanColors[] = "ash.wallpaper.k_mean_colors";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 const char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";
