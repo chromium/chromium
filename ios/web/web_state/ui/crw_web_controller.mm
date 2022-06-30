@@ -210,8 +210,7 @@ using web::wk_navigation_util::IsWKInternalUrl;
 @property(nonatomic, readonly) web::NavigationItemImpl* currentNavItem;
 
 // ContextMenu controller, handling the interactions with the context menu.
-@property(nonatomic, strong)
-    CRWContextMenuController* contextMenuController API_AVAILABLE(ios(13.0));
+@property(nonatomic, strong) CRWContextMenuController* contextMenuController;
 
 // Script manager for setting the windowID.
 @property(nonatomic, strong) CRWJSWindowIDManager* windowIDJSManager;

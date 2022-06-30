@@ -270,9 +270,8 @@ using web::NavigationManager;
 
 - (void)webState:(web::WebState*)webView
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
-                    completionHandler:
-                        (void (^)(UIContextMenuConfiguration*))completionHandler
-    API_AVAILABLE(ios(13.0)) {
+                    completionHandler:(void (^)(UIContextMenuConfiguration*))
+                                          completionHandler {
   GURL link = params.link_url;
   void (^copyHandler)(UIAction*) = ^(UIAction* action) {
     NSDictionary* item = @{

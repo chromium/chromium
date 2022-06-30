@@ -48,11 +48,7 @@ TEST_F(JavaScriptFeatureManagerTest, Configure) {
   ASSERT_EQ(0ul, [GetUserContentController().userScripts count]);
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({});
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    EXPECT_EQ(6ul, [GetUserContentController().userScripts count]);
-  } else {
-    EXPECT_EQ(3ul, [GetUserContentController().userScripts count]);
-  }
+  EXPECT_EQ(6ul, [GetUserContentController().userScripts count]);
 }
 
 // Tests that JavaScriptFeatureManager adds a JavaScriptFeature for all frames
@@ -73,11 +69,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
-  } else {
-    EXPECT_EQ(4ul, [GetUserContentController().userScripts count]);
-  }
+  EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
   EXPECT_TRUE(
@@ -105,11 +97,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
-  } else {
-    EXPECT_EQ(4ul, [GetUserContentController().userScripts count]);
-  }
+  EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
   EXPECT_TRUE(
@@ -121,12 +109,6 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
 // Tests that JavaScriptFeatureManager adds a JavaScriptFeature for all frames
 // at document end time for an isolated world.
 TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
-  // Using ContentWorld::kIsolatedWorldOnly on older versions of iOS will
-  // trigger a DCHECK, so return early before that happens.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   ASSERT_TRUE(GetJavaScriptFeatureManager());
 
   std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {

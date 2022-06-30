@@ -53,7 +53,6 @@ WKUserContentController* GetUserContentController(BrowserState* browser_state) {
 
 }  // namespace
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state,
                                                WKContentWorld* content_world)
     : browser_state_(browser_state),
@@ -61,11 +60,9 @@ JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state,
       content_world_(content_world),
       weak_factory_(this) {}
 
-WKContentWorld* JavaScriptContentWorld::GetWKContentWorld()
-    API_AVAILABLE(ios(14.0)) {
+WKContentWorld* JavaScriptContentWorld::GetWKContentWorld() {
   return content_world_;
 }
-#endif  // defined(__IPHONE14_0)
 
 JavaScriptContentWorld::~JavaScriptContentWorld() {}
 

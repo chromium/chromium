@@ -11,15 +11,13 @@
 namespace web {
 namespace test {
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 // Synchronously executes |script| in |content_world| and returns result.
 // NOTE: Generally, tests should not deal with raw WKContentWorlds. Instead,
 // prefer specifying the associated JavaScriptFeature instance using
 // WebTestWithWebState::ExecuteJavaScriptForFeature.
 id ExecuteJavaScript(WKWebView* web_view,
                      WKContentWorld* content_world,
-                     NSString* script) API_AVAILABLE(ios(14.0));
-#endif  // defined(__IPHONE14_0)
+                     NSString* script);
 
 }  // namespace test
 }  // namespace web

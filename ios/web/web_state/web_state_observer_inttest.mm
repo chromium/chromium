@@ -2447,12 +2447,6 @@ TEST_F(WebStateObserverTest, StopFinishedNavigation) {
 
 // Tests that iframe navigation triggers DidChangeBackForwardState.
 TEST_F(WebStateObserverTest, IframeNavigation) {
-  // This test fails in iOS 13.4 but is fixed in iOS 14. See crbug.com//1076233.
-  if (base::ios::IsRunningOnOrLater(13, 4, 0) &&
-      !base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   GURL url = test_server_->GetURL("/iframe_host.html");
 
   // Callbacks due to loading of the main frame.

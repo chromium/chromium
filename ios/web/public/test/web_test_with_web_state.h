@@ -83,8 +83,7 @@ class WebTestWithWebState : public WebTest {
   id ExecuteJavaScript(NSString* script);
   // Synchronously executes JavaScript in the content world associated with
   // |feature| and returns the result as id.
-  id ExecuteJavaScriptForFeature(NSString* script, JavaScriptFeature* feature)
-      API_AVAILABLE(ios(14.0));
+  id ExecuteJavaScriptForFeature(NSString* script, JavaScriptFeature* feature);
 
   // Returns the base URL of the loaded page.
   std::string BaseUrl() const;

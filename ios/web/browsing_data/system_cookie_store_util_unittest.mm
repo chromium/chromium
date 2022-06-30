@@ -31,8 +31,7 @@ namespace {
 // Checks if |system_cookie| was set in WKHTTPCookieStore |cookie_store|.
 bool IsCookieSetInWKCookieStore(NSHTTPCookie* system_cookie,
                                 NSURL* url,
-                                WKHTTPCookieStore* cookie_store)
-    API_AVAILABLE(ios(11.0)) {
+                                WKHTTPCookieStore* cookie_store) {
   __block bool is_set = false;
   __block bool verification_done = false;
   [cookie_store getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
