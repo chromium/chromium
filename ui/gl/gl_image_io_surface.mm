@@ -431,6 +431,8 @@ void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
         base::trace_event::MemoryAllocatorDump::kNameSize,
         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
         static_cast<uint64_t>(size_bytes));
+    anonymous_dump->AddScalar("width", "pixels", size_.width());
+    anonymous_dump->AddScalar("height", "pixels", size_.height());
   }
 }
 
