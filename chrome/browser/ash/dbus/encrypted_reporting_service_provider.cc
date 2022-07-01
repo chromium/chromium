@@ -35,7 +35,7 @@ namespace ash {
 namespace {
 
 static constexpr uint64_t kDefaultMemoryAllocation =
-    64u * 1024uLL * 1024uLL;  // 64 MiB by default
+    16u * 1024uLL * 1024uLL;  // 16 MiB by default
 
 void SendStatusAsResponse(std::unique_ptr<dbus::Response> response,
                           dbus::ExportedObject::ResponseSender response_sender,
@@ -151,12 +151,15 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  reporting::UploadEncryptedRecordRequest request;
   dbus::MessageReader reader(method_call);
-  if (!reader.PopArrayOfBytesAsProto(&request)) {
+  const char* serialized_request_buf = nullptr;
+  size_t serialized_request_buf_size = 0;
+  if (!reader.PopArrayOfBytes(
+          reinterpret_cast<const uint8_t**>(&serialized_request_buf),
+          &serialized_request_buf_size)) {
     reporting::Status status{
         reporting::error::INVALID_ARGUMENT,
-        "Message was not decipherable as an UploadEncryptedRecordRequest"};
+        "Error reading UploadEncryptedRecordRequest as array of bytes"};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
@@ -164,12 +167,25 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  ::reporting::ScopedReservation scoped_reservation(request.ByteSizeLong(),
+  ::reporting::ScopedReservation scoped_reservation(serialized_request_buf_size,
                                                     memory_resource_);
   if (!scoped_reservation.reserved()) {
     reporting::Status status{reporting::error::RESOURCE_EXHAUSTED,
                              "UploadEncryptedRecordRequest has exhausted "
                              "assigned memory pool in Chrome"};
+    LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
+               << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         status);
+    return;
+  }
+
+  reporting::UploadEncryptedRecordRequest request;
+  if (!request.ParseFromArray(serialized_request_buf,
+                              serialized_request_buf_size)) {
+    reporting::Status status{
+        reporting::error::INVALID_ARGUMENT,
+        "Failed to parse UploadEncryptedRecordRequest from array of bytes."};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
