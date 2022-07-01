@@ -26,7 +26,7 @@
         android:id="@+id/more_languages_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/languages_select_other"
+        android:text="@string/languages_more_languages"
         style="@style/TextAppearance.Button.Text.Blue" />
 
 </LinearLayout>
