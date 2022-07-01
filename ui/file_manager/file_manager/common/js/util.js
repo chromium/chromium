@@ -1380,6 +1380,16 @@ util.isGuestOsEnabled = () => {
 };
 
 /**
+ * Returns true if DriveFsMirroring flag is enabled.
+ * @return {boolean}
+ */
+util.isMirrorSyncEnabled = () => {
+  return loadTimeData.isInitialized() &&
+      loadTimeData.valueExists('DRIVEFS_MIRRORING') &&
+      loadTimeData.getBoolean('DRIVEFS_MIRRORING');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of

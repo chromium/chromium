@@ -2358,6 +2358,30 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
 })();
 
 /**
+ * Opens the Manage MirrorSync dialog if the flag is enabled.
+ */
+CommandHandler.COMMANDS_['manage-mirrorsync'] =
+    new (class extends FilesCommand {
+      execute(event, fileManager) {
+        // TODO(b/237066325): Wire this up to the `ManageMirrorSyncDialog`.
+      }
+
+      /**
+       * @override
+       */
+      canExecute(event, fileManager) {
+        // MirrorSync is only available to sync local directories, only show the
+        // folder when navigated to a local directory.
+        const currentRootType = fileManager.directoryModel.getCurrentRootType();
+        event.canExecute =
+            (currentRootType === VolumeManagerCommon.RootType.MY_FILES ||
+             currentRootType === VolumeManagerCommon.RootType.DOWNLOADS) &&
+            util.isMirrorSyncEnabled();
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
+
+/**
  * Shares the selected (single only) directory with the default crostini VM.
  */
 CommandHandler.COMMANDS_['share-with-linux'] = new (class extends FilesCommand {

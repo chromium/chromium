@@ -135,6 +135,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test needs the files-filters-in-recents-v2 flag.
     bool enable_filters_in_recents_v2 = false;
+
+    // Whether test should run with the DriveFsMirroring flag.
+    bool enable_mirrorsync = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

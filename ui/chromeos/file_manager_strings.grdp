@@ -512,6 +512,9 @@
   <message name="IDS_FILE_BROWSER_MANAGE_IN_DRIVE_BUTTON_LABEL" desc="Menu item's label, showing dialog to open the selected Google Drive files in the Drive webpage for managing sharing permissions, etc.">
     Manage in Drive
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_MANAGE_MIRRORSYNC_LABEL" desc="Menu item's label, shows dialog to manage MirrorSync settings and currently syncing folders.">
+    Manage synced folders
+  </message>
   <message name="IDS_FILE_BROWSER_SHARE_WITH_LINUX_BUTTON_LABEL" desc="Label for menu that will share a folder with the crostini Linux container.">
     Share with Linux
   </message>

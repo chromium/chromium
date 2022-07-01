@@ -166,6 +166,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableMirrorSync() {
+    options.enable_mirrorsync = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -207,6 +212,9 @@ struct TestCase {
 
     if (options.enable_filters_in_recents_v2)
       full_name += "_FiltersInRecentsV2";
+
+    if (options.enable_mirrorsync)
+      full_name += "_MirrorSync";
 
     return full_name;
   }
@@ -1620,7 +1628,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openHelpPageFromDownloadsVolume"),
         TestCase("openHelpPageFromDownloadsVolume").FilesSwa(),
         TestCase("openHelpPageFromDriveVolume"),
-        TestCase("openHelpPageFromDriveVolume").FilesSwa()));
+        TestCase("openHelpPageFromDriveVolume").FilesSwa(),
+        TestCase("showManageMirrorSyncShowsOnlyInLocalRoot").FilesSwa(),
+        TestCase("showManageMirrorSyncShowsOnlyInLocalRoot")
+            .EnableMirrorSync()
+            .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */

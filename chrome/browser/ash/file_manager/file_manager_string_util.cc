@@ -170,6 +170,8 @@ void AddStringsForDrive(base::Value::Dict* dict) {
   SET_STRING("SYNC_NO_SERVER_SPACE", IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE);
   SET_STRING("SYNC_SERVICE_UNAVAILABLE_ERROR",
              IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
+  SET_STRING("DRIVE_MANAGE_MIRRORSYNC",
+             IDS_FILE_BROWSER_DRIVE_MANAGE_MIRRORSYNC_LABEL);
 }
 
 void AddStringsForMediaView(base::Value::Dict* dict) {
@@ -1027,6 +1029,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("FUSEBOX_DEBUG",
             base::FeatureList::IsEnabled(chromeos::features::kFuseBoxDebug));
+
+  dict->Set("DRIVEFS_MIRRORING",
+            chromeos::features::IsDriveFsMirroringEnabled());
 
   dict->Set("GUEST_OS",
             base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));

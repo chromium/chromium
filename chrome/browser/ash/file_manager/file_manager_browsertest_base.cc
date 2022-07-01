@@ -1935,6 +1935,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
   }
 
+  if (options.enable_mirrorsync) {
+    enabled_features.push_back(chromeos::features::kDriveFsMirroring);
+  } else {
+    disabled_features.push_back(chromeos::features::kDriveFsMirroring);
+  }
+
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =
@@ -3057,6 +3063,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     *output = ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                   ? "true"
                   : "false";
+    return;
+  }
+
+  if (name == "isMirrorSyncEnabled") {
+    *output = options.enable_mirrorsync ? "true" : "false";
     return;
   }
 
