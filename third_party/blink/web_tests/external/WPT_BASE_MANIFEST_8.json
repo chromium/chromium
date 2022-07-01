@@ -298788,7 +298788,7 @@
     },
     "include": {
      "editor-test-utils.js": [
-      "abf89d7e9edb9526a8efb1609c44e9741852d04d",
+      "4a9981a9c5f4bcc1274994aeabbaaebf933134b6",
       []
      ],
      "implementation.js": [
@@ -334143,7 +334143,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "3bcebb95f4b5be91054219dd669274d3c8a3ff2a",
+       "8fe169d242835172a6b9126780224e71bdaddad4",
        []
       ],
       "fixtures_http.py": [
@@ -406576,6 +406576,16 @@
        {}
       ]
      ],
+     "cloning-attributes-at-splitting-element.tentative.html": [
+      "3c0b1c9344efc4097f55f8fc0e51d16457d576c1",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "delete.html": [
       "b9bd1437e3721f1353a9df6bde155f2f2b8ae95a",
       [
@@ -406804,6 +406814,23 @@
        }
       ]
      ],
+     "keeping-attributes-at-joining-elements.tentative.html": [
+      "99a0dab56ab43d8f9e96b7b6d9bc3a55f2d36210",
+      [
+       "editing/other/keeping-attributes-at-joining-elements.tentative.html?method=backspace",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/keeping-attributes-at-joining-elements.tentative.html?method=forwarddelete",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "legacy-edit-command.html": [
       "81ff89d81bd9037e2ffb5d2929951ad862e19bed",
       [
@@ -406920,7 +406947,7 @@
       ]
      ],
      "selectall-without-focus.html": [
-      "0db01014c103cd1750fca52d36a9b471edc6d4ee",
+      "f75e930907f1d69cbefd095b545c98784ef2220b",
       [
        null,
        {}

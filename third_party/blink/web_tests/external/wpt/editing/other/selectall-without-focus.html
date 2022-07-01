@@ -11,6 +11,10 @@ addEventListener("DOMContentLoaded", () => {
   test(() => {
     document.head.remove();
     document.execCommand("selectAll");
+    assert_false(
+      getSelection().isCollapsed,
+      'Selection should not be collapsed after calling document.execCommand("selectAll")'
+    );
     const rangeText = getSelection().toString();
     assert_true(
       rangeText.includes("preceding text"),

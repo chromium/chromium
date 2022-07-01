@@ -75,6 +75,11 @@ class EditorTestUtils {
     return this.sendKey(kEnd, modifier);
   }
 
+  sendEnterKey(modifier) {
+    const kEnter = "\uE007";
+    return this.sendKey(kEnter, modifier);
+  }
+
   sendSelectAllShortcutKey() {
     return this.sendKey(
       "a",
