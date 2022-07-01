@@ -51,8 +51,8 @@ public class LocaleManagerTest {
     @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
     @SmallTest
     @Test
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N,
-            message = "Flaky on Android M: https://crbug.com/1170670")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O,
+            message = "Flaky on Android M and N: https://crbug.com/1170670")
     public void
     testShowSearchEnginePromoDseDisabled() throws TimeoutException {
         final CallbackHelper getShowTypeCallback = new CallbackHelper();
