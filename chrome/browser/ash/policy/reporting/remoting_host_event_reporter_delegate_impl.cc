@@ -22,9 +22,14 @@ namespace {
 // Production implementation of CRD event reporter for remoting host.
 class HostEventReporterDelegateImpl : public HostEventReporterImpl::Delegate {
  public:
-  HostEventReporterDelegateImpl()
+  explicit HostEventReporterDelegateImpl(
+      std::unique_ptr<::reporting::UserEventReporterHelper> user_event_helper =
+          std::make_unique<::reporting::UserEventReporterHelper>(
+              ::reporting::Destination::CRD_EVENTS,
+              ::reporting::EventType::kUser))
       : helper_(base::MakeRefCounted<Helper>(
-            ::reporting::UserEventReporterHelper::valid_task_runner())) {}
+            ::reporting::UserEventReporterHelper::valid_task_runner(),
+            std::move(user_event_helper))) {}
 
   HostEventReporterDelegateImpl(const HostEventReporterDelegateImpl& other) =
       delete;
@@ -37,11 +42,12 @@ class HostEventReporterDelegateImpl : public HostEventReporterImpl::Delegate {
   // Enqueue task completes.
   class Helper : public base::RefCountedDeleteOnSequence<Helper> {
    public:
-    explicit Helper(scoped_refptr<base::SequencedTaskRunner> task_runner)
+    Helper(
+        scoped_refptr<base::SequencedTaskRunner> task_runner,
+        std::unique_ptr<::reporting::UserEventReporterHelper> user_event_helper)
         : base::RefCountedDeleteOnSequence<Helper>(task_runner),
           task_runner_(task_runner),
-          user_event_helper_(::reporting::Destination::CRD_EVENTS,
-                             ::reporting::EventType::kUser) {}
+          user_event_helper_(std::move(user_event_helper)) {}
 
     void EnqueueEvent(::ash::reporting::CRDRecord record) {
       task_runner_->PostTask(
@@ -58,14 +64,17 @@ class HostEventReporterDelegateImpl : public HostEventReporterImpl::Delegate {
     ~Helper() = default;
 
     void EnqueueEventSync(::ash::reporting::CRDRecord record) {
-      if (!user_event_helper_.ReportingEnabled(::ash::kReportCRDSessions)) {
+      if (!user_event_helper_->ReportingEnabled(::ash::kReportCRDSessions)) {
         return;
       }
-      if (!user_event_helper_.ShouldReportUser(
+      if (!user_event_helper_->ShouldReportUser(
               record.host_user().user_email())) {
         record.clear_host_user();  // anonymize host user.
+        if (user_event_helper_->IsKioskUser()) {
+          record.set_is_kiosk_session(true);
+        }
       }
-      user_event_helper_.ReportEvent(
+      user_event_helper_->ReportEvent(
           std::make_unique<::ash::reporting::CRDRecord>(std::move(record)),
           ::reporting::Priority::FAST_BATCH);
     }
@@ -74,7 +83,8 @@ class HostEventReporterDelegateImpl : public HostEventReporterImpl::Delegate {
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
     // Helper for posting events.
-    ::reporting::UserEventReporterHelper user_event_helper_;
+    const std::unique_ptr<::reporting::UserEventReporterHelper>
+        user_event_helper_;
   };
 
   void EnqueueEvent(::ash::reporting::CRDRecord record) override {
