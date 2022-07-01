@@ -54,6 +54,7 @@
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -4820,6 +4821,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAutofillRefreshStyleName,
      flag_descriptions::kEnableAutofillRefreshStyleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillRefreshStyleAndroid)},
+
+    {"enable-family-info-feedback",
+     flag_descriptions::kEnableFamilyInfoFeedbackName,
+     flag_descriptions::kEnableFamilyInfoFeedbackDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(kEnableFamilyInfoFeedback)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

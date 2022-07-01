@@ -57678,6 +57678,7 @@ from previous Chrome versions.
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
+  <int value="-476171840" label="EnableFamilyInfoFeedback:enabled"/>
   <int value="-475049740" label="disable-vr-shell"/>
   <int value="-475042780" label="DialMediaRouteProvider:enabled"/>
   <int value="-474833105" label="CrostiniUseBusterImage:enabled"/>
@@ -58187,6 +58188,7 @@ from previous Chrome versions.
       label="AutofillEnableManualFallbackForVirtualCards:enabled"/>
   <int value="-128687277"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:disabled"/>
+  <int value="-128289378" label="EnableFamilyInfoFeedback:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>
   <int value="-127231994" label="VrBrowsingNativeAndroidUi:disabled"/>
   <int value="-125941743" label="EnableLogControllerForDiagnosticsApp:enabled"/>

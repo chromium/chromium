@@ -339,6 +339,7 @@ public abstract class ChromeFeatureList {
     public static final String ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS =
             "ElidePrioritizationOfPreNativeBootstrapTasks";
     public static final String ENABLE_AUTOMATIC_SNOOZE = "EnableAutomaticSnooze";
+    public static final String ENABLE_FAMILY_INFO_FEEDBACK = "EnableFamilyInfoFeedback";
     public static final String ELASTIC_OVERSCROLL = "ElasticOverscroll";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";

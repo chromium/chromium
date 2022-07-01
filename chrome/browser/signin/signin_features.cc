@@ -4,6 +4,12 @@
 
 #include "chrome/browser/signin/signin_features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables the FamilyLink feedback collection in Chrome Settings feedback tool.
+const base::Feature kEnableFamilyInfoFeedback{"EnableFamilyInfoFeedback",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 // Enables the client-side processing of the HTTP response header
 // Google-Accounts-RemoveLocalAccount.
 const base::Feature kProcessGaiaRemoveLocalAccountHeader{
