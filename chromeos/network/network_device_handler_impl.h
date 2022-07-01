@@ -170,6 +170,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // Resets MAC address source property for secondary USB Ethernet devices.
   void ResetMacAddressSourceForSecondaryUsbEthernetDevices() const;
 
+  // On a successful SIM PUK unblock.
+  void OnUnblockPinSuccess(const std::string& device_path,
+                           const std::string& pin,
+                           base::OnceClosure callback);
+
   // Get the DeviceState for the wifi device, if any.
   const DeviceState* GetWifiDeviceState();
 

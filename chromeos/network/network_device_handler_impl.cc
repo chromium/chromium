@@ -35,6 +35,8 @@ namespace chromeos {
 
 namespace {
 
+const char kDefaultSimPin[] = "1111";
+
 std::string GetErrorNameForShillError(const std::string& shill_error_name) {
   if (shill_error_name == shill::kErrorResultFailure ||
       shill_error_name == shill::kErrorResultInvalidArguments) {
@@ -217,14 +219,32 @@ void NetworkDeviceHandlerImpl::UnblockPin(
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   NET_LOG(USER) << "Device.UnblockPin: " << device_path;
+  // A SIM PIN must be provided along with the PUK in order to PUK unblock a
+  // SIM. If admins have blocked SIM PIN locking, a PIN still must be provided,
+  // so th default SIM |kDefaultSimPin| is used.
+  const std::string pin = allow_cellular_sim_lock_ ? new_pin : kDefaultSimPin;
   ShillDeviceClient::Get()->UnblockPin(
-      dbus::ObjectPath(device_path), puk, new_pin,
-      base::BindOnce(&HandleSimPinOperationSuccess,
-                     CellularMetricsLogger::SimPinOperation::kUnblock,
+      dbus::ObjectPath(device_path), puk, pin,
+      base::BindOnce(&NetworkDeviceHandlerImpl::OnUnblockPinSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), device_path, pin,
                      std::move(callback)),
       base::BindOnce(&HandleSimPinOperationFailure,
                      CellularMetricsLogger::SimPinOperation::kUnblock,
                      device_path, std::move(error_callback)));
+}
+
+void NetworkDeviceHandlerImpl::OnUnblockPinSuccess(
+    const std::string& device_path,
+    const std::string& pin,
+    base::OnceClosure callback) {
+  if (allow_cellular_sim_lock_) {
+    HandleSimPinOperationSuccess(
+        CellularMetricsLogger::SimPinOperation::kUnblock, std::move(callback));
+    return;
+  }
+
+  // Disable the SIM PIN lock setting.
+  RequirePin(device_path, false, pin, std::move(callback), base::DoNothing());
 }
 
 void NetworkDeviceHandlerImpl::ChangePin(

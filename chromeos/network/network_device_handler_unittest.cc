@@ -510,6 +510,19 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPin) {
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinUnblockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 0);
+
+  // Test that if SIM PIN locking is prohibited, PUK unblocking a SIM will
+  // also disable the SIM PIN lock setting.
+  network_device_handler_->SetAllowCellularSimLock(
+      /*allow_cellular_sim_lock=*/false);
+  network_device_handler_->UnblockPin(kDefaultCellularDevicePath, kPin, kPuk,
+                                      GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, ChangePin) {
