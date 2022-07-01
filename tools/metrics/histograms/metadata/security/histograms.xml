@@ -413,6 +413,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Security.SCTAuditing.NumPersistedReportsLoaded"
+    units="reports" expires_after="2022-12-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the number of persisted SCT auditing reports that were loaded and
+    deserialized from disk, if SCT auditing is enabled. Invalid persisted
+    reports are not counted. Recorded once shortly after browser startup (or
+    when the network service restarts).
+  </summary>
+</histogram>
+
 <histogram name="Security.SCTAuditing.OptIn.DedupeCacheHWM" units="reports"
     expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>

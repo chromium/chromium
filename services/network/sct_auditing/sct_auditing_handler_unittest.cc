@@ -127,6 +127,9 @@ class SCTAuditingHandlerTest : public testing::Test {
         {features::kSCTAuditingRetryReports,
          features::kSCTAuditingPersistReports},
         {});
+
+    // Clear out any pending tasks before starting tests.
+    task_environment_.RunUntilIdle();
   }
 
   // Get the contents of `persistence_path_`. Pumps the message loop before
@@ -171,6 +174,10 @@ class SCTAuditingHandlerTest : public testing::Test {
   }
 
  protected:
+  // Must be first because ScopedFeatureList must be initialized before other
+  // threads are started.
+  base::test::ScopedFeatureList feature_list_{
+      /*enable_feature=*/features::kSCTAuditingPersistReports};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -738,6 +745,8 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
 // Test that deserializing bad data shouldn't result in any reporters being
 // created.
 TEST_F(SCTAuditingHandlerTest, DeserializeBadData) {
+  base::HistogramTester histograms;
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
@@ -773,11 +782,19 @@ TEST_F(SCTAuditingHandlerTest, DeserializeBadData) {
 
   // Check that no file got written to the persistence path.
   EXPECT_EQ(GetTestFileContents(), std::string());
+
+  // Check that these deserializations resulted in logging the 0-bucket of the
+  // NumPersistedReportsLoaded histogram. The count should be equal to the
+  // number of calls to DeserializeData() above.
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.NumPersistedReportsLoaded", 0, 5);
 }
 
 // Test that a handler loads valid persisted data from disk and creates pending
 // reporters for each entry.
 TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
+  base::HistogramTester histograms;
+
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
   // - Empty SCTClientReport for origin "example.test:443".
@@ -825,6 +842,10 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
   ASSERT_FALSE(file_writer->HasPendingWrite());
   EXPECT_FALSE(FileContentsHasString(
       "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo="));
+
+  // Check that the NumPersistedReportsLoaded histogram was correctly logged.
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.NumPersistedReportsLoaded", 1, 1);
 }
 
 // Test that scheduling a retry causes the failure count to increment in

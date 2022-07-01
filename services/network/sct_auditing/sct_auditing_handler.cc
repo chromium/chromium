@@ -209,9 +209,12 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   // Parse the serialized reports.
   absl::optional<base::Value> value = base::JSONReader::Read(serialized);
   if (!value || !value->is_list()) {
+    base::UmaHistogramCounts100(
+        "Security.SCTAuditing.NumPersistedReportsLoaded", 0);
     return;
   }
 
+  size_t num_reporters_deserialized = 0u;
   for (base::Value& sct_entry : value->GetList()) {
     base::Value::Dict* entry_dict = sct_entry.GetIfDict();
     if (!sct_entry.is_dict()) {
@@ -272,8 +275,10 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
     AddReporter(cache_key, std::move(audit_report), std::move(sct_metadata),
                 std::move(backoff_entry));
+    ++num_reporters_deserialized;
   }
-  // TODO(crbug.com/1144205): Add metrics for number of reporters deserialized.
+  base::UmaHistogramCounts100("Security.SCTAuditing.NumPersistedReportsLoaded",
+                              num_reporters_deserialized);
 }
 
 void SCTAuditingHandler::OnStartupFinished() {
