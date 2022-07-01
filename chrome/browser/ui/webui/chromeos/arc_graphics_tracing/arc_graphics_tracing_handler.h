@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing.h"
 #include "components/exo/surface_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -29,7 +30,6 @@ class ArcSystemStatCollector;
 
 namespace base {
 class FilePath;
-class ListValue;
 }  // namespace base
 
 namespace exo {
@@ -93,10 +93,10 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnGraphicsModelReady(std::pair<base::Value, std::string> result);
 
   // Handlers for calls from JS.
-  void HandleReady(const base::ListValue* args);
-  void HandleSetStopOnJank(const base::ListValue* args);
-  void HandleSetMaxTime(const base::ListValue* args);
-  void HandleLoadFromText(const base::ListValue* args);
+  void HandleReady(const base::Value::List& args);
+  void HandleSetStopOnJank(const base::Value::List& args);
+  void HandleSetMaxTime(const base::Value::List& args);
+  void HandleLoadFromText(const base::Value::List& args);
 
   // Updates title and icon for the active ARC window.
   void UpdateActiveArcWindowInfo();

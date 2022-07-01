@@ -349,22 +349,22 @@ ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
 }
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "ready", base::BindRepeating(&ArcGraphicsTracingHandler::HandleReady,
                                    base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "loadFromText",
       base::BindRepeating(&ArcGraphicsTracingHandler::HandleLoadFromText,
                           base::Unretained(this)));
   switch (mode_) {
     case ArcGraphicsTracingMode::kFull:
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "setStopOnJank",
           base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetStopOnJank,
                               base::Unretained(this)));
       break;
     case ArcGraphicsTracingMode::kOverview:
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "setMaxTime",
           base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetMaxTime,
                               base::Unretained(this)));
@@ -600,7 +600,7 @@ void ArcGraphicsTracingHandler::OnGraphicsModelReady(
                          std::move(result.first));
 }
 
-void ArcGraphicsTracingHandler::HandleReady(const base::ListValue* args) {
+void ArcGraphicsTracingHandler::HandleReady(const base::Value::List& args) {
   if (mode_ != ArcGraphicsTracingMode::kFull)
     return;
 
@@ -613,40 +613,40 @@ void ArcGraphicsTracingHandler::HandleReady(const base::ListValue* args) {
 }
 
 void ArcGraphicsTracingHandler::HandleSetStopOnJank(
-    const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  DCHECK_EQ(1U, args.size());
   DCHECK_EQ(ArcGraphicsTracingMode::kFull, mode_);
-  if (!args->GetListDeprecated()[0].is_bool()) {
+  if (!args[0].is_bool()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
-  stop_on_jank_ = args->GetListDeprecated()[0].GetBool();
+  stop_on_jank_ = args[0].GetBool();
 }
 
-void ArcGraphicsTracingHandler::HandleSetMaxTime(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetListDeprecated().size());
+void ArcGraphicsTracingHandler::HandleSetMaxTime(
+    const base::Value::List& args) {
+  DCHECK_EQ(1U, args.size());
   DCHECK_EQ(ArcGraphicsTracingMode::kOverview, mode_);
 
-  if (!args->GetListDeprecated()[0].is_int()) {
+  if (!args[0].is_int()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
-  max_tracing_time_ = base::Seconds(args->GetListDeprecated()[0].GetInt());
+  max_tracing_time_ = base::Seconds(args[0].GetInt());
   DCHECK_GE(max_tracing_time_, base::Seconds(1));
 }
 
 void ArcGraphicsTracingHandler::HandleLoadFromText(
-    const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetListDeprecated().size());
-  if (!args->GetListDeprecated()[0].is_string()) {
+    const base::Value::List& args) {
+  DCHECK_EQ(1U, args.size());
+  if (!args[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadGraphicsModel, mode_,
-                     std::move(args->GetListDeprecated()[0].GetString())),
+      base::BindOnce(&LoadGraphicsModel, mode_, std::move(args[0].GetString())),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
