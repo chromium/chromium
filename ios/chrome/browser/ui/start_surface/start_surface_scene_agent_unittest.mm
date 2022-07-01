@@ -224,10 +224,10 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
       /*favicon_service=*/nullptr);
   SetStartSurfaceSessionObjectForSceneState(scene_state_);
 
-  histogram_tester_->ExpectTotalCount("IOS.WarmStartBackgroundTime", 0);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeWarmStart", 0);
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-  histogram_tester_->ExpectTotalCount("IOS.WarmStartBackgroundTime", 1);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeWarmStart", 1);
 }
 
 // Tests that IOS.StartSurfaceShown is correctly logged for a valid cold start
@@ -251,8 +251,8 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
       web_state_list->GetActiveWebState(),
       /*favicon_service=*/nullptr);
 
-  histogram_tester_->ExpectTotalCount("IOS.ColdStartBackgroundTime", 0);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 0);
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-  histogram_tester_->ExpectTotalCount("IOS.ColdStartBackgroundTime", 1);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 1);
 }

@@ -206,15 +206,13 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   BOOL isColdStart = (level > SceneActivationLevelBackground &&
                       self.sceneState.appState.startupInformation.isColdStart);
   if (isColdStart) {
-    base::UmaHistogramCustomTimes("IOS.ColdStartBackgroundTime",
-                                  base::Minutes(timeSinceBackgroundInMinutes),
-                                  base::Seconds(0),
-                                  base::Seconds(12 * 60 /* 12 hours */), 24);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeColdStart",
+                                timeSinceBackgroundInMinutes, 1,
+                                60 * 12 /* 12 hours */, 24);
   } else {
-    base::UmaHistogramCustomTimes("IOS.WarmStartBackgroundTime",
-                                  base::Minutes(timeSinceBackgroundInMinutes),
-                                  base::Seconds(0),
-                                  base::Seconds(12 * 60 /* 12 hours */), 24);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeWarmStart",
+                                timeSinceBackgroundInMinutes, 1,
+                                60 * 12 /* 12 hours */, 24);
   }
 }
 

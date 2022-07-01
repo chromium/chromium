@@ -32,6 +32,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
+    expires_after="2023-04-27">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on every cold start app open. The value represents
+    how long the app was away from the foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundTimeBeforeWarmStart" units="minutes"
+    expires_after="2023-04-27">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on every warm start app open. The value represents
+    how long the app was away from the foreground.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
     enum="CaptivePortalStatus" expires_after="2022-10-16">
   <owner>ajuma@chromium.org</owner>
@@ -42,13 +62,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ColdStartBackgroundTime" units="minutes"
+<histogram name="IOS.ColdStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     This event is recorded on every cold start app open. The value represents
-    how long the app was away from the foreground.
+    how long the app was away from the foreground. NOTE: this metric is
+    obsolete, IOS.BackgroundTimeBeforeColdStart is the new metric.
   </summary>
 </histogram>
 
@@ -1664,13 +1685,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.WarmStartBackgroundTime" units="minutes"
+<histogram name="IOS.WarmStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     This event is recorded on every warm start app open. The value represents
-    how long the app was away from the foreground.
+    how long the app was away from the foreground. NOTE: this metric is
+    obsolete, IOS.BackgroundTimeBeforeWarmStart is the new metric.
   </summary>
 </histogram>
 
