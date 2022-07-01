@@ -78438,6 +78438,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PrintPreviewPrintDestinationBuckets">
+  <obsolete>
+    Deprecated 2022-06.
+  </obsolete>
   <int value="0" label="DESTINATION_SHOWN"/>
   <int value="1" label="DESTINATION_CLOSED_CHANGED"/>
   <int value="2" label="DESTINATION_CLOSED_UNCHANGED"/>

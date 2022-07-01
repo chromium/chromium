@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {MetricsContext} from '../metrics.js';
 import {CapabilitiesResponse, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../native_layer_cros.js';
@@ -183,11 +182,6 @@ export class DestinationStore extends EventTarget {
       Map<PrinterType, DestinationStorePrinterSearchStatus>;
 
   private initialDestinationSelected_: boolean = false;
-
-  /**
-   * Used to track metrics.
-   */
-  private metrics_: MetricsContext = MetricsContext.destinationSearch();
 
   /**
    * Used to fetch local print destinations.

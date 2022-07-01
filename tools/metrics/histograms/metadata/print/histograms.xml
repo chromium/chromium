@@ -24,6 +24,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.DestinationAction"
     enum="PrintPreviewPrintDestinationBuckets" expires_after="2022-07-01">
+  <obsolete>
+    Data no longer needed 2022-06.
+  </obsolete>
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

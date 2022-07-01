@@ -71,15 +71,6 @@ export class MetricsContext {
   }
 
   /**
-   * Destination Search specific usage statistics context.
-   */
-  static destinationSearch(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.DestinationAction',
-        DestinationSearchBucket.DESTINATION_SEARCH_MAX_BUCKET);
-  }
-
-  /**
    * Print settings UI specific usage statistics context
    */
   static printSettingsUi(): MetricsContext {

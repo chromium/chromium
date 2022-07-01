@@ -26,7 +26,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
-import {DestinationSearchBucket, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
 import {getTemplate} from './destination_dialog.html.js';
@@ -70,8 +69,6 @@ export class PrintPreviewDestinationDialogElement extends
         value: false,
       },
 
-      metrics_: Object,
-
       searchQuery_: {
         type: Object,
         value: null,
@@ -82,7 +79,6 @@ export class PrintPreviewDestinationDialogElement extends
   destinationStore: DestinationStore;
   private destinations_: Destination[];
   private loadingDestinations_: boolean;
-  private metrics_: MetricsContext;
   private searchQuery_: RegExp|null;
 
   private tracker_: EventTracker = new EventTracker();
@@ -144,10 +140,6 @@ export class PrintPreviewDestinationDialogElement extends
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }
-    const cancelled = this.$.dialog.getNative().returnValue !== 'success';
-    this.metrics_.record(
-        cancelled ? DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
-                    DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
   }
 
   private onCancelButtonClick_() {
@@ -170,9 +162,6 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   show() {
-    if (!this.metrics_) {
-      this.metrics_ = MetricsContext.destinationSearch();
-    }
     this.$.dialog.showModal();
     const loading = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
@@ -181,7 +170,6 @@ export class PrintPreviewDestinationDialogElement extends
       this.updateDestinations_();
     }
     this.loadingDestinations_ = loading;
-    this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
   }
 
   /** @return Whether the dialog is open. */
@@ -190,7 +178,6 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   private onManageButtonClick_() {
-    this.metrics_.record(DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
   }
 }
