@@ -61,7 +61,7 @@ executable("gcp_sfx") {
   deps = [
     ":setup_resources",
     ":version",
-    "//third_party/lzma_sdk/Util/SfxSetup:7zS2_source",
+    "//third_party/lzma_sdk/C/Util/SfxSetup:7zS2_source",
   ]
   configs += [ "//build/config/win:windowed" ]
 }

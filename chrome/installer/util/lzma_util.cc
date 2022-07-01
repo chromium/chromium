@@ -22,10 +22,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 extern "C" {
-#include "third_party/lzma_sdk/7z.h"
-#include "third_party/lzma_sdk/7zAlloc.h"
-#include "third_party/lzma_sdk/7zCrc.h"
-#include "third_party/lzma_sdk/7zFile.h"
+#include "third_party/lzma_sdk/C/7z.h"
+#include "third_party/lzma_sdk/C/7zAlloc.h"
+#include "third_party/lzma_sdk/C/7zCrc.h"
+#include "third_party/lzma_sdk/C/7zFile.h"
 }
 
 namespace {

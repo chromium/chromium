@@ -13,9 +13,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "third_party/lzma_sdk/7zCrc.h"
-#include "third_party/lzma_sdk/Xz.h"
-#include "third_party/lzma_sdk/XzCrc64.h"
+#include "third_party/lzma_sdk/C/7zCrc.h"
+#include "third_party/lzma_sdk/C/Xz.h"
+#include "third_party/lzma_sdk/C/XzCrc64.h"
 
 namespace {
 

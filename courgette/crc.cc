@@ -11,7 +11,7 @@
 #  include "zlib.h"
 #else
 extern "C" {
-#  include "third_party/lzma_sdk/7zCrc.h"
+#include "third_party/lzma_sdk/C/7zCrc.h"
 }
 #endif
 
