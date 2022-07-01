@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "ui/gl/gl_export.h"
 
