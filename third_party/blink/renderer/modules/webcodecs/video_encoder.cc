@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -623,6 +624,10 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.hw_pref == new_config.hw_pref;
 }
 
+const AtomicString& VideoEncoder::InterfaceName() const {
+  return event_target_names::kVideoEncoder;
+}
+
 bool VideoEncoder::HasPendingActivity() const {
   return (active_encodes_ > 0) || Base::HasPendingActivity();
 }
@@ -701,6 +706,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
             --self->requested_encodes_;
+            self->ScheduleDequeueEvent();
             self->blocking_request_in_progress_ = false;
             self->media_encoder_->Encode(std::move(frame), keyframe,
                                          std::move(done_callback));
@@ -792,6 +798,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
   }
 
   --requested_encodes_;
+  ScheduleDequeueEvent();
   media_encoder_->Encode(frame, keyframe,
                          ConvertToBaseOnceCallback(CrossThreadBindOnce(
                              done_callback, WrapCrossThreadWeakPersistent(this),

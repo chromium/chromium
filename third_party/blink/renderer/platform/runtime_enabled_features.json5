@@ -2670,6 +2670,10 @@
       origin_trial_feature_name: "WebCodecs"
     },
     {
+      name: "WebCodecsDequeueEvent",
+      status: "experimental",
+    },
+    {
       name: "WebGLColorManagement",
       status: "stable",
     },

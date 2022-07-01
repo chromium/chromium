@@ -359,6 +359,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
   base::TimeTicks timestamp = base::TimeTicks() + data->timestamp();
 
   --requested_encodes_;
+  ScheduleDequeueEvent();
   media_encoder_->Encode(std::move(audio_bus), timestamp,
                          ConvertToBaseOnceCallback(CrossThreadBindOnce(
                              done_callback, WrapCrossThreadWeakPersistent(this),
@@ -455,6 +456,10 @@ ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
   return ScriptPromise::Cast(
       script_state, ToV8Traits<AudioEncoderSupport>::ToV8(script_state, support)
                         .ToLocalChecked());
+}
+
+const AtomicString& AudioEncoder::InterfaceName() const {
+  return event_target_names::kAudioEncoder;
 }
 
 }  // namespace blink

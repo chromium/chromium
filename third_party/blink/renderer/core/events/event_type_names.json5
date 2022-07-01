@@ -107,6 +107,7 @@
     "dispose",
     "downloading",
     "dataavailable",
+    "dequeue",
     "drag",
     "dragend",
     "dragenter",

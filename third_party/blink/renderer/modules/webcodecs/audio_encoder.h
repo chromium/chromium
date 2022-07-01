@@ -65,6 +65,9 @@ class MODULES_EXPORT AudioEncoder final
     return Base::encode(data, nullptr, exception_state);
   }
 
+  // EventTarget interface
+  const AtomicString& InterfaceName() const override;
+
   static ScriptPromise isConfigSupported(ScriptState*,
                                          const AudioEncoderConfig*,
                                          ExceptionState&);

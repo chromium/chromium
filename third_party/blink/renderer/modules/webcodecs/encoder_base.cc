@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -33,6 +35,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -217,7 +220,10 @@ void EncoderBase<Traits>::ResetInternal() {
     if (pending_req->input)
       pending_req->input.Release()->close();
   }
-  requested_encodes_ = 0;
+  if (requested_encodes_ > 0) {
+    requested_encodes_ = 0;
+    ScheduleDequeueEvent();
+  }
   blocking_request_in_progress_ = false;
 
   // Schedule deletion of |media_encoder_| for later.
@@ -371,12 +377,47 @@ void EncoderBase<Traits>::TraceQueueSizes() const {
 }
 
 template <typename Traits>
+void EncoderBase<Traits>::DispatchDequeueEvent(Event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  probe::AsyncTask async_task(GetExecutionContext(),
+                              event->async_task_context());
+  dequeue_event_pending_ = false;
+  DispatchEvent(*event);
+}
+
+template <typename Traits>
+void EncoderBase<Traits>::ScheduleDequeueEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!RuntimeEnabledFeatures::WebCodecsDequeueEventEnabled())
+    return;
+
+  if (dequeue_event_pending_)
+    return;
+  dequeue_event_pending_ = true;
+
+  Event* event = Event::Create(event_type_names::kDequeue);
+  event->SetTarget(this);
+  event->async_task_context()->Schedule(GetExecutionContext(), event->type());
+
+  callback_runner_->PostTask(
+      FROM_HERE, WTF::Bind(&EncoderBase<Traits>::DispatchDequeueEvent,
+                           WrapWeakPersistent(this), WrapPersistent(event)));
+}
+
+template <typename Traits>
+ExecutionContext* EncoderBase<Traits>::GetExecutionContext() const {
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
+}
+
+template <typename Traits>
 void EncoderBase<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(active_config_);
   visitor->Trace(script_state_);
   visitor->Trace(output_callback_);
   visitor->Trace(error_callback_);
   visitor->Trace(requests_);
+  EventTargetWithInlineData::Trace(visitor);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ReclaimableCodec::Trace(visitor);

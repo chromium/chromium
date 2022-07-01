@@ -9,13 +9,18 @@
     SecureContext,
     RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
-] interface VideoEncoder {
+] interface VideoEncoder : EventTarget {
     [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
     constructor(VideoEncoderInit init);
 
     // The number of pending encode requests. This does not include requests
     // that have been sent to the underlying codec.
     readonly attribute unsigned long encodeQueueSize;
+
+    // Fires to signal a decrease in encodeQueueSize. Will fire at most once
+    // for a given turn of the event loop.
+    [RuntimeEnabled=WebCodecsDequeueEvent]
+    attribute EventHandler ondequeue;
 
     // Enqueues a control message to configure the video encoder for encoding
     // frames as described by config.

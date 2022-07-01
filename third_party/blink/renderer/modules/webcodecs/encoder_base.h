@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
+#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
@@ -33,7 +34,7 @@ enum class DOMExceptionCode;
 
 template <typename Traits>
 class MODULES_EXPORT EncoderBase
-    : public ScriptWrappable,
+    : public EventTargetWithInlineData,
       public ActiveScriptWrappable<EncoderBase<Traits>>,
       public ReclaimableCodec {
  public:
@@ -54,6 +55,8 @@ class MODULES_EXPORT EncoderBase
   // *_encoder.idl implementation.
   uint32_t encodeQueueSize() { return requested_encodes_; }
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue);
+
   void configure(const ConfigType*, ExceptionState&);
 
   void encode(InputType* input,
@@ -67,6 +70,9 @@ class MODULES_EXPORT EncoderBase
   void close(ExceptionState&);
 
   String state() { return state_; }
+
+  // EventTarget override.
+  ExecutionContext* GetExecutionContext() const override;
 
   // ExecutionContextLifecycleObserver override.
   void ContextDestroyed() override;
@@ -135,6 +141,10 @@ class MODULES_EXPORT EncoderBase
   void OnCodecReclaimed(DOMException*) override;
 
   void TraceQueueSizes() const;
+
+  void ScheduleDequeueEvent();
+  void DispatchDequeueEvent(Event* event);
+  bool dequeue_event_pending_ = false;
 
   std::unique_ptr<CodecLogger<media::EncoderStatus>> logger_;
 
