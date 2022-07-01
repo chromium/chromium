@@ -367,12 +367,10 @@ bool IsLacrosEnabled() {
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId())) {
     PrefService* local_state = g_browser_process->local_state();
     // Note that local_state can be nullptr in tests.
-    if (local_state &&
-        !IsProfileMigrationCompletedForUser(
-            local_state,
-            user_manager::UserManager::Get()->GetPrimaryUser()->username_hash(),
-            GetMigrationMode(user_manager::UserManager::Get()->GetPrimaryUser(),
-                             PolicyInitState::kAfterInit))) {
+    if (local_state && !IsCopyOrMoveProfileMigrationCompletedForUser(
+                           local_state, user_manager::UserManager::Get()
+                                            ->GetPrimaryUser()
+                                            ->username_hash())) {
       // If migration has not been completed, do not enable lacros.
       return false;
     }
@@ -457,9 +455,8 @@ bool IsProfileMigrationAvailable() {
     return false;
 
   // If migration is already completed, it is not necessary to run again.
-  if (IsProfileMigrationCompletedForUser(
-          user_manager->GetLocalState(), user->username_hash(),
-          GetMigrationMode(user, PolicyInitState::kAfterInit))) {
+  if (IsCopyOrMoveProfileMigrationCompletedForUser(
+          user_manager->GetLocalState(), user->username_hash())) {
     return false;
   }
 
@@ -908,6 +905,15 @@ MigrationMode GetMigrationMode(const user_manager::User* user,
   }
 
   return MigrationMode::kCopy;
+}
+
+bool IsCopyOrMoveProfileMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  // Completion of profile move migration sets copy migration as completed so
+  // only checking completion of copy migration is sufficient.
+  return IsProfileMigrationCompletedForUser(local_state, user_id_hash,
+                                            MigrationMode::kCopy);
 }
 
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,

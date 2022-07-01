@@ -784,6 +784,31 @@ TEST_F(BrowserUtilTest, IsProfileMigrationCompletedForUser) {
       &pref_service_, user_id_hash, browser_util::MigrationMode::kMove));
 }
 
+TEST_F(BrowserUtilTest, IsCopyOrMoveProfileMigrationCompletedForUser) {
+  const std::string user_id_hash = "abcd";
+  // `IsCopyOrMoveProfileMigrationCompletedForUser()` should return
+  // false by default.
+  EXPECT_FALSE(browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash));
+
+  // Setting copy migration as completed makes
+  // `IsCopyOrMoveProfileMigrationCompletedForUser()` return true.
+  browser_util::SetProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy);
+  EXPECT_TRUE(browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash));
+
+  browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
+                                                      user_id_hash);
+
+  // Setting move migration as completed makes
+  // `IsCopyOrMoveProfileMigrationCompletedForUser()` return true.
+  browser_util::SetProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove);
+  EXPECT_TRUE(browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash));
+}
+
 TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
   {
     browser_util::SetLacrosEnabledForTest(false);

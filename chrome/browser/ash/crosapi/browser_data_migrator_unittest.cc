@@ -494,8 +494,11 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   }
 
   {
-    // If copy migration is marked as completed but not move then migration
-    // should run if move migration is enabled.
+    // If copy migration is marked as completed then migration should not run
+    // even if move migration is enabled.
+    // TODO(crbug.com/1340438): This previously checked the opposite where the
+    // expectation was to run move migration even if copy migration is
+    // completed. Revisit this part if we decide to restore that behaviour.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
@@ -505,7 +508,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
     EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
                   user, crosapi::browser_util::PolicyInitState::kAfterInit),
               crosapi::browser_util::MigrationMode::kMove);
-    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
