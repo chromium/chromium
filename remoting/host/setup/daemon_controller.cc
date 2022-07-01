@@ -58,10 +58,9 @@ void DaemonController::CheckPermission(bool it2me, BoolCallback callback) {
   return delegate_->CheckPermission(it2me, std::move(callback));
 }
 
-void DaemonController::SetConfigAndStart(
-    std::unique_ptr<base::DictionaryValue> config,
-    bool consent,
-    CompletionCallback done) {
+void DaemonController::SetConfigAndStart(base::Value::Dict config,
+                                         bool consent,
+                                         CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   CompletionCallback wrapped_done =
@@ -73,9 +72,8 @@ void DaemonController::SetConfigAndStart(
   ServiceOrQueueRequest(std::move(request));
 }
 
-void DaemonController::UpdateConfig(
-    std::unique_ptr<base::DictionaryValue> config,
-    CompletionCallback done) {
+void DaemonController::UpdateConfig(base::Value::Dict config,
+                                    CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   CompletionCallback wrapped_done =
@@ -121,23 +119,21 @@ DaemonController::~DaemonController() {
 void DaemonController::DoGetConfig(GetConfigCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<base::DictionaryValue> config = delegate_->GetConfig();
+  absl::optional<base::Value::Dict> config = delegate_->GetConfig();
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(done), std::move(config)));
 }
 
-void DaemonController::DoSetConfigAndStart(
-    std::unique_ptr<base::DictionaryValue> config,
-    bool consent,
-    CompletionCallback done) {
+void DaemonController::DoSetConfigAndStart(base::Value::Dict config,
+                                           bool consent,
+                                           CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
   delegate_->SetConfigAndStart(std::move(config), consent, std::move(done));
 }
 
-void DaemonController::DoUpdateConfig(
-    std::unique_ptr<base::DictionaryValue> config,
-    CompletionCallback done) {
+void DaemonController::DoUpdateConfig(base::Value::Dict config,
+                                      CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
   delegate_->UpdateConfig(std::move(config), std::move(done));
@@ -176,7 +172,7 @@ void DaemonController::InvokeCompletionCallbackAndScheduleNext(
 
 void DaemonController::InvokeConfigCallbackAndScheduleNext(
     GetConfigCallback done,
-    std::unique_ptr<base::DictionaryValue> config) {
+    absl::optional<base::Value::Dict> config) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   std::move(done).Run(std::move(config));

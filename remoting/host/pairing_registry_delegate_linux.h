@@ -10,10 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace remoting {
 
 class PairingRegistryDelegateLinux
@@ -28,7 +24,7 @@ class PairingRegistryDelegateLinux
   ~PairingRegistryDelegateLinux() override;
 
   // PairingRegistry::Delegate interface
-  std::unique_ptr<base::ListValue> LoadAll() override;
+  base::Value::List LoadAll() override;
   bool DeleteAll() override;
   protocol::PairingRegistry::Pairing Load(
       const std::string& client_id) override;

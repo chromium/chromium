@@ -60,31 +60,30 @@ PairingRegistry::Pairing PairingRegistry::Pairing::Create(
 }
 
 PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
-    const base::DictionaryValue& pairing) {
-  std::string client_name, client_id;
+    const base::Value::Dict& pairing) {
   absl::optional<double> created_time_value =
-      pairing.FindDoubleKey(kCreatedTimeKey);
-  if (created_time_value && pairing.GetString(kClientNameKey, &client_name) &&
-      pairing.GetString(kClientIdKey, &client_id)) {
+      pairing.FindDouble(kCreatedTimeKey);
+  const std::string* client_name = pairing.FindString(kClientNameKey);
+  const std::string* client_id = pairing.FindString(kClientIdKey);
+  if (created_time_value && client_name && client_id) {
     // The shared secret is optional.
-    std::string shared_secret;
-    pairing.GetString(kSharedSecretKey, &shared_secret);
+    const std::string* shared_secret = pairing.FindString(kSharedSecretKey);
     base::Time created_time = base::Time::FromJsTime(*created_time_value);
-    return Pairing(created_time, client_name, client_id, shared_secret);
+    return Pairing(created_time, *client_name, *client_id,
+                   shared_secret ? *shared_secret : "");
   }
 
   LOG(ERROR) << "Failed to load pairing information: unexpected format.";
   return Pairing();
 }
 
-std::unique_ptr<base::DictionaryValue> PairingRegistry::Pairing::ToValue()
-    const {
-  std::unique_ptr<base::DictionaryValue> pairing(new base::DictionaryValue());
-  pairing->SetDouble(kCreatedTimeKey, created_time().ToJsTime());
-  pairing->SetString(kClientNameKey, client_name());
-  pairing->SetString(kClientIdKey, client_id());
+base::Value::Dict PairingRegistry::Pairing::ToValue() const {
+  base::Value::Dict pairing;
+  pairing.Set(kCreatedTimeKey, static_cast<double>(created_time().ToJsTime()));
+  pairing.Set(kClientNameKey, client_name());
+  pairing.Set(kClientIdKey, client_id());
   if (!shared_secret().empty())
-    pairing->SetString(kSharedSecretKey, shared_secret());
+    pairing.Set(kSharedSecretKey, shared_secret());
   return pairing;
 }
 
@@ -183,7 +182,7 @@ void PairingRegistry::AddPairing(const Pairing& pairing) {
 void PairingRegistry::DoLoadAll(GetAllPairingsCallback callback) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<base::ListValue> pairings = delegate_->LoadAll();
+  base::Value::List pairings = delegate_->LoadAll();
   PostTask(caller_task_runner_, FROM_HERE,
            base::BindOnce(std::move(callback), std::move(pairings)));
 }
@@ -242,27 +241,25 @@ void PairingRegistry::InvokeGetPairingCallbackAndScheduleNext(
 
 void PairingRegistry::InvokeGetAllPairingsCallbackAndScheduleNext(
     GetAllPairingsCallback callback,
-    std::unique_ptr<base::ListValue> pairings) {
+    base::Value::List pairings) {
   std::move(callback).Run(std::move(pairings));
   pending_requests_.pop();
   ServiceNextRequest();
 }
 
-void PairingRegistry::SanitizePairings(
-    GetAllPairingsCallback callback,
-    std::unique_ptr<base::ListValue> pairings) {
+void PairingRegistry::SanitizePairings(GetAllPairingsCallback callback,
+                                       base::Value::List pairings) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<base::ListValue> sanitized_pairings(new base::ListValue());
-  for (size_t i = 0; i < pairings->GetListDeprecated().size(); ++i) {
-    base::DictionaryValue* pairing_json;
-    if (!pairings->GetDictionary(i, &pairing_json)) {
+  base::Value::List sanitized_pairings;
+  for (const base::Value& pairing_json : pairings) {
+    if (!pairing_json.is_dict()) {
       LOG(WARNING) << "A pairing entry is not a dictionary.";
       continue;
     }
 
     // Parse the pairing data.
-    Pairing pairing = Pairing::CreateFromValue(*pairing_json);
+    Pairing pairing = Pairing::CreateFromValue(pairing_json.GetDict());
     if (!pairing.is_valid()) {
       LOG(WARNING) << "Could not parse a pairing entry.";
       continue;
@@ -274,8 +271,7 @@ void PairingRegistry::SanitizePairings(
         pairing.client_name(),
         pairing.client_id(),
         "");
-    sanitized_pairings->GetList().Append(
-        base::Value::FromUniquePtrValue(sanitized_pairing.ToValue()));
+    sanitized_pairings.Append(sanitized_pairing.ToValue());
   }
 
   std::move(callback).Run(std::move(sanitized_pairings));

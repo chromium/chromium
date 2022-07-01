@@ -21,12 +21,12 @@ class DaemonControllerDelegateWin : public DaemonController::Delegate {
 
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
-  std::unique_ptr<base::DictionaryValue> GetConfig() override;
+  absl::optional<base::Value::Dict> GetConfig() override;
   void CheckPermission(bool it2me, DaemonController::BoolCallback) override;
-  void SetConfigAndStart(std::unique_ptr<base::DictionaryValue> config,
+  void SetConfigAndStart(base::Value::Dict config,
                          bool consent,
                          DaemonController::CompletionCallback done) override;
-  void UpdateConfig(std::unique_ptr<base::DictionaryValue> config,
+  void UpdateConfig(base::Value::Dict config,
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
