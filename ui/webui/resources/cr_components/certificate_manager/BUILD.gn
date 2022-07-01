@@ -64,6 +64,7 @@ generate_grd("build_grdp") {
   grd_prefix = "cr_components_certificate_manager"
   out_grd = "$target_gen_dir/resources.grdp"
   public_deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   resource_path_prefix = "cr_components/certificate_manager"
 }

@@ -27,19 +27,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "browser_switch"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "browser_switch.html",
-    "internals/browser_switch_internals.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
@@ -62,6 +49,20 @@ ts_library("build_ts") {
     ":copy_main",
     ":html_wrapper_files",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "browser_switch"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "browser_switch.html",
+    "internals/browser_switch_internals.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
 
 copy("copy_main") {

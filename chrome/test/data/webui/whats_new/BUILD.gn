@@ -7,15 +7,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_android)
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_whats_new"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "whats_new"
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -31,4 +22,14 @@ ts_library("build_ts") {
   in_files = [ "whats_new_app_test.ts" ]
   deps = [ "//chrome/browser/resources/whats_new:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_whats_new"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "whats_new"
 }

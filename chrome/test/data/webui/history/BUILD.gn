@@ -28,15 +28,6 @@ non_preprocessed_files = [
   "test_util.ts",
 ]
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_history"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "history"
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -53,4 +44,14 @@ ts_library("build_ts") {
 
   deps = [ "//chrome/browser/resources/history:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_history"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "history"
 }

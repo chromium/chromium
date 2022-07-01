@@ -254,7 +254,8 @@ generate_grd("build_grd") {
         [ "personalization_app.rollup.js|trusted/personalization_app.js" ]
   } else {
     deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }
   grd_prefix = "ash_personalization_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"

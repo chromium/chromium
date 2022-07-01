@@ -32,17 +32,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-# Build a .grd file from the various resource files needed by the
-# feedback dialog.
-generate_grd("build_grd") {
-  input_files = [ "feedback.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  grd_prefix = "media_router_feedback"
-  out_grd = "$target_gen_dir/resources.grd"
-}
-
 preprocess_if_expr("preprocess_gen") {
   deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
@@ -77,4 +66,16 @@ ts_library("build_ts") {
     ":preprocess_gen",
     ":preprocess_src",
   ]
+}
+
+# Build a .grd file from the various resource files needed by the
+# feedback dialog.
+generate_grd("build_grd") {
+  input_files = [ "feedback.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  grd_prefix = "media_router_feedback"
+  out_grd = "$target_gen_dir/resources.grd"
 }

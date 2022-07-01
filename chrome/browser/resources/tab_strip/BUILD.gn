@@ -15,28 +15,6 @@ assert(enable_webui_tab_strip)
 
 preprocess_folder = "preprocessed"
 
-generate_grd("build_grd") {
-  grd_prefix = "tab_strip"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "alert_indicators/picture_in_picture_alt.svg",
-    "alert_indicators/serial_port.svg",
-    "alert_indicators/tab_audio_muting_rounded.svg",
-    "alert_indicators/tab_audio_rounded.svg",
-    "alert_indicators/tab_bluetooth_connected.svg",
-    "alert_indicators/tab_hid_connected.svg",
-    "alert_indicators/tab_media_capturing_with_arrow.svg",
-    "alert_indicators/tab_media_recording.svg",
-    "alert_indicators/tab_usb_connected.svg",
-    "alert_indicators/vr_headset.svg",
-    "tab_strip.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 copy("copy_mojo") {
   deps = [
     "//chrome/browser/ui/webui/tab_strip:mojo_bindings_webui_js",
@@ -103,4 +81,27 @@ ts_library("build_ts") {
     ":preprocess_gen",
     ":preprocess_src",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "tab_strip"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "alert_indicators/picture_in_picture_alt.svg",
+    "alert_indicators/serial_port.svg",
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_bluetooth_connected.svg",
+    "alert_indicators/tab_hid_connected.svg",
+    "alert_indicators/tab_media_capturing_with_arrow.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "alert_indicators/tab_usb_connected.svg",
+    "alert_indicators/vr_headset.svg",
+    "tab_strip.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

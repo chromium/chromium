@@ -33,25 +33,6 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  input_files = [
-    "bookmarks.html",
-    "images/folder_open.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [ "bookmarks.rollup.js|bookmarks.js" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-  grd_prefix = "bookmarks"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
-
 preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
@@ -116,4 +97,24 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "bookmarks.html",
+    "images/folder_open.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [ "bookmarks.rollup.js|bookmarks.js" ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
+  grd_prefix = "bookmarks"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

@@ -13,18 +13,6 @@ assert(!is_android)
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-generate_grd("build_grd") {
-  grd_prefix = "support_tool"
-  out_grd = resources_grd_file
-  input_files = html_files + [
-                  "support_tool_container.html",
-                  "url_generator_container.html",
-                ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 grit("resources") {
   enable_input_discovery_for_gn_analyze = false
   source = resources_grd_file
@@ -67,4 +55,17 @@ ts_library("build_ts") {
     ":html_wrapper_files",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "support_tool"
+  out_grd = resources_grd_file
+  input_files = html_files + [
+                  "support_tool_container.html",
+                  "url_generator_container.html",
+                ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

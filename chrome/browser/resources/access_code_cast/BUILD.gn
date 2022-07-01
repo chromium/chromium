@@ -57,7 +57,8 @@ ts_library("build_ts") {
 generate_grd("build_grd") {
   input_files = [ "index.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   deps = [ ":build_ts" ]
 
   grd_prefix = "access_code_cast"

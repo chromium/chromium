@@ -79,6 +79,7 @@ generate_grd("build_grdp") {
     "brush.svg",
   ]
   public_deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   resource_path_prefix = "cr_components/customize_themes"
 }

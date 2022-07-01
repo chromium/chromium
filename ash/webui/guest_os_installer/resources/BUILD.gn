@@ -91,7 +91,8 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 
   grd_prefix = "ash_guest_os_installer"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"

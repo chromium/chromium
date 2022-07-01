@@ -137,6 +137,39 @@ preprocess_if_expr("preprocess_generated_image_loader") {
   ]
 }
 
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+
+  extra_deps = [
+    ":copy_ts",
+    ":preprocess_generated",
+    ":preprocess_generated_image_loader",
+    ":preprocess_static",
+    ":preprocess_static_image_loader",
+  ]
+
+  deps = [ "//ui/webui/resources:library" ]
+
+  in_files =
+      static_js_files + generated_js_files + ts_files + ts_generated_templates +
+      image_loader_static_js_files + image_loader_generated_js_files
+
+  definitions = [
+    "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
+    "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
+  ]
+}
+
+js_library("js_from_ts") {
+  sources = []
+  foreach(_t, ts_files) {
+    sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
+  }
+  extra_deps = [ ":build_ts" ]
+}
+
 grd_prefix = "file_manager_gen"
 generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
@@ -215,7 +248,8 @@ generate_grd("build_grd") {
       "//ui/file_manager/file_manager/foreground/js:build_worker",
     ]
   } else {
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }
 }
 
@@ -247,39 +281,6 @@ html_to_wrapper("html_wrapper_files") {
   in_files = ts_templates
 }
 
-ts_library("build_ts") {
-  root_dir = preprocess_folder
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-
-  extra_deps = [
-    ":copy_ts",
-    ":preprocess_generated",
-    ":preprocess_generated_image_loader",
-    ":preprocess_static",
-    ":preprocess_static_image_loader",
-  ]
-
-  deps = [ "//ui/webui/resources:library" ]
-
-  in_files =
-      static_js_files + generated_js_files + ts_files + ts_generated_templates +
-      image_loader_static_js_files + image_loader_generated_js_files
-
-  definitions = [
-    "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
-    "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
-  ]
-}
-
-js_library("js_from_ts") {
-  sources = []
-  foreach(_t, ts_files) {
-    sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
-  }
-  extra_deps = [ ":build_ts" ]
-}
-
 # GRD for test files.
 generate_grd("build_tests_grdp") {
   testonly = true
@@ -296,6 +297,8 @@ generate_grd("build_tests_gen_grdp") {
   grd_prefix = "file_manager_test"
   out_grd = "$target_gen_dir/tests_gen_resources.grdp"
 
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+
   deps = [ ":build_ts" ]
 }

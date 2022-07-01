@@ -32,21 +32,6 @@ preprocess_if_expr("preprocess") {
   in_files = [ "webui_js_error.ts" ]
 }
 
-generate_grd("build_grd") {
-  input_files = [ "webui_js_error.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    resource_path_rewrites = [ "webui_js_error.rollup.js|webui_js_error.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-  grd_prefix = "webui_js_error"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
-
 grit("resources") {
   defines = chrome_grit_defines
 
@@ -70,4 +55,20 @@ ts_library("build_ts") {
   in_files = [ "webui_js_error.ts" ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":preprocess" ]
+}
+
+generate_grd("build_grd") {
+  input_files = [ "webui_js_error.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    resource_path_rewrites = [ "webui_js_error.rollup.js|webui_js_error.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
+  grd_prefix = "webui_js_error"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

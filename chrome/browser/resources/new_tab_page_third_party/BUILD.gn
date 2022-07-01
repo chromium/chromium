@@ -25,15 +25,6 @@ copy("copy_mojo") {
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
-generate_grd("build_grd") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "new_tab_page_third_party.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 grit("resources") {
   defines = chrome_grit_defines
   enable_input_discovery_for_gn_analyze = false
@@ -67,4 +58,14 @@ ts_library("build_ts") {
     ":copy_mojo",
     ":preprocess",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "new_tab_page_third_party.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
