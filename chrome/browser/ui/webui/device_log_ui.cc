@@ -36,25 +36,25 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "getLog", base::BindRepeating(&DeviceLogMessageHandler::GetLog,
                                       base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "clearLog", base::BindRepeating(&DeviceLogMessageHandler::ClearLog,
                                         base::Unretained(this)));
   }
 
  private:
-  void GetLog(const base::ListValue* value) {
+  void GetLog(const base::Value::List& value) {
     AllowJavascript();
-    std::string callback_id = value->GetListDeprecated()[0].GetString();
+    std::string callback_id = value[0].GetString();
     base::Value data(device_event_log::GetAsString(
         device_event_log::NEWEST_FIRST, "json", "",
         device_event_log::LOG_LEVEL_DEBUG, 0));
     ResolveJavascriptCallback(base::Value(callback_id), data);
   }
 
-  void ClearLog(const base::ListValue* value) const {
+  void ClearLog(const base::Value::List& value) const {
     device_event_log::ClearAll();
   }
 };

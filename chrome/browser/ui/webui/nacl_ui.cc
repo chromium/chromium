@@ -90,7 +90,7 @@ class NaClDomHandler : public WebUIMessageHandler {
 
  private:
   // Callback for the "requestNaClInfo" message.
-  void HandleRequestNaClInfo(const base::ListValue* args);
+  void HandleRequestNaClInfo(const base::Value::List& args);
 
   // Callback for the NaCl plugin information.
   void OnGotPlugins(const std::vector<content::WebPluginInfo>& plugins);
@@ -147,7 +147,7 @@ NaClDomHandler::NaClDomHandler()
 NaClDomHandler::~NaClDomHandler() = default;
 
 void NaClDomHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestNaClInfo",
       base::BindRepeating(&NaClDomHandler::HandleRequestNaClInfo,
                           base::Unretained(this)));
@@ -290,10 +290,10 @@ void NaClDomHandler::AddNaClInfo(base::ListValue* list) {
   AddLineBreak(list);
 }
 
-void NaClDomHandler::HandleRequestNaClInfo(const base::ListValue* args) {
+void NaClDomHandler::HandleRequestNaClInfo(const base::Value::List& args) {
   CHECK(callback_id_.empty());
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  callback_id_ = args[0].GetString();
 
   if (!has_plugin_info_) {
     PluginService::GetInstance()->GetPlugins(base::BindOnce(

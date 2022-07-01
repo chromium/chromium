@@ -139,16 +139,16 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // Callback for the "requestProcessList" message.
-  void HandleRequestProcessList(const base::ListValue* args);
+  void HandleRequestProcessList(const base::Value::List& args);
 
   // Callback for the "saveDump" message.
-  void HandleSaveDump(const base::ListValue* args);
+  void HandleSaveDump(const base::Value::List& args);
 
   // Callback for the "reportProcess" message.
-  void HandleReportProcess(const base::ListValue* args);
+  void HandleReportProcess(const base::Value::List& args);
 
   // Callback for the "startProfiling" message.
-  void HandleStartProfiling(const base::ListValue* args);
+  void HandleStartProfiling(const base::Value::List& args);
 
  private:
   void ReturnProcessListOnUIThread(const std::string& callback_id,
@@ -186,28 +186,28 @@ MemoryInternalsDOMHandler::~MemoryInternalsDOMHandler() {
 void MemoryInternalsDOMHandler::RegisterMessages() {
   // Unretained should be OK here since this class is bound to the lifetime of
   // the WebUI.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestProcessList",
       base::BindRepeating(&MemoryInternalsDOMHandler::HandleRequestProcessList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "saveDump",
       base::BindRepeating(&MemoryInternalsDOMHandler::HandleSaveDump,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "reportProcess",
       base::BindRepeating(&MemoryInternalsDOMHandler::HandleReportProcess,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startProfiling",
       base::BindRepeating(&MemoryInternalsDOMHandler::HandleStartProfiling,
                           base::Unretained(this)));
 }
 
 void MemoryInternalsDOMHandler::HandleRequestProcessList(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string callback_id = args[0].GetString();
 
   std::vector<base::Value> result;
 
@@ -239,7 +239,7 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
       weak_factory_.GetWeakPtr(), callback_id, std::move(result)));
 }
 
-void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
+void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List& args) {
   base::FilePath default_file = base::FilePath().AppendASCII(
       base::StringPrintf("trace_with_heap_dump.json.gz"));
 
@@ -275,17 +275,17 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
 }
 
 void MemoryInternalsDOMHandler::HandleReportProcess(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // TODO(etienneb): Delete the use of this method.
 }
 
 void MemoryInternalsDOMHandler::HandleStartProfiling(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!args->is_list() || args->GetListDeprecated().size() != 1)
+  if (args.size() != 1)
     return;
 
-  base::ProcessId pid = args->GetListDeprecated()[0].GetInt();
+  base::ProcessId pid = args[0].GetInt();
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();
   if (supervisor->HasStarted()) {

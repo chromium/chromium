@@ -98,11 +98,11 @@ class NetExportMessageHandler
   void RegisterMessages() override;
 
   // Messages
-  void OnEnableNotifyUIWithState(const base::ListValue* list);
-  void OnStartNetLog(const base::ListValue* list);
-  void OnStopNetLog(const base::ListValue* list);
-  void OnSendNetLog(const base::ListValue* list);
-  void OnShowFile(const base::ListValue* list);
+  void OnEnableNotifyUIWithState(const base::Value::List& list);
+  void OnStartNetLog(const base::Value::List& list);
+  void OnStopNetLog(const base::Value::List& list);
+  void OnSendNetLog(const base::Value::List& list);
+  void OnShowFile(const base::Value::List& list);
 
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -179,23 +179,23 @@ NetExportMessageHandler::~NetExportMessageHandler() {
 void NetExportMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kEnableNotifyUIWithStateHandler,
       base::BindRepeating(&NetExportMessageHandler::OnEnableNotifyUIWithState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kStartNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStartNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kStopNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStopNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kSendNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnSendNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kShowFile,
       base::BindRepeating(&NetExportMessageHandler::OnShowFile,
                           base::Unretained(this)));
@@ -205,7 +205,7 @@ void NetExportMessageHandler::RegisterMessages() {
 // After this function, NotifyUIWithState() will be called on all |file_writer_|
 // state changes.
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
-    const base::ListValue* list) {
+    const base::Value::List& list) {
   AllowJavascript();
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_observation_manager_.IsObserving()) {
@@ -214,10 +214,8 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
   NotifyUIWithState(file_writer_->GetState());
 }
 
-void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
+void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  base::Value::ConstListView params = list->GetListDeprecated();
 
   // Determine the capture mode.
   capture_mode_ = net::NetLogCaptureMode::kDefault;
@@ -245,7 +243,7 @@ void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
   }
 }
 
-void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
+void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::Value::Dict ui_thread_polled_data;
@@ -263,13 +261,13 @@ void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
   file_writer_->StopNetLog(std::move(ui_thread_polled_data));
 }
 
-void NetExportMessageHandler::OnSendNetLog(const base::ListValue* list) {
+void NetExportMessageHandler::OnSendNetLog(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_writer_->GetFilePathToCompletedLog(
       base::BindOnce(&NetExportMessageHandler::SendEmail));
 }
 
-void NetExportMessageHandler::OnShowFile(const base::ListValue* list) {
+void NetExportMessageHandler::OnShowFile(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_writer_->GetFilePathToCompletedLog(
       base::BindOnce(&NetExportMessageHandler::ShowFileInShell, AsWeakPtr()));

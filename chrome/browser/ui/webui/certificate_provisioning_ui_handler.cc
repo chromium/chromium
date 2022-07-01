@@ -167,15 +167,15 @@ CertificateProvisioningUiHandler::~CertificateProvisioningUiHandler() = default;
 
 void CertificateProvisioningUiHandler::RegisterMessages() {
   // Passing base::Unretained(this) to
-  // web_ui()->RegisterDeprecatedMessageCallback is fine because in chrome Web
+  // web_ui()->RegisterMessageCallback is fine because in chrome Web
   // UI, web_ui() has acquired ownership of |this| and maintains the life time
   // of |this| accordingly.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "refreshCertificateProvisioningProcessses",
       base::BindRepeating(&CertificateProvisioningUiHandler::
                               HandleRefreshCertificateProvisioningProcesses,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "triggerCertificateProvisioningProcessUpdate",
       base::BindRepeating(&CertificateProvisioningUiHandler::
                               HandleTriggerCertificateProvisioningProcessUpdate,
@@ -199,20 +199,18 @@ CertificateProvisioningUiHandler::ReadAndResetUiRefreshCountForTesting() {
 }
 
 void CertificateProvisioningUiHandler::
-    HandleRefreshCertificateProvisioningProcesses(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+    HandleRefreshCertificateProvisioningProcesses(
+        const base::Value::List& args) {
+  CHECK_EQ(0U, args.size());
   AllowJavascript();
   RefreshCertificateProvisioningProcesses();
 }
 
 void CertificateProvisioningUiHandler::
     HandleTriggerCertificateProvisioningProcessUpdate(
-        const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  if (!args->is_list()) {
-    return;
-  }
-  const base::Value& cert_profile_id = args->GetListDeprecated()[0];
+        const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& cert_profile_id = args[0];
   if (!cert_profile_id.is_string()) {
     return;
   }

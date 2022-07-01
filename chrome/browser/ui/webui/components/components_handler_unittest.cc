@@ -27,8 +27,8 @@ TEST(ComponentsHandlerTest, RemovesObserver) {
 
   {
     TestComponentsHandler handler(&mock_service);
-    base::ListValue args;
+    base::Value::List args;
     args.Append("unused");
-    handler.HandleRequestComponentsData(&args);
+    handler.HandleRequestComponentsData(args);
   }
 }

@@ -60,7 +60,7 @@ class CertificateProvisioningUiHandler
   // the UI when it loads.
   // |args| is expected to be empty.
   void HandleRefreshCertificateProvisioningProcesses(
-      const base::ListValue* args);
+      const base::Value::List& args);
 
   // Trigger an update / refresh on a certificate provisioning process.
   // |args| is expected to contain two arguments:
@@ -69,7 +69,7 @@ class CertificateProvisioningUiHandler
   // index 1 is a boolean specifying whether the process is a user-specific
   // (false) or a device-wide (true) certificate provisioning process.
   void HandleTriggerCertificateProvisioningProcessUpdate(
-      const base::ListValue* args);
+      const base::Value::List& args);
 
   // Send the list of certificate provisioning processes to the UI.
   void RefreshCertificateProvisioningProcesses();

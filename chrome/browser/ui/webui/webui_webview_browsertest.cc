@@ -40,7 +40,7 @@ class WebUIMessageListener : public base::SupportsWeakPtr<WebUIMessageListener>{
  public:
   WebUIMessageListener(content::WebUI* web_ui, const std::string& message)
       : message_loop_(new content::MessageLoopRunner) {
-    web_ui->RegisterDeprecatedMessageCallback(
+    web_ui->RegisterMessageCallback(
         message,
         base::BindRepeating(&WebUIMessageListener::HandleMessage, AsWeakPtr()));
   }
@@ -54,7 +54,7 @@ class WebUIMessageListener : public base::SupportsWeakPtr<WebUIMessageListener>{
   }
 
  private:
-  void HandleMessage(const base::ListValue* test_result) {
+  void HandleMessage(const base::Value::List& test_result) {
     message_loop_->Quit();
   }
 
