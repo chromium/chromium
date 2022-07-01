@@ -11,8 +11,9 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/surface.h"
-#include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,18 +64,14 @@ class AccessibilityInfoDataWrapperTest : public ash::AshTestBase {
  public:
   AccessibilityInfoDataWrapperTest() = default;
 
-  exo::test::ExoTestHelper exo_test_helper;
-
   std::unique_ptr<exo::WMHelper> wm_helper =
       std::make_unique<exo::WMHelperChromeOS>();
 };
 
 TEST_F(AccessibilityInfoDataWrapperTest, NonRootNodeBounds) {
-  auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface =
-      exo_test_helper.CreateClientControlledShellSurface(surface.get());
-  shell_surface->SetGeometry(gfx::Rect(10, 10, 200, 200));
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
+                           .SetGeometry(gfx::Rect(10, 10, 200, 200))
+                           .BuildClientControlledShellSurface();
 
   TestTreeSource tree_source(shell_surface->GetWidget()->GetNativeWindow());
   TestAccessibilityInfoDataWrapper root(&tree_source);
@@ -94,11 +91,9 @@ TEST_F(AccessibilityInfoDataWrapperTest, NonRootNodeBounds) {
 TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBounds) {
   UpdateDisplay("400x400");
 
-  auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface =
-      exo_test_helper.CreateClientControlledShellSurface(surface.get());
-  shell_surface->SetGeometry(gfx::Rect(10, 10, 200, 200));
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
+                           .SetGeometry(gfx::Rect(10, 10, 200, 200))
+                           .BuildClientControlledShellSurface();
 
   TestTreeSource tree_source(shell_surface->GetWidget()->GetNativeWindow());
   TestAccessibilityInfoDataWrapper data(&tree_source);
@@ -114,11 +109,9 @@ TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBounds) {
 TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBoundsOnExternalDisplay) {
   UpdateDisplay("400x400,500x500");
 
-  auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface =
-      exo_test_helper.CreateClientControlledShellSurface(surface.get());
-  shell_surface->SetGeometry(gfx::Rect(410, 10, 200, 200));
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
+                           .SetGeometry(gfx::Rect(410, 10, 200, 200))
+                           .BuildClientControlledShellSurface();
 
   TestTreeSource tree_source(shell_surface->GetWidget()->GetNativeWindow());
   TestAccessibilityInfoDataWrapper data(&tree_source);
@@ -136,12 +129,10 @@ TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingPiArc) {
 
   // With default_scale_cancellation, Android has default (1x) scale factor.
   wm_helper->SetDefaultScaleCancellation(true);
-
-  auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface = exo_test_helper.CreateClientControlledShellSurface(
-      surface.get(), /*is_modal=*/false, /*default_scale_cancellation=*/true);
-  shell_surface->SetGeometry(gfx::Rect(10, 10, 100, 100));  // DIP
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder()
+                           .SetGeometry(gfx::Rect(10, 10, 100, 100))
+                           .EnableDefaultScaleCancellation()
+                           .BuildClientControlledShellSurface();
 
   TestTreeSource tree_source(shell_surface->GetWidget()->GetNativeWindow());
   TestAccessibilityInfoDataWrapper data(&tree_source);
@@ -159,12 +150,9 @@ TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingFromRvcArcAndLater) {
 
   // Without default_scale_cancellation, Android use the same (2x) scale factor.
   wm_helper->SetDefaultScaleCancellation(false);
-
-  auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface = exo_test_helper.CreateClientControlledShellSurface(
-      surface.get(), /*is_modal=*/false, /*default_scale_cancellation=*/false);
-  shell_surface->SetGeometry(gfx::Rect(10, 10, 100, 100));  // DIP
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
+                           .SetGeometry(gfx::Rect(10, 10, 200, 200))
+                           .BuildClientControlledShellSurface();
 
   TestTreeSource tree_source(shell_surface->GetWidget()->GetNativeWindow());
   TestAccessibilityInfoDataWrapper data(&tree_source);

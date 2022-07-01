@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "cc/base/region.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/buffer_types.h"
@@ -27,7 +29,7 @@ namespace test {
 // destroyed when the shell surface is destroyed.
 class ShellSurfaceBuilder {
  public:
-  ShellSurfaceBuilder(const gfx::Size& buffer_size);
+  explicit ShellSurfaceBuilder(const gfx::Size& buffer_size = {0, 0});
   ShellSurfaceBuilder(ShellSurfaceBuilder& other) = delete;
   ShellSurfaceBuilder& operator=(ShellSurfaceBuilder& other) = delete;
   ~ShellSurfaceBuilder();
@@ -37,10 +39,17 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetRootBufferFormat(gfx::BufferFormat buffer_format);
   ShellSurfaceBuilder& SetOrigin(const gfx::Point& origin);
   ShellSurfaceBuilder& SetUseSystemModalContainer();
+  ShellSurfaceBuilder& EnableSystemModal();
+  // When set true, some properties such as kAppType may not be set by this
+  // builder as they need the widget created in the commit process.
   ShellSurfaceBuilder& SetNoCommit();
   ShellSurfaceBuilder& SetCanMinimize(bool can_minimize);
   ShellSurfaceBuilder& SetMaximumSize(const gfx::Size& size);
   ShellSurfaceBuilder& SetMinimumSize(const gfx::Size& size);
+  ShellSurfaceBuilder& SetGeometry(const gfx::Rect& geometry);
+  ShellSurfaceBuilder& SetInputRegion(const cc::Region& region);
+  ShellSurfaceBuilder& SetFrame(SurfaceFrameType type);
+  ShellSurfaceBuilder& SetApplicationId(const std::string& application_id);
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
 
@@ -49,7 +58,10 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetAsPopup();
 
   // Sets parameters defined in ClientControlledShellSurface.
+  ShellSurfaceBuilder& SetWindowState(chromeos::WindowStateType window_state);
   ShellSurfaceBuilder& EnableDefaultScaleCancellation();
+  ShellSurfaceBuilder& SetDelegate(
+      std::unique_ptr<ClientControlledShellSurface::Delegate> delegate);
 
   // Must be called only once for either of the below and the object cannot
   // be used to create multiple windows.
@@ -74,7 +86,12 @@ class ShellSurfaceBuilder {
   gfx::Point origin_;
   absl::optional<gfx::Size> max_size_;
   absl::optional<gfx::Size> min_size_;
+  absl::optional<gfx::Rect> geometry_;
+  absl::optional<cc::Region> input_region_;
+  absl::optional<SurfaceFrameType> type_;
+  std::string application_id_;
   bool use_system_modal_container_ = false;
+  bool system_modal_ = false;
   bool commit_on_build_ = true;
   bool can_minimize_ = true;
   bool disable_movement_ = false;
@@ -86,7 +103,9 @@ class ShellSurfaceBuilder {
   bool popup_ = false;
 
   // ClientControlledShellSurface-specific parameters.
+  absl::optional<chromeos::WindowStateType> window_state_;
   bool default_scale_cancellation_ = false;
+  std::unique_ptr<ClientControlledShellSurface::Delegate> delegate_;
 };
 
 }  // namespace test

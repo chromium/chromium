@@ -136,27 +136,6 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
                               gpu::kNullSurfaceHandle, nullptr);
 }
 
-std::unique_ptr<ClientControlledShellSurface>
-ExoTestHelper::CreateClientControlledShellSurface(
-    Surface* surface,
-    bool is_modal,
-    bool default_scale_cancellation) {
-  int container = is_modal ? ash::kShellWindowId_SystemModalContainer
-                           : ash::desks_util::GetActiveDeskContainerId();
-  auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
-      surface, container,
-      WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
-      default_scale_cancellation);
-  shell_surface->SetApplicationId("arc");
-  // ARC's default min size is non-empty.
-  shell_surface->SetMinimumSize(gfx::Size(1, 1));
-  shell_surface->set_delegate(
-      std::make_unique<ClientControlledShellSurfaceDelegate>(
-          shell_surface.get()));
-
-  return shell_surface;
-}
-
 std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(
     Surface* surface,
     InputMethodSurfaceManager* surface_manager,

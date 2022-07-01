@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "ash/constants/app_types.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "components/exo/buffer.h"
@@ -15,6 +16,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 
 #include "base/logging.h"
@@ -34,7 +36,7 @@ struct Holder {
                       absl::optional<gfx::BufferFormat> buffer_format) {
     auto surface = std::make_unique<exo::Surface>();
     std::unique_ptr<exo::Buffer> buffer;
-    if (buffer_format) {
+    if (!size.IsEmpty() && buffer_format) {
       buffer = std::make_unique<exo::Buffer>(
           aura::Env::GetInstance()
               ->context_factory()
@@ -135,6 +137,12 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetUseSystemModalContainer() {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::EnableSystemModal() {
+  DCHECK(!built_);
+  system_modal_ = true;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetNoCommit() {
   DCHECK(!built_);
   commit_on_build_ = false;
@@ -158,6 +166,33 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetMinimumSize(
     const gfx::Size& size) {
   DCHECK(!built_);
   min_size_ = size;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetGeometry(
+    const gfx::Rect& geometry) {
+  DCHECK(!built_);
+  geometry_ = geometry;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetInputRegion(
+    const cc::Region& region) {
+  DCHECK(!built_);
+  input_region_ = region;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetFrame(SurfaceFrameType type) {
+  DCHECK(!built_);
+  type_ = type;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetApplicationId(
+    const std::string& application_id) {
+  DCHECK(!built_);
+  application_id_ = application_id;
   return *this;
 }
 
@@ -185,9 +220,23 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetAsPopup() {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetWindowState(
+    chromeos::WindowStateType window_state) {
+  DCHECK(!built_);
+  window_state_ = window_state;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::EnableDefaultScaleCancellation() {
   DCHECK(!built_);
   default_scale_cancellation_ = true;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetDelegate(
+    std::unique_ptr<ClientControlledShellSurface::Delegate> delegate) {
+  DCHECK(!built_);
+  delegate_ = std::move(delegate);
   return *this;
 }
 
@@ -244,21 +293,62 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey, holder);
 
   // Set the properties specific to ClientControlledShellSurface.
-  shell_surface->SetApplicationId("arc");
+  shell_surface->SetApplicationId(!application_id_.empty()
+                                      ? application_id_.c_str()
+                                      : "org.chromium.arc.1");
   // ARC's default min size is non-empty.
   if (!min_size_.has_value())
     shell_surface->SetMinimumSize(gfx::Size(1, 1));
-  shell_surface->set_delegate(
-      std::make_unique<ClientControlledShellSurfaceDelegate>(
-          shell_surface.get()));
+  if (delegate_) {
+    shell_surface->set_delegate(std::move(delegate_));
+  } else {
+    shell_surface->set_delegate(
+        std::make_unique<ClientControlledShellSurfaceDelegate>(
+            shell_surface.get()));
+  }
+  if (window_state_.has_value()) {
+    switch (window_state_.value()) {
+      case chromeos::WindowStateType::kDefault:
+      case chromeos::WindowStateType::kNormal:
+        shell_surface->SetRestored();
+        break;
+      case chromeos::WindowStateType::kMaximized:
+        shell_surface->SetMaximized();
+        break;
+      case chromeos::WindowStateType::kMinimized:
+        shell_surface->SetMinimized();
+        break;
+      case chromeos::WindowStateType::kFullscreen:
+        shell_surface->SetFullscreen(/*fullscreen=*/true);
+        break;
+      case chromeos::WindowStateType::kPrimarySnapped:
+        shell_surface->SetSnappedToPrimary();
+        break;
+      case chromeos::WindowStateType::kSecondarySnapped:
+        shell_surface->SetSnappedToSecondary();
+        break;
+      case chromeos::WindowStateType::kPip:
+        shell_surface->SetPip();
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
 
   SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
+
+  // The widget becomes available after the first commit.
+  if (shell_surface->GetWidget()) {
+    shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+        aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  }
 
   return shell_surface;
 }
 
 bool ShellSurfaceBuilder::isConfigurationValidForShellSurface() {
-  return !default_scale_cancellation_;
+  return !default_scale_cancellation_ && !window_state_.has_value() &&
+         !delegate_;
 }
 
 bool ShellSurfaceBuilder::
@@ -276,6 +366,21 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
 
   if (min_size_.has_value())
     shell_surface->SetMinimumSize(min_size_.value());
+
+  if (geometry_.has_value())
+    shell_surface->SetGeometry(geometry_.value());
+
+  if (input_region_.has_value()) {
+    shell_surface->root_surface()->SetInputRegion(input_region_.value());
+  }
+
+  if (type_.has_value()) {
+    shell_surface->root_surface()->SetFrame(type_.value());
+  }
+
+  if (system_modal_) {
+    shell_surface->SetSystemModal(true);
+  }
 
   if (commit_on_build_) {
     shell_surface->root_surface()->Commit();

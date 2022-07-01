@@ -16,7 +16,9 @@
 #include "base/bind.h"
 #include "base/posix/unix_domain_socket.h"
 #include "components/exo/display.h"
+#include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -71,6 +73,9 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
     wl_shell_resource_.reset(wl_resource_create(wl_client_.get(),
                                                 &zcr_remote_shell_v2_interface,
                                                 /*version=*/1, /*id=*/0));
+    wl_remote_surface_resource_.reset(
+        wl_resource_create(wl_client(), &zcr_remote_surface_v2_interface,
+                           /*version=*/1, /*id=*/0));
 
     display_ = std::make_unique<Display>();
     shell_ = std::make_unique<WaylandRemoteShell>(
@@ -91,6 +96,11 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
     ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
   }
 
+  std::unique_ptr<ClientControlledShellSurface::Delegate> CreateDelegate() {
+    return shell()->CreateShellSurfaceDelegate(
+        wl_remote_surface_resource_.get());
+  }
+
   void ResetEventRecords() {
     remote_shell_event_sequence_.clear();
     remote_shell_requested_bounds_changes_.clear();
@@ -99,6 +109,8 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
   WaylandRemoteShell* shell() { return shell_.get(); }
 
   wl_client* wl_client() { return wl_client_.get(); }
+
+  wl_resource* wl_remote_surface() { return wl_remote_surface_resource_.get(); }
 
   static std::vector<RemoteShellEventType> remote_shell_event_sequence() {
     return remote_shell_event_sequence_;
@@ -118,6 +130,7 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
   ScopedWlDisplay wl_display_;
   ScopedWlClient wl_client_;
   ScopedWlResource wl_shell_resource_;
+  ScopedWlResource wl_remote_surface_resource_;
 
   std::unique_ptr<WaylandRemoteShell> shell_;
 
@@ -212,22 +225,10 @@ uint32_t WaylandRemoteShellTest::last_desktop_focus_state_ = 0;
 // Test that all bounds change requests are deferred while the tablet transition
 // is happening until it's finished.
 TEST_F(WaylandRemoteShellTest, TabletTransition) {
-  // Setup buffer/surface/window.
-  const gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-
-  std::unique_ptr<Surface> surface(new Surface);
-  auto shell_surface =
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
-
-  ScopedWlResource wl_res(wl_resource_create(
-      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
-  shell_surface->set_delegate(
-      shell()->CreateShellSurfaceDelegate(wl_res.get()));
-
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
+                           .SetDelegate(CreateDelegate())
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
   auto* const widget = shell_surface->GetWidget();
   auto* const window = widget->GetNativeWindow();
 
@@ -255,27 +256,18 @@ TEST_F(WaylandRemoteShellTest, TabletTransition) {
 // proper values and in proper order when display zoom happens. A bounds change
 // event must be triggered only for PIP.
 TEST_F(WaylandRemoteShellTest, DisplayZoom) {
-  const gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
+  // Test a restored window first.
   auto shell_surface =
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
-  ScopedWlResource wl_res(wl_resource_create(
-      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
-  shell_surface->set_delegate(
-      shell()->CreateShellSurfaceDelegate(wl_res.get()));
-  surface->Attach(buffer.get());
-  surface->Commit();
-  auto* const window = shell_surface->GetWidget()->GetNativeWindow();
+      exo::test::ShellSurfaceBuilder({256, 256})
+          .SetDelegate(CreateDelegate())
+          .SetWindowState(chromeos::WindowStateType::kNormal)
+          .SetGeometry({100, 100, kDefaultWindowLength, kDefaultWindowLength})
+          .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+  auto* window = shell_surface->GetWidget()->GetNativeWindow();
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
 
-  // Test a restored window.
-  shell_surface->SetRestored();
-  shell_surface->SetGeometry(
-      gfx::Rect(100, 100, kDefaultWindowLength, kDefaultWindowLength));
-  surface->Commit();
   ResetEventRecords();
   ash::Shell::Get()->display_manager()->ZoomDisplay(display.id(), /*up=*/true);
   task_environment()->RunUntilIdle();
@@ -326,27 +318,18 @@ TEST_F(WaylandRemoteShellTest, DisplayZoom) {
 // proper values and in proper order when display rotation happens. A bounds
 // change event must be triggered only for PIP.
 TEST_F(WaylandRemoteShellTest, DisplayRotation) {
-  const gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
+  // Test a restored window first.
   auto shell_surface =
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
-  ScopedWlResource wl_res(wl_resource_create(
-      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
-  shell_surface->set_delegate(
-      shell()->CreateShellSurfaceDelegate(wl_res.get()));
-  surface->Attach(buffer.get());
-  surface->Commit();
-  auto* const window = shell_surface->GetWidget()->GetNativeWindow();
+      exo::test::ShellSurfaceBuilder({256, 256})
+          .SetDelegate(CreateDelegate())
+          .SetWindowState(chromeos::WindowStateType::kNormal)
+          .SetGeometry({100, 100, kDefaultWindowLength, kDefaultWindowLength})
+          .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+  auto* window = shell_surface->GetWidget()->GetNativeWindow();
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
 
-  // Test a restored window.
-  shell_surface->SetRestored();
-  shell_surface->SetGeometry(
-      gfx::Rect(100, 100, kDefaultWindowLength, kDefaultWindowLength));
-  surface->Commit();
   ResetEventRecords();
   ash::Shell::Get()->display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,
@@ -411,21 +394,11 @@ TEST_F(WaylandRemoteShellTest, DisplayRotation) {
 // and workspace info events are triggered with proper values and in
 // proper order.
 TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
-  const gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
-  auto shell_surface =
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
-  ScopedWlResource wl_res(wl_resource_create(
-      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
-  shell_surface->set_delegate(
-      shell()->CreateShellSurfaceDelegate(wl_res.get()));
-  surface->Attach(buffer.get());
-  shell_surface->SetRestored();
-  shell_surface->SetGeometry(
-      gfx::Rect(100, 100, kDefaultWindowLength, kDefaultWindowLength));
-  surface->Commit();
+  auto shell_surface = exo::test::ShellSurfaceBuilder(
+                           {kDefaultWindowLength, kDefaultWindowLength})
+                           .SetDelegate(CreateDelegate())
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
 
   // Add secondary display with a different scale factor.
   UpdateDisplay("800x600,800x600*2");
@@ -496,31 +469,25 @@ TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
 // Test that the desktop focus state event is called with the proper value in
 // response to window focus change.
 TEST_F(WaylandRemoteShellTest, DesktopFocusState) {
-  // Setup buffer/surface/window.
-  const gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-
-  std::unique_ptr<Surface> surface(new Surface);
-  auto shell_surface =
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
-
-  ScopedWlResource wl_res(wl_resource_create(
-      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
-  shell_surface->set_delegate(
-      shell()->CreateShellSurfaceDelegate(wl_res.get()));
-  SetSurfaceResource(surface.get(), wl_res.get());
-
-  surface->Attach(buffer.get());
+  auto client_controlled_shell_surface =
+      exo::test::ShellSurfaceBuilder(
+          {kDefaultWindowLength, kDefaultWindowLength})
+          .SetDelegate(CreateDelegate())
+          .SetNoCommit()
+          .BuildClientControlledShellSurface();
+  auto* surface = client_controlled_shell_surface->root_surface();
+  SetSurfaceResource(surface, wl_remote_surface());
   surface->Commit();
   EXPECT_EQ(last_desktop_focus_state(), 2);
 
-  shell_surface->SetMinimized();
+  client_controlled_shell_surface->SetMinimized();
   surface->Commit();
   EXPECT_EQ(last_desktop_focus_state(), 1);
 
-  auto* other_client_window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
+  auto shell_surface = exo::test::ShellSurfaceBuilder(
+                           {kDefaultWindowLength, kDefaultWindowLength})
+                           .BuildShellSurface();
+  auto* other_client_window = shell_surface->GetWidget()->GetNativeWindow();
   other_client_window->Show();
   other_client_window->Focus();
   EXPECT_EQ(last_desktop_focus_state(), 3);
