@@ -141,7 +141,7 @@ to avoid crashes inside gtk.
 `NSS_DISABLE_ARENA_FREE_LIST=1` and `NSS_DISABLE_UNLOAD=1` are required as well.
 
 When filing a bug found by AddressSanitizer, please add a label
-`Stability-AddressSanitizer`.
+`Stability-Memory-AddressSanitizer`.
 
 ## ASan runtime options
 
