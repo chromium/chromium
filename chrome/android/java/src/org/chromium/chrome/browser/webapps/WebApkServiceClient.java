@@ -165,6 +165,15 @@ public class WebApkServiceClient {
 
             @ContentSettingValues
             int settingValue = toContentSettingValue(api.checkNotificationPermission());
+
+            // See http://crbug.com/1340854. Temporary fallback in case the shell has not yet been
+            // updated to support checkNotificationPermission(). Delete this after shell v154 has
+            // been fully launched.
+            if (settingValue != ContentSettingValues.ALLOW && api.notificationPermissionEnabled()) {
+                Log.d(TAG, "Fallback to notificationPermissionEnabled().");
+                settingValue = ContentSettingValues.ALLOW;
+            }
+
             WebApkUmaRecorder.recordNotificationPermissionStatus(settingValue);
 
             if (settingValue != ContentSettingValues.ALLOW) {
