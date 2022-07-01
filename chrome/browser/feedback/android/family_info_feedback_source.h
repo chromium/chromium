@@ -51,6 +51,8 @@ class FamilyInfoFeedbackSource : public FamilyInfoFetcher::Consumer {
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+
+  base::WeakPtrFactory<FamilyInfoFeedbackSource> weak_factory_{this};
 };
 
 }  // namespace chrome::android
