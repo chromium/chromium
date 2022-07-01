@@ -1485,7 +1485,7 @@
   {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 110
   },
   {
     "name": "enable-accessibility-os-settings-visibility",
@@ -1494,8 +1494,8 @@
   },
   {
     "name": "enable-accessibility-page-zoom",
-    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 105
+    "owners": [ "mschillaci@google.com", "aldietz@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-android-gamepad-vibration",
@@ -1555,7 +1555,7 @@
   {
     "name": "enable-auto-disable-accessibility",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 110
   },
   {
     "name": "enable-autofill-credit-card-authentication",
