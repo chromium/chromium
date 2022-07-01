@@ -275,14 +275,6 @@ using VoidFunction = void (*)(PaintOp* op);
 static const VoidFunction g_destructor_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-using MoveFunction = void (*)(PaintOp* op, char* dst);
-#define M(T)                                        \
-  [](PaintOp* op, char* dst) {                      \
-    new (dst) T(std::move(*(static_cast<T*>(op)))); \
-  },
-static const MoveFunction g_move_functions[kNumOpTypes] = {TYPES(M)};
-#undef M
-
 #define M(T) T::kIsDrawOp,
 static bool g_is_draw_op[kNumOpTypes] = {TYPES(M)};
 #undef M
@@ -1561,8 +1553,8 @@ void ClipRRectOp::Raster(const ClipRRectOp* op,
 }
 
 void ConcatOp::Raster(const ConcatOp* op,
-                      SkCanvas* canvas,
-                      const PlaybackParams& params) {
+                        SkCanvas* canvas,
+                        const PlaybackParams& params) {
   canvas->concat(op->matrix);
 }
 
@@ -1939,8 +1931,8 @@ void ScaleOp::Raster(const ScaleOp* op,
 }
 
 void SetMatrixOp::Raster(const SetMatrixOp* op,
-                         SkCanvas* canvas,
-                         const PlaybackParams& params) {
+                           SkCanvas* canvas,
+                           const PlaybackParams& params) {
   canvas->setMatrix(params.original_ctm * op->matrix);
 }
 
@@ -2695,12 +2687,6 @@ void PaintOp::DestroyThis() {
     func(this);
 }
 
-void PaintOp::MoveThis(char* dst) {
-  auto func = g_move_functions[type];
-  if (func)
-    func(this, dst);
-}
-
 bool PaintOpWithFlags::HasDiscardableImagesFromFlags() const {
   return flags.HasDiscardableImages();
 }
@@ -2784,8 +2770,6 @@ AnnotateOp::AnnotateOp(PaintCanvas::AnnotationType annotation_type,
       rect(rect),
       data(std::move(data)) {}
 
-AnnotateOp::AnnotateOp(AnnotateOp&&) = default;
-
 AnnotateOp::~AnnotateOp() = default;
 
 DrawImageOp::DrawImageOp() : PaintOpWithFlags(kType) {}
@@ -2807,8 +2791,6 @@ DrawImageOp::DrawImageOp(const PaintImage& image,
       left(left),
       top(top),
       sampling(sampling) {}
-
-DrawImageOp::DrawImageOp(DrawImageOp&&) = default;
 
 bool DrawImageOp::HasDiscardableImages() const {
   return image && !image.IsTextureBacked();
@@ -2842,8 +2824,6 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
       sampling(sampling),
       constraint(constraint) {}
 
-DrawImageRectOp::DrawImageRectOp(DrawImageRectOp&&) = default;
-
 bool DrawImageRectOp::HasDiscardableImages() const {
   return image && !image.IsTextureBacked();
 }
@@ -2852,8 +2832,6 @@ DrawImageRectOp::~DrawImageRectOp() = default;
 
 DrawRecordOp::DrawRecordOp(sk_sp<const PaintRecord> record)
     : PaintOp(kType), record(std::move(record)) {}
-
-DrawRecordOp::DrawRecordOp(DrawRecordOp&&) = default;
 
 DrawRecordOp::~DrawRecordOp() = default;
 
@@ -2880,8 +2858,6 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
       text_map(std::move(text_map)) {}
 
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
-
-DrawSkottieOp::DrawSkottieOp(DrawSkottieOp&&) = default;
 
 DrawSkottieOp::~DrawSkottieOp() = default;
 
@@ -2911,8 +2887,6 @@ DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
       x(x),
       y(y),
       node_id(node_id) {}
-
-DrawTextBlobOp::DrawTextBlobOp(DrawTextBlobOp&&) = default;
 
 DrawTextBlobOp::~DrawTextBlobOp() = default;
 
@@ -3273,14 +3247,8 @@ void PaintOpBuffer::ReallocBuffer(size_t new_size) {
   DCHECK_GE(new_size, used_);
   std::unique_ptr<char, base::AlignedFreeDeleter> new_data(
       static_cast<char*>(base::AlignedAlloc(new_size, PaintOpAlign)));
-  char* dst = new_data.get();
-  DCHECK(dst);
-  for (auto* op : Iterator(this)) {
-    size_t skip = op->skip;
-    op->MoveThis(dst);
-    op->DestroyThis();
-    dst += skip;
-  }
+  if (data_)
+    memcpy(new_data.get(), data_.get(), used_);
   data_ = std::move(new_data);
   reserved_ = new_size;
 }
