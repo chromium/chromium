@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -65,15 +66,14 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
 namespace {
 
-Mutex& CreationMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& CreationLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 LocalFrame* ToFrame(ExecutionContext* context) {
@@ -92,13 +92,13 @@ MainThreadDebugger* MainThreadDebugger::instance_ = nullptr;
 MainThreadDebugger::MainThreadDebugger(v8::Isolate* isolate)
     : ThreadDebugger(isolate),
       paused_(false) {
-  MutexLocker locker(CreationMutex());
+  base::AutoLock locker(CreationLock());
   DCHECK(!instance_);
   instance_ = this;
 }
 
 MainThreadDebugger::~MainThreadDebugger() {
-  MutexLocker locker(CreationMutex());
+  base::AutoLock locker(CreationLock());
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
 }

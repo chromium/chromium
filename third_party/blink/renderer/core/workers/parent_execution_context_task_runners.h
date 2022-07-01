@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_PARENT_EXECUTION_CONTEXT_TASK_RUNNERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_PARENT_EXECUTION_CONTEXT_TASK_RUNNERS_H_
 
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ class CORE_EXPORT ParentExecutionContextTaskRunners final
   // Might return nullptr for unsupported task types. This can be called from
   // any threads.
   scoped_refptr<base::SingleThreadTaskRunner> Get(TaskType)
-      LOCKS_EXCLUDED(mutex_);
+      LOCKS_EXCLUDED(lock_);
 
   void Trace(Visitor*) const override;
 
@@ -55,10 +55,10 @@ class CORE_EXPORT ParentExecutionContextTaskRunners final
                                     WTF::IntHash<TaskType>,
                                     TaskTypeTraits>;
 
-  void ContextDestroyed() LOCKS_EXCLUDED(mutex_) override;
+  void ContextDestroyed() LOCKS_EXCLUDED(lock_) override;
 
-  Mutex mutex_;
-  TaskRunnerHashMap task_runners_ GUARDED_BY(mutex_);
+  base::Lock lock_;
+  TaskRunnerHashMap task_runners_ GUARDED_BY(lock_);
 };
 
 }  // namespace blink

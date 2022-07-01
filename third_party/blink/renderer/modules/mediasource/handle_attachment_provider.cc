@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediasource/handle_attachment_provider.h"
 
 #include "base/logging.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -25,7 +26,7 @@ HandleAttachmentProvider::~HandleAttachmentProvider() {
 
 scoped_refptr<MediaSourceAttachment>
 HandleAttachmentProvider::TakeAttachment() {
-  MutexLocker lock(attachment_lock_);
+  base::AutoLock locker(attachment_lock_);
 
   DVLOG(1) << __func__ << " this=" << this << ", attachment_=" << attachment_;
   return std::move(attachment_);

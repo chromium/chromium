@@ -40,20 +40,20 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #if DCHECK_IS_ON()
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #endif
 
 namespace blink {
 
 #if DCHECK_IS_ON()
-static Mutex& ActiveIteratorCountMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+static base::Lock& ActiveIteratorCountLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 void EventListenerMap::CheckNoActiveIterators() {
-  MutexLocker locker(ActiveIteratorCountMutex());
+  base::AutoLock locker(ActiveIteratorCountLock());
   DCHECK(!active_iterator_count_);
 }
 #endif

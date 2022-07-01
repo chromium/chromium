@@ -14,15 +14,15 @@
 {% for agent in agents|sort %}
 #include "{{agent | agent_name_to_include}}"
 {% endfor %}
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+#include "base/synchronization/lock.h"
 
 namespace blink {
 
 namespace {
 
-Mutex& AgentCountMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& AgentCountLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 }  // namespace
@@ -33,7 +33,7 @@ std::atomic<unsigned> {{sink_class}}::s_existingAgents;
 {{sink_class}}::{{sink_class}}() {}
 
 {{sink_class}}::~{{sink_class}}() {
-  MutexLocker lock(AgentCountMutex());
+  base::AutoLock locker(AgentCountLock());
 {% for agent in agents|sort %}
   if (Has{{agent}}s() && --s_numSinksWith{{agent}} == 0)
     s_existingAgents &= ~k{{agent}};
@@ -52,7 +52,7 @@ void {{sink_class}}::Add{{agent}}({{class_name}}* agent) {
   {{getter_name}}s_.AddAgent(agent);
 
   if (!already_had_agent) {
-    MutexLocker lock(AgentCountMutex());
+    base::AutoLock locker(AgentCountLock());
     if (++s_numSinksWith{{agent}} == 1)
       s_existingAgents |= k{{agent}};
   }
@@ -67,7 +67,7 @@ void {{sink_class}}::Remove{{agent}}({{class_name}}* agent) {
   {{getter_name}}s_.RemoveAgent(agent);
 
   if (!Has{{agent}}s()) {
-    MutexLocker lock(AgentCountMutex());
+    base::AutoLock locker(AgentCountLock());
     if (--s_numSinksWith{{agent}} == 0)
       s_existingAgents &= ~k{{agent}};
   }

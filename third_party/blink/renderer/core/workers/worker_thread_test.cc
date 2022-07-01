@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -208,7 +209,7 @@ TEST_F(WorkerThreadTest, ShouldTerminateScriptExecution) {
   worker_thread_->inspector_task_runner_ = InspectorTaskRunner::Create(nullptr);
 
   // SetExitCode() and ShouldTerminateScriptExecution() require the lock.
-  MutexLocker dummy_lock(worker_thread_->mutex_);
+  base::AutoLock dummy_locker(worker_thread_->lock_);
 
   EXPECT_EQ(ThreadState::kNotStarted, worker_thread_->thread_state_);
   EXPECT_EQ(WorkerThread::TerminationState::kTerminationUnnecessary,
@@ -398,7 +399,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
   // Wait for the debugger task.
   test::EnterRunLoop();
   {
-    MutexLocker lock(worker_thread_->mutex_);
+    base::AutoLock lock(worker_thread_->lock_);
     EXPECT_EQ(1, worker_thread_->debugger_task_counter_);
   }
 
@@ -411,7 +412,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
   // because of the running debugger task but it should get reposted.
   test::RunDelayedTasks(kDelay);
   {
-    MutexLocker lock(worker_thread_->mutex_);
+    base::AutoLock lock(worker_thread_->lock_);
     EXPECT_EQ(WorkerThread::TerminationState::kPostponeTerminate,
               worker_thread_->ShouldTerminateScriptExecution());
   }
@@ -444,7 +445,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
   // Wait for the debugger task.
   test::EnterRunLoop();
   {
-    MutexLocker lock(worker_thread_->mutex_);
+    base::AutoLock lock(worker_thread_->lock_);
     EXPECT_EQ(1, worker_thread_->debugger_task_counter_);
   }
 
@@ -457,7 +458,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
   // because of the running debugger task but it should get reposted.
   test::RunDelayedTasks(kDelay);
   {
-    MutexLocker lock(worker_thread_->mutex_);
+    base::AutoLock lock(worker_thread_->lock_);
     EXPECT_EQ(WorkerThread::TerminationState::kPostponeTerminate,
               worker_thread_->ShouldTerminateScriptExecution());
   }

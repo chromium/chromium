@@ -32,6 +32,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
@@ -79,9 +80,9 @@ constexpr base::TimeDelta kForcibleTerminationDelay = base::Seconds(2);
 
 }  // namespace
 
-Mutex& WorkerThread::ThreadSetMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& WorkerThread::ThreadSetLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 static std::atomic_int g_unique_worker_thread_id(1);
@@ -153,7 +154,7 @@ class WorkerThread::InterruptData {
 
 WorkerThread::~WorkerThread() {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
-  MutexLocker lock(ThreadSetMutex());
+  base::AutoLock locker(ThreadSetLock());
   DCHECK(InitializingWorkerThreads().Contains(this) ||
          WorkerThreads().Contains(this));
   InitializingWorkerThreads().erase(this);
@@ -273,7 +274,7 @@ void WorkerThread::Resume() {
 void WorkerThread::Terminate() {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
     if (requested_to_terminate_)
       return;
     requested_to_terminate_ = true;
@@ -357,13 +358,13 @@ bool WorkerThread::IsCurrentThread() {
 }
 
 void WorkerThread::DebuggerTaskStarted() {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK(IsCurrentThread());
   debugger_task_counter_++;
 }
 
 void WorkerThread::DebuggerTaskFinished() {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK(IsCurrentThread());
   debugger_task_counter_--;
 }
@@ -379,7 +380,7 @@ WorkerInspectorController* WorkerThread::GetWorkerInspectorController() {
 }
 
 unsigned WorkerThread::WorkerThreadCount() {
-  MutexLocker lock(ThreadSetMutex());
+  base::AutoLock locker(ThreadSetLock());
   return InitializingWorkerThreads().size() + WorkerThreads().size();
 }
 
@@ -394,7 +395,7 @@ HashSet<WorkerThread*>& WorkerThread::WorkerThreads() {
 }
 
 bool WorkerThread::IsForciblyTerminated() {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   switch (exit_code_) {
     case ExitCode::kNotTerminated:
     case ExitCode::kGracefullyTerminated:
@@ -414,7 +415,7 @@ void WorkerThread::WaitForShutdownForTesting() {
 }
 
 ExitCode WorkerThread::GetExitCodeForTesting() {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   return exit_code_;
 }
 
@@ -435,7 +436,7 @@ void WorkerThread::ChildThreadStartedOnWorkerThread(WorkerThread* child) {
   DCHECK(IsCurrentThread());
 #if DCHECK_IS_ON()
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
     DCHECK_EQ(ThreadState::kRunning, thread_state_);
   }
 #endif
@@ -464,7 +465,7 @@ WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
           std::move(parent_thread_default_task_runner)),
       shutdown_event_(RefCountedWaitableEvent::Create()) {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
-  MutexLocker lock(ThreadSetMutex());
+  base::AutoLock locker(ThreadSetLock());
   InitializingWorkerThreads().insert(this);
 }
 
@@ -507,7 +508,7 @@ WorkerThread::TerminationState WorkerThread::ShouldTerminateScriptExecution() {
 
 void WorkerThread::EnsureScriptExecutionTerminates(ExitCode exit_code) {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   switch (ShouldTerminateScriptExecution()) {
     case TerminationState::kTerminationUnnecessary:
       return;
@@ -596,7 +597,7 @@ void WorkerThread::InitializeOnWorkerThread(
   worker_reporting_proxy_.WillInitializeWorkerContext();
   {
     TRACE_EVENT0("blink.worker", "WorkerThread::InitializeWorkerContext");
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
     DCHECK_EQ(ThreadState::kNotStarted, thread_state_);
 
     if (IsOwningBackingThread()) {
@@ -647,7 +648,7 @@ void WorkerThread::InitializeOnWorkerThread(
   }
 
   {
-    MutexLocker lock(ThreadSetMutex());
+    base::AutoLock locker(ThreadSetLock());
     DCHECK(InitializingWorkerThreads().Contains(this));
     DCHECK(!WorkerThreads().Contains(this));
     InitializingWorkerThreads().erase(this);
@@ -722,7 +723,7 @@ void WorkerThread::FetchAndRunModuleScriptOnWorkerThread(
 void WorkerThread::PrepareForShutdownOnWorkerThread() {
   DCHECK(IsCurrentThread());
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
     if (thread_state_ == ThreadState::kReadyToShutdown)
       return;
     SetThreadState(ThreadState::kReadyToShutdown);
@@ -756,7 +757,7 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
 void WorkerThread::PerformShutdownOnWorkerThread() {
   DCHECK(IsCurrentThread());
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
     DCHECK(requested_to_terminate_);
     DCHECK_EQ(ThreadState::kReadyToShutdown, thread_state_);
     if (exit_code_ == ExitCode::kNotTerminated)
@@ -824,7 +825,7 @@ void WorkerThread::SetExitCode(ExitCode exit_code) {
 }
 
 bool WorkerThread::CheckRequestedToTerminate() {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   return requested_to_terminate_;
 }
 
@@ -840,7 +841,7 @@ void WorkerThread::PauseOrFreeze(mojom::blink::FrameLifecycleState state,
     // workers might not yield. Likewise we might not be in JS and the
     // interrupt might not fire right away, so we post a task as well.
     // Use a token to mitigate both the interrupt and post task firing.
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
 
     InterruptData* interrupt_data =
         new InterruptData(this, state, is_in_back_forward_cache);
@@ -911,7 +912,7 @@ void WorkerThread::PauseOrFreezeWithInterruptDataOnWorkerThread(
   bool should_execute = false;
   mojom::blink::FrameLifecycleState state;
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock locker(lock_);
     state = interrupt_data->state();
     // If both the V8 interrupt and PostTask have executed we can remove
     // the matching InterruptData from the |pending_interrupts_| as it is

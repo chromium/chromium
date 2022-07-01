@@ -48,25 +48,6 @@ class DeferredTaskHandler;
 
 namespace WTF {
 
-// Note: Prefer base::Lock to WTF::Mutex. The implementation is the same, this
-// will be removed. crbug.com/1290281.
-class LOCKABLE WTF_EXPORT Mutex {
- public:
-  Mutex() = default;
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true) { return lock_.Try(); }
-
-  // Overridden solely for the purpose of annotating them.
-  // The compiler is expected to optimize the calls away.
-  void lock() EXCLUSIVE_LOCK_FUNCTION() { lock_.Acquire(); }
-  void unlock() UNLOCK_FUNCTION() { lock_.Release(); }
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
-    lock_.AssertAcquired();
-  }
-
- private:
-  base::Lock lock_;
-};
-
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
 // https://crbug.com/856641
 class LOCKABLE WTF_EXPORT RecursiveMutex {
@@ -103,25 +84,8 @@ class LOCKABLE WTF_EXPORT RecursiveMutex {
   FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlockThreads);
 };
 
-class SCOPED_LOCKABLE MutexLocker final {
-  STACK_ALLOCATED();
-
- public:
-  MutexLocker(Mutex& mutex) EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex) {
-    mutex_.lock();
-  }
-  MutexLocker(const MutexLocker&) = delete;
-  MutexLocker& operator=(const MutexLocker&) = delete;
-  ~MutexLocker() UNLOCK_FUNCTION() { mutex_.unlock(); }
-
- private:
-  Mutex& mutex_;
-};
-
 }  // namespace WTF
 
-using WTF::Mutex;
-using WTF::MutexLocker;
 using WTF::RecursiveMutex;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_

@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_HANDLE_ATTACHMENT_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_HANDLE_ATTACHMENT_PROVIDER_H_
 
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -43,7 +43,7 @@ class HandleAttachmentProvider final
       LOCKS_EXCLUDED(attachment_lock_);
 
  private:
-  Mutex attachment_lock_;
+  base::Lock attachment_lock_;
   scoped_refptr<MediaSourceAttachment> attachment_ GUARDED_BY(attachment_lock_);
 };
 
