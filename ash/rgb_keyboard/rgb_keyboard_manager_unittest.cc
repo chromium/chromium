@@ -40,8 +40,10 @@ class RgbKeyboardManagerTest : public testing::Test {
   RgbKeyboardManagerTest(const RgbKeyboardManagerTest&) = delete;
   RgbKeyboardManagerTest& operator=(const RgbKeyboardManagerTest&) = delete;
   ~RgbKeyboardManagerTest() override {
-    // Destroy the global instance.
+    // Ordering for deletion is Manger -> Client -> IME Controller
+    manager_.reset();
     RgbkbdClient::Shutdown();
+    ime_controller_.reset();
   };
 
  protected:

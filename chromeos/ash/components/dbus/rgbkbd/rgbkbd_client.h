@@ -30,7 +30,6 @@ class COMPONENT_EXPORT(RGBKBD_CLIENT) RgbkbdClient {
     ~Observer() override = default;
     virtual void OnCapabilityUpdatedForTesting(
         rgbkbd::RgbKeyboardCapabilities capability) = 0;
-    virtual void OnShutdown() = 0;
   };
 
   void AddObserver(Observer* observer);

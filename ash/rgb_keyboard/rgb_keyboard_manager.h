@@ -48,7 +48,6 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   // RgbkbdClient::Observer:
   void OnCapabilityUpdatedForTesting(
       rgbkbd::RgbKeyboardCapabilities capability) override;
-  void OnShutdown() override;
 
   void FetchRgbKeyboardSupport();
 

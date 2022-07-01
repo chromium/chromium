@@ -26,11 +26,6 @@ class RgbkbdClientImpl : public RgbkbdClient {
   RgbkbdClientImpl() = default;
   RgbkbdClientImpl(const RgbkbdClientImpl&) = delete;
   RgbkbdClientImpl& operator=(const RgbkbdClientImpl&) = delete;
-  ~RgbkbdClientImpl() override {
-    for (auto& observer : observers_) {
-      observer.OnShutdown();
-    }
-  }
 
   void GetRgbKeyboardCapabilities(
       GetRgbKeyboardCapabilitiesCallback callback) override {

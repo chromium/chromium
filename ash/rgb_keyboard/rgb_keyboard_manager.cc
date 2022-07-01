@@ -37,6 +37,7 @@ RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
 }
 
 RgbKeyboardManager::~RgbKeyboardManager() {
+  RgbkbdClient::Get()->RemoveObserver(this);
   ime_controller_ptr_->RemoveObserver(this);
 
   DCHECK_EQ(g_instance, this);
@@ -107,10 +108,6 @@ RgbKeyboardManager* RgbKeyboardManager::Get() {
 void RgbKeyboardManager::OnCapabilityUpdatedForTesting(
     rgbkbd::RgbKeyboardCapabilities capability) {
   capabilities_ = capability;
-}
-
-void RgbKeyboardManager::OnShutdown() {
-  RgbkbdClient::Get()->RemoveObserver(this);
 }
 
 void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
