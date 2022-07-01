@@ -11,6 +11,7 @@ struct DiskSpace {
 };
 
 // Next Method ID: 6
+// Deprecated method ID: 4
 interface DiskQuotaHost {
   // Whether cryptohome supports quota-based stats.
   IsQuotaSupported@0() => (bool supported);
@@ -24,12 +25,6 @@ interface DiskQuotaHost {
   // Get the current disk space usage for a project ID. Returns -1 for failure.
   [MinVersion=1] GetCurrentSpaceForProjectId@3(uint32 project_id) =>
       (int64 cur_space);
-
-  // Set a project ID on a file path.
-  // Host is supposed to convert the given Android file path to the
-  // corresponding path in Chrome OS file system.
-  [MinVersion=1] SetProjectId@4(uint32 project_id, string android_file_path) =>
-      (bool success);
 
   // Get free disk space in the stateful partition.
   [MinVersion=2] GetFreeDiskSpace@5() => (DiskSpace? free_space);

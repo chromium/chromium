@@ -8,7 +8,6 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -37,54 +36,7 @@ class ArcDiskQuotaBridgeFactory
   ~ArcDiskQuotaBridgeFactory() override = default;
 };
 
-constexpr char kAndroidDownloadPath[] = "/storage/emulated/0/Download/";
-constexpr char kAndroidExternalStoragePath[] = "/storage/emulated/0/";
-constexpr char kAndroidDataMediaPath[] = "/data/media/0/";
-
 }  // namespace
-
-// static
-bool ArcDiskQuotaBridge::convertPathForSetProjectId(
-    const base::FilePath& android_path,
-    user_data_auth::SetProjectIdAllowedPathType* parent_path_out,
-    base::FilePath* child_path_out) {
-  const base::FilePath kDownloadPath(kAndroidDownloadPath);
-  const base::FilePath kExternalStoragePath(kAndroidExternalStoragePath);
-  const base::FilePath kDataMediaPath(kAndroidDataMediaPath);
-
-  if (android_path.ReferencesParent()) {
-    LOG(ERROR) << "Path contains \"..\" : " << android_path.value();
-    return false;
-  }
-
-  *child_path_out = base::FilePath();
-  if (kDownloadPath.IsParent(android_path)) {
-    // /storage/emulated/0/Download/* =>
-    //     parent=/home/user/<hash>/MyFiles/Downloads/, child=*
-    *parent_path_out =
-        user_data_auth::SetProjectIdAllowedPathType::PATH_DOWNLOADS;
-    return kDownloadPath.AppendRelativePath(android_path, child_path_out);
-  } else if (kExternalStoragePath.IsParent(android_path)) {
-    // /storage/emulated/0/* =>
-    //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
-    *parent_path_out =
-        user_data_auth::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
-    // child_path should be relative to the root.
-    return base::FilePath("/").AppendRelativePath(kDataMediaPath,
-                                                  child_path_out) &&
-           kExternalStoragePath.AppendRelativePath(android_path,
-                                                   child_path_out);
-  } else if (kDataMediaPath.IsParent(android_path)) {
-    // /data/media/0/* =>
-    //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
-    *parent_path_out =
-        user_data_auth::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
-    // child_path should be relative to the root.
-    return base::FilePath("/").AppendRelativePath(android_path, child_path_out);
-  } else {
-    return false;
-  }
-}
 
 // static
 ArcDiskQuotaBridge* ArcDiskQuotaBridge::GetForBrowserContext(
@@ -193,45 +145,6 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
             std::move(callback).Run(result);
           },
           std::move(callback), project_id));
-}
-
-void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
-                                      const std::string& android_path,
-                                      SetProjectIdCallback callback) {
-  user_data_auth::SetProjectIdAllowedPathType parent_path;
-  base::FilePath child_path;
-  if (!convertPathForSetProjectId(base::FilePath(android_path), &parent_path,
-                                  &child_path)) {
-    LOG(ERROR) << "Setting a project ID to path " << android_path
-               << " is not allowed";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  user_data_auth::SetProjectIdRequest request;
-  request.set_project_id(project_id);
-  request.set_parent_path(parent_path);
-  request.set_child_path(child_path.value());
-  *request.mutable_account_id() =
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
-  ash::ArcQuotaClient::Get()->SetProjectId(
-      request,
-      base::BindOnce(
-          [](SetProjectIdCallback callback, const int project_id,
-             const user_data_auth::SetProjectIdAllowedPathType parent_path,
-             const std::string& child_path,
-             absl::optional<user_data_auth::SetProjectIdReply> reply) {
-            LOG_IF(ERROR, !reply.has_value())
-                << "Failed to set project ID " << project_id
-                << " to parent_path=" << parent_path
-                << " child_path=" << child_path;
-            bool result = false;
-            if (reply.has_value()) {
-              result = reply->success();
-            }
-            std::move(callback).Run(result);
-          },
-          std::move(callback), project_id, parent_path, child_path.value()));
 }
 
 void ArcDiskQuotaBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {

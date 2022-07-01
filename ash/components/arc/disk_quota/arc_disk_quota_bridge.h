@@ -6,7 +6,6 @@
 #define ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
@@ -30,15 +29,6 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   static ArcDiskQuotaBridge* GetForBrowserContext(
       content::BrowserContext* context);
 
-  // Converts an Android path to a pair of (parent_path, child_path) to be
-  // passed to SetProjectId() on cryptohome.
-  // Returns false if SetProjectId() is not allowed for the path.
-  // (go/arc-project-quota)
-  static bool convertPathForSetProjectId(
-      const base::FilePath& android_path,
-      user_data_auth::SetProjectIdAllowedPathType* parent_path_out,
-      base::FilePath* child_path_out);
-
   ArcDiskQuotaBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
 
@@ -61,10 +51,6 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   void GetCurrentSpaceForProjectId(
       uint32_t project_id,
       GetCurrentSpaceForProjectIdCallback callback) override;
-
-  void SetProjectId(uint32_t project_id,
-                    const std::string& android_path,
-                    SetProjectIdCallback callback) override;
 
   void GetFreeDiskSpace(GetFreeDiskSpaceCallback) override;
 

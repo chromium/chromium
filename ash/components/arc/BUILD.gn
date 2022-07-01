@@ -399,7 +399,6 @@ source_set("unit_tests") {
     "compat_mode/touch_mode_mouse_rewriter_unittest.cc",
     "crash_collector/arc_crash_collector_bridge_unittest.cc",
     "dark_theme/arc_dark_theme_bridge_unittest.cc",
-    "disk_quota/arc_disk_quota_bridge_unittest.cc",
     "enterprise/arc_data_remove_requested_pref_handler_unittest.cc",
     "enterprise/arc_data_snapshotd_bridge_unittest.cc",
     "enterprise/arc_data_snapshotd_manager_unittest.cc",
