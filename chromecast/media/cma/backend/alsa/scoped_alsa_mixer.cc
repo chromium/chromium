@@ -41,7 +41,8 @@ void ScopedAlsaMixer::Refresh() {
     LOG(INFO) << "Opening mixer element \"" << mixer_element_name_
               << "\" on device \"" << mixer_device_name_ << "\"";
   }
-
+  mixer = nullptr;
+  element = nullptr;
   int alsa_err = alsa_->MixerOpen(&mixer, 0);
   if (alsa_err < 0) {
     LOG(ERROR) << "MixerOpen error: " << alsa_->StrError(alsa_err);
