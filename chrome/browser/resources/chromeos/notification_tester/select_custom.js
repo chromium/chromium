@@ -15,7 +15,7 @@ export class SelectCustom extends PolymerElement {
     this.shadowRoot.querySelector('.hidden-input').hidden = true;
 
     // Set default value of select to the first option.
-    this.shadowRoot.querySelector('#' + this.selectid).selectedIndex = 1;
+    this.shadowRoot.querySelector('#' + this.selectid).selectedIndex = 0;
   }
 
   static get is() {
@@ -29,9 +29,7 @@ export class SelectCustom extends PolymerElement {
   static get properties() {
     return {
       selectElements: {type: Array},
-      selectValue:
-          {type: String, notify: true, computed: 'getSelectValue(selectIndex)'},
-      selectIndex: {type: Number, value: 0},
+      selectValue: {type: String, notify: true},
       formItemStyle: {type: String, value: 'form-item'},
       displayLabel: {type: String},
       selectid: {type: String},
@@ -46,29 +44,23 @@ export class SelectCustom extends PolymerElement {
   // <select> element.
   onSelectChange(event) {
     const customInput = this.shadowRoot.querySelector('.hidden-input');
-    if (event.target.value == 'custom' && !this.noCustomInput) {
-      this.customSelected = true;
-      this.formItemStyle = 'form-item-custom';
-      customInput.hidden = false;
-    } else {
-      this.customSelected = false;
+    this.customSelected = event.target.value == 'custom';
+    customInput.hidden = event.target.value != 'custom';
+    if (event.target.value != 'custom') {
       this.formItemStyle = 'form-item';
-      customInput.hidden = true;
       const select = this.shadowRoot.querySelector('#' + this.selectid);
-      this.selectIndex = select.selectedIndex;
+      this.selectValue = this.selectElements[select.selectedIndex].value;
+    } else if (!this.noCustomInput) {
+      this.formItemStyle = 'form-item-custom';
+      this.onInputChange();  // sets the value of this.selectValue to the
+                             // value of the custom input.
     }
   }
 
-  // Computed property callback. Returns the value of an element in
-  // selectElements using its index.
-  getSelectValue(selectIndex) {
-    return this.selectElements[selectIndex].value;
-  }
-
-  // When the custom input field changes (on-change event), store the value in a
-  // property.
+  // When the custom input field changes (on-change event), store the value in
+  // this.selectValue.
   onInputChange() {
-    if (this.customSelected) {
+    if (this.customSelected && !this.noCustomInput) {
       const customInput = this.shadowRoot.querySelector('.hidden-input');
       this.selectValue = customInput.value;
     }
