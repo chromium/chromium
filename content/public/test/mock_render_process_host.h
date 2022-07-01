@@ -257,6 +257,11 @@ class MockRenderProcessHost : public RenderProcessHost {
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver)
       override {}
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver)
+      override {}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;

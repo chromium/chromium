@@ -53,6 +53,10 @@
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom-forward.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 class GURL;
 
 namespace base {
@@ -620,6 +624,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void CreateWebSocketConnector(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) = 0;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  virtual void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+          receiver) = 0;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Returns the current number of active views in this process.  Excludes
   // any RenderViewHosts that are swapped out.

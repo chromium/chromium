@@ -930,7 +930,7 @@ void GpuDataManagerImplPrivate::RequestDawnInfo() {
 void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
   base::OnceClosure task = base::BindOnce([]() {
     auto media_interface_proxy =
-        std::make_unique<FramelessMediaInterfaceProxy>();
+        std::make_unique<FramelessMediaInterfaceProxy>(nullptr);
 
     mojo::PendingRemote<media::mojom::VideoDecoder> pending_remote_decoder;
     media_interface_proxy->CreateVideoDecoder(
@@ -946,13 +946,15 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
     DCHECK(remote_decoder_ptr);
     remote_decoder_ptr->GetSupportedConfigs(base::BindOnce(
         [](mojo::Remote<media::mojom::VideoDecoder> /* remote_decoder */,
+           std::unique_ptr<
+               FramelessMediaInterfaceProxy> /* media_interface_proxy */,
            const media::SupportedVideoDecoderConfigs& configs,
            media::VideoDecoderType /* decoder_type */) {
           GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
           DCHECK(manager);
           manager->UpdateMojoMediaVideoCapabilities(configs);
         },
-        std::move(remote_decoder)));
+        std::move(remote_decoder), std::move(media_interface_proxy)));
   });
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));

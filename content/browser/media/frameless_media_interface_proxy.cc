@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "content/public/browser/media_service.h"
+#include "content/public/browser/render_process_host.h"
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
@@ -22,7 +23,9 @@
 
 namespace content {
 
-FramelessMediaInterfaceProxy::FramelessMediaInterfaceProxy() {
+FramelessMediaInterfaceProxy::FramelessMediaInterfaceProxy(
+    RenderProcessHost* render_process_host)
+    : render_process_host_(render_process_host) {
   DVLOG(1) << __func__;
 }
 
@@ -66,12 +69,22 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
       oop_video_decoder;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding)) {
-    // TODO(b/195769334): for now, we're using the same
-    // StableVideoDecoderFactory. However, we should be using a separate
-    // StableVideoDecoderFactory for each client (i.e., different renderers
-    // should use different video decoder processes).
-    GetStableVideoDecoderFactory().CreateStableVideoDecoder(
-        oop_video_decoder.InitWithNewPipeAndPassReceiver());
+    if (!render_process_host_) {
+      if (!stable_vd_factory_remote_.is_bound()) {
+        LaunchStableVideoDecoderFactory(
+            stable_vd_factory_remote_.BindNewPipeAndPassReceiver());
+        stable_vd_factory_remote_.reset_on_disconnect();
+      }
+
+      if (!stable_vd_factory_remote_.is_bound())
+        return;
+
+      stable_vd_factory_remote_->CreateStableVideoDecoder(
+          oop_video_decoder.InitWithNewPipeAndPassReceiver());
+    } else {
+      render_process_host_->CreateStableVideoDecoder(
+          oop_video_decoder.InitWithNewPipeAndPassReceiver());
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   factory->CreateVideoDecoder(std::move(receiver),

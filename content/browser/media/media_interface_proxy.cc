@@ -288,11 +288,7 @@ void MediaInterfaceProxy::CreateVideoDecoder(
       oop_video_decoder;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding)) {
-    // TODO(b/195769334): for now, we're using the same
-    // StableVideoDecoderFactory. However, we should be using a separate
-    // StableVideoDecoderFactory for each client (i.e., different renderers
-    // should use different video decoder processes).
-    GetStableVideoDecoderFactory().CreateStableVideoDecoder(
+    render_frame_host().GetProcess()->CreateStableVideoDecoder(
         oop_video_decoder.InitWithNewPipeAndPassReceiver());
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

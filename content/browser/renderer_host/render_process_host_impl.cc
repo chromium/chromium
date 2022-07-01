@@ -217,6 +217,8 @@
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "content/browser/font_service.h"  // nogncheck
 #include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom.h"  // nogncheck
+
+#include "content/public/browser/stable_video_decoder_factory.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -2094,6 +2096,23 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
       std::move(receiver));
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+void RenderProcessHostImpl::CreateStableVideoDecoder(
+    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver) {
+  if (!stable_video_decoder_factory_remote_.is_bound()) {
+    LaunchStableVideoDecoderFactory(
+        stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
+    stable_video_decoder_factory_remote_.reset_on_disconnect();
+  }
+
+  if (!stable_video_decoder_factory_remote_.is_bound())
+    return;
+
+  stable_video_decoder_factory_remote_->CreateStableVideoDecoder(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 void RenderProcessHostImpl::DelayProcessShutdown(
     const base::TimeDelta& subframe_shutdown_timeout,
     const base::TimeDelta& unload_handler_timeout,
@@ -2439,7 +2458,8 @@ void RenderProcessHostImpl::CreateDomStorageProvider(
 void RenderProcessHostImpl::BindMediaInterfaceProxy(
     mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
   if (!media_interface_proxy_)
-    media_interface_proxy_ = std::make_unique<FramelessMediaInterfaceProxy>();
+    media_interface_proxy_ =
+        std::make_unique<FramelessMediaInterfaceProxy>(this);
   media_interface_proxy_->Add(std::move(receiver));
 }
 
@@ -4683,6 +4703,10 @@ void RenderProcessHostImpl::ResetIPC() {
   associated_interfaces_.reset();
   coordinator_connector_receiver_.reset();
   tracing_registration_.reset();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  stable_video_decoder_factory_remote_.reset();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Destroy all embedded CompositorFrameSinks.
   embedded_frame_sink_provider_.reset();
