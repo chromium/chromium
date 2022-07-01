@@ -143,7 +143,9 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
     // |outer_| can only be safely used from a task posted to one of the
     // runners.
-    raw_ptr<BrowserTaskQueues> outer_ = nullptr;
+    //
+    // TODO(crbug.com/1298696): Breaks events_unittests.
+    raw_ptr<BrowserTaskQueues, DegradeToNoOpWhenMTE> outer_ = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
     std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
