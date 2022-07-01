@@ -366,7 +366,7 @@ group("gn_all") {
       "//net/android:net_junit_tests",
       "//services:services_junit_tests",
       "//testing/android/junit:junit_unit_tests",
-      "//third_party/android_lint:custom_lint_java",
+      "//third_party/android_build_tools/lint:custom_lint_java",
       "//third_party/catapult/devil",
       "//third_party/r8:custom_d8_java",
       "//tools/android:android_tools",

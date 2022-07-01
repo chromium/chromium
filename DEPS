@@ -980,9 +980,10 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_lint': {
+  'src/third_party/android_build_tools/lint': {
       'packages': [
           {
+               # TODO(wnwen): Switch to chromium/third_party/android_build_tools/lint.
                'package': 'chromium/third_party/android_lint',
                'version': 'f5g1G8eyExIUPHk4lH3xx_xV4pza9WSBaITgmLPgF2cC',
           },

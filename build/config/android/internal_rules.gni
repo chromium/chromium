@@ -91,8 +91,8 @@ _desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desug
 _desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.5.jar"
 _robolectric_jar_path =
     "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
-_lint_jar_path = "//third_party/android_lint/lint.jar"
-_custom_lint_jar_path = "//third_party/android_lint/custom_lint.jar"
+_lint_jar_path = "//third_party/android_build_tools/lint/lint.jar"
+_custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
 
 # Put the bug number in the target name so that false-positives have a hint in
 # the error message about why non-existent dependencies are there.

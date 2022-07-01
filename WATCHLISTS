@@ -72,8 +72,9 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/.*ChooserDialogTest.java'
     },
     'android_lint': {
-      'filepath': '/lint-baseline.xml|'\
-                  '/lint-suppressions.xml'
+      'filepath': '/lint-baseline.xml' \
+                  '|/lint-suppressions.xml' \
+                  '|third_party/android_build_tools/lint'
     },
     'android_omnibox': {
       'filepath': 'chrome/browser/ui/android/omnibox/',
