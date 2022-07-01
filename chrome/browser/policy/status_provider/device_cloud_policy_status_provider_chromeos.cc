@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
+#include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 
 #include <string>
 
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ui/webui/policy/status_provider/status_provider_util.h"
+#include "chrome/browser/policy/status_provider/status_provider_util.h"
 
 DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/policy/status_provider/status_provider_util.h"
+#include "chrome/browser/policy/status_provider/status_provider_util.h"
 
 #include "google_apis/gaia/gaia_auth_util.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/policy/status_provider/device_active_directory_policy_status_provider.h"
+#include "chrome/browser/policy/status_provider/device_active_directory_policy_status_provider.h"
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/policy/status_provider/status_provider_util.h"
+#include "chrome/browser/policy/status_provider/status_provider_util.h"
 
 DeviceActiveDirectoryPolicyStatusProvider::
     DeviceActiveDirectoryPolicyStatusProvider(

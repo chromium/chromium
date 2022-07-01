@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/policy/status_provider/device_policy_status_provider_lacros.h"
+#include "chrome/browser/policy/status_provider/device_policy_status_provider_lacros.h"
 
 #include <utility>
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_CHROMEOS_H_
+#define CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_CHROMEOS_H_
 
-#include "chrome/browser/ui/webui/policy/status_provider/user_cloud_policy_status_provider.h"
+#include "chrome/browser/policy/status_provider/user_cloud_policy_status_provider.h"
 
 class Profile;
 
@@ -38,4 +38,4 @@ class UserCloudPolicyStatusProviderChromeOS
   Profile* profile_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_CHROMEOS_H_

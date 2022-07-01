@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_DEVICE_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
-#define CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_DEVICE_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
+#ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_DEVICE_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
+#define CHROME_BROWSER_POLICY_STATUS_PROVIDER_DEVICE_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
 
 #include <string>
 
-#include "chrome/browser/ui/webui/policy/status_provider/user_active_directory_policy_status_provider.h"
+#include "chrome/browser/policy/status_provider/user_active_directory_policy_status_provider.h"
 
 namespace base {
 class DictionaryValue;
@@ -39,4 +39,4 @@ class DeviceActiveDirectoryPolicyStatusProvider
   std::string enterprise_domain_manager_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_DEVICE_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
+#endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_DEVICE_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_

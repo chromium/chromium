@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
-#define CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
+#ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
+#define CHROME_BROWSER_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,4 +29,4 @@ void GetOffHoursStatus(base::DictionaryValue* dict);
 void GetUserManager(base::DictionaryValue* dict, Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#endif  // CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
+#endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_

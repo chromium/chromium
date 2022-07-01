@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_USER_POLICY_STATUS_PROVIDER_LACROS_H_
-#define CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_USER_POLICY_STATUS_PROVIDER_LACROS_H_
+#ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_POLICY_STATUS_PROVIDER_LACROS_H_
+#define CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_POLICY_STATUS_PROVIDER_LACROS_H_
 
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 
@@ -38,4 +38,4 @@ class UserPolicyStatusProviderLacros : public policy::PolicyStatusProvider {
   raw_ptr<policy::PolicyLoaderLacros> loader_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_POLICY_STATUS_PROVIDER_USER_POLICY_STATUS_PROVIDER_LACROS_H_
+#endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_POLICY_STATUS_PROVIDER_LACROS_H_

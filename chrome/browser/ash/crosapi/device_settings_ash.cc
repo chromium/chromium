@@ -12,8 +12,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
+#include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {

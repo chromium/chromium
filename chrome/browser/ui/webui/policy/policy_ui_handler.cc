@@ -35,12 +35,12 @@
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/schema_registry_service.h"
+#include "chrome/browser/policy/status_provider/cloud_policy_core_status_provider.h"
+#include "chrome/browser/policy/status_provider/status_provider_util.h"
+#include "chrome/browser/policy/status_provider/user_cloud_policy_status_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/webui/policy/status_provider/cloud_policy_core_status_provider.h"
-#include "chrome/browser/ui/webui/policy/status_provider/status_provider_util.h"
-#include "chrome/browser/ui/webui/policy/status_provider/user_cloud_policy_status_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -94,19 +94,19 @@
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/webui/policy/status_provider/device_active_directory_policy_status_provider.h"
-#include "chrome/browser/ui/webui/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
-#include "chrome/browser/ui/webui/policy/status_provider/device_local_account_policy_status_provider.h"
-#include "chrome/browser/ui/webui/policy/status_provider/user_active_directory_policy_status_provider.h"
-#include "chrome/browser/ui/webui/policy/status_provider/user_cloud_policy_status_provider_chromeos.h"
+#include "chrome/browser/policy/status_provider/device_active_directory_policy_status_provider.h"
+#include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
+#include "chrome/browser/policy/status_provider/device_local_account_policy_status_provider.h"
+#include "chrome/browser/policy/status_provider/user_active_directory_policy_status_provider.h"
+#include "chrome/browser/policy/status_provider/user_cloud_policy_status_provider_chromeos.h"
 #include "components/user_manager/user_manager.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/webui/policy/status_provider/device_policy_status_provider_lacros.h"
-#include "chrome/browser/ui/webui/policy/status_provider/user_policy_status_provider_lacros.h"
+#include "chrome/browser/policy/status_provider/device_policy_status_provider_lacros.h"
+#include "chrome/browser/policy/status_provider/user_policy_status_provider_lacros.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -124,7 +124,7 @@
 #include <DSRole.h>
 
 #include "chrome/browser/google/google_update_policy_fetcher_win.h"
-#include "chrome/browser/ui/webui/policy/status_provider/updater_status_provider.h"
+#include "chrome/browser/policy/status_provider/updater_status_provider.h"
 #include "chrome/install_static/install_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
