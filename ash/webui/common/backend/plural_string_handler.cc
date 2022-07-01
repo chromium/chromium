@@ -35,7 +35,11 @@ void PluralStringHandler::HandleGetPluralString(const base::Value::List& args) {
   const std::string callback = args[0].GetString();
   const std::string name = args[1].GetString();
   const int count = args[2].GetInt();
-  DCHECK(base::Contains(string_id_map_, name));
+  if (string_id_map_.find(name) == string_id_map_.end()) {
+    // Only reachable if the WebUI renderer is misbehaving.
+    LOG(ERROR) << "Invalid string ID received: " << name;
+    return;
+  }
   const std::u16string localized_string =
       l10n_util::GetPluralStringFUTF16(string_id_map_.at(name), count);
   ResolveJavascriptCallback(base::Value(callback),
