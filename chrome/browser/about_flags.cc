@@ -1372,26 +1372,38 @@ const FeatureEntry::FeatureVariation
         {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
          std::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
 
-const FeatureEntry::FeatureParam kFiveOrganicRepeatableQueries[] = {
-    {"MaxNumRepeatableQueries", "5"}};
-const FeatureEntry::FeatureParam kFiveOrganicRepeatableQueriesScaled[] = {
-    {"MaxNumRepeatableQueries", "5"},
-    {"ScaleRepeatableQueriesScores", "true"}};
 const FeatureEntry::FeatureParam
-    kFiveOrganicRepeatableQueriesScaledPrivileged[] = {
-        {"MaxNumRepeatableQueries", "5"},
+    kOrganicRepeatableQueriesCappedWithHighPrivilege[] = {
+        {"MaxNumRepeatableQueries", "4"},
         {"ScaleRepeatableQueriesScores", "true"},
         {"PrivilegeRepeatableQueries", "true"}};
+const FeatureEntry::FeatureParam
+    kOrganicRepeatableQueriesCappedWithLowPrivilege[] = {
+        {"MaxNumRepeatableQueries", "4"},
+        {"ScaleRepeatableQueriesScores", "true"},
+        {"PrivilegeRepeatableQueries", "false"}};
+const FeatureEntry::FeatureParam
+    kOrganicRepeatableQueriesUncappedWithHighPrivilege[] = {
+        {"ScaleRepeatableQueriesScores", "true"},
+        {"PrivilegeRepeatableQueries", "true"}};
+const FeatureEntry::FeatureParam
+    kOrganicRepeatableQueriesUncappedWithLowPrivilege[] = {
+        {"ScaleRepeatableQueriesScores", "true"},
+        {"PrivilegeRepeatableQueries", "false"}};
 
 const FeatureEntry::FeatureVariation kOrganicRepeatableQueriesVariations[] = {
-    {"- up to 5 repeatable queries", kFiveOrganicRepeatableQueries,
-     std::size(kFiveOrganicRepeatableQueries), nullptr},
-    {"- up to 5 repeatable queries - scaled for mixing",
-     kFiveOrganicRepeatableQueriesScaled,
-     std::size(kFiveOrganicRepeatableQueriesScaled), nullptr},
-    {"- up to 5 repeatable queries - scaled and privileged for mixing",
-     kFiveOrganicRepeatableQueriesScaledPrivileged,
-     std::size(kFiveOrganicRepeatableQueriesScaledPrivileged), nullptr}};
+    {"- No max, High privilege",
+     kOrganicRepeatableQueriesUncappedWithHighPrivilege,
+     std::size(kOrganicRepeatableQueriesUncappedWithHighPrivilege), nullptr},
+    {"- No max, Low privilege",
+     kOrganicRepeatableQueriesUncappedWithLowPrivilege,
+     std::size(kOrganicRepeatableQueriesUncappedWithLowPrivilege), nullptr},
+    {"- Max 4, High privilege",
+     kOrganicRepeatableQueriesCappedWithHighPrivilege,
+     std::size(kOrganicRepeatableQueriesCappedWithHighPrivilege), nullptr},
+    {"- Max 4, Low privilege", kOrganicRepeatableQueriesCappedWithLowPrivilege,
+     std::size(kOrganicRepeatableQueriesCappedWithLowPrivilege), nullptr},
+};
 
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
     {features::kMinimumTabWidthFeatureParameterName, "54"}};
