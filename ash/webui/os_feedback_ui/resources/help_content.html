@@ -17,8 +17,9 @@
     text-decoration: none;
   }
 
-  iron-icon {
+  .help-item-icon {
     padding-inline-end: 12px;
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
   }
 </style>
 <div id="helpContentContainer">
@@ -27,7 +28,7 @@
     <template>
       <div class="help-item">
         <a href="[[getUrl_(item)]]" target="_blank">
-          <iron-icon icon="[[getIcon_(item.contentType)]]"></iron-icon>
+          <iron-icon icon="[[getIcon_(item.contentType)]]" class="help-item-icon"></iron-icon>
           <span>[[getTitle_(item)]]</span>
         </a>
       </div>
