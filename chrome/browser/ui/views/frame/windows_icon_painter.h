@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_ICON_PAINTER_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_ICON_PAINTER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_ICON_PAINTER_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_ICON_PAINTER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/canvas.h"
@@ -63,4 +63,4 @@ class Windows11IconPainter : public Windows10IconPainter {
                         cc::PaintFlags& flags) override;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_ICON_PAINTER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_ICON_PAINTER_H_

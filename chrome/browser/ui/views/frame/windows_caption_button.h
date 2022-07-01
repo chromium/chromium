@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_CAPTION_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_CAPTION_BUTTON_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/windows_10_icon_painter.h"
+#include "chrome/browser/ui/views/frame/windows_icon_painter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 
 class GlassBrowserFrameView;
 
-class Windows10CaptionButton : public views::Button {
+class WindowsCaptionButton : public views::Button {
  public:
-  METADATA_HEADER(Windows10CaptionButton);
-  Windows10CaptionButton(PressedCallback callback,
-                         GlassBrowserFrameView* frame_view,
-                         ViewID button_type,
-                         const std::u16string& accessible_name);
-  Windows10CaptionButton(const Windows10CaptionButton&) = delete;
-  Windows10CaptionButton& operator=(const Windows10CaptionButton&) = delete;
-  ~Windows10CaptionButton() override;
+  METADATA_HEADER(WindowsCaptionButton);
+  WindowsCaptionButton(PressedCallback callback,
+                       GlassBrowserFrameView* frame_view,
+                       ViewID button_type,
+                       const std::u16string& accessible_name);
+  WindowsCaptionButton(const WindowsCaptionButton&) = delete;
+  WindowsCaptionButton& operator=(const WindowsCaptionButton&) = delete;
+  ~WindowsCaptionButton() override;
 
   // views::Button:
   gfx::Size CalculatePreferredSize() const override;
@@ -57,4 +57,4 @@ class Windows10CaptionButton : public views::Button {
   ViewID button_type_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_CAPTION_BUTTON_H_

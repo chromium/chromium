@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"
+#include "chrome/browser/ui/views/frame/windows_tab_search_caption_button.h"
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -12,14 +12,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
-Windows10TabSearchCaptionButton::Windows10TabSearchCaptionButton(
+WindowsTabSearchCaptionButton::WindowsTabSearchCaptionButton(
     GlassBrowserFrameView* frame_view,
     ViewID button_type,
     const std::u16string& accessible_name)
-    : Windows10CaptionButton(views::Button::PressedCallback(),
-                             frame_view,
-                             button_type,
-                             accessible_name),
+    : WindowsCaptionButton(views::Button::PressedCallback(),
+                           frame_view,
+                           button_type,
+                           accessible_name),
       tab_search_bubble_host_(std::make_unique<TabSearchBubbleHost>(
           this,
           frame_view->browser_view()->GetProfile())) {
@@ -29,7 +29,7 @@ Windows10TabSearchCaptionButton::Windows10TabSearchCaptionButton(
       kColorTabSearchCaptionButtonFocusRing);
 }
 
-Windows10TabSearchCaptionButton::~Windows10TabSearchCaptionButton() = default;
+WindowsTabSearchCaptionButton::~WindowsTabSearchCaptionButton() = default;
 
-BEGIN_METADATA(Windows10TabSearchCaptionButton, Windows10CaptionButton)
+BEGIN_METADATA(WindowsTabSearchCaptionButton, WindowsCaptionButton)
 END_METADATA

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
+#include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
@@ -21,7 +21,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 
-Windows10CaptionButton::Windows10CaptionButton(
+WindowsCaptionButton::WindowsCaptionButton(
     PressedCallback callback,
     GlassBrowserFrameView* frame_view,
     ViewID button_type,
@@ -37,17 +37,17 @@ Windows10CaptionButton::Windows10CaptionButton(
   SetID(button_type);
 }
 
-Windows10CaptionButton::~Windows10CaptionButton() = default;
+WindowsCaptionButton::~WindowsCaptionButton() = default;
 
 std::unique_ptr<Windows10IconPainter>
-Windows10CaptionButton::CreateIconPainter() {
+WindowsCaptionButton::CreateIconPainter() {
   if (base::win::GetVersion() >= base::win::Version::WIN11) {
     return std::make_unique<Windows11IconPainter>();
   }
   return std::make_unique<Windows10IconPainter>();
 }
 
-gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {
+gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
   // TODO(bsep): The sizes in this function are for 1x device scale and don't
   // match Windows button sizes at hidpi.
   int height = WindowFrameUtil::kWindows10GlassCaptionButtonHeightRestored;
@@ -65,14 +65,14 @@ gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {
   return gfx::Size(base_width + GetBetweenButtonSpacing(), height);
 }
 
-SkColor Windows10CaptionButton::GetBaseForegroundColor() const {
+SkColor WindowsCaptionButton::GetBaseForegroundColor() const {
   return GetColorProvider()->GetColor(
       frame_view_->ShouldPaintAsActive()
           ? kColorCaptionButtonForegroundActive
           : kColorCaptionButtonForegroundInactive);
 }
 
-void Windows10CaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
+void WindowsCaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   // Paint the background of the button (the semi-transparent rectangle that
   // appears when you hover or press the button).
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
@@ -137,18 +137,18 @@ void Windows10CaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   canvas->FillRect(bounds, SkColorSetA(base_color, alpha));
 }
 
-void Windows10CaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
+void WindowsCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   PaintSymbol(canvas);
 }
 
-int Windows10CaptionButton::GetBetweenButtonSpacing() const {
+int WindowsCaptionButton::GetBetweenButtonSpacing() const {
   const int display_order_index = GetButtonDisplayOrderIndex();
   return display_order_index == 0
              ? 0
              : WindowFrameUtil::kWindows10GlassCaptionButtonVisualSpacing;
 }
 
-int Windows10CaptionButton::GetButtonDisplayOrderIndex() const {
+int WindowsCaptionButton::GetButtonDisplayOrderIndex() const {
   int button_display_order = 0;
   const bool tab_search_enabled =
       WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
@@ -181,7 +181,7 @@ int Windows10CaptionButton::GetButtonDisplayOrderIndex() const {
   return button_display_order;
 }
 
-void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
+void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   SkColor symbol_color = GetBaseForegroundColor();
   const SkColor hovered_color =
       GetColorProvider()->GetColor(kColorCaptionCloseButtonForegroundHovered);
@@ -253,7 +253,7 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   }
 }
 
-BEGIN_METADATA(Windows10CaptionButton, views::Button)
+BEGIN_METADATA(WindowsCaptionButton, views::Button)
 ADD_READONLY_PROPERTY_METADATA(int, BetweenButtonSpacing)
 ADD_READONLY_PROPERTY_METADATA(int, ButtonDisplayOrderIndex)
 ADD_READONLY_PROPERTY_METADATA(SkColor,

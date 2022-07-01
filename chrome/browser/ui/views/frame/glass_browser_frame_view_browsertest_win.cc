@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_caption_button_container.h"
-#include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
+#include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
@@ -297,13 +297,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   auto* caption_button_container =
       glass_frame_view_->caption_button_container_for_testing();
-  auto* minimize_button = static_cast<const Windows10CaptionButton*>(
+  auto* minimize_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
-  auto* maximize_button = static_cast<const Windows10CaptionButton*>(
+  auto* maximize_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
-  auto* restore_button = static_cast<const Windows10CaptionButton*>(
+  auto* restore_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_RESTORE_BUTTON));
-  auto* close_button = static_cast<const Windows10CaptionButton*>(
+  auto* close_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_CLOSE_BUTTON));
 
   // Verify tooltip text was first empty.
