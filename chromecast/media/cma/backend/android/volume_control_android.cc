@@ -198,16 +198,7 @@ void VolumeControlAndroid::InitializeOnThread() {
               << " mute=" << muted_[type];
   }
 
-  if (!is_single_volume_) {
-    // The kOther content type should not have any type-wide volume control or
-    // mute (volume control for kOther is per-stream only). Therefore, ensure
-    // that the global volume and mute state fo kOther is initialized correctly
-    // (100% volume, and not muted).
-    SetVolumeOnThread(VolumeChangeSource::kAutomatic, AudioContentType::kOther,
-                      1.0f, false /* from_android */);
-    SetMutedOnThread(VolumeChangeSource::kAutomatic, AudioContentType::kOther,
-                     false, false /* from_android */);
-  }
+  // kOther is not used on Android, so we don't attempt to set it to 100% here.
 
   initialize_complete_event_.Signal();
 }
@@ -281,14 +272,6 @@ void VolumeControlAndroid::SetMutedOnThread(VolumeChangeSource source,
 void VolumeControlAndroid::ReportVolumeChangeOnThread(AudioContentType type,
                                                       float level) {
   DCHECK(thread_.task_runner()->BelongsToCurrentThread());
-  if (!is_single_volume_ && type == AudioContentType::kOther) {
-    // Volume for AudioContentType::kOther should stay at 1.0.
-    Java_VolumeControl_setVolume(base::android::AttachCurrentThread(),
-                                 j_volume_control_, static_cast<int>(type),
-                                 1.0f);
-    return;
-  }
-
   SetVolumeOnThread(VolumeChangeSource::kUser, type, level,
                     true /* from android */);
 }
@@ -296,14 +279,6 @@ void VolumeControlAndroid::ReportVolumeChangeOnThread(AudioContentType type,
 void VolumeControlAndroid::ReportMuteChangeOnThread(AudioContentType type,
                                                     bool muted) {
   DCHECK(thread_.task_runner()->BelongsToCurrentThread());
-  if (!is_single_volume_ && type == AudioContentType::kOther) {
-    // Mute state for AudioContentType::kOther should always be false.
-    Java_VolumeControl_setMuted(base::android::AttachCurrentThread(),
-                                j_volume_control_, static_cast<int>(type),
-                                false);
-    return;
-  }
-
   SetMutedOnThread(VolumeChangeSource::kUser, type, muted,
                    true /* from_android */);
 }
