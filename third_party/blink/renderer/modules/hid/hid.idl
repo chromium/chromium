@@ -7,7 +7,8 @@
 // https://wicg.github.io/webhid/index.html#enumeration
 
 [
-    Exposed(Window WebHID),
+    Exposed(ServiceWorker WebHIDOnServiceWorkers,
+            Window WebHID),
     SecureContext
 ] interface HID : EventTarget {
     attribute EventHandler onconnect;

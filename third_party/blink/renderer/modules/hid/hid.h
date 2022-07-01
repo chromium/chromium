@@ -27,13 +27,13 @@ namespace blink {
 class ExecutionContext;
 class HIDDeviceFilter;
 class HIDDeviceRequestOptions;
-class Navigator;
+class NavigatorBase;
 class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT HID : public EventTargetWithInlineData,
                            public ExecutionContextLifecycleObserver,
-                           public Supplement<Navigator>,
+                           public Supplement<NavigatorBase>,
                            public device::mojom::blink::HidManagerClient,
                            public HIDDevice::ServiceInterface {
   DEFINE_WRAPPERTYPEINFO();
@@ -42,9 +42,9 @@ class MODULES_EXPORT HID : public EventTargetWithInlineData,
   static const char kSupplementName[];
 
   // Web-exposed getter for navigator.hid
-  static HID* hid(Navigator&);
+  static HID* hid(NavigatorBase&);
 
-  explicit HID(Navigator&);
+  explicit HID(NavigatorBase&);
   ~HID() override;
 
   // EventTarget:
@@ -117,7 +117,7 @@ class MODULES_EXPORT HID : public EventTargetWithInlineData,
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> request_device_promises_;
   HeapHashMap<String, WeakMember<HIDDevice>> device_cache_;
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
+  absl::optional<FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle>
       feature_handle_for_scheduler_;
 };
 

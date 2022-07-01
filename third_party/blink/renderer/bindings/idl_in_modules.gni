@@ -325,6 +325,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/hid/hid_report_info.idl",
           "//third_party/blink/renderer/modules/hid/hid_report_item.idl",
           "//third_party/blink/renderer/modules/hid/navigator_hid.idl",
+          "//third_party/blink/renderer/modules/hid/worker_navigator_hid.idl",
           "//third_party/blink/renderer/modules/idle/idle_detector.idl",
           "//third_party/blink/renderer/modules/idle/idle_options.idl",
           "//third_party/blink/renderer/modules/imagecapture/constrain_point_2d_parameters.idl",

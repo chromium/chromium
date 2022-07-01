@@ -9,7 +9,8 @@
 
 [
     ActiveScriptWrappable,
-    Exposed(Window WebHID),
+    Exposed(ServiceWorker WebHIDOnServiceWorkers,
+            Window WebHID),
     SecureContext
 ] interface HIDDevice : EventTarget {
     attribute EventHandler oninputreport;

@@ -2710,6 +2710,11 @@
       status: "stable",
     },
     {
+      // It is only enabled in extension environment for now.
+      name: "WebHIDOnServiceWorkers",
+      depends_on: ["WebHID"],
+    },
+    {
       name: "WebNFC",
       status: {"Android": "stable", "default": "test"},
     },
