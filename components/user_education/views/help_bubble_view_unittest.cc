@@ -72,7 +72,6 @@ class TestThemeProvider : public ui::ThemeProvider {
   ~TestThemeProvider() override = default;
 
   gfx::ImageSkia* GetImageSkiaNamed(int id) const override { return nullptr; }
-  SkColor GetColor(int id) const override { return SK_ColorRED; }
   color_utils::HSL GetTint(int id) const override { return color_utils::HSL(); }
   int GetDisplayProperty(int id) const override { return 0; }
   bool ShouldUseNativeFrame() const override { return false; }

@@ -6837,7 +6837,6 @@ test("unit_tests") {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
     }
     if (is_linux) {
-      sources += [ "../browser/themes/theme_service_linux_unittest.cc" ]
       deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
     }
     if (use_ozone) {

@@ -91,93 +91,6 @@ constexpr base::TimeDelta kRemoveUnusedThemesStartupDelay = base::Seconds(30);
 
 bool g_dont_write_theme_pack_for_testing = false;
 
-absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
-  // clang-format off
-  static constexpr const auto kMap = base::MakeFixedFlatMap<int, ui::ColorId>({
-#if BUILDFLAG(IS_WIN)
-      {TP::COLOR_ACCENT_BORDER_ACTIVE, kColorAccentBorderActive},
-      {TP::COLOR_ACCENT_BORDER_INACTIVE, kColorAccentBorderInactive},
-#endif  // BUILDFLAG(IS_WIN)
-      {TP::COLOR_BOOKMARK_BAR_BACKGROUND, kColorBookmarkBarBackground},
-      {TP::COLOR_BOOKMARK_FAVICON, kColorBookmarkFavicon},
-      {TP::COLOR_BOOKMARK_SEPARATOR, kColorBookmarkBarSeparator},
-      {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkBarForeground},
-      {TP::COLOR_CONTROL_BUTTON_BACKGROUND, kColorCaptionButtonBackground},
-      {TP::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND,
-       kColorFeaturePromoBubbleBackground},
-      {TP::COLOR_FEATURE_PROMO_BUBBLE_BUTTON_BORDER,
-       kColorFeaturePromoBubbleButtonBorder},
-      {TP::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP,
-       kColorFeaturePromoBubbleCloseButtonInkDrop},
-      {TP::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND,
-       kColorFeaturePromoBubbleDefaultButtonBackground},
-      {TP::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND,
-       kColorFeaturePromoBubbleDefaultButtonForeground},
-      {TP::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND,
-       kColorFeaturePromoBubbleForeground},
-      {TP::COLOR_FLYING_INDICATOR_BACKGROUND, kColorFlyingIndicatorBackground},
-      {TP::COLOR_FLYING_INDICATOR_FOREGROUND, kColorFlyingIndicatorForeground},
-      {TP::COLOR_LOCATION_BAR_BORDER, kColorLocationBarBorder},
-      {TP::COLOR_LOCATION_BAR_BORDER_OPAQUE, kColorLocationBarBorderOpaque},
-      {TP::COLOR_NTP_BACKGROUND, kColorNewTabPageBackground},
-      {TP::COLOR_NTP_HEADER, kColorNewTabPageHeader},
-      {TP::COLOR_NTP_LINK, kColorNewTabPageLink},
-      {TP::COLOR_NTP_LOGO, kColorNewTabPageLogo},
-      {TP::COLOR_NTP_SECTION_BORDER, kColorNewTabPageSectionBorder},
-      {TP::COLOR_NTP_SHORTCUT, kColorNewTabPageMostVisitedTileBackground},
-      {TP::COLOR_NTP_TEXT_LIGHT, kColorNewTabPageTextLight},
-      {TP::COLOR_FRAME_CAPTION_ACTIVE, kColorFrameCaptionActive},
-      {TP::COLOR_FRAME_CAPTION_INACTIVE, kColorFrameCaptionInactive},
-      {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
-      {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
-      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
-       kColorTabBackgroundActiveFrameActive},
-      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
-       kColorTabBackgroundActiveFrameInactive},
-      {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
-       kColorTabBackgroundInactiveFrameActive},
-      {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
-       kColorTabBackgroundInactiveFrameInactive},
-      {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
-       kColorTabForegroundActiveFrameActive},
-      {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
-       kColorTabForegroundActiveFrameInactive},
-      {TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE,
-       kColorTabForegroundInactiveFrameActive},
-      {TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE,
-       kColorTabForegroundInactiveFrameInactive},
-      {TP::COLOR_TAB_STROKE_FRAME_ACTIVE, kColorTabStrokeFrameActive},
-      {TP::COLOR_TAB_STROKE_FRAME_INACTIVE, kColorTabStrokeFrameInactive},
-      // Toolbar and associated colors.
-      {TP::COLOR_TOOLBAR, kColorToolbar},
-      {TP::COLOR_TOOLBAR_BUTTON_BORDER, kColorToolbarButtonBorder},
-      {TP::COLOR_TOOLBAR_BUTTON_ICON, kColorToolbarButtonIcon},
-      {TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED, kColorToolbarButtonIconHovered},
-      {TP::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE, kColorToolbarButtonIconInactive},
-      {TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED, kColorToolbarButtonIconPressed},
-      {TP::COLOR_TOOLBAR_BUTTON_TEXT, kColorToolbarButtonText},
-      {TP::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR,
-       kColorToolbarContentAreaSeparator},
-      {TP::COLOR_TOOLBAR_INK_DROP, kColorToolbarInkDrop},
-      {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
-      {TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE,
-        kColorToolbarTopSeparatorFrameActive},
-      {TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE,
-        kColorToolbarTopSeparatorFrameInactive},
-      {TP::COLOR_TOOLBAR_VERTICAL_SEPARATOR, kColorToolbarSeparator},
-      {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE,
-       kColorWindowControlButtonBackgroundActive},
-      {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE,
-       kColorWindowControlButtonBackgroundInactive},
-  });
-  // clang-format on
-  auto* color_it = kMap.find(color_id);
-  if (color_it != kMap.cend()) {
-    return color_it->second;
-  }
-  return absl::nullopt;
-}
-
 // Writes the theme pack to disk on a separate thread.
 void WritePackToDiskCallback(BrowserThemePack* pack,
                              const base::FilePath& directory) {
@@ -187,12 +100,6 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
   const bool success =
       pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
   base::UmaHistogramBoolean("Browser.ThemeService.WritePackToDisk", success);
-}
-
-void ReportHistogramBooleanUsesColorProvider(bool uses_color_provider) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Browser.ThemeService.BrowserThemeProvider.GetColor.UsesColorProvider",
-      uses_color_provider);
 }
 
 }  // namespace
@@ -305,18 +212,6 @@ gfx::ImageSkia* ThemeService::BrowserThemeProvider::GetImageSkiaNamed(
   return theme_helper_.GetImageSkiaNamed(id, incognito_, GetThemeSupplier());
 }
 
-SkColor ThemeService::BrowserThemeProvider::GetColor(int id) const {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Browser.ThemeService.BrowserThemeProvider.GetColor");
-  if (auto color = GetColorProviderColor(id)) {
-    ReportHistogramBooleanUsesColorProvider(true);
-    return color.value();
-  }
-
-  ReportHistogramBooleanUsesColorProvider(false);
-  return theme_helper_.GetColor(id, incognito_, GetThemeSupplier());
-}
-
 color_utils::HSL ThemeService::BrowserThemeProvider::GetTint(int id) const {
   return theme_helper_.GetTint(id, incognito_, GetThemeSupplier());
 }
@@ -337,38 +232,6 @@ base::RefCountedMemory* ThemeService::BrowserThemeProvider::GetRawData(
     int id,
     ui::ResourceScaleFactor scale_factor) const {
   return theme_helper_.GetRawData(id, GetThemeSupplier(), scale_factor);
-}
-
-absl::optional<SkColor>
-ThemeService::BrowserThemeProvider::GetColorProviderColor(int id) const {
-  if (base::FeatureList::IsEnabled(
-          features::kColorProviderRedirectionForThemeProvider)) {
-    if (auto provider_color_id = ThemeProviderColorIdToColorId(id)) {
-      const ui::NativeTheme* native_theme = nullptr;
-
-      if (incognito_) {
-        native_theme = ui::NativeTheme::GetInstanceForDarkUI();
-      } else {
-        native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-#if BUILDFLAG(IS_LINUX)
-        if (const auto* linux_ui = views::LinuxUI::instance()) {
-          native_theme =
-              linux_ui->GetNativeTheme(delegate_->ShouldUseSystemTheme());
-        }
-#endif
-      }
-      if (!native_theme)
-        return absl::nullopt;
-
-      auto color_provider_key = native_theme->GetColorProviderKey(
-          GetThemeSupplier(), delegate_->ShouldUseCustomFrame());
-      auto* color_provider =
-          ui::ColorProviderManager::Get().GetColorProviderFor(
-              color_provider_key);
-      return color_provider->GetColor(provider_color_id.value());
-    }
-  }
-  return absl::nullopt;
 }
 
 CustomThemeSupplier* ThemeService::BrowserThemeProvider::GetThemeSupplier()

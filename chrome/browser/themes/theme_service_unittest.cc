@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -751,32 +750,6 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_EQ(scoper.extension_id(), theme_service_->GetThemeID());
   EXPECT_TRUE(service_->IsExtensionEnabled(scoper.extension_id()));
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
-}
-
-TEST_P(ColorProviderTest, GetColor) {
-#if BUILDFLAG(IS_LINUX)
-  const auto param_tuple = GetParam();
-  const auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
-  const auto contrast_mode = std::get<ContrastMode>(param_tuple);
-  const auto system_theme = std::get<SystemTheme>(param_tuple);
-  // For LinuxUI, test only the light, non high contrast mode.
-  // TODO(crbug.com/1310397): make a dedicated test for LinuxUI colors.
-  if (system_theme == SystemTheme::kCustom &&
-      !(color_scheme == ui::NativeTheme::ColorScheme::kLight &&
-        contrast_mode == ContrastMode::kNonHighContrast))
-    return;
-#endif  // BUILDFLAG(IS_LINUX)
-
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile());
-
-  for (auto color_id : theme_service::test::kTestColorIds) {
-    std::string error_message = base::StrCat(
-        {theme_service::test::ThemePropertiesColorToString(color_id),
-         " has mismatched values"});
-    theme_service::test::TestOriginalAndRedirectedColorMatched(
-        theme_provider, color_id, error_message);
-  }
 }
 
 }  // namespace theme_service_internal

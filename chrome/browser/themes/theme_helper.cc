@@ -11,17 +11,11 @@
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -37,22 +31,6 @@ using TP = ThemeProperties;
 // realize we've installed the default theme, we already have an extension
 // unpacked on the filesystem.)
 constexpr char kDefaultThemeGalleryID[] = "hkacjpbfdknhflllbcmjibkdeoafencn";
-
-SkColor IncreaseLightness(SkColor color, double percent) {
-  color_utils::HSL result;
-  color_utils::SkColorToHSL(color, &result);
-  result.l += (1 - result.l) * percent;
-  return color_utils::HSLToSkColor(result, SkColorGetA(color));
-}
-
-// Key for cache of separator colors; pair is <tab color, frame color>.
-using SeparatorColorKey = std::pair<SkColor, SkColor>;
-using SeparatorColorCache = std::map<SeparatorColorKey, SkColor>;
-
-SeparatorColorCache& GetSeparatorColorCache() {
-  static base::NoDestructor<SeparatorColorCache> cache;
-  return *cache;
-}
 
 }  // namespace
 
@@ -163,20 +141,6 @@ ThemeHelper::~ThemeHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-SkColor ThemeHelper::GetColor(int id,
-                              bool incognito,
-                              const CustomThemeSupplier* theme_supplier) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (theme_supplier && !incognito) {
-    SkColor color;
-    if (theme_supplier->GetColor(id, &color))
-      return color;
-  }
-
-  return GetDefaultColor(id, incognito, theme_supplier);
-}
-
 color_utils::HSL ThemeHelper::GetTint(
     int id,
     bool incognito,
@@ -217,126 +181,6 @@ bool ThemeHelper::ShouldUseIncreasedContrastThemeSupplier(
 #else
   return native_theme && native_theme->UserHasContrastPreference();
 #endif
-}
-
-SkColor ThemeHelper::GetDefaultColor(
-    int id,
-    bool incognito,
-    const CustomThemeSupplier* theme_supplier) const {
-  // For backward compat with older themes, some newer colors are generated from
-  // older ones if they are missing.
-  const auto get_frame_color = [this, incognito, theme_supplier](bool active) {
-    return GetColor(active ? TP::COLOR_FRAME_ACTIVE : TP::COLOR_FRAME_INACTIVE,
-                    incognito, theme_supplier);
-  };
-  switch (id) {
-    case TP::COLOR_BOOKMARK_BAR_BACKGROUND:
-    case TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE:
-    case TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE:
-      return GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
-    case TP::COLOR_BOOKMARK_FAVICON: {
-      SkColor color;
-      return (theme_supplier &&
-              theme_supplier->GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &color))
-                 ? color
-                 : SK_ColorTRANSPARENT;
-    }
-    case TP::COLOR_FLYING_INDICATOR_BACKGROUND:
-      return GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
-    case TP::COLOR_FLYING_INDICATOR_FOREGROUND:
-      return GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier);
-    case TP::COLOR_FRAME_CAPTION_ACTIVE:
-    case TP::COLOR_FRAME_CAPTION_INACTIVE:
-      return color_utils::GetColorWithMaxContrast(GetColor(
-          id == TP::COLOR_FRAME_CAPTION_ACTIVE ? TP::COLOR_FRAME_ACTIVE
-                                               : TP::COLOR_FRAME_INACTIVE,
-          incognito, theme_supplier));
-    case TP::COLOR_BOOKMARK_TEXT:
-    case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
-    case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
-      return GetColor(TP::COLOR_TOOLBAR_TEXT, incognito, theme_supplier);
-    case TP::COLOR_TAB_STROKE_FRAME_ACTIVE:
-      return GetColor(TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE, incognito,
-                      theme_supplier);
-    case TP::COLOR_TAB_STROKE_FRAME_INACTIVE:
-      return GetColor(TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE, incognito,
-                      theme_supplier);
-    case TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE:
-      return color_utils::HSLShift(get_frame_color(/*active=*/true),
-                                   GetTint(ThemeProperties::TINT_BACKGROUND_TAB,
-                                           incognito, theme_supplier));
-    case TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE:
-      return color_utils::HSLShift(get_frame_color(/*active=*/false),
-                                   GetTint(ThemeProperties::TINT_BACKGROUND_TAB,
-                                           incognito, theme_supplier));
-    case TP::COLOR_TOOLBAR_BUTTON_ICON:
-    case TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
-    case TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED:
-      return color_utils::HSLShift(
-          gfx::kGoogleGrey700,
-          GetTint(TP::TINT_BUTTONS, incognito, theme_supplier));
-    case TP::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE:
-      // The active color is overridden in GtkUi.
-      return SkColorSetA(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
-          gfx::kGoogleGreyAlpha500);
-    case TP::COLOR_LOCATION_BAR_BORDER:
-      return SkColorSetA(SK_ColorBLACK, 0x4D);
-    case TP::COLOR_LOCATION_BAR_BORDER_OPAQUE:
-      return color_utils::GetResultingPaintColor(
-          GetColor(TP::COLOR_LOCATION_BAR_BORDER, incognito, theme_supplier),
-          GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier));
-    case TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
-    case TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE: {
-      const SkColor toolbar_color =
-          GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
-      const SkColor frame_color = get_frame_color(
-          /*active=*/id == TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE);
-      const SeparatorColorKey key(toolbar_color, frame_color);
-      auto i = GetSeparatorColorCache().find(key);
-      if (i != GetSeparatorColorCache().end())
-        return i->second;
-      const SkColor separator_color =
-          GetToolbarTopSeparatorColor(toolbar_color, frame_color);
-      GetSeparatorColorCache()[key] = separator_color;
-      return separator_color;
-    }
-    case TP::COLOR_BOOKMARK_SEPARATOR:
-    case TP::COLOR_TOOLBAR_VERTICAL_SEPARATOR:
-      return SkColorSetA(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
-          0x4D);
-    case TP::COLOR_TOOLBAR_BUTTON_TEXT:
-      // TODO(crbug.com/967317): Update to match mocks, i.e. return
-      // gfx::kGoogleGrey900, if needed.
-      [[fallthrough]];
-    case TP::COLOR_TOOLBAR_INK_DROP:
-      return color_utils::GetColorWithMaxContrast(
-          GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier));
-    case TP::COLOR_TOOLBAR_BUTTON_BORDER:
-      return SkColorSetA(
-          GetColor(TP::COLOR_TOOLBAR_INK_DROP, incognito, theme_supplier),
-          0x20);
-    case TP::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
-      return color_utils::AlphaBlend(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
-          GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier),
-          SkAlpha{0x3A});
-    case TP::COLOR_NTP_SECTION_BORDER:
-      return SkColorSetA(
-          GetColor(TP::COLOR_NTP_HEADER, incognito, theme_supplier), 0x50);
-    case TP::COLOR_NTP_TEXT_LIGHT:
-      return IncreaseLightness(
-          GetColor(TP::COLOR_NTP_TEXT, incognito, theme_supplier), 0.40);
-    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE:
-    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE:
-      return GetColor(id == TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE
-                          ? TP::COLOR_FRAME_ACTIVE
-                          : TP::COLOR_FRAME_INACTIVE,
-                      incognito, theme_supplier);
-  }
-
-  return TP::GetDefaultColor(id, incognito, UseDarkModeColors(theme_supplier));
 }
 
 // static
