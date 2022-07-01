@@ -670,13 +670,14 @@ const AutomationRichEditableText = class extends AutomationEditableText {
    * @private
    */
   handleBraille_(baseLineOnStart) {
+    const isEmpty = !this.node_.find({role: RoleType.STATIC_TEXT});
     const isFirstLine = this.isSelectionOnFirstLine();
     const cur = this.line_;
     if (cur.value === null) {
       return;
     }
 
-    let value = new MultiSpannable(cur.value);
+    let value = new MultiSpannable(isEmpty ? '' : cur.value);
     if (!this.node_.constructor) {
       return;
     }
@@ -707,6 +708,8 @@ const AutomationRichEditableText = class extends AutomationEditableText {
           start, end);
     });
 
+    value.setSpan(new ValueSpan(0), 0, value.length);
+
     // Provide context for the current selection.
     const context = baseLineOnStart ? cur.startContainer : cur.endContainer;
     if (context && context.role !== RoleType.TEXT_FIELD) {
@@ -729,16 +732,25 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       }
     }
 
+    let start = cur.startOffset;
+    let end = cur.endOffset;
     if (isFirstLine) {
       if (!/\s/.test(value.toString()[value.length - 1])) {
         value.append(Output.SPACE);
       }
+
+      if (isEmpty) {
+        // When the text field is empty, place the selection cursor immediately
+        // after the space and before the 'ed' role msg indicator below.
+        start = value.length - 1;
+        end = start;
+      }
       value.append(Msgs.getMsg('tag_textarea_brl'));
     }
-    value.setSpan(new ValueSpan(0), 0, cur.value.length);
-    value.setSpan(new ValueSelectionSpan(), cur.startOffset, cur.endOffset);
-    ChromeVox.braille.write(new NavBraille(
-        {text: value, startIndex: cur.startOffset, endIndex: cur.endOffset}));
+
+    value.setSpan(new ValueSelectionSpan(), start, end);
+    ChromeVox.braille.write(
+        new NavBraille({text: value, startIndex: start, endIndex: end}));
   }
 
   /**

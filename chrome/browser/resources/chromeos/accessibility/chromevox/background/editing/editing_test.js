@@ -2324,3 +2324,24 @@ AX_TEST_F(
 
           .replay();
     });
+
+AX_TEST_F(
+    'ChromeVoxEditingTest', 'BackspaceToEmptyTextField', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
+    <p>start</p>
+    <div aria-label="test" role="textbox" contenteditable></div>
+  `;
+      const root = await this.runWithLoadedTree(site);
+      await this.focusFirstTextField(root);
+
+      const textField = root.find({role: RoleType.TEXT_FIELD});
+      mockFeedback.expectSpeech('Text area')
+          .expectBraille('test mled', {startIndex: -1, endIndex: -1})
+          .call(this.press(KeyCode.A))
+          .expectBraille('a mled', {startIndex: 1, endIndex: 1})
+          .call(this.press(KeyCode.BACK))
+          .expectBraille(' mled', {startIndex: 0, endIndex: 0})
+
+          .replay();
+    });
