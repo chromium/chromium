@@ -20,7 +20,7 @@ import { StubTransport } from '../../../tests/stubTransport.spec';
 import * as sinon from 'sinon';
 
 import { BrowsingContextProcessor } from './browsingContextProcessor';
-import { CdpConnection } from '../../../cdp';
+import { CdpConnection, CdpClient } from '../../../cdp';
 import { TargetContext } from './targetContext';
 import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
@@ -69,16 +69,12 @@ describe('BrowsingContextProcessor', function () {
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
     TargetContext.create = sinon.fake(
       async (
-        _0: Protocol.Target.TargetInfo,
-        _1: string,
-        _2: CdpConnection,
-        _3: IBidiServer,
-        _4: IEventManager
-      ) => {
-        return sinon.createStubInstance(
-          TargetContext
-        ) as unknown as TargetContext;
-      }
+        targetInfo: Protocol.Target.TargetInfo,
+        sessionId: string,
+        cdpClient: CdpClient,
+        bidiServer: IBidiServer,
+        eventManager: IEventManager
+      ) => {}
     );
   });
 

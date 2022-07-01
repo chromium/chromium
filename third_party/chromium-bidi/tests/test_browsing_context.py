@@ -344,6 +344,48 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_navigateWaitComplete_navigated(websocket,
+      context_id):
+    await subscribe(websocket, ["browsingContext.domContentLoaded",
+                                "browsingContext.load"])
+
+    # Send command.
+    command = {
+        "id": 15,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "complete",
+            "context": context_id}}
+    await send_JSON_command(websocket, command)
+
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    navigation_id = resp["params"]["navigation"]
+    assert resp == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id}}
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 15,
+        "result": {
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": navigation_id}}
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_navigateSameDocumentNavigation_navigated(
       websocket,
       context_id):

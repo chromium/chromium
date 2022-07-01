@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-import { IContext } from './iContext';
+import { Protocol } from 'devtools-protocol';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
-import { NoSuchFrameException } from '../protocol/error';
+import { NoSuchFrameException, UnknownErrorResponse } from '../protocol/error';
+import { CdpClient } from '../../../cdp';
 
-export abstract class Context implements IContext {
-  static #contexts: Map<string, IContext> = new Map();
+export abstract class Context {
+  static #contexts: Map<string, Context> = new Map();
+  protected readonly cdpClient: CdpClient;
 
-  public static getTopLevelContexts(): IContext[] {
+  public static getTopLevelContexts(): Context[] {
     return Array.from(Context.#contexts.values()).filter(
       (c) => c.getParentId() === null
     );
@@ -32,7 +34,7 @@ export abstract class Context implements IContext {
     Context.#contexts.delete(contextId);
   }
 
-  public static addContext(context: IContext) {
+  public static addContext(context: Context) {
     Context.#contexts.set(context.getContextId(), context);
   }
 
@@ -40,7 +42,7 @@ export abstract class Context implements IContext {
     return Context.#contexts.has(contextId);
   }
 
-  public static getKnownContext(contextId: string): IContext {
+  public static getKnownContext(contextId: string): Context {
     if (!Context.hasKnownContext(contextId)) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
@@ -54,7 +56,7 @@ export abstract class Context implements IContext {
   #url: string = 'about:blank';
 
   public getContextId = (): string => this.#contextId;
-  public getChildren = (): IContext[] =>
+  public getChildren = (): Context[] =>
     Array.from(this.#childrenIds).map((contextId) =>
       Context.getKnownContext(contextId)
     );
@@ -62,22 +64,24 @@ export abstract class Context implements IContext {
   public getParentId = (): string | null => this.#parentId;
   public getUrl = (): string | null => this.#url;
 
-  protected setUrl(url: string) {
+  public setUrl(url: string) {
     this.#url = url;
   }
 
-  public addChild(child: IContext) {
+  public addChild(child: Context) {
     this.#childrenIds.add(child.getContextId());
   }
 
   protected constructor(
     contextId: string,
     parent: string | null,
-    sessionId: string
+    sessionId: string,
+    cdpClient: CdpClient
   ) {
     this.#contextId = contextId;
     this.#parentId = parent;
     this.#sessionId = sessionId;
+    this.cdpClient = cdpClient;
   }
 
   abstract callFunction(
@@ -87,15 +91,12 @@ export abstract class Context implements IContext {
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult>;
 
-  abstract navigate(
-    url: string,
-    wait: BrowsingContext.ReadinessState
-  ): Promise<BrowsingContext.NavigateResult>;
-
   abstract scriptEvaluate(
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult>;
+
+  abstract waitInitialized(): Promise<void>;
 
   public serializeToBidiValue(
     maxDepth: number,
@@ -136,5 +137,102 @@ export abstract class Context implements IContext {
 
     // TODO(sadym): handle type properly.
     return result as any as BrowsingContext.PROTO.FindElementResult;
+  }
+
+  public async navigate(
+    url: string,
+    wait: BrowsingContext.ReadinessState
+  ): Promise<BrowsingContext.NavigateResult> {
+    await this.waitInitialized();
+
+    // TODO: handle loading errors.
+    const cdpNavigateResult = await this.cdpClient.Page.navigate({
+      url,
+      frameId: this.getContextId(),
+    });
+
+    if (cdpNavigateResult.errorText) {
+      throw new UnknownErrorResponse(cdpNavigateResult.errorText);
+    }
+
+    // Wait for `wait` condition.
+    switch (wait) {
+      case 'none':
+        break;
+
+      case 'interactive':
+        // No `loaderId` means same-document navigation.
+        if (cdpNavigateResult.loaderId === undefined) {
+          await this.waitNavigatedWithinDocument();
+        } else {
+          await this.waitPageLifeCycleEvent(
+            'DOMContentLoaded',
+            cdpNavigateResult.loaderId!
+          );
+        }
+        break;
+
+      case 'complete':
+        // No `loaderId` means same-document navigation.
+        if (cdpNavigateResult.loaderId === undefined) {
+          await this.waitNavigatedWithinDocument();
+        } else {
+          await this.waitPageLifeCycleEvent(
+            'load',
+            cdpNavigateResult.loaderId!
+          );
+        }
+        break;
+
+      default:
+        throw new Error(`Not implemented wait '${wait}'`);
+    }
+
+    return {
+      result: {
+        navigation: cdpNavigateResult.loaderId || null,
+        url: url,
+      },
+    };
+  }
+
+  protected async waitPageLifeCycleEvent(eventName: string, loaderId: string) {
+    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
+      const handleLifecycleEvent = async (
+        params: Protocol.Page.LifecycleEventEvent
+      ) => {
+        if (params.name !== eventName || params.loaderId !== loaderId) {
+          return;
+        }
+        this.cdpClient.Page.removeListener(
+          'lifecycleEvent',
+          handleLifecycleEvent
+        );
+        resolve(params);
+      };
+
+      this.cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
+    });
+  }
+
+  protected async waitNavigatedWithinDocument() {
+    return new Promise<Protocol.Page.NavigatedWithinDocumentEvent>(
+      (resolve) => {
+        const handleLifecycleEvent = async (
+          params: Protocol.Page.NavigatedWithinDocumentEvent
+        ) => {
+          if (params.frameId !== this.getContextId()) {
+            return;
+          }
+          this.cdpClient.Page.removeListener(
+            'navigatedWithinDocument',
+            handleLifecycleEvent
+          );
+          resolve(params);
+        };
+
+        this.cdpClient.Page.on('navigatedWithinDocument', handleLifecycleEvent);
+      }
+    );
   }
 }

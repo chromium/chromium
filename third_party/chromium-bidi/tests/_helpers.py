@@ -52,6 +52,20 @@ async def context_id(websocket):
     return open_context_id
 
 
+@pytest.fixture
+async def iframe_id(context_id, websocket):
+    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
+                              f'<iframe src="about:blank" />'
+
+    await goto_url(websocket, context_id, page_with_nested_iframe)
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {"root": context_id}})
+
+    iframe_id = result["contexts"][0]["children"][0]["context"]
+    return iframe_id
+
+
 @pytest.fixture(autouse=True)
 async def before_each_test(websocket):
     # This method can be used for browser state preparation.

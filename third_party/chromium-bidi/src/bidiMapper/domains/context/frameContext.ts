@@ -20,29 +20,33 @@ import { Context } from './context';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { UnknownErrorResponse } from '../protocol/error';
 import { CdpClient } from '../../../cdp';
+import { IEventManager } from '../events/EventManager';
 
 export class FrameContext extends Context {
-  readonly #cdpClient: CdpClient;
-
   private constructor(
     params: Protocol.Page.FrameAttachedEvent,
     sessionId: string,
     cdpClient: CdpClient
   ) {
-    super(params.frameId, params.parentFrameId, sessionId);
-    this.#cdpClient = cdpClient;
+    super(params.frameId, params.parentFrameId, sessionId, cdpClient);
   }
 
   public static async create(
     params: Protocol.Page.FrameAttachedEvent,
     sessionId: string,
-    cdpClient: CdpClient
-  ): Promise<FrameContext> {
+    cdpClient: CdpClient,
+    eventManager: IEventManager
+  ): Promise<void> {
     const context = new FrameContext(params, sessionId, cdpClient);
+    Context.addContext(context);
+    Context.getKnownContext(params.parentFrameId).addChild(context);
 
-    // TODO(sadym): Add `Page.frameNavigated` handler.
-    context.#initializeEventListeners();
-    return context;
+    await eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(
+        context.serializeToBidiValue(0, true)
+      ),
+      context.getContextId()
+    );
   }
 
   callFunction(
@@ -54,13 +58,6 @@ export class FrameContext extends Context {
     throw new UnknownErrorResponse('Not implemented');
   }
 
-  navigate(
-    url: string,
-    wait: BrowsingContext.ReadinessState
-  ): Promise<BrowsingContext.NavigateResult> {
-    throw new UnknownErrorResponse('Not implemented');
-  }
-
   scriptEvaluate(
     expression: string,
     awaitPromise: boolean
@@ -68,15 +65,9 @@ export class FrameContext extends Context {
     throw new UnknownErrorResponse('Not implemented');
   }
 
-  #initializeEventListeners() {
-    this.#cdpClient.Page.on(
-      'frameNavigated',
-      (params: Protocol.Page.FrameNavigatedEvent) => {
-        const frame = params.frame;
-        if (params.frame.id === this.getContextId()) {
-          this.setUrl(frame.url);
-        }
-      }
-    );
+  async waitInitialized(): Promise<void> {
+    if (this.getParentId() !== null) {
+      await Context.getKnownContext(this.getParentId()!).waitInitialized();
+    }
   }
 }

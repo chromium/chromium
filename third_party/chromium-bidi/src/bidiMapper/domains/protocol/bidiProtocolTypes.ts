@@ -373,7 +373,7 @@ export namespace CommonDataTypes {
   };
 
   // BrowsingContext = text;
-  export const BrowsingContextSchema = zod.string().min(1);
+  export const BrowsingContextSchema = zod.string();
   export type BrowsingContext = zod.infer<typeof BrowsingContextSchema>;
 }
 
@@ -571,7 +571,7 @@ export namespace BrowsingContext {
   // ReadinessState = "none" / "interactive" / "complete"
   const NavigateParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
-    url: zod.string(),
+    url: zod.string().url(),
     wait: ReadinessStateSchema.optional(),
   });
   export type NavigateParameters = zod.infer<typeof NavigateParametersSchema>;

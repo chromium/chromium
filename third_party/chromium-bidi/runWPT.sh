@@ -10,6 +10,6 @@ npm run build && \
   --manifest ./wpt/MANIFEST.json \
   --metadata ./wpt-metadata \
   --log-wptreport wptreport.json \
+  --timeout-multiplier 8 \
   chromium \
   $1
-#  --timeout-multiplier 4 \

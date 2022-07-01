@@ -16,20 +16,16 @@
  */
 
 import { Protocol } from 'devtools-protocol';
-import { CdpClient, CdpConnection } from '../../../cdp';
+import { CdpClient } from '../../../cdp';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { LogManager } from '../log/logManager';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Context } from './context';
-import LoadEvent = BrowsingContext.LoadEvent;
-import { FrameContext } from './frameContext';
 
 export class TargetContext extends Context {
   readonly #sessionId: string;
-  readonly #cdpClient: CdpClient;
-  readonly #browserClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
@@ -46,28 +42,27 @@ export class TargetContext extends Context {
     };
   });
 
-  async #waitInitialized(): Promise<void> {
+  async waitInitialized(): Promise<void> {
     await this.#initialized;
   }
 
   private constructor(
     targetInfo: Protocol.Target.TargetInfo,
     sessionId: string,
-    cdpConnection: CdpConnection,
+    cdpClient: CdpClient,
     bidiServer: IBidiServer,
     eventManager: IEventManager
   ) {
     let parentId = null;
     if (Context.hasKnownContext(targetInfo.targetId)) {
+      // A frame target became a dedicated target. Keep parent.
       parentId = Context.getKnownContext(targetInfo.targetId).getParentId();
     }
-    super(targetInfo.targetId, parentId, sessionId);
+    super(targetInfo.targetId, parentId, sessionId, cdpClient);
     this.#sessionId = sessionId;
-    this.#cdpClient = cdpConnection.getCdpClient(sessionId);
-    this.#browserClient = cdpConnection.browserClient();
     this.#bidiServer = bidiServer;
     this.#eventManager = eventManager;
-    this.#scriptEvaluator = ScriptEvaluator.create(this.#cdpClient);
+    this.#scriptEvaluator = ScriptEvaluator.create(this.cdpClient);
 
     // Just initiate initialization, don't wait for it to complete.
     // Field `initialized` has a promise, which is resolved after initialization
@@ -77,69 +72,35 @@ export class TargetContext extends Context {
   }
 
   public static async create(
-    _targetInfo: Protocol.Target.TargetInfo,
-    _sessionId: string,
-    _cdpConnection: CdpConnection,
-    _bidiServer: IBidiServer,
-    _eventManager: IEventManager
-  ): Promise<TargetContext> {
-    return new TargetContext(
-      _targetInfo,
-      _sessionId,
-      _cdpConnection,
-      _bidiServer,
-      _eventManager
+    targetInfo: Protocol.Target.TargetInfo,
+    sessionId: string,
+    cdpClient: CdpClient,
+    bidiServer: IBidiServer,
+    eventManager: IEventManager
+  ): Promise<void> {
+    const context = new TargetContext(
+      targetInfo,
+      sessionId,
+      cdpClient,
+      bidiServer,
+      eventManager
     );
-  }
 
-  public async navigate(
-    url: string,
-    wait: BrowsingContext.ReadinessState
-  ): Promise<BrowsingContext.NavigateResult> {
-    await this.#waitInitialized();
+    Context.addContext(context);
 
-    // TODO: handle loading errors.
-    const cdpNavigateResult = await this.#cdpClient.Page.navigate({ url });
-
-    // No `loaderId` means same-document navigation.
-    if (cdpNavigateResult.loaderId !== undefined) {
-      // Wait for `wait` condition.
-      switch (wait) {
-        case 'none':
-          break;
-
-        case 'interactive':
-          await this.#waitPageLifeCycleEvent(
-            'DOMContentLoaded',
-            cdpNavigateResult.loaderId!
-          );
-          break;
-
-        case 'complete':
-          await this.#waitPageLifeCycleEvent(
-            'load',
-            cdpNavigateResult.loaderId!
-          );
-          break;
-
-        default:
-          throw new Error(`Not implemented wait '${wait}'`);
-      }
-    }
-
-    return {
-      result: {
-        navigation: cdpNavigateResult.loaderId || null,
-        url: url,
-      },
-    };
+    await eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(
+        context.serializeToBidiValue(0, true)
+      ),
+      context.getContextId()
+    );
   }
 
   public async scriptEvaluate(
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult> {
-    await this.#waitInitialized();
+    await this.waitInitialized();
     return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
   }
 
@@ -149,7 +110,7 @@ export class TargetContext extends Context {
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
-    await this.#waitInitialized();
+    await this.waitInitialized();
     return {
       result: await this.#scriptEvaluator.callFunction(
         functionDeclaration,
@@ -163,120 +124,20 @@ export class TargetContext extends Context {
   async #initialize() {
     await LogManager.create(
       this.getContextId(),
-      this.#cdpClient,
+      this.cdpClient,
       this.#bidiServer,
       this.#scriptEvaluator
     );
-    this.#initializeEventListeners();
-    await this.#cdpClient.Runtime.enable();
-    await this.#cdpClient.Page.enable();
-    await this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
-    await this.#cdpClient.Target.setAutoAttach({
+    await this.cdpClient.Runtime.enable();
+    await this.cdpClient.Page.enable();
+    await this.cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+    await this.cdpClient.Target.setAutoAttach({
       autoAttach: true,
       waitForDebuggerOnStart: true,
       flatten: true,
     });
 
-    await this.#cdpClient.Runtime.runIfWaitingForDebugger();
+    await this.cdpClient.Runtime.runIfWaitingForDebugger();
     this.#markContextInitialized();
-  }
-
-  #initializeEventListeners() {
-    this.#initializePageLifecycleEventListener();
-    this.#initializeCdpEventListeners();
-    // TODO(sadym): implement.
-    // this.#handleBindingCalledEvent();
-
-    // TODO(sadym): consider using only 1 listener.
-    this.#browserClient.Target.on('targetInfoChanged', (params) => {
-      if (params.targetInfo.targetId === this.getContextId()) {
-        this.#updateTargetInfo(params.targetInfo);
-      }
-    });
-  }
-
-  #initializeCdpEventListeners() {
-    this.#cdpClient.on('event', async (method, params) => {
-      await this.#eventManager.sendEvent(
-        {
-          method: 'PROTO.cdp.eventReceived',
-          params: {
-            cdpMethod: method,
-            cdpParams: params,
-            session: this.#sessionId,
-          },
-        },
-        null
-      );
-    });
-  }
-
-  #initializePageLifecycleEventListener() {
-    this.#cdpClient.Page.on(
-      'frameAttached',
-      async (params: Protocol.Page.FrameAttachedEvent) => {
-        const frameContext = await FrameContext.create(
-          params,
-          this.#sessionId,
-          this.#cdpClient
-        );
-        Context.addContext(frameContext);
-        Context.getKnownContext(params.parentFrameId).addChild(frameContext);
-
-        await this.#eventManager.sendEvent(
-          new BrowsingContext.ContextCreatedEvent(
-            frameContext.serializeToBidiValue(0, true)
-          ),
-          frameContext.getContextId()
-        );
-      }
-    );
-
-    this.#cdpClient.Page.on('lifecycleEvent', async (params) => {
-      switch (params.name) {
-        case 'DOMContentLoaded':
-          await this.#eventManager.sendEvent(
-            new BrowsingContext.DomContentLoadedEvent({
-              context: this.getContextId(),
-              navigation: params.loaderId,
-            }),
-            this.getContextId()
-          );
-          break;
-
-        case 'load':
-          await this.#eventManager.sendEvent(
-            new LoadEvent({
-              context: this.getContextId(),
-              navigation: params.loaderId,
-            }),
-            this.getContextId()
-          );
-          break;
-      }
-    });
-  }
-
-  #updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
-    this.setUrl(targetInfo.url);
-  }
-
-  async #waitPageLifeCycleEvent(eventName: string, loaderId: string) {
-    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
-      const handleLifecycleEvent = async (
-        params: Protocol.Page.LifecycleEventEvent
-      ) => {
-        if (params.name !== eventName || params.loaderId !== loaderId) {
-          return;
-        }
-        this.#cdpClient.Page.removeListener(
-          'lifecycleEvent',
-          handleLifecycleEvent
-        );
-        resolve(params);
-      };
-
-      this.#cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
-    });
   }
 }

@@ -24,10 +24,13 @@ import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { InvalidArgumentErrorResponse } from '../protocol/error';
 import { Context } from './context';
+import { FrameContext } from './frameContext';
+import LoadEvent = BrowsingContext.LoadEvent;
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
+  readonly sessions: Set<string> = new Set();
   readonly #cdpConnection: CdpConnection;
   readonly #selfTargetId: string;
   readonly #bidiServer: IBidiServer;
@@ -44,52 +47,135 @@ export class BrowsingContextProcessor {
     this.#bidiServer = bidiServer;
     this.#eventManager = eventManager;
 
-    this.#setCdpEventListeners(this.#cdpConnection.browserClient());
+    this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
 
-  #setCdpEventListeners(cdpClient: CdpClient) {
+  #setBrowserClientEventListeners(browserClient: CdpClient) {
+    this.#setTargetEventListeners(browserClient);
+  }
+
+  #setTargetEventListeners(cdpClient: CdpClient) {
+    cdpClient.Target.on(
+      'targetInfoChanged',
+      (params: Protocol.Target.TargetInfoChangedEvent) => {
+        const contextId = params.targetInfo.targetId;
+        if (!Context.hasKnownContext(contextId)) {
+          return;
+        }
+        Context.getKnownContext(contextId).setUrl(params.targetInfo.url);
+      }
+    );
     cdpClient.Target.on('attachedToTarget', async (params) => {
-      await this.#handleAttachedToTargetEvent(params);
+      await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
     cdpClient.Target.on('detachedFromTarget', async (params) => {
       await this.#handleDetachedFromTargetEvent(params);
     });
   }
 
+  #setSessionEventListeners(sessionId: string) {
+    if (this.sessions.has(sessionId)) {
+      return;
+    }
+    this.sessions.add(sessionId);
+
+    const sessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+
+    this.#setTargetEventListeners(sessionCdpClient);
+
+    sessionCdpClient.on('event', async (method, params) => {
+      await this.#eventManager.sendEvent(
+        {
+          method: 'PROTO.cdp.eventReceived',
+          params: {
+            cdpMethod: method,
+            cdpParams: params,
+            session: sessionId,
+          },
+        },
+        null
+      );
+    });
+
+    sessionCdpClient.Page.on(
+      'frameAttached',
+      async (params: Protocol.Page.FrameAttachedEvent) => {
+        await FrameContext.create(
+          params,
+          sessionId,
+          sessionCdpClient,
+          this.#eventManager
+        );
+      }
+    );
+
+    sessionCdpClient.Page.on(
+      'lifecycleEvent',
+      async (params: Protocol.Page.LifecycleEventEvent) => {
+        const contextId = params.frameId;
+        if (!Context.hasKnownContext(contextId)) {
+          return;
+        }
+        switch (params.name) {
+          case 'DOMContentLoaded':
+            await this.#eventManager.sendEvent(
+              new BrowsingContext.DomContentLoadedEvent({
+                context: contextId,
+                navigation: params.loaderId,
+              }),
+              contextId
+            );
+            break;
+
+          case 'load':
+            await this.#eventManager.sendEvent(
+              new LoadEvent({
+                context: contextId,
+                navigation: params.loaderId,
+              }),
+              contextId
+            );
+            break;
+        }
+      }
+    );
+    sessionCdpClient.Page.on(
+      'frameNavigated',
+      async function (params: Protocol.Page.FrameNavigatedEvent) {
+        const contextId = params.frame.id;
+        if (!Context.hasKnownContext(contextId)) {
+          return;
+        }
+        Context.getKnownContext(contextId).setUrl(params.frame.url);
+      }
+    );
+  }
+
   async #handleAttachedToTargetEvent(
-    params: Protocol.Target.AttachedToTargetEvent
+    params: Protocol.Target.AttachedToTargetEvent,
+    parentSessionCdpClient: CdpClient
   ) {
     logContext('AttachedToTarget event received: ' + JSON.stringify(params));
 
     const { sessionId, targetInfo } = params;
 
-    // TODO(sadym): Set listeners only once per session.
-    this.#setCdpEventListeners(this.#cdpConnection.getCdpClient(sessionId));
+    let targetSessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target.
-      await this.#cdpConnection
-        .getCdpClient(sessionId)
-        .Runtime.runIfWaitingForDebugger();
-      await this.#cdpConnection.browserClient().Target.detachFromTarget(params);
+      await targetSessionCdpClient.Runtime.runIfWaitingForDebugger();
+      await parentSessionCdpClient.Target.detachFromTarget(params);
       return;
     }
 
-    const context = await TargetContext.create(
+    this.#setSessionEventListeners(sessionId);
+
+    await TargetContext.create(
       targetInfo,
       sessionId,
-      this.#cdpConnection,
+      targetSessionCdpClient,
       this.#bidiServer,
       this.#eventManager
-    );
-
-    Context.addContext(context);
-
-    await this.#eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent(
-        context.serializeToBidiValue(0, true)
-      ),
-      context.getContextId()
     );
   }
 
