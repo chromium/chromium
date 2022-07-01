@@ -426,7 +426,10 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     // being notified of the change before |this|.
     UpdateShadow();
 
-    Configure();
+    // A window state change will send a configuration event. Avoid sending
+    // two configuration events for the same change.
+    if (!window_state_is_changing_)
+      Configure();
   }
 }
 
@@ -436,6 +439,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
 void ShellSurface::OnPreWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
+  window_state_is_changing_ = true;
   chromeos::WindowStateType new_type = window_state->GetStateType();
   if (chromeos::IsMinimizedWindowStateType(old_type) ||
       chromeos::IsMinimizedWindowStateType(new_type)) {
@@ -474,6 +478,10 @@ void ShellSurface::OnPostWindowStateTypeChange(
   // decoration, window-state information is needed to toggle the maximize and
   // restore buttons. When the window is restored, we show a maximized button;
   // otherwise we show a restore button.
+  //
+  // Note that configuration events on bounds change is suppressed during state
+  // change, because it is assumed that a configuration event will always be
+  // sent at the end of a state change.
   Configure();
 
   if (widget_) {
@@ -483,6 +491,7 @@ void ShellSurface::OnPostWindowStateTypeChange(
 
   // Re-enable animations if they were disabled in pre state change handler.
   animations_disabler_.reset();
+  window_state_is_changing_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
