@@ -40,6 +40,8 @@ class TsLibraryTest(unittest.TestCase):
 
     # Build project1, which includes a mix of TS and definition files.
     ts_library.main([
+        '--output_suffix',
+        'build_ts',
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project1'),
         '--gen_dir',
@@ -60,14 +62,14 @@ class TsLibraryTest(unittest.TestCase):
         'foo.js',
         'legacy_file.d.ts',
         'tsconfig_definitions.json',
-        'tsconfig.json',
-        'tsconfig.manifest',
+        'tsconfig_build_ts.json',
+        'build_ts.manifest',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
 
     # Check that the generated .tsbuildinfo file is deleted.
-    tsbuildinfo = 'tsconfig.tsbuildinfo'
+    tsbuildinfo = 'tsconfig_build_ts.tsbuildinfo'
     self.assertFalse(os.path.exists(os.path.join(gen_dir, tsbuildinfo)),
                      tsbuildinfo)
 
@@ -80,6 +82,8 @@ class TsLibraryTest(unittest.TestCase):
     project3_gen_dir = os.path.relpath(project3_gen_dir, gen_dir)
 
     ts_library.main([
+        '--output_suffix',
+        'build_ts',
         '--root_dir',
         root_dir,
         '--gen_dir',
@@ -89,8 +93,8 @@ class TsLibraryTest(unittest.TestCase):
         '--in_files',
         'bar.ts',
         '--deps',
-        os.path.join(project1_gen_dir, 'tsconfig.json'),
-        os.path.join(project3_gen_dir, 'tsconfig.json'),
+        os.path.join(project1_gen_dir, 'tsconfig_build_ts.json'),
+        os.path.join(project3_gen_dir, 'tsconfig_build_ts.json'),
         '--path_mappings',
         'chrome://some-other-source/*|' + os.path.join(project1_gen_dir, '*'),
         '--tsconfig_base',
@@ -101,15 +105,15 @@ class TsLibraryTest(unittest.TestCase):
   def _assert_project2_output(self, gen_dir):
     files = [
         'bar.js',
-        'tsconfig.json',
-        'tsconfig.manifest',
+        'tsconfig_build_ts.json',
+        'build_ts.manifest',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
 
     non_existing_files = [
         'bar.d.ts',
-        'tsconfig.tsbuildinfo',
+        'tsconfig_build_ts.tsbuildinfo',
     ]
     for f in non_existing_files:
       self.assertFalse(os.path.exists(os.path.join(gen_dir, f)), f)
@@ -119,6 +123,8 @@ class TsLibraryTest(unittest.TestCase):
     gen_dir = os.path.join(self._out_folder, 'project3')
 
     ts_library.main([
+        '--output_suffix',
+        'build_ts',
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project3'),
         '--gen_dir',
@@ -132,10 +138,11 @@ class TsLibraryTest(unittest.TestCase):
     return gen_dir
 
   def _assert_project3_output(self, gen_dir):
-    self.assertTrue(os.path.exists(os.path.join(gen_dir, 'tsconfig.json')))
+    self.assertTrue(
+        os.path.exists(os.path.join(gen_dir, 'tsconfig_build_ts.json')))
     self.assertFalse(
-        os.path.exists(os.path.join(gen_dir, 'tsconfig.tsbuildinfo')))
-    self.assertFalse(os.path.exists(os.path.join(gen_dir, 'tsconfig.manifest')))
+        os.path.exists(os.path.join(gen_dir, 'tsconfig_build_ts.tsbuildinfo')))
+    self.assertFalse(os.path.exists(os.path.join(gen_dir, 'build_ts.manifest')))
 
   def _build_project4(self):
     gen_dir = os.path.join(self._out_folder, 'project4')
@@ -143,6 +150,8 @@ class TsLibraryTest(unittest.TestCase):
     # Build project4, which includes multiple TS files, only one of which should
     # be included in the manifest.
     ts_library.main([
+        '--output_suffix',
+        'build_ts',
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project4'),
         '--gen_dir',
@@ -161,19 +170,74 @@ class TsLibraryTest(unittest.TestCase):
     files = [
         'include.js',
         'exclude.js',
-        'tsconfig.json',
-        'tsconfig.manifest',
+        'tsconfig_build_ts.json',
+        'build_ts.manifest',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
 
     # Check that the generated manifest file doesn't include exclude.js.
-    manifest = 'tsconfig.manifest'
-    with open(os.path.join(gen_dir, manifest), 'r') as f:
-      data = json.load(f)
-      self.assertEqual(len(data['files']), 1)
-      self.assertEqual(data['files'][0], 'include.js')
+    manifest = os.path.join(gen_dir, 'build_ts.manifest')
+    self._assert_manifest_files(manifest, ['include.js'])
 
+  def _assert_manifest_files(self, manifest_path, expected_files):
+    with open(manifest_path, 'r') as f:
+      data = json.load(f)
+      self.assertEqual(data['files'], expected_files)
+
+  def _build_project5(self):
+    gen_dir = os.path.join(self._out_folder, 'project5')
+    out_dir_test = os.path.join(self._out_folder, 'project5_test')
+
+    # Build project5, which includes 2 TS projects one for prod and one for
+    # test, it should generate different manifest, tsconfig and tsbuildinfo.
+    # prod:
+    ts_library.main([
+        '--output_suffix',
+        'build_ts',
+        '--composite',
+        '--root_dir',
+        os.path.join(_HERE_DIR, 'tests', 'project5'),
+        '--gen_dir',
+        gen_dir,
+        '--out_dir',
+        gen_dir,
+        '--in_files',
+        'bar.ts',
+    ])
+
+    # test:
+    ts_library.main([
+        '--output_suffix',
+        'test_build_ts',
+        '--deps',
+        os.path.join(gen_dir, 'tsconfig_build_ts.json'),
+        '--root_dir',
+        os.path.join(_HERE_DIR, 'tests', 'project5'),
+        '--gen_dir',
+        gen_dir,
+        '--out_dir',
+        gen_dir,
+        '--in_files',
+        'bar_test.ts',
+    ])
+
+    return gen_dir
+
+  def _assert_project5_output(self, gen_dir):
+    # prod:
+    self.assertTrue(
+        os.path.exists(os.path.join(gen_dir, 'tsconfig_build_ts.json')))
+    manifest = os.path.join(gen_dir, 'build_ts.manifest')
+    self.assertTrue(os.path.exists(manifest))
+    self._assert_manifest_files(manifest, ['bar.js'])
+
+    # test:
+    self.assertTrue(
+        os.path.exists(os.path.join(gen_dir, 'tsconfig_test_build_ts.json')))
+    manifest_test = os.path.join(gen_dir, 'test_build_ts.manifest')
+    self.assertTrue(os.path.exists(manifest_test))
+    self._assert_manifest_files(manifest_test, ['bar_test.js'])
 
   # Test success case where both project1 and project2 are compiled successfully
   # and no errors are thrown.
@@ -191,6 +255,9 @@ class TsLibraryTest(unittest.TestCase):
     project4_gen_dir = self._build_project4()
     self._assert_project4_output(project4_gen_dir)
 
+    project5_gen_dir = self._build_project5()
+    self._assert_project5_output(project5_gen_dir)
+
   # Test error case where a type violation exists, ensure that an error is
   # thrown.
   def testError(self):
@@ -198,6 +265,8 @@ class TsLibraryTest(unittest.TestCase):
     gen_dir = os.path.join(self._out_folder, 'project1')
     try:
       ts_library.main([
+          '--output_suffix',
+          'build_ts',
           '--root_dir',
           os.path.join(_HERE_DIR, 'tests', 'project1'),
           '--gen_dir',
@@ -212,7 +281,8 @@ class TsLibraryTest(unittest.TestCase):
       self.assertTrue('Type \'number\' is not assignable to type \'string\'' \
                       in str(err))
       self.assertFalse(
-          os.path.exists(os.path.join(gen_dir, 'tsconfig.tsbuildinfo')))
+          os.path.exists(os.path.join(gen_dir,
+                                      'tsconfig_build_ts.tsbuildinfo')))
     else:
       self.fail('Failed to detect type error')
 
@@ -223,6 +293,8 @@ class TsLibraryTest(unittest.TestCase):
     gen_dir = os.path.join(self._out_folder, 'project5')
     try:
       ts_library.main([
+          '--output_suffix',
+          'build_ts',
           '--root_dir',
           root_dir,
           '--gen_dir',

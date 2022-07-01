@@ -15,10 +15,11 @@ template("ts_library") {
                              "in_files",
                              "tsconfig_base",
                              "manifest_excludes",
+                             "testonly",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
-    outputs = [ "$target_gen_dir/tsconfig.json" ]
+    outputs = [ "$target_gen_dir/tsconfig_$target_name.json" ]
 
     assert(defined(in_files) || defined(invoker.definitions))
 
@@ -38,7 +39,7 @@ template("ts_library") {
     }
 
     if (defined(in_files)) {
-      outputs += [ "$target_gen_dir/tsconfig.manifest" ]
+      outputs += [ "$target_gen_dir/$target_name.manifest" ]
       foreach(_source, in_files) {
         inputs += [ "$root_dir/$_source" ]
         _dirname =
@@ -59,6 +60,8 @@ template("ts_library") {
       rebase_path(target_gen_dir, root_build_dir),
       "--out_dir",
       rebase_path(out_dir, root_build_dir),
+      "--output_suffix",
+      target_name,
     ]
 
     if (defined(in_files)) {
@@ -81,9 +84,11 @@ template("ts_library") {
 
     if (defined(deps)) {
       args += [ "--deps" ]
+
       foreach(dep, deps) {
-        args +=
-            [ rebase_path(get_label_info(dep, "dir"), ".") + "/tsconfig.json" ]
+        name = get_label_info(dep, "name")
+        args += [ rebase_path(get_label_info(dep, "dir"), ".") +
+                  "/tsconfig_$name.json" ]
       }
     }
 

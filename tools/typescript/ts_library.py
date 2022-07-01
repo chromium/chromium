@@ -19,11 +19,11 @@ import node
 import node_modules
 
 
-def _write_tsconfig_json(gen_dir, tsconfig):
+def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   if not os.path.exists(gen_dir):
     os.makedirs(gen_dir)
 
-  with open(os.path.join(gen_dir, 'tsconfig.json'), 'w') as generated_tsconfig:
+  with open(os.path.join(gen_dir, tsconfig_file), 'w') as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
@@ -52,6 +52,7 @@ def main(argv):
   parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
+  parser.add_argument('--output_suffix', required=True)
   args = parser.parse_args(argv)
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
@@ -76,7 +77,7 @@ def main(argv):
   tsconfig['compilerOptions']['outDir'] = out_dir
 
   if args.composite:
-    tsbuildinfo_name = 'tsconfig.tsbuildinfo'
+    tsbuildinfo_name = f'tsconfig_{args.output_suffix}.tsbuildinfo'
     tsconfig['compilerOptions']['composite'] = True
     tsconfig['compilerOptions']['declaration'] = True
     tsconfig['compilerOptions']['tsBuildInfoFile'] = tsbuildinfo_name
@@ -100,7 +101,8 @@ def main(argv):
   if args.deps is not None:
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
-  _write_tsconfig_json(args.gen_dir, tsconfig)
+  tsconfig_file = f'tsconfig_{args.output_suffix}.json'
+  _write_tsconfig_json(args.gen_dir, tsconfig, tsconfig_file)
 
   # Detect and delete obsolete files that can cause build problems.
   if args.in_files is not None:
@@ -136,7 +138,7 @@ def main(argv):
   try:
     node.RunNode([
         node_modules.PathToTypescript(), '--project',
-        os.path.join(args.gen_dir, 'tsconfig.json')
+        os.path.join(args.gen_dir, tsconfig_file)
     ])
   finally:
     if args.composite:
@@ -156,8 +158,9 @@ def main(argv):
         os.remove(tsbuildinfo_path)
 
   if args.in_files is not None:
-    with open(os.path.join(args.gen_dir, 'tsconfig.manifest'), 'w') \
-        as manifest_file:
+
+    manifest_path = os.path.join(args.gen_dir, f'{args.output_suffix}.manifest')
+    with open(manifest_path, 'w') as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir
       manifest_files = args.in_files

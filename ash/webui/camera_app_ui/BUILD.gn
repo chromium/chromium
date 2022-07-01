@@ -142,7 +142,7 @@ generate_grd("build_grd") {
     generated_grdp_file,
   ]
 
-  manifest_files = [ "$target_gen_dir/resources/js/tsconfig.manifest" ]
+  manifest_files = [ "$target_gen_dir/resources/js/build_ts.manifest" ]
   input_files_base_dir = rebase_path("resources", "//")
   input_files = []
 
