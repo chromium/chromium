@@ -7010,8 +7010,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
 // name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
 // is enabled
 //
-// TODO(https://crbug.com/1326944): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1326944): Flaky on Mac and Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_BlockNameUpdateForPendingDelete \
   DISABLED_BlockNameUpdateForPendingDelete
 #else
