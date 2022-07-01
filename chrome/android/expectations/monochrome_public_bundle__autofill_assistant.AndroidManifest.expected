@@ -6,21 +6,17 @@
     package="org.chromium.chrome.stable"
     platformBuildVersionCode="31"
     platformBuildVersionName="12">
-  <dist:module dist:title="@string/autofill_assistant_module_title">  # DIFF-ANCHOR: afa8402d
-    <dist:delivery>  # DIFF-ANCHOR: f7518c58
-      <dist:install-time>  # DIFF-ANCHOR: 4387071b
-        <dist:conditions>  # DIFF-ANCHOR: 210b2aff
+  <dist:module dist:title="@string/autofill_assistant_module_title">  # DIFF-ANCHOR: 328f25a9
+    <dist:delivery>  # DIFF-ANCHOR: 62b39bbe
+      <dist:install-time>  # DIFF-ANCHOR: a4752ed3
+        <dist:conditions>  # DIFF-ANCHOR: bedacbe5
           <dist:min-sdk dist:value="26"/>
-          <dist:user-countries dist:include="true">  # DIFF-ANCHOR: 285b35e4
-            <dist:country dist:code="GB"/>
-            <dist:country dist:code="US"/>
-          </dist:user-countries>  # DIFF-ANCHOR: 285b35e4
-        </dist:conditions>  # DIFF-ANCHOR: 210b2aff
-      </dist:install-time>  # DIFF-ANCHOR: 4387071b
+        </dist:conditions>  # DIFF-ANCHOR: bedacbe5
+      </dist:install-time>  # DIFF-ANCHOR: a4752ed3
       <dist:on-demand/>
-    </dist:delivery>  # DIFF-ANCHOR: f7518c58
+    </dist:delivery>  # DIFF-ANCHOR: 62b39bbe
     <dist:fusing dist:include="true"/>
-  </dist:module>  # DIFF-ANCHOR: afa8402d
+  </dist:module>  # DIFF-ANCHOR: 328f25a9
   <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
   <uses-split android:name="chrome"/>
   <application/>

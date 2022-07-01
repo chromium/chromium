@@ -10,10 +10,6 @@
           <dist:install-time>
             <dist:conditions>
               <dist:min-sdk dist:value="26"/>
-              <dist:user-countries dist:include="true">
-                <dist:country dist:code="US"/>
-                <dist:country dist:code="GB"/>
-              </dist:user-countries>
             </dist:conditions>
           </dist:install-time>
         </dist:delivery>
