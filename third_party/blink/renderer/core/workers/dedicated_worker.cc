@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -324,7 +325,10 @@ void DedicatedWorker::OnScriptLoadStartFailed() {
 
 void DedicatedWorker::DispatchErrorEventForScriptFetchFailure() {
   DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
-  // TODO(nhiroki): Add a console error message.
+  GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kWorker,
+      mojom::blink::ConsoleMessageLevel::kError,
+      "new Worker() has failed to fetch script."));
   DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
 }
 
