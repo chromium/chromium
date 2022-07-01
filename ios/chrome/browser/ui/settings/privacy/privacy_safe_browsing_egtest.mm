@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/test/ios/wait_util.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
@@ -24,27 +23,8 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using l10n_util::GetNSString;
 
-namespace {
-
-// Waits until the warning alert is shown.
-[[nodiscard]] bool WaitForWarningAlert(NSString* alertMessage) {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^{
-        NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:grey_text(alertMessage)]
-            assertWithMatcher:grey_notNil()
-                        error:&error];
-        return (error == nil);
-      });
-}
-
-}  // namespace
-
 // Integration tests using the Privacy Safe Browsing settings screen.
-@interface PrivacySafeBrowsingTestCase : ChromeTestCase {
-  // The default value for SafeBrowsingEnabled pref.
-  BOOL _safeBrowsingEnabledPrefDefault;
-}
+@interface PrivacySafeBrowsingTestCase : ChromeTestCase
 @end
 
 @implementation PrivacySafeBrowsingTestCase
@@ -55,22 +35,12 @@ namespace {
   return config;
 }
 
-- (void)setUp {
-  [super setUp];
-  // Ensure that Safe Browsing opt-out starts in its default (opted-in) state.
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
-}
-
-- (void)tearDown {
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
-  [super tearDown];
-}
-
 - (void)testOpenPrivacySafeBrowsingSettings {
   [self openPrivacySafeBrowsingSettings];
 }
 
-- (void)testEachSafeBrowsingOption {
+// TODO(crbug.com/1333625): Enable once activation point is fixed.
+- (void)DISABLED_testEachSafeBrowsingOption {
   [self openPrivacySafeBrowsingSettings];
 
   // Presses each of the Safe Browsing options.
@@ -81,50 +51,34 @@ namespace {
   GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
                  @"Failed to toggle-on Enhanced Safe Browsing");
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kSettingsSafeBrowsingStandardProtectionCellId),
-                            grey_sufficientlyVisible(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kSettingsSafeBrowsingStandardProtectionCellId)]
       performAction:grey_tap()];
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
                   @"Failed to toggle-off Enhanced Safe Browsing");
   GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnabled],
                  @"Failed to toggle-on Standard Safe Browsing");
 
-  // Taps "No Protection" and then the Cancel button on pop-up.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kSettingsSafeBrowsingNoProtectionCellId),
-                                   grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsSafeBrowsingNoProtectionCellId)]
       performAction:grey_tap()];
-  GREYAssert(
-      WaitForWarningAlert(l10n_util::GetNSString(
-          IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM)),
-      @"The No Protection pop-up did not show up");
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
+  [[EarlGrey selectElementWithMatcher:grey_buttonTitle(GetNSString(IDS_CANCEL))]
       performAction:grey_tap()];
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
                   @"Failed to keep Enhanced Safe Browsing off");
   GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnabled],
                  @"Failed to keep Standard Safe Browsing on");
 
-  // Taps "No Protection" and then the "Turn Off" Button on pop-up.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kSettingsSafeBrowsingNoProtectionCellId),
-                                   grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsSafeBrowsingNoProtectionCellId)]
       performAction:grey_tap()];
-  GREYAssert(
-      WaitForWarningAlert(l10n_util::GetNSString(
-          IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM)),
-      @"The No Protection pop-up did not show up");
   [[EarlGrey
       selectElementWithMatcher:
-          ButtonWithAccessibilityLabelId(
-              IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM)]
+          grey_buttonTitle(GetNSString(
+              IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM))]
       performAction:grey_tap()];
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnabled],
                   @"Failed to toggle-off Standard Safe Browsing");
