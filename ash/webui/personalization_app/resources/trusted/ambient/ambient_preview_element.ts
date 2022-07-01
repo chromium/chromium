@@ -17,6 +17,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
+import {setErrorAction} from '../personalization_actions.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -64,6 +65,7 @@ export class AmbientPreview extends WithPersonalizationStore {
         type: Boolean,
         computed:
             'computeLoading_(ambientModeEnabled_, albums_, topicSource_, googlePhotosAlbumsPreviews_)',
+        observer: 'onLoadingChanged_',
       },
       googlePhotosAlbumsPreviews_: {
         type: Array,
@@ -88,6 +90,8 @@ export class AmbientPreview extends WithPersonalizationStore {
   private googlePhotosAlbumsPreviews_: Url[]|null;
   private collageImages_: Url[];
 
+  private loadingTimeoutId_: number|null = null;
+
   override ready() {
     super.ready();
     AmbientObserver.initAmbientObserverIfNeeded();
@@ -108,6 +112,20 @@ export class AmbientPreview extends WithPersonalizationStore {
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
         this.topicSource_ === null || this.googlePhotosAlbumsPreviews_ === null;
+  }
+
+  private onLoadingChanged_(value: boolean) {
+    if (!value && this.loadingTimeoutId_) {
+      window.clearTimeout(this.loadingTimeoutId_);
+      this.loadingTimeoutId_ = null;
+      return;
+    }
+    if (value && !this.loadingTimeoutId_) {
+      this.loadingTimeoutId_ = window.setTimeout(
+          () => this.dispatch(
+              setErrorAction({message: this.i18n('ambientModeNetworkError')})),
+          60 * 1000);
+    }
   }
 
   /** Enable ambient mode and navigates to the ambient subpage. */

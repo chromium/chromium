@@ -74,7 +74,8 @@ function errorReducer(
       if (isNonEmptyArray(images) &&
           !globalState.wallpaper.loading.collections &&
           !isNonEmptyArray(globalState.wallpaper.backdrop.collections)) {
-        return state || {message: loadTimeData.getString('networkError')};
+        return state ||
+            {message: loadTimeData.getString('wallpaperNetworkError')};
       }
       return state;
     case WallpaperActionName.SET_COLLECTIONS:
@@ -82,7 +83,8 @@ function errorReducer(
       if (!globalState.wallpaper.loading.local.images &&
           isNonEmptyArray(globalState.wallpaper.local.images) &&
           !isNonEmptyArray(collections)) {
-        return state || {message: loadTimeData.getString('networkError')};
+        return state ||
+            {message: loadTimeData.getString('wallpaperNetworkError')};
       }
       return state;
     case PersonalizationActionName.SET_ERROR:

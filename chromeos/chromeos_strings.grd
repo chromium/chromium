@@ -2151,7 +2151,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING" desc="Aria label for wallpaper collection while it is still loading and unable to be selected">
         Loading
       </message>
-      <message name="IDS_PERSONALIZATION_APP_NETWORK_ERROR" desc="Label for the error page when wallpaper information cannot be downloaded">
+      <message name="IDS_PERSONALIZATION_APP_WALLPAPER_NETWORK_ERROR" desc="Error message displayed when wallpaper information cannot be downloaded">
         Please connect to a network and reload the page to view wallpaper.
       </message>
       <message name="IDS_PERSONALIZATION_APP_LOAD_WALLPAPER_ERROR" desc="Label for the error toast notification when loading current wallpaper failed">
@@ -2316,6 +2316,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL" desc="Label of button to turn on ambient mode.">
         Turn on
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_NETWORK_ERROR" desc="Error message displayed when screen saver information cannot be downloaded.">
+        Please connect to a network and reload the page to view screen saver.
       </message>
       <message name="IDS_PERSONALIZATION_APP_MANAGED_SETTING" desc="Message to show in the personalization hub for a setting which is enterprise managed by administrators.">
         This setting is managed by your administrators

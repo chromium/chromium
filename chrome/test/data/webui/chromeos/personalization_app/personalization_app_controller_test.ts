@@ -717,7 +717,7 @@ suite('local images available but no internet connection', () => {
   test(
       'error displays when fetch collections failed but local images loaded',
       async () => {
-        loadTimeData.overrideValues({['networkError']: 'someError'});
+        loadTimeData.overrideValues({['wallpaperNetworkError']: 'someError'});
 
         // Set collections to null to simulate collections failure.
         wallpaperProvider.setCollectionsToFail();
@@ -771,7 +771,8 @@ suite('local images available but no internet connection', () => {
               // Set local images.
               // Error displays once local images are loaded.
               {
-                'error': {message: loadTimeData.getString('networkError')},
+                'error':
+                    {message: loadTimeData.getString('wallpaperNetworkError')},
               },
             ],
             personalizationStore.states.map(filterAndFlattenState(['error'])));

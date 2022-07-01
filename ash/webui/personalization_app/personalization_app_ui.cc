@@ -77,7 +77,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"dailyRefresh", IDS_PERSONALIZATION_APP_DAILY_REFRESH},
       {"unknownImageAttribution",
        IDS_PERSONALIZATION_APP_UNKNOWN_IMAGE_ATTRIBUTION},
-      {"networkError", IDS_PERSONALIZATION_APP_NETWORK_ERROR},
+      {"wallpaperNetworkError",
+       IDS_PERSONALIZATION_APP_WALLPAPER_NETWORK_ERROR},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
       // Using old wallpaper app error string pending final revision.
       // TODO(b/195609442)
@@ -199,6 +200,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL},
       {"ariaLabelChangeScreensaver",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER},
+      {"ambientModeNetworkError",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_NETWORK_ERROR},
 
       // Keyboard backlight strings
       {"keyboardBacklightTitle",
