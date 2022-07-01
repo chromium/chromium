@@ -8,11 +8,8 @@
 #include <map>
 #include <string>
 
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace ash {
 
@@ -35,7 +32,7 @@ class PluralStringHandler : public content::WebUIMessageHandler {
 
  private:
   // Returns a localized, pluralized string.
-  void HandleGetPluralString(const base::ListValue* args);
+  void HandleGetPluralString(const base::Value::List& args);
 
   std::map<std::string, int> string_id_map_;
 };
