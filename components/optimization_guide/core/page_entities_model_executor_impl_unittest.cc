@@ -64,6 +64,13 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
 
 class PageEntitiesModelExecutorImplTest : public testing::Test {
  public:
+  PageEntitiesModelExecutorImplTest() {
+    PageEntitiesModelExecutorConfig config;
+    // The false variation is tested in a src-internal test.
+    config.should_provide_filter_path = true;
+    SetPageEntitiesModelExecutorConfigForTesting(config);
+  }
+
   void SetUp() override {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
 
@@ -259,14 +266,7 @@ TEST_F(PageEntitiesModelExecutorImplTest, ModelInfoUpdated) {
   EXPECT_TRUE(immediate_callback_run);
 }
 
-// TODO(https://crbug.com/1341224): Fix flakes on linux-chromeos-chrome and
-// re-enable this test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CreateMissingFiles DISABLED_CreateMissingFiles
-#else
-#define MAYBE_CreateMissingFiles CreateMissingFiles
-#endif
-TEST_F(PageEntitiesModelExecutorImplTest, MAYBE_CreateMissingFiles) {
+TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
   proto::Any any;
   proto::PageEntitiesModelMetadata metadata;
   metadata.add_slice("global");
