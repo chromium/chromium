@@ -110,7 +110,8 @@ void APIBindingJSUtil::SendRequest(
 
   request_handler_->StartRequest(
       context, name, std::move(parse_result.arguments_list),
-      parse_result.async_type, parse_result.callback, custom_callback);
+      parse_result.async_type, parse_result.callback, custom_callback,
+      binding::ResultModifierFunction());
 }
 
 void APIBindingJSUtil::RegisterEventArgumentMassager(

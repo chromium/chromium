@@ -615,6 +615,7 @@ void APIBinding::HandleCall(const std::string& name,
 
   bool invalid_invocation = false;
   v8::Local<v8::Function> custom_callback;
+  binding::ResultModifierFunction result_modifier;
   bool updated_args = false;
   int old_request_id = request_handler_->last_sent_request_id();
   {
@@ -656,6 +657,7 @@ void APIBinding::HandleCall(const std::string& name,
         break;  // Handle in the default manner.
     }
     custom_callback = hooks_result.custom_callback;
+    result_modifier = std::move(hooks_result.result_modifier);
   }
 
   if (invalid_invocation) {
@@ -700,7 +702,8 @@ void APIBinding::HandleCall(const std::string& name,
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, name, std::move(parse_result.arguments_list),
-      parse_result.async_type, parse_result.callback, custom_callback);
+      parse_result.async_type, parse_result.callback, custom_callback,
+      std::move(result_modifier));
   if (!promise.IsEmpty())
     arguments->Return(promise);
 }

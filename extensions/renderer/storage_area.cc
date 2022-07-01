@@ -308,8 +308,8 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, full_method_name, std::move(parse_result.arguments_list),
-      parse_result.async_type, parse_result.callback,
-      v8::Local<v8::Function>());
+      parse_result.async_type, parse_result.callback, v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
 
   if (!promise.IsEmpty())
     arguments->Return(promise);

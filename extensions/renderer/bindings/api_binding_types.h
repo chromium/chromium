@@ -61,6 +61,13 @@ enum class AsyncResponseType {
 using AddConsoleError = base::RepeatingCallback<void(v8::Local<v8::Context>,
                                                      const std::string& error)>;
 
+using V8ArgumentList = std::vector<v8::Local<v8::Value>>;
+
+using ResultModifierFunction =
+    base::OnceCallback<V8ArgumentList(const V8ArgumentList&,
+                                      v8::Local<v8::Context>,
+                                      AsyncResponseType)>;
+
 }  // namespace binding
 }  // namespace extensions
 
