@@ -580,8 +580,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 @synthesize startupComplete = _startupComplete;
 
-+ (void)initialize {
-  if (self == [AppController self]) {
+- (instancetype)init {
+  if (self = [super init]) {
     // -[NSMenu cr_menuItemForKeyEquivalentEvent:] lives in /content, but
     // we need to execute special update code before the search begins.
     // Setting this block gives us the hook we need.
@@ -594,6 +594,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
           updateMenuItemKeyEquivalents];
     }];
   }
+  return self;
 }
 
 - (void)dealloc {
