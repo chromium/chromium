@@ -26,6 +26,17 @@ class TestFontSelector : public FontSelector {
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message));
   }
 
+  static TestFontSelector* Create(const uint8_t* data, size_t size) {
+    scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data, size);
+    String ots_parse_message;
+    scoped_refptr<FontCustomPlatformData> font_custom_platform_data =
+        FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message);
+    if (!font_custom_platform_data)
+      return nullptr;
+    return MakeGarbageCollected<TestFontSelector>(
+        std::move(font_custom_platform_data));
+  }
+
   TestFontSelector(scoped_refptr<FontCustomPlatformData> custom_platform_data)
       : custom_platform_data_(std::move(custom_platform_data)) {
     DCHECK(custom_platform_data_);
@@ -102,6 +113,24 @@ class TestFontSelector : public FontSelector {
 };
 
 }  // namespace
+
+Font CreateTestFont(const AtomicString& family_name,
+                    const uint8_t* data,
+                    size_t data_size,
+                    float size,
+                    const FontDescription::VariantLigatures* ligatures) {
+  FontFamily family;
+  family.SetFamily(family_name, FontFamily::Type::kFamilyName);
+
+  FontDescription font_description;
+  font_description.SetFamily(family);
+  font_description.SetSpecifiedSize(size);
+  font_description.SetComputedSize(size);
+  if (ligatures)
+    font_description.SetVariantLigatures(*ligatures);
+
+  return Font(font_description, TestFontSelector::Create(data, data_size));
+}
 
 Font CreateTestFont(const AtomicString& family_name,
                     const String& font_path,

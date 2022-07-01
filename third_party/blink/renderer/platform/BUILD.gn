@@ -2440,6 +2440,16 @@ fuzzer_test("mathml_operator_dictionary_fuzzer") {
   dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
 }
 
+# Fuzzer for blink::OpenTypeMathSupportTest.
+fuzzer_test("open_type_math_support_fuzzer") {
+  sources = [ "fonts/opentype/open_type_math_support_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpus = "//third_party/blink/web_tests/external/wpt/fonts/math"
+}
+
 # Fuzzer for blink::MHTMLParser.
 fuzzer_test("mhtml_parser_fuzzer") {
   sources = [ "mhtml/mhtml_fuzzer.cc" ]
