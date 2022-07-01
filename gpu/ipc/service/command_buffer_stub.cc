@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -85,21 +86,21 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
 
   void AppendAsTraceFormat(std::string* out) const override {
     std::string tmp;
-    base::JSONWriter::Write(*value_, &tmp);
+    base::JSONWriter::Write(value_, &tmp);
     *out += tmp;
   }
 
  private:
-  explicit DevToolsChannelData(base::Value* value) : value_(value) {}
-  std::unique_ptr<base::Value> value_;
+  explicit DevToolsChannelData(base::Value value) : value_(std::move(value)) {}
+  base::Value value_;
 };
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
 DevToolsChannelData::CreateForChannel(GpuChannel* channel) {
-  std::unique_ptr<base::DictionaryValue> res(new base::DictionaryValue);
-  res->SetInteger("renderer_pid", channel->client_pid());
-  res->SetDouble("used_bytes", channel->GetMemoryUsage());
-  return base::WrapUnique(new DevToolsChannelData(res.release()));
+  base::Value::Dict res;
+  res.Set("renderer_pid", static_cast<int>(channel->client_pid()));
+  res.Set("used_bytes", static_cast<double>(channel->GetMemoryUsage()));
+  return base::WrapUnique(new DevToolsChannelData(base::Value(std::move(res))));
 }
 
 }  // namespace

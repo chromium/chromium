@@ -524,11 +524,10 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   EXPECT_DOUBLE_EQ(it->second, static_cast<double>(num_packets_rtx_rejected));
 }
 
-bool CheckHistogramHasValue(base::ListValue* values,
+bool CheckHistogramHasValue(const base::Value::List& values,
                             const std::string& bucket,
                             int expected_count) {
-  for (size_t i = 0; i < values->GetListDeprecated().size(); ++i) {
-    const base::Value& value = values->GetListDeprecated()[i];
+  for (const base::Value& value : values) {
     if (!value.is_dict() || !value.FindKey(bucket))
       continue;
     absl::optional<int> bucket_count = value.FindIntKey(bucket);
@@ -627,47 +626,47 @@ TEST_F(StatsEventSubscriberTest, Histograms) {
   cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
   StatsEventSubscriber::SimpleHistogram* histogram;
-  std::unique_ptr<base::ListValue> values;
+  base::Value::List values;
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::CAPTURE_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "10-14", 10));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "10-14", 10));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::ENCODE_TIME_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "15-19", 10));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "15-19", 10));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::QUEUEING_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "100-119", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "200-219", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "300-319", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "100-119", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "200-219", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "300-319", 1));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::NETWORK_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "100-119", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "200-219", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "300-319", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "100-119", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "200-219", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "300-319", 1));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::PACKET_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "400-419", 3));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "400-419", 3));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::LATE_FRAME_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "100-119", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "100-119", 1));
 }
 
 }  // namespace cast
