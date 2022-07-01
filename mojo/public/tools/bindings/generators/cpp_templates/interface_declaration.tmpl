@@ -55,12 +55,16 @@ class {{export_attribute}} {{interface.name}}
 {%- endfor %}
   };
 
+// crbug.com/1340245 - this causes binary size bloat on Fuchsia, and we're OK
+// with not having this data in traces there.
+#if !BUILDFLAG(IS_FUCHSIA)
 {#--- Per method symbols #}
 {%- for method in interface.methods %}
   struct {{method.name}}_Sym {
     NOINLINE static void IPCSymbol();
   };
 {%- endfor %}
+#endif // !BUILDFLAG(IS_FUCHSIA)
 
 {#--- Enums #}
 {%- for enum in interface.enums %}

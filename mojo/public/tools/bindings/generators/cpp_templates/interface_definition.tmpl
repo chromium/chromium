@@ -52,7 +52,11 @@ std::pair<uint32_t, const void*> {{interface.name}}::MessageToMethodInfo_(mojo::
     case internal::k{{interface.name}}_{{method.name}}_Name: {
       constexpr uint32_t value = base::MD5Hash32Constexpr(
               "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
-      return std::make_pair(value, reinterpret_cast<const void*>(&{{interface.name}}::{{method.name}}_Sym::IPCSymbol));
+#if BUILDFLAG(IS_FUCHSIA)
+        return std::make_pair(value, nullptr);
+#else
+        return std::make_pair(value, reinterpret_cast<const void*>(&{{interface.name}}::{{method.name}}_Sym::IPCSymbol));
+#endif // BUILDFLAG(IS_FUCHSIA)
     }
 {%-   endfor %}
   }
@@ -92,6 +96,7 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 #endif // BUILDFLAG(MOJO_TRACE_ENABLED)
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
 {%-   for method in interface.methods %}
 void {{interface.name}}::{{method.name}}_Sym::IPCSymbol() {
   // This method's address is used for indetifiying the mojo method name after
@@ -99,6 +104,7 @@ void {{interface.name}}::{{method.name}}_Sym::IPCSymbol() {
   NO_CODE_FOLDING();
 }
 {%-   endfor %}
+# endif // !BUILDFLAG(IS_FUCHSIA)
 
 {%- for method in interface.methods %}
 {%-   if method.sync %}
