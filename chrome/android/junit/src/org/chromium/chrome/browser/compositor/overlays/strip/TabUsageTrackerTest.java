@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -53,8 +55,13 @@ public class TabUsageTrackerTest {
     @Before
     public void setUp() throws TimeoutException {
         MockitoAnnotations.initMocks(this);
+        List<TabModel> tabModels = new ArrayList<>();
+        tabModels.add(mTabModel);
+
         Mockito.when(mTabModel.getCount()).thenReturn(INITIAL_TAB_COUNT);
         Mockito.when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        Mockito.when(mTabModelSelector.getModels()).thenReturn(tabModels);
+        Mockito.when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
 
         mTabUsageTracker = new TabUsageTracker(mDispatcher, mTabModelSelector);
     }
