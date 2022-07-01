@@ -335,6 +335,7 @@ int CplayMain(int argc, char* argv[]) {
   FilterGroup* input_group = pipeline->GetInputGroup(params.device_id);
   CHECK(input_group);
   MixerInput mixer_input(&input_source, input_group);
+  mixer_input.Initialize();
 
   // Set volume.
   std::string contents;
