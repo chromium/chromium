@@ -1,7 +1,7 @@
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
     `Tests that the initiator position is correct even when that initiator is minified.`);
-
+  testRunner.startDumpingProtocolMessages();
   window.onerror = (msg) => testRunner.log('onerror: ' + msg);
   window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
   let errorForLog = new Error();
