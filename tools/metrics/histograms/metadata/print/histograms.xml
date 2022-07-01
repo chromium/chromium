@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettingsUi"
-    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2022-07-01">
+    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2023-07-01">
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
