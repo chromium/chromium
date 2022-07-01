@@ -830,6 +830,7 @@ body.mirror #preview-document-corner-overlay .corner-container {
 }
 
 #preview-video {
+  pointer-events: none;
   transition: opacity var(--fast2-duration) ease-in-out;
 }
 
