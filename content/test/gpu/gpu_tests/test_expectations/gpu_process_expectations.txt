@@ -129,9 +129,10 @@ crbug.com/1311719 [ linux display-server-wayland ] GpuProcess_disabling_workarou
 
 crbug.com/1321145 [ fuchsia fuchsia-board-qemu-x64 ] * [ Failure ]
 
-# Flaking on Linux FYI Release (AMD RX 5500 XT)
+# Flaking on Linux FYI Release
 crbug.com/1340081 [ linux release amd-0x7340 ] GpuProcess_canvas2d [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] GpuProcess_css3d [ RetryOnFailure ]
+crbug.com/1340081 [ linux release intel-0x5912 ] GpuProcess_canvas2d [ RetryOnFailure ]
 
 
 

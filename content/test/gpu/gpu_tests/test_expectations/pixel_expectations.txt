@@ -424,6 +424,9 @@ crbug.com/1287249 [ android android-pixel-6 passthrough skia-renderer-vulkan and
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 
+# Flaking on Linux FYI Release (AMD RX 5500 XT)
+crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

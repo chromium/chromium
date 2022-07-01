@@ -86,6 +86,9 @@ crbug.com/1113893 [ win10 nvidia ] InfoCollection_direct_composition [ Failure ]
 # InfoCollection_basic is flaky on Fuchsia.
 crbug.com/1154597 [ fuchsia ] InfoCollection_basic [ RetryOnFailure ]
 
+# Flakes on Linux Release
+crbug.com/1340081 [ linux release intel-0x5912 ] InfoCollection_asan_info_surfaced [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
