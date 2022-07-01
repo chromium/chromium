@@ -11,6 +11,10 @@
 # results: [ Skip ]
 # conflicts_allowed: True
 
+# Test is flaky, with the particular flake signaled in the bug below but the underlying cause likely
+# being crbug.com/1277901.
+crbug.com/1329813 [ all ] org.chromium.weblayer.test.ExternalNavigationTest#testNonHandledExternalIntentWithFallbackUrlThatLaunchesIntentAfterRedirectBlocksFallbackIntent [ Skip ]
+
 # No real changes to weblayer APIs, changes should only affect chrome-internal behavior around
 # navigation which the test depends on.
 crbug.com/1196803 [ client_lte_91 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids [ Skip ]
