@@ -376,7 +376,9 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
     // Exit background mode if the new priority is not BACKGROUND. This is a
     // no-op if not in background mode.
     ::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_END);
-    internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_NORMAL);
+    // We used to DCHECK that memory priority is MEMORY_PRIORITY_NORMAL here,
+    // but found that it is not always the case (e.g. in the installer).
+    // crbug.com/1340578#c2
   }
 
   int desired_priority = THREAD_PRIORITY_ERROR_RETURN;
@@ -423,10 +425,9 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
     // https://crbug.com/901483
     if (GetCurrentThreadPriority() != ThreadPriority::BACKGROUND) {
       ::SetThreadPriority(thread_handle, THREAD_PRIORITY_LOWEST);
-      // Make sure that using THREAD_PRIORITY_LOWEST didn't affect the memory
-      // priority set by THREAD_MODE_BACKGROUND_BEGIN. There is no practical
-      // way to verify the I/O priority.
-      internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_VERY_LOW);
+      // We used to DCHECK that memory priority is MEMORY_PRIORITY_VERY_LOW
+      // here, but found that it is not always the case (e.g. in the installer).
+      // crbug.com/1340578#c2
     }
   }
 }
