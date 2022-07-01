@@ -289,29 +289,11 @@ void RemoveSymlinkAndLog(const base::FilePath& link_path,
 }
 
 base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
-  base::FilePath log_dir;
-  std::string log_dir_str;
+  std::string log_dir;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (env->GetVar(env_vars::kSessionLogDir, &log_dir_str) &&
-      !log_dir_str.empty()) {
-    log_dir = base::FilePath(log_dir_str);
-  } else if (command_line.HasSwitch(ash::switches::kLoginProfile)) {
-    base::PathService::Get(chrome::DIR_USER_DATA, &log_dir);
-    base::FilePath profile_dir;
-    std::string login_profile_value =
-        command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
-    if (login_profile_value == chrome::kLegacyProfileDir ||
-        login_profile_value == chrome::kTestUserProfileDir) {
-      profile_dir = base::FilePath(login_profile_value);
-    } else {
-      // We could not use g_browser_process > profile_helper() here.
-      std::string profile_dir_str = chrome::kProfileDirPrefix;
-      profile_dir_str.append(login_profile_value);
-      profile_dir = base::FilePath(profile_dir_str);
-    }
-    log_dir = log_dir.Append(profile_dir);
-  }
-  return log_dir;
+  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir))
+    NOTREACHED();
+  return base::FilePath(log_dir);
 }
 
 base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
