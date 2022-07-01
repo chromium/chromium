@@ -36,10 +36,15 @@ class CORE_EXPORT PrePaintTreeWalk final {
   static bool ObjectRequiresPrePaint(const LayoutObject&);
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
 
+  // Keeps information about the parent fragment that we need to search inside
+  // to find out-of-flow positioned descendants, and also which fragmentainer
+  // we're inside (which will serve as a fragment ID in FragmentData).
   struct ContainingFragment {
     STACK_ALLOCATED();
 
    public:
+    bool IsInFragmentationContext() const;
+
     const NGPhysicalBoxFragment* fragment = nullptr;
     wtf_size_t fragmentainer_idx = WTF::kNotFound;
     int fragmentation_nesting_level = 0;
@@ -59,7 +64,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // Reset fragmentation when entering something that shouldn't be affected by
     // the current fragmentation context(s).
     void ResetFragmentation() {
-      current_fragmentainer = {};
+      current_container = {};
       absolute_positioned_container = {};
       fixed_positioned_container = {};
     }
@@ -89,7 +94,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // fragmented at all).
     bool is_parent_first_for_node = true;
 
-    ContainingFragment current_fragmentainer;
+    ContainingFragment current_container;
     ContainingFragment absolute_positioned_container;
     ContainingFragment fixed_positioned_container;
   };
@@ -148,7 +153,8 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                         const NGPrePaintInfo&);
 
   void UpdateContextForOOFContainer(const LayoutObject&,
-                                    PrePaintTreeWalkContext&);
+                                    PrePaintTreeWalkContext&,
+                                    const NGPhysicalBoxFragment*);
 
   void Walk(LocalFrameView&, const PrePaintTreeWalkContext& parent_context);
 
