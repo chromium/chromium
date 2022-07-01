@@ -125,8 +125,7 @@ base::flat_set<int32_t> GetAvailableFramerates(
 
 }  // namespace
 
-CameraHalDelegate::CameraHalDelegate(
-    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
+CameraHalDelegate::CameraHalDelegate()
     : authenticated_(false),
       camera_module_has_been_set_(
           base::WaitableEvent::ResetPolicy::MANUAL,
@@ -141,13 +140,25 @@ CameraHalDelegate::CameraHalDelegate(
                             base::WaitableEvent::InitialState::NOT_SIGNALED),
       num_builtin_cameras_(0),
       camera_buffer_factory_(new CameraBufferFactory()),
-      ipc_task_runner_(std::move(ipc_task_runner)),
-      camera_module_callbacks_(this),
-      vendor_tag_ops_delegate_(ipc_task_runner_) {
+      camera_hal_ipc_thread_("CamerHalIpcThread"),
+      camera_module_callbacks_(this) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-CameraHalDelegate::~CameraHalDelegate() = default;
+bool CameraHalDelegate::Init() {
+  if (!camera_hal_ipc_thread_.Start()) {
+    LOG(ERROR) << "CameraHalDelegate IPC thread failed to start";
+    return false;
+  }
+  ipc_task_runner_ = camera_hal_ipc_thread_.task_runner();
+  vendor_tag_ops_delegate_ =
+      std::make_unique<VendorTagOpsDelegate>(ipc_task_runner_);
+  return true;
+}
+
+CameraHalDelegate::~CameraHalDelegate() {
+  camera_hal_ipc_thread_.Stop();
+}
 
 bool CameraHalDelegate::RegisterCameraClient() {
   auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
@@ -319,7 +330,8 @@ void CameraHalDelegate::GetDevicesInfo(
       }
 
       auto get_vendor_string = [&](const std::string& key) -> const char* {
-        const VendorTagInfo* info = vendor_tag_ops_delegate_.GetInfoByName(key);
+        const VendorTagInfo* info =
+            vendor_tag_ops_delegate_->GetInfoByName(key);
         if (info == nullptr) {
           return nullptr;
         }
@@ -407,7 +419,7 @@ VideoCaptureControlSupport CameraHalDelegate::GetControlSupport(
   VideoCaptureControlSupport control_support;
 
   auto is_vendor_range_valid = [&](const std::string& key) -> bool {
-    const VendorTagInfo* info = vendor_tag_ops_delegate_.GetInfoByName(key);
+    const VendorTagInfo* info = vendor_tag_ops_delegate_->GetInfoByName(key);
     if (info == nullptr)
       return false;
     auto range = GetMetadataEntryAsSpan<int32_t>(
@@ -487,7 +499,7 @@ void CameraHalDelegate::DisableAllVirtualDevices() {
 
 const VendorTagInfo* CameraHalDelegate::GetVendorTagInfoByName(
     const std::string& full_name) {
-  return vendor_tag_ops_delegate_.GetInfoByName(full_name);
+  return vendor_tag_ops_delegate_->GetInfoByName(full_name);
 }
 
 void CameraHalDelegate::OpenDevice(
@@ -556,7 +568,7 @@ void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   camera_module_.reset();
   camera_module_callbacks_.reset();
-  vendor_tag_ops_delegate_.Reset();
+  vendor_tag_ops_delegate_->Reset();
   builtin_camera_info_updated_.Reset();
   camera_module_has_been_set_.Reset();
   has_camera_connected_.Reset();
@@ -620,7 +632,7 @@ void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
                      base::Unretained(this)));
 
   camera_module_->GetVendorTagOps(
-      vendor_tag_ops_delegate_.MakeReceiver(),
+      vendor_tag_ops_delegate_->MakeReceiver(),
       base::BindOnce(&CameraHalDelegate::OnGotVendorTagOpsOnIpcThread,
                      base::Unretained(this)));
 }
@@ -652,7 +664,7 @@ void CameraHalDelegate::OnSetCallbacksOnIpcThread(int32_t result) {
 
 void CameraHalDelegate::OnGotVendorTagOpsOnIpcThread() {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  vendor_tag_ops_delegate_.Initialize();
+  vendor_tag_ops_delegate_->Initialize();
 }
 
 void CameraHalDelegate::GetCameraInfoOnIpcThread(

@@ -136,8 +136,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
  public:
   CameraDeviceDelegateTest()
       : mock_camera_device_receiver_(&mock_camera_device_),
-        device_delegate_thread_("DeviceDelegateThread"),
-        hal_delegate_thread_("HalDelegateThread") {}
+        device_delegate_thread_("DeviceDelegateThread") {}
 
   CameraDeviceDelegateTest(const CameraDeviceDelegateTest&) = delete;
   CameraDeviceDelegateTest& operator=(const CameraDeviceDelegateTest&) = delete;
@@ -145,9 +144,12 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   void SetUp() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
-    hal_delegate_thread_.Start();
-    camera_hal_delegate_ =
-        std::make_unique<CameraHalDelegate>(hal_delegate_thread_.task_runner());
+    camera_hal_delegate_ = std::make_unique<CameraHalDelegate>();
+    if (!camera_hal_delegate_->Init()) {
+      LOG(ERROR) << "Failed to initialize CameraHalDelegate";
+      camera_hal_delegate_.reset();
+      return;
+    }
     auto get_camera_info =
         base::BindRepeating(&CameraHalDelegate::GetCameraInfoFromDeviceId,
                             base::Unretained(camera_hal_delegate_.get()));
@@ -155,10 +157,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         mock_camera_module_.GetPendingRemote());
   }
 
-  void TearDown() override {
-    camera_hal_delegate_->Reset();
-    hal_delegate_thread_.Stop();
-  }
+  void TearDown() override { camera_hal_delegate_->Reset(); }
 
   void AllocateDevice() {
     ASSERT_FALSE(device_delegate_thread_.IsRunning());
@@ -535,7 +534,6 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   ClientType client_type_;
 
  private:
-  base::Thread hal_delegate_thread_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
