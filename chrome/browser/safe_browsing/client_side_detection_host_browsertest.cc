@@ -141,7 +141,7 @@ class ClientSideDetectionHostPrerenderBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
-                       PrerenderShouldNotAffectClientSideDetection) {
+                       DISABLED_PrerenderShouldNotAffectClientSideDetection) {
   FakeClientSideDetectionService fake_csd_service;
   fake_csd_service.SetModel(client_side_model());
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
-                       ClassifyPrerenderedPageAfterActivation) {
+                       DISABLED_ClassifyPrerenderedPageAfterActivation) {
   FakeClientSideDetectionService fake_csd_service;
   fake_csd_service.SetModel(client_side_model());
 
