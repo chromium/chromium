@@ -149,18 +149,25 @@ class ZeroSuggestProvider : public BaseSearchProvider {
       const network::SimpleURLLoader* source,
       std::unique_ptr<std::string> response_body);
 
-  // The function updates |results_| with data parsed from |json_data|.
+  // Called when the remote response is received, populates |results_| with
+  // |json_data|; and converts them to |matches_|.
   //
   // * The update is not performed if |json_data| is invalid.
-  // * When the provider is using cached results and |json_data| is non-empty,
-  //   this function updates the cached results.
-  // * When |results_| contains cached results, these are updated only if
-  //   |json_cata| corresponds to an empty list. This is done to ensure that
+  // * Updates the zero suggest response stored in user prefs, if applicable.
+  //   In those cases, when |results_| is non-empty, it is updated only if
+  //   |json_data| corresponds to an empty list. This is done to ensure that
   //   the display is cleared, as it may be showing cached results that should
   //   not be shown.
+  // * Otherwise, the update is performed.
   //
-  // The return value is true only when |results_| changed.
-  bool UpdateResults(const std::string& json_data);
+  // Returns whether |results_| changed.
+  bool UpdateResultsWithResponse(const std::string& json_data);
+
+  // Called in Start(), populates |results_| with the zero suggest response
+  // stored in user prefs, if applicable; and converts them to |matches_|.
+  //
+  // Returns the stored response whether |results_| changed or not.
+  std::string MaybeUpdateResultsWithStoredResponse();
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
@@ -171,11 +178,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // received.
   void ConvertResultsToAutocompleteMatches();
 
-  // Returns an AutocompleteMatch for the current text. The match should be in
-  // the top position so that pressing enter has the effect of reloading the
-  // page.
-  AutocompleteMatch MatchForCurrentText();
-
   // Whether zero suggest suggestions are allowed in the given context.
   // Invoked early, confirms all the external conditions for ZeroSuggest are
   // met.
@@ -184,10 +186,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // the logic to turn on and off requests by flags is split between these two
   // functions, so the reader has to look in two places.
   bool AllowZeroSuggestSuggestions(const AutocompleteInput& input) const;
-
-  // Populates |matches_| using the stored zero suggest response, if applicable.
-  // Returns the stored zero suggest response, whether or not it was used.
-  std::string MaybeUseStoredResponse();
 
   // Returns the type of results that should be generated for the current
   // context.
@@ -204,19 +202,8 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // When the provider is not running, the result type is set to NONE.
   ResultType result_type_running_;
 
-  // The URL for which a suggestion fetch is pending.
-  std::string current_query_;
-
-  // The title of the page for which a suggestion fetch is pending.
-  std::u16string current_title_;
-
-  // The type of page the user is viewing (a search results page doing search
-  // term replacement, an arbitrary URL, etc.).
-  metrics::OmniboxEventProto::PageClassification current_page_classification_ =
-      metrics::OmniboxEventProto::INVALID_SPEC;
-
-  // Copy of OmniboxEditModel::permanent_text_.
-  std::u16string permanent_text_;
+  // The user's input for which a suggestion fetch is pending.
+  AutocompleteInput input_;
 
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
@@ -228,9 +215,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // Loader used to retrieve counterfactual results.
   std::unique_ptr<network::SimpleURLLoader> counterfactual_loader_;
-
-  // The verbatim match for the current text, which is always a URL.
-  AutocompleteMatch current_text_match_;
 
   // Contains suggest and navigation results as well as relevance parsed from
   // the response for the most recent zero suggest input URL.

@@ -181,16 +181,12 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   }
 
   result_type_running_ = NONE;
+  input_ = input;
   set_field_trial_triggered(false);
   set_field_trial_triggered_in_session(false);
-  permanent_text_ = input.text();
-  current_query_ = input.current_url().spec();
-  current_title_ = input.current_title();
-  current_page_classification_ = input.current_page_classification();
-  current_text_match_ = MatchForCurrentText();
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
-  search_terms_args.page_classification = current_page_classification_;
+  search_terms_args.page_classification = input.current_page_classification();
   search_terms_args.focus_type = input.focus_type();
   const int cache_duration_sec =
       OmniboxFieldTrial::kZeroSuggestCacheDurationSec.Get();
@@ -212,10 +208,11 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   else
     done_ = false;
 
-  const std::string original_response = MaybeUseStoredResponse();
+  const std::string original_response = MaybeUpdateResultsWithStoredResponse();
 
-  search_terms_args.current_page_url =
-      result_type_running_ == REMOTE_SEND_URL ? current_query_ : std::string();
+  search_terms_args.current_page_url = result_type_running_ == REMOTE_SEND_URL
+                                           ? input.current_url().spec()
+                                           : std::string();
   // Grab ownership of the loader until results come in to
   // `OnURLLoadComplete()`.
   loader_ = client()
@@ -245,16 +242,7 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
   result_type_running_ = NONE;
 
   if (clear_cached_results) {
-    // We do not call Clear() on |results_| to retain |verbatim_relevance|
-    // value in the |results_| object. |verbatim_relevance| is used at the
-    // beginning of the next call to Start() to determine the current url
-    // match relevance.
-    results_.suggest_results.clear();
-    results_.navigation_results.clear();
-    results_.experiment_stats.clear();
-    results_.headers_map.clear();
-    current_query_.clear();
-    current_title_.clear();
+    results_.Clear();
   }
 }
 
@@ -303,15 +291,7 @@ const TemplateURL* ZeroSuggestProvider::GetTemplateURL(bool is_keyword) const {
 }
 
 const AutocompleteInput ZeroSuggestProvider::GetInput(bool is_keyword) const {
-  // The callers of this method won't look at the AutocompleteInput's
-  // |from_omnibox_focus| member, so we can set its value to false.
-  AutocompleteInput input(std::u16string(), current_page_classification_,
-                          client()->GetSchemeClassifier());
-  input.set_current_url(GURL(current_query_));
-  input.set_current_title(current_title_);
-  input.set_prevent_inline_autocomplete(true);
-  input.set_allow_exact_keyword_match(false);
-  return input;
+  return input_;
 }
 
 bool ZeroSuggestProvider::ShouldAppendExtraParams(
@@ -372,7 +352,7 @@ void ZeroSuggestProvider::OnURLLoadComplete(
        source->ResponseInfo()->headers->response_code() == 200);
   const bool results_updated =
       response_received &&
-      UpdateResults(SearchSuggestionParser::ExtractJsonData(
+      UpdateResultsWithResponse(SearchSuggestionParser::ExtractJsonData(
           source, std::move(response_body)));
   loader_.reset();
   prefetch_done_ = true;
@@ -399,14 +379,18 @@ void ZeroSuggestProvider::OnCounterfactualURLLoadComplete(
   counterfactual_loader_.reset();
 }
 
-bool ZeroSuggestProvider::UpdateResults(const std::string& json_data) {
+bool ZeroSuggestProvider::UpdateResultsWithResponse(
+    const std::string& json_data) {
+  if (json_data.empty())
+    return false;
+
   std::unique_ptr<base::Value> data(
       SearchSuggestionParser::DeserializeJsonData(json_data));
   if (!data)
     return false;
 
   // Store non-empty response if running the REMOTE_NO_URL variant.
-  if (result_type_running_ == REMOTE_NO_URL && !json_data.empty()) {
+  if (result_type_running_ == REMOTE_NO_URL) {
     client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                     json_data);
 
@@ -423,10 +407,37 @@ bool ZeroSuggestProvider::UpdateResults(const std::string& json_data) {
     if (non_empty_parsed_list && non_empty_cache)
       return false;
   }
+
   const bool results_updated = ParseSuggestResults(
       *data, kDefaultZeroSuggestRelevance, false, &results_);
-  ConvertResultsToAutocompleteMatches();
+  if (results_updated) {
+    ConvertResultsToAutocompleteMatches();
+  }
   return results_updated;
+}
+
+std::string ZeroSuggestProvider::MaybeUpdateResultsWithStoredResponse() {
+  // Use the stored response only if running the REMOTE_NO_URL variant.
+  if (result_type_running_ != REMOTE_NO_URL) {
+    return "";
+  }
+
+  std::string json_data =
+      client()->GetPrefs()->GetString(omnibox::kZeroSuggestCachedResults);
+  if (json_data.empty())
+    return "";
+
+  std::unique_ptr<base::Value> data(
+      SearchSuggestionParser::DeserializeJsonData(json_data));
+  if (!data)
+    return "";
+
+  if (ParseSuggestResults(*data, kDefaultZeroSuggestRelevance, false,
+                          &results_)) {
+    ConvertResultsToAutocompleteMatches();
+  }
+
+  return json_data;
 }
 
 AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
@@ -499,23 +510,6 @@ void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
   }
 }
 
-AutocompleteMatch ZeroSuggestProvider::MatchForCurrentText() {
-  // The placeholder suggestion for the current URL has high relevance so
-  // that it is in the first suggestion slot and inline autocompleted. It
-  // gets dropped as soon as the user types something.
-  AutocompleteInput tmp(GetInput(false));
-  tmp.UpdateText(permanent_text_, std::u16string::npos, tmp.parts());
-
-  // We pass a nullptr as the |history_url_provider| parameter now to force
-  // VerbatimMatch to do a classification, since the text can be a search query.
-  // TODO(tommycli): Simplify this - probably just bypass VerbatimMatchForURL.
-  AutocompleteMatch match =
-      VerbatimMatchForURL(this, client(), tmp, GURL(current_query_),
-                          current_title_, results_.verbatim_relevance);
-  match.provider = this;
-  return match;
-}
-
 bool ZeroSuggestProvider::AllowZeroSuggestSuggestions(
     const AutocompleteInput& input) const {
   const auto& page_url = input.current_url();
@@ -576,24 +570,6 @@ bool ZeroSuggestProvider::AllowZeroSuggestSuggestions(
   }
 
   return true;
-}
-
-std::string ZeroSuggestProvider::MaybeUseStoredResponse() {
-  // Use the stored response only if running the REMOTE_NO_URL variant.
-  if (result_type_running_ != REMOTE_NO_URL) {
-    return "";
-  }
-
-  std::string json_data =
-      client()->GetPrefs()->GetString(omnibox::kZeroSuggestCachedResults);
-  if (!json_data.empty()) {
-    std::unique_ptr<base::Value> data(
-        SearchSuggestionParser::DeserializeJsonData(json_data));
-    if (data && ParseSuggestResults(*data, kDefaultZeroSuggestRelevance, false,
-                                    &results_))
-      ConvertResultsToAutocompleteMatches();
-  }
-  return json_data;
 }
 
 // static
