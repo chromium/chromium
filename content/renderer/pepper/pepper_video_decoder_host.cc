@@ -409,12 +409,6 @@ void PepperVideoDecoderHost::PictureReady(const media::Picture& picture) {
   CHECK(it->second == PictureBufferState::ASSIGNED);
   it->second = PictureBufferState::IN_USE;
 
-  if (software_fallback_used_) {
-    media::ReportPepperVideoDecoderOutputPictureCountSW(coded_size_.height());
-  } else {
-    media::ReportPepperVideoDecoderOutputPictureCountHW(coded_size_.height());
-  }
-
   // Don't bother validating the visible rect, since the plugin process is less
   // trusted than the gpu process.
   PP_Rect visible_rect = PP_FromGfxRect(picture.visible_rect());

@@ -3749,6 +3749,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.PepperVideoDecoderPictureCount" units="units"
     expires_after="M77">
+  <obsolete>
+    Removed 07/2022.
+  </obsolete>
   <owner>ihf@chromium.org</owner>
   <owner>posciak@chromium.org</owner>
   <summary>

@@ -269,8 +269,6 @@ void PPB_VideoDecoder_Impl::PictureReady(const media::Picture& picture) {
   if (!GetPPP())
     return;
 
-  media::ReportPepperVideoDecoderOutputPictureCountHW(coded_size_.height());
-
   PP_Picture_Dev output;
   output.picture_buffer_id = picture.picture_buffer_id();
   output.bitstream_buffer_id = picture.bitstream_buffer_id();
