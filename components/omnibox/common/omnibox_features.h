@@ -71,7 +71,7 @@ extern const base::Feature kDocumentProviderAso;
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
 extern const base::Feature kClipboardSuggestionContentHidden;
-extern const base::Feature kFinanceTickerColorReverse;
+extern const base::Feature kSuggestionAnswersColorReverse;
 extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kRichAutocompletion;
 extern const base::Feature kNtpRealboxPedals;

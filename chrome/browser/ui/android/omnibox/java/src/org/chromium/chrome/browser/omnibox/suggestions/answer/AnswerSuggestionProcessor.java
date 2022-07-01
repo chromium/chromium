@@ -66,16 +66,16 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public void onNativeInitialized() {
         mOmniBoxAnswerColorReversal =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.FINANCE_TICKER_COLOR_REVERSE);
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE);
 
         mOmniBoxAnswerColorReversalFinanceOnly =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.FINANCE_TICKER_COLOR_REVERSE,
+                        ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
                         "omnibox_answer_color_reversal_finance_only",
                         /* default= */ true);
 
         String stockColorReversalCountryList = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.FINANCE_TICKER_COLOR_REVERSE,
+                ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
                 "omnibox_answer_color_reversal_countries");
         if (!TextUtils.isEmpty(stockColorReversalCountryList)) {
             List<String> financeTickerColorReversalCountryList =
