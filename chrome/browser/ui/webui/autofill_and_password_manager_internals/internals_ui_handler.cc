@@ -91,10 +91,10 @@ InternalsUIHandler::~InternalsUIHandler() {
 }
 
 void InternalsUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "loaded", base::BindRepeating(&InternalsUIHandler::OnLoaded,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "resetCache", base::BindRepeating(&InternalsUIHandler::OnResetCache,
                                         base::Unretained(this)));
 }
@@ -107,7 +107,7 @@ void InternalsUIHandler::OnJavascriptDisallowed() {
   EndSubscription();
 }
 
-void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
+void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   AllowJavascript();
   FireWebUIListener(call_on_load_, base::Value());
   // This is only available in contents, because the iOS BrowsingDataRemover
@@ -120,7 +120,7 @@ void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
   FireWebUIListener("notify-about-variations", version_ui::GetVariationsList());
 }
 
-void InternalsUIHandler::OnResetCache(const base::ListValue* args) {
+void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
   if (!autofill_cache_resetter_) {
     content::BrowserContext* browser_context = Profile::FromWebUI(web_ui());
     autofill_cache_resetter_.emplace(browser_context);
