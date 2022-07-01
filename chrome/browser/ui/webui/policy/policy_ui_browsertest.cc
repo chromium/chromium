@@ -415,7 +415,13 @@ void PolicyUITest::VerifyExportingPolicies(
   EXPECT_EQ(expected, *value_ptr);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
+#if !defined(NDEBUG)
+// Slow and hangs often in debug builds. https://crbug.com/1338642
+#define MAYBE_WritePoliciesToJSONFile DISABLED_WritePoliciesToJSONFile
+#else
+#define MAYBE_WritePoliciesToJSONFile WritePoliciesToJSONFile
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_WritePoliciesToJSONFile) {
   // Set policy values and generate expected dictionary.
   policy::PolicyMap values;
   base::DictionaryValue expected_values;
