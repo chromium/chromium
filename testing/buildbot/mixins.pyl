@@ -968,7 +968,7 @@
     'swarming': {
       'dimension_sets': [
          {
-           'os': 'Mac-10.15',
+           'os': 'Mac-12',
            'cpu': 'x86-64',
          },
       ],
