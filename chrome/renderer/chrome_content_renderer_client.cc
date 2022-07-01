@@ -1596,6 +1596,16 @@ void ChromeContentRendererClient::
            features::kSupportSearchSuggestionForPrerender2))) {
     blink::WebRuntimeFeatures::EnablePrerender2RelatedFeatures(true);
   }
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
+  // WebHID on service workers is only available in extension for now with
+  // feature enabled.
+  if (IsStandaloneContentExtensionProcess() &&
+      base::FeatureList::IsEnabled(
+          features::kEnableWebHidOnExtensionServiceWorker)) {
+    blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
+  }
+#endif
 }
 
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(
