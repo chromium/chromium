@@ -715,6 +715,36 @@ TEST_F(StableVideoDecoderServiceTest,
   auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
 }
 
+// Tests that a mojom::MediaLog::AddLogRecord() call originating from the
+// underlying mojom::VideoDecoder gets forwarded to the stable::mojom::MediaLog
+// correctly.
+TEST_F(StableVideoDecoderServiceTest,
+       StableVideoDecoderClientReceivesAddLogRecordEvent) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto auxiliary_endpoints = ConstructStableVideoDecoder(
+      stable_video_decoder_remote, *mock_video_decoder_raw,
+      /*expect_construct_call=*/true);
+  ASSERT_TRUE(auxiliary_endpoints);
+  ASSERT_TRUE(auxiliary_endpoints->media_log_remote);
+  ASSERT_TRUE(auxiliary_endpoints->mock_stable_media_log);
+
+  MediaLogRecord media_log_record_to_send;
+  media_log_record_to_send.id = 2;
+  media_log_record_to_send.type = MediaLogRecord::Type::kMediaStatus;
+  media_log_record_to_send.params.SetStringKey("Test", "Value");
+  media_log_record_to_send.time = base::TimeTicks::Now();
+
+  EXPECT_CALL(*auxiliary_endpoints->mock_stable_media_log,
+              AddLogRecord(media_log_record_to_send));
+  auxiliary_endpoints->media_log_remote->AddLogRecord(media_log_record_to_send);
+  auxiliary_endpoints->media_log_remote.FlushForTesting();
+}
+
 }  // namespace
 
 }  // namespace media

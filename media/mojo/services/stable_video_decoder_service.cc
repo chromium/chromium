@@ -156,7 +156,8 @@ void StableVideoDecoderService::RequestOverlayInfo(
 
 void StableVideoDecoderService::AddLogRecord(const MediaLogRecord& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  DCHECK(stable_media_log_remote_.is_bound());
+  stable_media_log_remote_->AddLogRecord(event);
 }
 
 }  // namespace media
