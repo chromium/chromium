@@ -163,6 +163,20 @@ base::TimeDelta GetTryLaterDelayForRequestType(
   }
 }
 
+// The original message of kUserNotManagedError is misleading in case the user
+// is not affiliated. In this case, the error message associated to the error
+// code kUserNotManagedError is replaced.
+std::string ConstructFailureMessage(
+    const attestation::TpmChallengeKeyResult& challenge_result) {
+  std::string failure_message = "Failed to build challenge response: ";
+  if (challenge_result.result_code ==
+      attestation::TpmChallengeKeyResultCode::kUserNotManagedError) {
+    return (failure_message +
+            "User is not affiliated. Certificate profile is not applicable.");
+  }
+  return (failure_message + challenge_result.GetErrorMessage());
+}
+
 }  // namespace
 
 // ============= CertProvisioningWorkerFactory =================================
@@ -533,25 +547,24 @@ void CertProvisioningWorkerImpl::BuildVaChallengeResponse() {
 
 void CertProvisioningWorkerImpl::OnBuildVaChallengeResponseDone(
     base::TimeTicks start_time,
-    const attestation::TpmChallengeKeyResult& result) {
+    const attestation::TpmChallengeKeyResult& challenge_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RecordVerifiedAccessTime(cert_scope_, base::TimeTicks::Now() - start_time);
 
-  if (!result.IsSuccess()) {
-    failure_message_ = base::StrCat(
-        {"Failed to build challenge response: ", result.GetErrorMessage()});
+  if (!challenge_result.IsSuccess()) {
+    failure_message_ = ConstructFailureMessage(challenge_result);
     UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed);
     return;
   }
 
-  if (result.challenge_response.empty()) {
+  if (challenge_result.challenge_response.empty()) {
     failure_message_ = "Challenge response is empty";
     UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed);
     return;
   }
 
-  va_challenge_response_ = result.challenge_response;
+  va_challenge_response_ = challenge_result.challenge_response;
   UpdateState(FROM_HERE, CertProvisioningWorkerState::kVaChallengeFinished);
   DoStep();
 }
