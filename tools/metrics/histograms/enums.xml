@@ -96706,16 +96706,6 @@ Full version information for the fingerprint enum values:
   </int>
 </enum>
 
-<enum name="V8CagedMemoryAllocationOutcome">
-  <int value="0" label="kSuccess">Allocation succeeded inside the cage.</int>
-  <int value="1" label="kOutsideCage">
-    Allocation failed inside the cage but succeeded outside of it.
-  </int>
-  <int value="2" label="kFailure">
-    Allocation failed inside and outside of the cage.
-  </int>
-</enum>
-
 <enum name="V8CodeCacheRejectReason">
   <int value="1" label="MAGIC_NUMBER_MISMATCH">
     Reject due to magic number mismatch

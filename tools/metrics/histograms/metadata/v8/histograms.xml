@@ -41,17 +41,6 @@ chromium-metrics-reviews@google.com.
   <summary>Array buffer sizes for which V8 failed to allocate memory.</summary>
 </histogram>
 
-<histogram name="V8.CagedMemoryAllocationOutcome"
-    enum="V8CagedMemoryAllocationOutcome" expires_after="2022-12-04">
-  <owner>saelo@chromium.org</owner>
-  <owner>ishell@chromium.org</owner>
-  <summary>
-    The outcome of attempts to allocate memory pages inside the virtual memory
-    cage. Recorded at each allocation attempt, such as when allocating WASM
-    memory buffers, but only if the virtual memory cage is active.
-  </summary>
-</histogram>
-
 <histogram name="V8.CodeCacheRejectReason" enum="V8CodeCacheRejectReason"
     expires_after="M77">
   <owner>yangguo@chromium.org</owner>
