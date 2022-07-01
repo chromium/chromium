@@ -2,7 +2,6 @@ import os
 
 import pytest
 
-from mako.ext.linguaplugin import LinguaMakoExtractor
 from mako.testing.assertions import eq_
 from mako.testing.config import config
 from mako.testing.exclusions import requires_lingua
@@ -19,11 +18,14 @@ class MockOptions:
 class MakoExtractTest(TemplateTest):
     @pytest.fixture(autouse=True)
     def register_lingua_extractors(self):
+
         from lingua.extractors import register_extractors
 
         register_extractors()
 
     def test_extract(self):
+        from mako.ext.linguaplugin import LinguaMakoExtractor
+
         plugin = LinguaMakoExtractor({"comment-tags": "TRANSLATOR"})
         messages = list(
             plugin(

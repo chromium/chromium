@@ -940,18 +940,15 @@ class ControlTest(TemplateTest):
     %endfor
 """
         )
-        assert (
-            result_lines(
-                t.render(
-                    y=[
-                        {"test": "one"},
-                        {"foo": "bar"},
-                        {"foo": "bar", "test": "two"},
-                    ]
-                )
+        assert result_lines(
+            t.render(
+                y=[
+                    {"test": "one"},
+                    {"foo": "bar"},
+                    {"foo": "bar", "test": "two"},
+                ]
             )
-            == ["yes x has test", "no x does not have test", "yes x has test"]
-        )
+        ) == ["yes x has test", "no x does not have test", "yes x has test"]
 
     def test_blank_control_1(self):
         self._do_memory_test(

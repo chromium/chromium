@@ -1,26 +1,35 @@
 import io
 import os
 
-from mako.ext.babelplugin import extract
+import pytest
+
 from mako.testing.assertions import eq_
 from mako.testing.config import config
 from mako.testing.exclusions import requires_babel
 from mako.testing.fixtures import TemplateTest
 
 
+class UsesExtract:
+    @pytest.fixture(scope="class")
+    def extract(self):
+        from mako.ext.babelplugin import extract
+
+        return extract
+
+
 @requires_babel
-class PluginExtractTest:
-    def test_parse_python_expression(self):
+class PluginExtractTest(UsesExtract):
+    def test_parse_python_expression(self, extract):
         input_ = io.BytesIO(b'<p>${_("Message")}</p>')
         messages = list(extract(input_, ["_"], [], {}))
         eq_(messages, [(1, "_", ("Message"), [])])
 
-    def test_python_gettext_call(self):
+    def test_python_gettext_call(self, extract):
         input_ = io.BytesIO(b'<p>${_("Message")}</p>')
         messages = list(extract(input_, ["_"], [], {}))
         eq_(messages, [(1, "_", ("Message"), [])])
 
-    def test_translator_comment(self):
+    def test_translator_comment(self, extract):
         input_ = io.BytesIO(
             b"""
         <p>
@@ -43,8 +52,8 @@ class PluginExtractTest:
 
 
 @requires_babel
-class MakoExtractTest(TemplateTest):
-    def test_extract(self):
+class MakoExtractTest(UsesExtract, TemplateTest):
+    def test_extract(self, extract):
         with open(
             os.path.join(config.template_base, "gettext.mako")
         ) as mako_tmpl:
@@ -83,7 +92,7 @@ class MakoExtractTest(TemplateTest):
             ]
         eq_(expected, messages)
 
-    def test_extract_utf8(self):
+    def test_extract_utf8(self, extract):
         with open(
             os.path.join(config.template_base, "gettext_utf8.mako"), "rb"
         ) as mako_tmpl:
@@ -92,7 +101,7 @@ class MakoExtractTest(TemplateTest):
             )
             assert message == (1, "_", "K\xf6ln", [])
 
-    def test_extract_cp1251(self):
+    def test_extract_cp1251(self, extract):
         with open(
             os.path.join(config.template_base, "gettext_cp1251.mako"), "rb"
         ) as mako_tmpl:

@@ -80,6 +80,16 @@ class TemplateTest:
             output = filters(output)
         eq_(output, expected)
 
+    def indicates_unbound_local_error(self, rendered_output, unbound_var):
+        var = f"&#39;{unbound_var}&#39;"
+        error_msgs = (
+            # < 3.11
+            f"local variable {var} referenced before assignment",
+            # >= 3.11
+            f"cannot access local variable {var} where it is not associated",
+        )
+        return any((msg in rendered_output) for msg in error_msgs)
+
 
 class PlainCacheImpl(CacheImpl):
     """Simple memory cache impl so that tests which

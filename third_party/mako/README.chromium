@@ -1,8 +1,8 @@
 Name: Mako Templates for Python
 Short Name: python-mako
 URL: https://www.makotemplates.org
-Version: 1.2.0
-Date: March 11, 2022
+Version: 1.2.1
+Date: July 1, 2022
 License: MIT
 License File: NOT_SHIPPED
 Security Critical: no
@@ -10,11 +10,11 @@ Security Critical: no
 Description:
 Template engine in Python, used for code generation in Blink.
 
-Source: https://files.pythonhosted.org/packages/50/ec/1d687348f0954bda388bfd1330c158ba8d7dea4044fc160e74e080babdb9/Mako-1.2.0.tar.gz
-SHA-256: 9a7c7e922b87db3686210cf49d5d767033a41d4010b284e747682c92bddd8b39
+Source: https://files.pythonhosted.org/packages/ad/dd/34201dae727bb183ca14fd8417e61f936fa068d6f503991f09ee3cac6697/Mako-1.2.1.tar.gz
+SHA-256: f054a5ff4743492f1aa9ecc47172cb33b42b9d993cffcc146c9de17e717b0307
 
 Local Modifications:
 * add DIR_METADATA, OWNERS, README.chromium, and .gitattributes files in this directory.
 * run following commands to pass PRESUBMIT.
-  $ rm -rf mako/doc/ mako/example/ mako/Mako.egg-info mako/PKG-INFO
+  $ rm -rf mako/doc/ mako/examples/ mako/Mako.egg-info mako/PKG-INFO
   $ chmod -x mako/mako/cmd.py

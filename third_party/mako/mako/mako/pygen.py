@@ -1,5 +1,5 @@
 # mako/pygen.py
-# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2022 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -42,6 +42,15 @@ class PythonPrinter:
         # mapping of generated python lines to template
         # source lines
         self.source_map = {}
+
+        self._re_space_comment = re.compile(r"^\s*#")
+        self._re_space = re.compile(r"^\s*$")
+        self._re_indent = re.compile(r":[ \t]*(?:#.*)?$")
+        self._re_compound = re.compile(r"^\s*(if|try|elif|while|for|with)")
+        self._re_indent_keyword = re.compile(
+            r"^\s*(def|class|else|elif|except|finally)"
+        )
+        self._re_unindentor = re.compile(r"^\s*(else|elif|except|finally).*\:")
 
     def _update_lineno(self, num):
         self.lineno += num
@@ -86,8 +95,8 @@ class PythonPrinter:
 
         if (
             line is None
-            or re.match(r"^\s*#", line)
-            or re.match(r"^\s*$", line)
+            or self._re_space_comment.match(line)
+            or self._re_space.match(line)
         ):
             hastext = False
         else:
@@ -121,12 +130,12 @@ class PythonPrinter:
         # note that a line can both decrase (before printing) and
         # then increase (after printing) the indentation level.
 
-        if re.search(r":[ \t]*(?:#.*)?$", line):
+        if self._re_indent.search(line):
             # increment indentation count, and also
             # keep track of what the keyword was that indented us,
             # if it is a python compound statement keyword
             # where we might have to look for an "unindent" keyword
-            match = re.match(r"^\s*(if|try|elif|while|for|with)", line)
+            match = self._re_compound.match(line)
             if match:
                 # its a "compound" keyword, so we will check for "unindentors"
                 indentor = match.group(1)
@@ -137,9 +146,7 @@ class PythonPrinter:
                 # its not a "compound" keyword.  but lets also
                 # test for valid Python keywords that might be indenting us,
                 # else assume its a non-indenting line
-                m2 = re.match(
-                    r"^\s*(def|class|else|elif|except|finally)", line
-                )
+                m2 = self._re_indent_keyword.match(line)
                 if m2:
                     self.indent += 1
                     self.indent_detail.append(indentor)
@@ -167,7 +174,7 @@ class PythonPrinter:
 
         # if the current line doesnt have one of the "unindentor" keywords,
         # return False
-        match = re.match(r"^\s*(else|elif|except|finally).*\:", line)
+        match = self._re_unindentor.match(line)
         # if True, whitespace matches up, we have a compound indentor,
         # and this line has an unindentor, this
         # is probably good enough
@@ -193,6 +200,9 @@ class PythonPrinter:
 
         stripspace is a string of space that will be truncated from the
         start of the line before indenting."""
+        if stripspace == "":
+            # Fast path optimization.
+            return self.indentstring * self.indent + line
 
         return re.sub(
             r"^%s" % stripspace, self.indentstring * self.indent, line
