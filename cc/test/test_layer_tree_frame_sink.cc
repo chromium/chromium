@@ -143,6 +143,14 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   return true;
 }
 
+void TestLayerTreeFrameSink::UnregisterBeginFrameSource() {
+  if (display_begin_frame_source_) {
+    frame_sink_manager_->UnregisterBeginFrameSource(
+        display_begin_frame_source_);
+    display_begin_frame_source_ = nullptr;
+  }
+}
+
 void TestLayerTreeFrameSink::DetachFromClient() {
   // This acts like the |shared_bitmap_manager_| is a global object, while
   // in fact it is tied to the lifetime of this class and is destroyed below:
@@ -260,6 +268,10 @@ void TestLayerTreeFrameSink::ReclaimResources(
     std::vector<viz::ReturnedResource> resources) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   client_->ReclaimResources(std::move(resources));
+}
+
+void TestLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
+  external_begin_frame_source_.OnSetBeginFrameSourcePaused(paused);
 }
 
 void TestLayerTreeFrameSink::DisplayOutputSurfaceLost() {

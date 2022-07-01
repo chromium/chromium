@@ -10402,5 +10402,82 @@ class LayerTreeHostTestDidCommitAndDrawFrame : public LayerTreeHostTest {
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestDidCommitAndDrawFrame);
+
+class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
+ protected:
+  void SetupTree() override {
+    scoped_refptr<Layer> root = Layer::Create();
+    root->SetBounds(gfx::Size(10, 10));
+    layer_tree_host()->SetRootLayer(std::move(root));
+    LayerTreeHostTest::SetupTree();
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void ReadyToCommitOnThread(LayerTreeHostImpl* host_impl) override {
+    switch (host_impl->active_tree()->source_frame_number()) {
+      // frame 1 is ready in main thread and main thread is waiting until
+      // commit complete in impl thread
+      case 0:
+        // this should trigger OnBeginFramePausedChanged(true) callback, so that
+        // scheduler can abort the pending commit job
+        layer_tree_frame_sink_->UnregisterBeginFrameSource();
+        break;
+    }
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    switch (host_impl->pending_tree()->source_frame_number()) {
+      case 1:
+        // Scheduler abort the pending commit job successfully
+        EndTest();
+        break;
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    switch (host_impl->active_tree()->source_frame_number()) {
+      case 0:
+        // Block activation of pedning tree which is created by implside
+        // invalidation. This is for making ShouldCommit() return false.
+        host_impl->BlockNotifyReadyToActivateForTesting(true);
+        // next commit can start only if pending tree was created by implside
+        // invalidation.
+        host_impl->RequestImplSideInvalidationForRerasterTiling();
+        break;
+    }
+  }
+
+  void DidInvalidateContentOnImplSide(LayerTreeHostImpl* host_impl) override {
+    switch (host_impl->active_tree()->source_frame_number()) {
+      case 0:
+        // has_pending_tree_ is true now, so we can request next frame which
+        // will be stuck in main thread because has_pending_tree_ == true block
+        // commit process.
+        PostSetNeedsCommitToMainThread();
+        break;
+    }
+  }
+
+  std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
+      const viz::RendererSettings& renderer_settings,
+      double refresh_rate,
+      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> worker_context_provider)
+      override {
+    std::unique_ptr<TestLayerTreeFrameSink> frame_sink =
+        LayerTreeHostTest::CreateLayerTreeFrameSink(
+            renderer_settings, refresh_rate,
+            std::move(compositor_context_provider),
+            std::move(worker_context_provider));
+    layer_tree_frame_sink_ = frame_sink.get();
+    return frame_sink;
+  }
+
+ private:
+  TestLayerTreeFrameSink* layer_tree_frame_sink_;
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestBeginFramePausedChanged);
+
 }  // namespace
 }  // namespace cc

@@ -154,6 +154,14 @@ void CompositorFrameSinkSupport::SetBeginFrameSource(
     BeginFrameSource* begin_frame_source) {
   if (begin_frame_source_ && added_frame_observer_) {
     begin_frame_source_->RemoveObserver(this);
+    // When detaching from source, CompositorFrameSinkClient needs to know that
+    // there are no more OnBeginFrame. Otherwise, client in renderer could wait
+    // OnBeginFrame forever. e.g., crbug.com/1335000.
+    // OnBeginFrameSourcePausedChanged(false) is not handled here because it's
+    // handled in AddObserver() depending on current status of begin frame
+    // source.
+    if (!begin_frame_source)
+      OnBeginFrameSourcePausedChanged(true);
     added_frame_observer_ = false;
   }
 
