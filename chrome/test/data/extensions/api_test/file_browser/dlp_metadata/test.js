@@ -27,13 +27,14 @@ async function getVolumeMetadataByType(volumeType) {
 async function getFileSystem(volumeType) {
   const volume = await getVolumeMetadataByType(volumeType);
   return new Promise((resolve, reject) => {
-    chrome.fileSystem.requestFileSystem({volumeId: volume.volumeId}, fs => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError.message);
-        return;
-      }
-      resolve(fs);
-    });
+    chrome.fileSystem.requestFileSystem(
+        {volumeId: volume.volumeId, writable: true}, fs => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError.message);
+            return;
+          }
+          resolve(fs);
+        });
   });
 }
 
@@ -65,19 +66,40 @@ async function getFileEntries(volumeType, paths) {
   return Promise.all(paths.map(path => getFileEntry(volumeType, path)));
 }
 
-chrome.test.runTests([async function getDlpMetadata() {
-  const testEntries = await getFileEntries(
-      'testing',
-      ['blocked_file.txt', 'unrestricted_file.txt', 'untracked_file.txt']);
-  chrome.test.assertEq(3, testEntries.length);
-  chrome.fileManagerPrivate.getDlpMetadata(
-      testEntries, chrome.test.callbackPass(dlpMetadata => {
-        chrome.test.assertEq(
-            [
-              {isDlpRestricted: true, sourceUrl: 'https://example1.com'},
-              {isDlpRestricted: false, sourceUrl: 'https://example2.com'},
-              {isDlpRestricted: false, sourceUrl: ''}
-            ],
-            dlpMetadata);
-      }))
-}]);
+chrome.test.runTests([
+  async function getDlpMetadata() {
+    const testEntries = await getFileEntries(
+        'testing',
+        ['blocked_file.txt', 'unrestricted_file.txt', 'untracked_file.txt']);
+    chrome.test.assertEq(3, testEntries.length);
+    chrome.fileManagerPrivate.getDlpMetadata(
+        testEntries, chrome.test.callbackPass(dlpMetadata => {
+          chrome.test.assertEq(
+              [
+                {isDlpRestricted: true, sourceUrl: 'https://example1.com'},
+                {isDlpRestricted: false, sourceUrl: 'https://example2.com'},
+                {isDlpRestricted: false, sourceUrl: ''}
+              ],
+              dlpMetadata);
+        }))
+  },
+  async function getDlpMetadata_Error() {
+    // Get the file.
+    const [file] = await getFileEntries('testing', ['blocked_file.txt']);
+    // Delete the file. Even though 'blocked_file.txt' is restricted by DLP,
+    // once it doesn't exist anymore an empty DlpMetadata object should be
+    // returned.
+    await new Promise((resolve, reject) => file.remove(resolve, reject));
+    chrome.fileManagerPrivate.getDlpMetadata(
+        [file], chrome.test.callbackPass(dlpMetadata => {
+          chrome.test.assertEq(
+              [{isDlpRestricted: false, sourceUrl: ''}], dlpMetadata);
+        }))
+  },
+  async function getDlpMetadata_Empty() {
+    chrome.fileManagerPrivate.getDlpMetadata(
+        [], chrome.test.callbackPass(dlpMetadata => {
+          chrome.test.assertEq(0, dlpMetadata.length);
+        }))
+  }
+]);

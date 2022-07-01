@@ -777,6 +777,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(3);
 
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
