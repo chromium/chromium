@@ -208,11 +208,12 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
         &install_manager(), &controller().registrar(), &ui_manager(),
         &controller().sync_bridge(), &controller().os_integration_manager(),
         &icon_manager(), web_app_policy_manager_.get(),
-        &controller().translation_manager());
+        &controller().translation_manager(), &command_manager());
 
     install_manager().SetSubsystems(
         &controller().registrar(), &controller().os_integration_manager(),
-        &controller().command_manager(), &install_finalizer());
+        &controller().command_manager(), &install_finalizer(), &icon_manager(),
+        &controller().sync_bridge(), &controller().translation_manager());
 
     icon_manager().SetSubsystems(&controller().registrar(), &install_manager());
 

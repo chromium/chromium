@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
+#include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -106,11 +107,17 @@ void WebAppInstallManager::SetSubsystems(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppCommandManager* command_manager,
-    WebAppInstallFinalizer* finalizer) {
+    WebAppInstallFinalizer* finalizer,
+    WebAppIconManager* icon_manager,
+    WebAppSyncBridge* sync_bridge,
+    WebAppTranslationManager* translation_manager) {
   registrar_ = registrar;
   os_integration_manager_ = os_integration_manager;
   command_manager_ = command_manager;
   finalizer_ = finalizer;
+  icon_manager_ = icon_manager;
+  sync_bridge_ = sync_bridge;
+  translation_manager_ = translation_manager;
 }
 
 void WebAppInstallManager::LoadWebAppAndCheckManifest(
@@ -220,15 +227,15 @@ void WebAppInstallManager::UninstallFromSync(
   if (!started_)
     return;
 
-  finalizer_->UninstallFromSync(
-      std::move(web_apps),
-      base::BindRepeating(
-          [](RepeatingUninstallCallback callback, const web_app::AppId& app_id,
-             webapps::UninstallResultCode code) {
-            callback.Run(app_id,
-                         code == webapps::UninstallResultCode::kSuccess);
-          },
-          std::move(callback)));
+  for (auto& app_id : web_apps) {
+    command_manager_->ScheduleCommand(std::make_unique<WebAppUninstallCommand>(
+        app_id,
+        url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
+        profile_, os_integration_manager_, sync_bridge_, icon_manager_,
+        registrar_, this, finalizer_, translation_manager_,
+        webapps::WebappUninstallSource::kSync,
+        base::BindOnce(callback, app_id)));
+  }
 }
 
 void WebAppInstallManager::RetryIncompleteUninstalls(

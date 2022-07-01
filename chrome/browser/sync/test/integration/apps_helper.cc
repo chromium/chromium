@@ -40,31 +40,6 @@ std::string CreateFakeAppName(int index) {
   return "fakeapp" + base::NumberToString(index);
 }
 
-std::unique_ptr<web_app::WebAppTestUninstallObserver>
-SetupUninstallObserverForProfile(Profile* profile) {
-  std::set<web_app::AppId> apps_in_sync_uninstall =
-      web_app::WebAppProvider::GetForTest(profile)
-          ->sync_bridge()
-          .GetAppsInSyncUninstallForTest();
-
-  std::vector<web_app::AppId> apps_in_uninstall =
-      web_app::WebAppProvider::GetForTest(profile)
-          ->install_finalizer()
-          .GetPendingUninstallsForTesting();
-
-  apps_in_sync_uninstall.insert(apps_in_uninstall.begin(),
-                                apps_in_uninstall.end());
-
-  if (apps_in_sync_uninstall.empty()) {
-    return nullptr;
-  }
-
-  auto uninstall_observer =
-      std::make_unique<web_app::WebAppTestUninstallObserver>(profile);
-  uninstall_observer->BeginListening(apps_in_sync_uninstall);
-  return uninstall_observer;
-}
-
 void FlushPendingOperations(std::vector<Profile*> profiles) {
   for (Profile* profile : profiles) {
     web_app::WebAppProvider::GetForTest(profile)
@@ -105,12 +80,9 @@ void FlushPendingOperations(std::vector<Profile*> profiles) {
 
     // Next, wait for uninstalls. These are easier because they don't have two
     // stages.
-    std::unique_ptr<web_app::WebAppTestUninstallObserver> uninstall_observer =
-        SetupUninstallObserverForProfile(profile);
-    // This actually waits for all observed apps to be installed.
-    if (uninstall_observer) {
-      uninstall_observer->Wait();
-    }
+    web_app::WebAppProvider::GetForTest(profile)
+        ->command_manager()
+        .AwaitAllCommandsCompleteForTesting();
   }
 }
 

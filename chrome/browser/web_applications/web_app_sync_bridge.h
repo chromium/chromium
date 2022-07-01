@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -162,6 +163,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void UpdateRegistrar(std::unique_ptr<RegistryUpdateData> update_data);
 
   // Useful for identifying apps that have not yet been fully uninstalled.
+  // TODO(phillis): Remove apps_in_sync_uninstall_ and
+  // GetAppsInSyncUninstallForTest. https://crbug.com/1341354
   std::set<AppId> apps_in_sync_uninstall_;
 
   // Update the remote sync server.
@@ -172,7 +175,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnDataWritten(CommitCallback callback, bool success);
-  void WebAppUninstalled(const AppId& app, bool uninstalled);
+  void OnWebAppUninstallComplete(const AppId& app,
+                                 webapps::UninstallResultCode code);
 
   void ReportErrorToChangeProcessor(const syncer::ModelError& error);
 

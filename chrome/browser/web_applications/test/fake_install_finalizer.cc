@@ -77,12 +77,6 @@ void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
                      }));
 }
 
-void FakeInstallFinalizer::UninstallFromSync(
-    const std::vector<AppId>& web_apps,
-    RepeatingUninstallCallback callback) {
-  NOTREACHED();
-}
-
 bool FakeInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return false;

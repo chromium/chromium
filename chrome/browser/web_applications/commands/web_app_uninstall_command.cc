@@ -1,15 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_uninstall_job.h"
+#include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+
+#include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -18,10 +25,14 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
-WebAppUninstallJob::WebAppUninstallJob(
+WebAppUninstallCommand::WebAppUninstallCommand(
+    const AppId& app_id,
+    const url::Origin& app_origin,
+    Profile* profile,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge,
     WebAppIconManager* icon_manager,
@@ -29,27 +40,30 @@ WebAppUninstallJob::WebAppUninstallJob(
     WebAppInstallManager* install_manager,
     WebAppInstallFinalizer* install_finalizer,
     WebAppTranslationManager* translation_manager,
-    PrefService* profile_prefs)
-    : os_integration_manager_(os_integration_manager),
+    webapps::WebappUninstallSource source,
+    UninstallWebAppCallback callback)
+    : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
+      app_id_(app_id),
+      app_origin_(app_origin),
+      source_(source),
+      callback_(std::move(callback)),
+      os_integration_manager_(os_integration_manager),
       sync_bridge_(sync_bridge),
       icon_manager_(icon_manager),
       registrar_(registrar),
       install_manager_(install_manager),
       install_finalizer_(install_finalizer),
       translation_manager_(translation_manager),
-      profile_prefs_(profile_prefs) {}
+      profile_prefs_(profile->GetPrefs()) {}
 
-WebAppUninstallJob::~WebAppUninstallJob() = default;
+WebAppUninstallCommand::~WebAppUninstallCommand() = default;
 
-void WebAppUninstallJob::Start(const AppId& app_id,
-                               const url::Origin& app_origin,
-                               webapps::WebappUninstallSource source,
-                               UninstallCallback callback) {
-  DCHECK(install_manager_);
+void WebAppUninstallCommand::Start() {
+  if (!registrar_->GetAppById(app_id_)) {
+    Abort(webapps::UninstallResultCode::kNoAppToUninstall);
+    return;
+  }
 
-  app_id_ = app_id;
-  source_ = source;
-  callback_ = std::move(callback);
   DCHECK(state_ == State::kNotStarted);
   state_ = State::kPendingDataDeletion;
 
@@ -59,15 +73,17 @@ void WebAppUninstallJob::Start(const AppId& app_id,
   // same time.
   {
     ScopedRegistryUpdate update(sync_bridge_);
-    WebApp* app = update->UpdateApp(app_id);
+    WebApp* app = update->UpdateApp(app_id_);
     DCHECK(app);
     app->SetIsUninstalling(true);
   }
-  install_manager_->NotifyWebAppWillBeUninstalled(app_id);
+  install_manager_->NotifyWebAppWillBeUninstalled(app_id_);
 
-  RemoveAppIsolationState(profile_prefs_, app_origin);
+  RemoveAppIsolationState(profile_prefs_, app_origin_);
 
   // Uninstall any sub-apps the app has.
+  // TODO(phillis): Fix this command to get locks for all sub-app ids as well.
+  // https://crbug.com/1341337
   std::vector<AppId> sub_app_ids = registrar_->GetAllSubAppIds(app_id_);
   num_pending_sub_app_uninstalls_ = sub_app_ids.size();
   for (const AppId& sub_app_id : sub_app_ids) {
@@ -76,23 +92,30 @@ void WebAppUninstallJob::Start(const AppId& app_id,
     install_finalizer_->UninstallExternalWebApp(
         sub_app_id, WebAppManagement::Type::kSubApp,
         webapps::WebappUninstallSource::kSubApp,
-        base::BindOnce(&WebAppUninstallJob::OnSubAppUninstalled,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&WebAppUninstallCommand::OnSubAppUninstalled,
+                       weak_factory_.GetWeakPtr()));
   }
 
   os_integration_manager_->UninstallAllOsHooks(
-      app_id_, base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,
-                              weak_ptr_factory_.GetWeakPtr()));
+      app_id_, base::BindOnce(&WebAppUninstallCommand::OnOsHooksUninstalled,
+                              weak_factory_.GetWeakPtr()));
   icon_manager_->DeleteData(
-      app_id, base::BindOnce(&WebAppUninstallJob::OnIconDataDeleted,
-                             weak_ptr_factory_.GetWeakPtr()));
+      app_id_, base::BindOnce(&WebAppUninstallCommand::OnIconDataDeleted,
+                              weak_factory_.GetWeakPtr()));
 
   translation_manager_->DeleteTranslations(
-      app_id, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
-                             weak_ptr_factory_.GetWeakPtr()));
+      app_id_, base::BindOnce(&WebAppUninstallCommand::OnTranslationDataDeleted,
+                              weak_factory_.GetWeakPtr()));
 }
 
-void WebAppUninstallJob::OnSubAppUninstalled(
+void WebAppUninstallCommand::Abort(webapps::UninstallResultCode code) {
+  if (!callback_)
+    return;
+  SignalCompletionAndSelfDestruct(CommandResult::kFailure,
+                                  base::BindOnce(std::move(callback_), code));
+}
+
+void WebAppUninstallCommand::OnSubAppUninstalled(
     webapps::UninstallResultCode code) {
   errors_ = errors_ || (code != webapps::UninstallResultCode::kSuccess);
   num_pending_sub_app_uninstalls_--;
@@ -100,7 +123,7 @@ void WebAppUninstallJob::OnSubAppUninstalled(
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
+void WebAppUninstallCommand::OnOsHooksUninstalled(OsHooksErrors errors) {
   DCHECK(state_ == State::kPendingDataDeletion);
   hooks_uninstalled_ = true;
   // TODO(https://crbug.com/1293234): Remove after flakiness is solved.
@@ -111,7 +134,7 @@ void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::OnIconDataDeleted(bool success) {
+void WebAppUninstallCommand::OnIconDataDeleted(bool success) {
   DCHECK(state_ == State::kPendingDataDeletion);
   app_data_deleted_ = true;
   // TODO(https://crbug.com/1293234): Remove after flakiness is solved.
@@ -121,14 +144,14 @@ void WebAppUninstallJob::OnIconDataDeleted(bool success) {
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::OnTranslationDataDeleted(bool success) {
+void WebAppUninstallCommand::OnTranslationDataDeleted(bool success) {
   DCHECK(state_ == State::kPendingDataDeletion);
   translation_data_deleted_ = true;
   errors_ = errors_ || !success;
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::MaybeFinishUninstall() {
+void WebAppUninstallCommand::MaybeFinishUninstall() {
   DCHECK(state_ == State::kPendingDataDeletion);
   if (!hooks_uninstalled_ || !app_data_deleted_ ||
       num_pending_sub_app_uninstalls_ > 0 || !translation_data_deleted_) {
@@ -146,8 +169,27 @@ void WebAppUninstallJob::MaybeFinishUninstall() {
     update->DeleteApp(app_id_);
   }
   install_manager_->NotifyWebAppUninstalled(app_id_);
-  std::move(callback_).Run(errors_ ? webapps::UninstallResultCode::kError
-                                   : webapps::UninstallResultCode::kSuccess);
+
+  SignalCompletionAndSelfDestruct(
+      errors_ ? CommandResult::kFailure : CommandResult::kSuccess,
+      base::BindOnce(std::move(callback_),
+                     errors_ ? webapps::UninstallResultCode::kError
+                             : webapps::UninstallResultCode::kSuccess));
 }
 
+void WebAppUninstallCommand::OnSyncSourceRemoved() {
+  // TODO(crbug.com/1320086): remove after uninstall from sync is async.
+  Abort(webapps::UninstallResultCode::kNoAppToUninstall);
+  return;
+}
+
+void WebAppUninstallCommand::OnShutdown() {
+  Abort(webapps::UninstallResultCode::kError);
+  return;
+}
+
+base::Value WebAppUninstallCommand::ToDebugValue() const {
+  return base::Value(base::StringPrintf(
+      "WebAppUninstallCommand %d, app_id_: %s", id(), app_id_.c_str()));
+}
 }  // namespace web_app

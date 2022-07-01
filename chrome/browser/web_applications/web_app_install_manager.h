@@ -43,6 +43,9 @@ class WebAppInstallFinalizer;
 class WebAppInstallTask;
 class WebAppRegistrar;
 class OsIntegrationManager;
+class WebAppSyncBridge;
+class WebAppTranslationManager;
+class WebAppIconManager;
 
 // TODO(loyso): Unify the API and merge similar InstallWebAppZZZZ functions.
 class WebAppInstallManager final : public SyncInstallDelegate {
@@ -58,7 +61,10 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void SetSubsystems(WebAppRegistrar* registrar,
                      OsIntegrationManager* os_integration_manager,
                      WebAppCommandManager* command_manager,
-                     WebAppInstallFinalizer* finalizer);
+                     WebAppInstallFinalizer* finalizer,
+                     WebAppIconManager* icon_manager,
+                     WebAppSyncBridge* sync_bridge,
+                     WebAppTranslationManager* translation_manager);
 
   // Loads |web_app_url| in a new WebContents and determines whether it has a
   // valid manifest. Calls |callback| with results.
@@ -187,6 +193,9 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;
+  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
 
   // All owned tasks.
   using Tasks = base::flat_set<std::unique_ptr<WebAppInstallTask>,

@@ -1114,8 +1114,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
   bool swa_found = false;
   app_service_proxy->AppRegistryCache().ForEachApp(
       [&](const apps::AppUpdate& app) {
-        if (app.AppType() == apps::AppType::kSystemWeb ||
-            app.AppType() == apps::AppType::kWeb) {
+        if ((app.AppType() == apps::AppType::kSystemWeb ||
+             app.AppType() == apps::AppType::kWeb) &&
+            app.Readiness() != apps::Readiness::kUninstalledByUser) {
           swa_found = true;
         }
       });

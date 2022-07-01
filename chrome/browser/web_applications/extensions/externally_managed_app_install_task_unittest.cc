@@ -177,11 +177,6 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
         }));
   }
 
-  void UninstallFromSync(const std::vector<AppId>& web_apps,
-                         RepeatingUninstallCallback callback) override {
-    NOTREACHED();
-  }
-
   void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                       InstallFinalizedCallback callback) override {
     NOTREACHED();

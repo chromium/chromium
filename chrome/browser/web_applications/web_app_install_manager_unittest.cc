@@ -44,7 +44,6 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_app_uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -116,8 +115,9 @@ class WebAppInstallManagerTest
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     install_manager_->SetSubsystems(
         &registrar(), &controller().os_integration_manager(),
-        &fake_registry_controller_->command_manager(),
-        install_finalizer_.get());
+        &fake_registry_controller_->command_manager(), install_finalizer_.get(),
+        icon_manager_.get(), &fake_registry_controller_->sync_bridge(),
+        &fake_registry_controller_->translation_manager());
 
     auto test_url_loader = std::make_unique<TestWebAppUrlLoader>();
 
@@ -133,7 +133,8 @@ class WebAppInstallManagerTest
         &fake_registry_controller_->sync_bridge(),
         &fake_registry_controller_->os_integration_manager(),
         icon_manager_.get(), policy_manager_.get(),
-        &fake_registry_controller_->translation_manager());
+        &fake_registry_controller_->translation_manager(),
+        &fake_registry_controller_->command_manager());
   }
 
   void TearDown() override {
@@ -428,12 +429,12 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
             std::move(apps_to_uninstall),
             base::BindLambdaForTesting(
                 [&, callback](const AppId& uninstalled_app_id,
-                              bool uninstalled) {
+                              webapps::UninstallResultCode code) {
                   EXPECT_EQ(uninstalled_app_id, app_id);
-                  EXPECT_TRUE(uninstalled);
+                  EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
                   event_order.push_back(Event::kUninstallFromSync_Callback);
                   run_loop.Quit();
-                  callback.Run(uninstalled_app_id, uninstalled);
+                  callback.Run(uninstalled_app_id, code);
                 }));
       }));
 
@@ -489,12 +490,12 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
             std::move(apps_to_uninstall),
             base::BindLambdaForTesting(
                 [&, callback](const AppId& uninstalled_app_id,
-                              bool uninstalled) {
+                              webapps::UninstallResultCode code) {
                   EXPECT_EQ(uninstalled_app_id, app_id);
-                  EXPECT_TRUE(uninstalled);
+                  EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
                   event_order.push_back(Event::kUninstallFromSync_Callback);
                   run_loop.Quit();
-                  callback.Run(uninstalled_app_id, uninstalled);
+                  callback.Run(uninstalled_app_id, code);
                 }));
       }));
 

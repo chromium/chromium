@@ -127,7 +127,7 @@ void FakeWebAppRegistryController::UninstallFromSync(
                                                              callback);
   } else {
     for (const AppId& web_app : web_apps) {
-      callback.Run(web_app, /*uninstalled=*/true);
+      callback.Run(web_app, webapps::UninstallResultCode::kSuccess);
     }
   }
 }
