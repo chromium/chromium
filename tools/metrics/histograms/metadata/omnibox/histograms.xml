@@ -863,13 +863,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.ProviderTime2" units="ms" expires_after="2022-12-25">
+<histogram name="Omnibox.ProviderTime2.{OmniboxProvider}" units="ms"
+    expires_after="2022-12-25">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The length of time taken by the named provider&quot;s synchronous pass.
+    The length of time taken by the {OmniboxProvider}Provider's synchronous
+    pass.
   </summary>
+  <token key="OmniboxProvider">
+    <variant name="Bookmark"/>
+    <variant name="Builtin"/>
+    <variant name="Clipboard"/>
+    <variant name="Contact"/>
+    <variant name="Document"/>
+    <variant name="ExtensionApp"/>
+    <variant name="HistoryCluster"/>
+    <variant name="HistoryContents"/>
+    <variant name="HistoryFuzzy"/>
+    <variant name="HistoryQuick"/>
+    <variant name="HistoryURL"/>
+    <variant name="Keyword"/>
+    <variant name="LocalHistoryZeroSuggest"/>
+    <variant name="MostVisitedSites"/>
+    <variant name="OnDeviceHead"/>
+    <variant name="OpenTab"/>
+    <variant name="QueryTile"/>
+    <variant name="Search"/>
+    <variant name="Shortcuts"/>
+    <variant name="VerbatimMatch"/>
+    <variant name="VoiceSuggest"/>
+    <variant name="ZeroSuggest"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.QueryTime2" units="ms" expires_after="2022-11-13">

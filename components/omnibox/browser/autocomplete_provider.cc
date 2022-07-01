@@ -36,9 +36,10 @@ AutocompleteProvider::AutocompleteProvider(Type type)
 // static
 const char* AutocompleteProvider::TypeToString(Type type) {
   // When creating a new provider, add the provider type to this function and
-  // make sure to also add the appropriate suffix entry to OmniboxProviderTime
-  // histogram_suffixes (in histogram_suffixes_list.xml) so that the run-time
-  // metrics associated with the relevant provider can be properly analyzed.
+  // make sure to also add the appropriate OmniboxProvider variant to the
+  // Omnibox.ProviderTime2 histogram (defined in omnibox/histograms.xml) so that
+  // the run-time metrics associated with the relevant provider can be properly
+  // analyzed.
   switch (type) {
     case TYPE_BOOKMARK:
       return "Bookmark";
