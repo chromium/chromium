@@ -12,6 +12,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace safe_browsing {
 
 // This class encapsulates the process of getting data scanned through a generic
@@ -187,6 +189,10 @@ class BinaryUploadService : public KeyedService {
     // Access token to be attached in the request headers.
     std::string access_token_;
   };
+
+  static BinaryUploadService* GetForProfile(
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings& settings);
 
   // Upload the given file contents for deep scanning if the browser is
   // authorized to upload data, otherwise queue the request.

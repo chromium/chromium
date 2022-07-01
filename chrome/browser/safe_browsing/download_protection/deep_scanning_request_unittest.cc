@@ -181,7 +181,9 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
   void RequestFinished(DeepScanningRequest* request) override {}
 
-  BinaryUploadService* GetBinaryUploadService(Profile* profile) override {
+  BinaryUploadService* GetBinaryUploadService(
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings&) override {
     return &binary_upload_service_;
   }
 

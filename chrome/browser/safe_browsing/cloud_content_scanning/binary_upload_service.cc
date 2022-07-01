@@ -9,6 +9,8 @@
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "components/enterprise/common/strings.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -221,6 +223,15 @@ const std::string& BinaryUploadService::Request::access_token() const {
 void BinaryUploadService::Request::set_access_token(
     const std::string& access_token) {
   access_token_ = access_token;
+}
+
+// static
+BinaryUploadService* BinaryUploadService::GetForProfile(
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& settings) {
+  // TODO(rogerta): If settings.is_local_analysis() is true, use
+  // LocalBinaryUploadServiceFactory instead.
+  return CloudBinaryUploadServiceFactory::GetForProfile(profile);
 }
 
 }  // namespace safe_browsing

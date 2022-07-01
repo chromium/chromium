@@ -29,8 +29,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
@@ -325,7 +325,7 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   void SetBinaryUploadServiceTestFactory() {
-    BinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
+    CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindRepeating(
             &DownloadDeepScanningBrowserTestBase::CreateBinaryUploadService,
@@ -360,7 +360,7 @@ class DownloadDeepScanningBrowserTestBase
 
   void AuthorizeForDeepScanning() {
     static_cast<safe_browsing::CloudBinaryUploadService*>(
-        BinaryUploadServiceFactory::GetForProfile(browser()->profile()))
+        CloudBinaryUploadServiceFactory::GetForProfile(browser()->profile()))
         ->SetAuthForTesting("dm_token", /*authorized=*/true);
   }
 

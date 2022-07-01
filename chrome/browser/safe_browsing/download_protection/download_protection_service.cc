@@ -19,8 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
@@ -782,8 +780,9 @@ void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
 }
 
 BinaryUploadService* DownloadProtectionService::GetBinaryUploadService(
-    Profile* profile) {
-  return BinaryUploadServiceFactory::GetForProfile(profile);
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& settings) {
+  return BinaryUploadService::GetForProfile(profile, settings);
 }
 
 SafeBrowsingNavigationObserverManager*

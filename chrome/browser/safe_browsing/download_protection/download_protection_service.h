@@ -315,7 +315,9 @@ class DownloadProtectionService {
 
   // Get the BinaryUploadService for the given |profile|. Virtual so it can be
   // overridden in tests.
-  virtual BinaryUploadService* GetBinaryUploadService(Profile* profile);
+  virtual BinaryUploadService* GetBinaryUploadService(
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings& settings);
 
   // Get the SafeBrowsingNavigationObserverManager for the given |web_contents|.
   SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(

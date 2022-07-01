@@ -34,7 +34,6 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
@@ -535,7 +534,8 @@ void ContentAnalysisDelegate::FillAllResultsWith(bool status) {
 }
 
 BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
-  return safe_browsing::BinaryUploadServiceFactory::GetForProfile(profile_);
+  return safe_browsing::BinaryUploadService::GetForProfile(profile_,
+                                                           data_.settings);
 }
 
 void ContentAnalysisDelegate::UploadTextForDeepScanning(

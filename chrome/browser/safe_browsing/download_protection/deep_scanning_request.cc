@@ -518,7 +518,7 @@ void DeepScanningRequest::OnDownloadRequestReady(
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   BinaryUploadService* binary_upload_service =
-      download_service_->GetBinaryUploadService(profile);
+      download_service_->GetBinaryUploadService(profile, analysis_settings_);
   if (binary_upload_service) {
     binary_upload_service->MaybeUploadForDeepScanning(
         std::move(deep_scan_request));
