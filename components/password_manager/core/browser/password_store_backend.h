@@ -70,10 +70,6 @@ class PasswordStoreBackend {
 
     // Tells whether sync enabled or not.
     virtual bool IsSyncingPasswordsEnabled() = 0;
-
-    // Active syncing account if one exist. If sync disabled absl::nullopt will
-    // be returned.
-    virtual absl::optional<std::string> GetSyncingAccount() = 0;
   };
 
   using RemoteChangesReceived =

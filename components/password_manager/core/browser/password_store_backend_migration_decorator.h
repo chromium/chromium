@@ -31,7 +31,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
       PrefService* prefs,
-      SyncDelegate* sync_delegate);
+      std::unique_ptr<SyncDelegate> sync_delegate);
   PasswordStoreBackendMigrationDecorator(
       const PasswordStoreBackendMigrationDecorator&) = delete;
   PasswordStoreBackendMigrationDecorator(
@@ -151,9 +151,8 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
 
   const raw_ptr<PrefService> prefs_ = nullptr;
 
-  // |sync_delegate| lives inside |android_backend|. So it should always be
-  // destroyed before |android_backend_|.
-  const raw_ptr<SyncDelegate> sync_delegate_;
+  // A delegate used to retrieve sync status.
+  std::unique_ptr<SyncDelegate> sync_delegate_;
 
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
 

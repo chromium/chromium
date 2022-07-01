@@ -57,6 +57,7 @@ using base::UTF8ToUTF16;
 using password_manager::GetExpressionForFederatedMatching;
 using password_manager::GetRegexForPSLFederatedMatching;
 using password_manager::GetRegexForPSLMatching;
+using sync_util::GetSyncingAccount;
 
 using JobId = PasswordStoreAndroidBackendBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
@@ -327,12 +328,9 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetElapsedTimeSinceStart()
   return metrics_recorder_.GetElapsedTimeSinceCreation();
 }
 
-PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
-    std::unique_ptr<SyncDelegate> sync_delegate,
-    PrefService* prefs)
+PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(PrefService* prefs)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
-      bridge_(PasswordStoreAndroidBackendBridge::Create()),
-      sync_delegate_(std::move(sync_delegate)) {
+      bridge_(PasswordStoreAndroidBackendBridge::Create()) {
   DCHECK(base::FeatureList::IsEnabled(
       password_manager::features::kUnifiedPasswordManagerAndroid));
   DCHECK(bridge_);
@@ -348,13 +346,11 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     base::PassKey<class PasswordStoreAndroidBackendTest>,
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-    std::unique_ptr<SyncDelegate> sync_delegate,
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
         sync_controller_delegate,
     PrefService* prefs)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_(std::move(bridge)),
-      sync_delegate_(std::move(sync_delegate)),
       sync_controller_delegate_(std::move(sync_controller_delegate)) {
   DCHECK(bridge_);
   prefs_ = prefs;
@@ -386,14 +382,14 @@ void PasswordStoreAndroidBackend::Shutdown(
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
-  GetAllLoginsForAccount(GetAccount(sync_delegate_->GetSyncingAccount()),
+  GetAllLoginsForAccount(GetAccount(GetSyncingAccount(sync_service_)),
                          std::move(callback));
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   JobId job_id = bridge_->GetAutofillableLogins(
-      GetAccount(sync_delegate_->GetSyncingAccount()));
+      GetAccount(GetSyncingAccount(sync_service_)));
   QueueNewJob(job_id, std::move(callback),
               MetricInfix("GetAutofillableLoginsAsync"));
 }
@@ -444,7 +440,7 @@ void PasswordStoreAndroidBackend::AddLoginAsync(
   CHECK(!form.blocked_by_user ||
         (form.username_value.empty() && form.password_value.empty()));
   JobId job_id =
-      bridge_->AddLogin(form, GetAccount(sync_delegate_->GetSyncingAccount()));
+      bridge_->AddLogin(form, GetAccount(GetSyncingAccount(sync_service_)));
   QueueNewJob(job_id, std::move(callback), MetricInfix("AddLoginAsync"));
 }
 
@@ -454,15 +450,15 @@ void PasswordStoreAndroidBackend::UpdateLoginAsync(
   // TODO(crbug.com/1324588): remove this check
   CHECK(!form.blocked_by_user ||
         (form.username_value.empty() && form.password_value.empty()));
-  JobId job_id = bridge_->UpdateLogin(
-      form, GetAccount(sync_delegate_->GetSyncingAccount()));
+  JobId job_id =
+      bridge_->UpdateLogin(form, GetAccount(GetSyncingAccount(sync_service_)));
   QueueNewJob(job_id, std::move(callback), MetricInfix("UpdateLoginAsync"));
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  RemoveLoginForAccount(form, GetAccount(sync_delegate_->GetSyncingAccount()),
+  RemoveLoginForAccount(form, GetAccount(GetSyncingAccount(sync_service_)),
                         std::move(callback));
 }
 
@@ -750,7 +746,7 @@ void PasswordStoreAndroidBackend::GetLoginsAsync(const PasswordFormDigest& form,
                                                  LoginsOrErrorReply callback) {
   JobId job_id = bridge_->GetLoginsForSignonRealm(
       FormToSignonRealmQuery(form, include_psl),
-      GetAccount(sync_delegate_->GetSyncingAccount()));
+      GetAccount(GetSyncingAccount(sync_service_)));
   QueueNewJob(job_id,
               base::BindOnce(&ValidateSignonRealm, std::move(form), include_psl,
                              std::move(callback)),

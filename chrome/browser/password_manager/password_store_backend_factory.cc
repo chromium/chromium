@@ -39,13 +39,11 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
         "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
         !prefs->GetBoolean(password_manager::prefs::
                                kUnenrolledFromGoogleMobileServicesDueToErrors));
-    raw_ptr<SyncDelegate> raw_sync_delegate = sync_delegate.get();
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreBuiltInBackend>(
             CreateLoginDatabaseForProfileStorage(login_db_path)),
-        std::make_unique<PasswordStoreAndroidBackend>(std::move(sync_delegate),
-                                                      prefs),
-        prefs, raw_sync_delegate.get());
+        std::make_unique<PasswordStoreAndroidBackend>(prefs), prefs,
+        std::move(sync_delegate));
   }
   return std::make_unique<PasswordStoreBuiltInBackend>(
       CreateLoginDatabaseForProfileStorage(login_db_path));

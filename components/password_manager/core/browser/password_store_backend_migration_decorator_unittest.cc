@@ -51,10 +51,13 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
         /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
         {{"migration_version", "1"}, {"stage", "0"}});
 
+    std::unique_ptr<MockPasswordBackendSyncDelegate> sync_delegate =
+        std::make_unique<MockPasswordBackendSyncDelegate>();
+    sync_delegate_ = sync_delegate.get();
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
             CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
-            &sync_delegate_);
+            std::move(sync_delegate));
   }
 
   ~PasswordStoreBackendMigrationDecoratorTest() override {
@@ -86,7 +89,7 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     RunUntilIdle();
   }
 
-  MockPasswordBackendSyncDelegate& sync_delegate() { return sync_delegate_; }
+  MockPasswordBackendSyncDelegate& sync_delegate() { return *sync_delegate_; }
   PasswordStoreBackend* backend_migration_decorator() {
     return backend_migration_decorator_.get();
   }
@@ -120,7 +123,7 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
-  MockPasswordBackendSyncDelegate sync_delegate_;
+  raw_ptr<MockPasswordBackendSyncDelegate> sync_delegate_;
   raw_ptr<MockPasswordStoreBackend> built_in_backend_;
   raw_ptr<MockPasswordStoreBackend> android_backend_;
   syncer::TestSyncService sync_service_;

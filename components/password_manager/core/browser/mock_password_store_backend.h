@@ -26,8 +26,6 @@ class MockPasswordBackendSyncDelegate
   ~MockPasswordBackendSyncDelegate() override;
 
   MOCK_METHOD(bool, IsSyncingPasswordsEnabled, (), (override));
-
-  MOCK_METHOD(absl::optional<std::string>, GetSyncingAccount, (), (override));
 };
 
 class MockPasswordStoreBackend : public PasswordStoreBackend {
