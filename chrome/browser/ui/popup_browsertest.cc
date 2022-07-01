@@ -32,12 +32,6 @@
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC)
-#include "testing/gmock/include/gmock/gmock.h"
-#include "ui/display/display_observer.h"
-#include "ui/display/mac/test/virtual_display_mac_util.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace {
 
 // Tests of window placement for popup browser windows. Test fixtures are run
@@ -123,40 +117,6 @@ class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
   const gfx::Rect initial_bounds_;
   base::RunLoop run_loop_;
 };
-
-#if BUILDFLAG(IS_MAC)
-// A helper class to wait for another display added.
-class TestDisplayObserver : public display::DisplayObserver {
- public:
-  // display::DisplayObserver:
-  MOCK_METHOD2(OnDisplayMetricsChanged,
-               void(const display::Display&, uint32_t));
-  void OnDisplayAdded(const display::Display& new_display) override {
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "TestDisplayObserver::OnDisplayAdded - display id: "
-              << new_display.id() << ".";
-    run_loop_.Quit();
-  }
-  void OnDisplayRemoved(const display::Display& old_display) override {
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "TestDisplayObserver::OnDisplayRemoved - display id: "
-              << old_display.id() << ".";
-  };
-
-  // Wait for changes to occur, or return immediately if they already have.
-  void Wait() {
-    if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  base::RunLoop run_loop_;
-};
-#endif  // BUILDFLAG(IS_MAC)
 
 // Ensure popups are opened in the available space of the opener's display.
 // TODO(crbug.com/1211516): Flaky.
@@ -280,9 +240,9 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
   }
 }
 
-// TODO(crbug.com/1183791): Disabled everywhere except ChromeOS and Mac because
-// of races with SetScreenInstance and observers not being notified.
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC))
+// TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
+// SetScreenInstance and observers not being notified.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_AboutBlankCrossScreenPlacement \
   DISABLED_AboutBlankCrossScreenPlacement
 #else
@@ -293,18 +253,6 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");
-#elif BUILDFLAG(IS_MAC)
-  if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
-    GTEST_SKIP() << "Skipping test for MacOS 10.13 and older or Arm Macs.";
-  }
-  display::test::VirtualDisplayMacUtil::PreventDisplaySleep();
-  TestDisplayObserver display_observer;
-  display::Screen::GetScreen()->AddObserver(&display_observer);
-  int screen_number = display::Screen::GetScreen()->GetNumDisplays();
-  for (int i = screen_number; i < 2; ++i) {
-    display::test::VirtualDisplayMacUtil::AddDisplay(i + 1, {800, 800});
-    display_observer.Wait();
-  }
 #else
   display::ScreenBase test_screen;
   test_screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
@@ -353,12 +301,8 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
   auto original_popup_display = GetDisplayNearestBrowser(popup);
   EXPECT_EQ(opener_display, original_popup_display);
 
-  const auto second_display = screen->GetAllDisplays()[1];
-  const std::string move_popup_to_the_second_screen_script = base::StringPrintf(
-      "w.moveTo(%d, %d);", second_display.work_area().x() + 100,
-      second_display.work_area().y() + 100);
   // Have the opener try to move the popup to the second screen.
-  content::ExecuteScriptAsync(opener, move_popup_to_the_second_screen_script);
+  content::ExecuteScriptAsync(opener, "w.moveTo(999, 199);");
 
   // Wait for the substantial move, widgets may move during initialization.
   auto* widget = views::Widget::GetWidgetForNativeWindow(
@@ -367,18 +311,11 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
   auto new_popup_display = GetDisplayNearestBrowser(popup);
   // The popup only moves to the second screen with Window Placement permission.
   EXPECT_EQ(GetParam(), original_popup_display != new_popup_display);
-  EXPECT_EQ(GetParam(), second_display == new_popup_display);
   // The popup is always constrained to the bounds of the target display.
   auto popup_bounds = popup->window()->GetBounds();
   EXPECT_TRUE(new_popup_display.work_area().Contains(popup_bounds))
       << " work_area: " << new_popup_display.work_area().ToString()
       << " popup: " << popup_bounds.ToString();
-
-#if BUILDFLAG(IS_MAC)
-  display::test::VirtualDisplayMacUtil::RemoveAllDisplays();
-  display::Screen::GetScreen()->RemoveObserver(&display_observer);
-  display::test::VirtualDisplayMacUtil::AllowDisplaySleep();
-#endif  // BUILDFLAG(IS_MAC)
 }
 
 }  // namespace
