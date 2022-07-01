@@ -350,7 +350,13 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputType::kJSON, OutputType::kProto),
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
+// Flaky; see https://crbug.com/1341341 .
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
+#else
+#define MAYBE_StopOnUIThread StopOnUIThread
+#endif
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   StartupTracingController::EmergencyStop();
