@@ -66,7 +66,7 @@ class AppCommandRunner {
   // command line can be either hardcoded or placeholders from `%1` to `%9`.
   static HRESULT GetAppCommandFormatComponents(
       UpdaterScope scope,
-      const std::wstring& command_format,
+      std::wstring command_format,
       base::FilePath& executable,
       std::vector<std::wstring>& parameters);
 

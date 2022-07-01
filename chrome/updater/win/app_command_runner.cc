@@ -275,12 +275,11 @@ HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
 
 HRESULT AppCommandRunner::GetAppCommandFormatComponents(
     UpdaterScope scope,
-    const std::wstring& command_format,
+    std::wstring command_format,
     base::FilePath& executable,
     std::vector<std::wstring>& parameters) {
-  std::wstring fmt = command_format;
   int num_args = 0;
-  ScopedLocalAlloc args(::CommandLineToArgvW(&fmt[0], &num_args));
+  ScopedLocalAlloc args(::CommandLineToArgvW(&command_format[0], &num_args));
   if (!args.is_valid() || num_args < 1)
     return E_INVALIDARG;
 

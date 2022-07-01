@@ -412,9 +412,8 @@ class WindowEnumerator {
 };
 
 DISPID GetDispId(Microsoft::WRL::ComPtr<IDispatch> dispatch,
-                 const std::wstring& of_name) {
+                 std::wstring name) {
   DISPID id = 0;
-  std::wstring name = of_name;
   LPOLESTR name_ptr = &name[0];
   EXPECT_HRESULT_SUCCEEDED(dispatch->GetIDsOfNames(IID_NULL, &name_ptr, 1,
                                                    LOCALE_USER_DEFAULT, &id));
