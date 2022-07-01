@@ -1555,7 +1555,7 @@
   {
     "name": "enable-auto-disable-accessibility",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 106
   },
   {
     "name": "enable-autofill-credit-card-authentication",
