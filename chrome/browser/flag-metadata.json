@@ -753,6 +753,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cct-real-time-engagement-signals",
+    "owners": ["sinansahin@google.com", "jinsukkim"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "cct-resizable-90-maximum-height",
     "owners": ["ctzsm", "peconn"],
     "expiry_milestone": 105

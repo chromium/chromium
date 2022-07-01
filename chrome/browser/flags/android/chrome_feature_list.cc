@@ -183,6 +183,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTNewDownloadTab,
     &kCCTPostMessageAPI,
+    &kCCTRealTimeEngagementSignals,
     &kCCTRedirectPreconnect,
     &kCCTRemoveRemoteViewIds,
     &kCCTReportParallelRequestStatus,
@@ -503,6 +504,9 @@ const base::Feature kCCTPackageNameRecording{"CCTPackageNameRecording",
 
 const base::Feature kCCTPostMessageAPI{"CCTPostMessageAPI",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCCTRealTimeEngagementSignals{
+    "CCTRealTimeEngagementSignals", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTRedirectPreconnect{"CCTRedirectPreconnect",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

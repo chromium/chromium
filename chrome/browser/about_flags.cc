@@ -5850,6 +5850,13 @@ const FeatureEntry kFeatureEntries[] = {
          "CCTResizableThirdPartiesDefaultPolicy")},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"cct-real-time-engagement-signals",
+     flag_descriptions::kCCTRealTimeEngagementSignalsName,
+     flag_descriptions::kCCTRealTimeEngagementSignalsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTRealTimeEngagementSignals)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"allow-dsp-based-aec", flag_descriptions::kCrOSDspBasedAecAllowedName,
      flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS | kOsLacros,

@@ -1793,6 +1793,9 @@ extern const char kCCTResizableForFirstPartiesDescription[];
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 
+extern const char kCCTRealTimeEngagementSignalsName[];
+extern const char kCCTRealTimeEngagementSignalsDescription[];
+
 extern const char kChimeAlwaysShowNotificationDescription[];
 extern const char kChimeAlwaysShowNotificationName[];
 

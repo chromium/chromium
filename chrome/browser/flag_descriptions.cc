@@ -3192,6 +3192,12 @@ const char kCCTResizableForThirdPartiesName[] =
 const char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
 
+const char kCCTRealTimeEngagementSignalsName[] =
+    "Enable CCT real-time engagement signals.";
+const char kCCTRealTimeEngagementSignalsDescription[] =
+    "Enables sending real-time engagement signals (e.g. scroll) through "
+    "CustomTabsCallback.";
+
 const char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";
 const char kChimeAlwaysShowNotificationName[] =

@@ -55877,6 +55877,7 @@ from previous Chrome versions.
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
+  <int value="-1612641543" label="CCTRealTimeEngagementSignals:disabled"/>
   <int value="-1612418793"
       label="ExperimentalAccessibilitySwitchAccessSetupGuide:enabled"/>
   <int value="-1612253158" label="HardwareSecureDecryptionExperiment:enabled"/>
@@ -57390,6 +57391,7 @@ from previous Chrome versions.
   <int value="-669761849" label="SplitSettings:disabled"/>
   <int value="-669400536" label="FastPairSoftwareScanning:disabled"/>
   <int value="-668114930" label="WindowsFollowCursor:disabled"/>
+  <int value="-667952041" label="CCTRealTimeEngagementSignals:enabled"/>
   <int value="-667517406" label="overscroll-history-navigation"/>
   <int value="-667018797"
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:disabled"/>
