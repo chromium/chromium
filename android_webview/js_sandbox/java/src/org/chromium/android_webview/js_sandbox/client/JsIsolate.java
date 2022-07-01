@@ -10,6 +10,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresFeature;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -132,7 +133,11 @@ public class JsIsolate implements AutoCloseable {
         mGuard.close();
     }
 
-    public boolean provideNamedData(@NonNull String name, @NonNull byte[] inputBytes) {
+    @RequiresFeature(name = JsSandbox.PROVIDE_CONSUME_ARRAY_BUFFER,
+            enforcement =
+                    "org.chromium.android_webview.js_sandbox.client.JsSandbox#isFeatureSupported")
+    public boolean
+    provideNamedData(@NonNull String name, @NonNull byte[] inputBytes) {
         if (mJsIsolateStub == null) {
             throw new IllegalStateException("Calling provideNamedData() after closing the Isolate");
         }

@@ -14,6 +14,8 @@ import android.os.RemoteException;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.core.content.ContextCompat;
@@ -23,6 +25,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -48,6 +54,56 @@ public class JsSandbox implements AutoCloseable {
 
     @GuardedBy("mLock")
     private HashSet<JsIsolate> mActiveIsolateSet = new HashSet<JsIsolate>();
+
+    /**
+     * @hide
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @StringDef(value =
+                       {
+                               ISOLATE_TERMINATION,
+                               PROMISE_RETURN,
+                               PROVIDE_CONSUME_ARRAY_BUFFER,
+                               WASM_COMPILATION,
+                       })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.PARAMETER, ElementType.METHOD})
+    public @interface JsSandboxFeature {}
+
+    /**
+     * Feature for {@link #isFeatureSupported(String)}.
+     * <p>This features provides additional behaviour to {@link JsIsolate#close()}. When this
+     * feature is present, {@link JsIsolate#close()} will terminate the currently running JS
+     * evaluation and close the isolate. If it is absent, {@link JsIsolate#close()} will close the
+     * isolate after all pending evaluations are run.
+     */
+    public static final String ISOLATE_TERMINATION = "ISOLATE_TERMINATION";
+
+    /**
+     * Feature for {@link #isFeatureSupported(String)}.
+     * <p>This features provides additional behaviour to {@link
+     * JsIsolate#evaluateJavascriptAsync(String)} ()}. When this feature is present, we support the
+     * JS to return promises, and {@link JsIsolate#evaluateJavascriptAsync(String)} waits for the
+     * promise to resolve and returns the resolved value of the promise.
+     */
+    public static final String PROMISE_RETURN = "PROMISE_RETURN";
+
+    /**
+     * Feature for {@link #isFeatureSupported(String)}.
+     * This feature covers {@link JsIsolate#provideNamedData(String, byte[])}
+     * <p>This also covers the JS API android.consumeNamedDataAsArrayBuffer(string).
+     */
+    public static final String PROVIDE_CONSUME_ARRAY_BUFFER = "PROVIDE_CONSUME_ARRAY_BUFFER";
+
+    /**
+     * Feature for {@link #isFeatureSupported(String)}.
+     * <p>This features provides additional behaviour to {@link
+     * JsIsolate#evaluateJavascriptAsync(String)} ()}. When this feature is present, we support
+     * using the JS API WebAssembly.compile(ArrayBuffer).
+     */
+    public static final String WASM_COMPILATION = "WASM_COMPILATION";
+
+    private HashSet<String> mClientSideFeatureSet;
 
     static class ConnectionSetup implements ServiceConnection {
         private CallbackToFutureAdapter.Completer<JsSandbox> mCompleter;
@@ -183,22 +239,40 @@ public class JsSandbox implements AutoCloseable {
         }
     }
 
+    // Called from only the constructor and as a result mJsSandboxService will not be null.
+    @GuardedBy("mLock")
+    private void populateClientFeatureSet() {
+        mClientSideFeatureSet = new HashSet<String>();
+        List<String> features;
+        try {
+            features = mJsSandboxService.getSupportedFeatures();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (features.contains(IJsSandboxService.ISOLATE_TERMINATION)) {
+            mClientSideFeatureSet.add(ISOLATE_TERMINATION);
+        }
+        if (features.contains(IJsSandboxService.WASM_FROM_ARRAY_BUFFER)) {
+            mClientSideFeatureSet.add(PROMISE_RETURN);
+            mClientSideFeatureSet.add(PROVIDE_CONSUME_ARRAY_BUFFER);
+            mClientSideFeatureSet.add(WASM_COMPILATION);
+        }
+    }
+
     /**
-     * Quick temporary feature detection interface for testing the IPC.
-     * TODO(crbug.com/1297672): make parameterized and cached.
+     * Feature detection interface.
      */
-    public boolean isIsolateTerminationSupported() {
+    public boolean isFeatureSupported(@NonNull @JsSandboxFeature String feature) {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
                 throw new IllegalStateException(
                         "Attempting to check features on a service that isn't connected");
             }
-            try {
-                List<String> features = mJsSandboxService.getSupportedFeatures();
-                return features.contains(IJsSandboxService.ISOLATE_TERMINATION);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
+            if (mClientSideFeatureSet == null) {
+                populateClientFeatureSet();
             }
+            return mClientSideFeatureSet.contains(feature);
         }
     }
 
