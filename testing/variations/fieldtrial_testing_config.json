@@ -6365,25 +6365,6 @@
             ]
         }
     ],
-    "PageEntitiesModelBypassFilters": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220330",
-                    "enable_features": [
-                        "PageEntitiesModelBypassFilters"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoDiscoverabilityTimeout": [
         {
             "platforms": [

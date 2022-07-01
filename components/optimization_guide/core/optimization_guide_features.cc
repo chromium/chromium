@@ -131,7 +131,7 @@ const base::Feature kPageVisibilityPageContentAnnotations{
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
 const base::Feature kPageEntitiesModelBypassFilters{
-    "PageEntitiesModelBypassFilters", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PageEntitiesModelBypassFilters", enabled_by_default_desktop_only};
 
 // This feature flag enables resetting the entities model on shutdown.
 const base::Feature kPageEntitiesModelResetOnShutdown{
