@@ -509,9 +509,8 @@
             src="./images/privacy_sandbox_floc_banner.svg">
       </picture>
       <settings-toggle-button id="flocToggleButton"
-          pref="{{prefs.generated.floc_enabled}}"
-          label="$i18n{privacySandboxPageFlocHeading}"
-          on-change="onFlocToggleButtonChange_">
+          pref="[[prefFlocToggle_]]"
+          label="$i18n{privacySandboxPageFlocHeading}">
       </settings-toggle-button>
       <div id="flocExplanation" class="cr-row continuation">
         <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>

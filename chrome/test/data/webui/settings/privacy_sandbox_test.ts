@@ -101,8 +101,6 @@ suite('PrivacySandbox', function() {
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
 
-    page.prefs = {generated: {floc_enabled: {value: true}}};
-
     return flushTasks();
   });
 
@@ -126,7 +124,6 @@ suite('PrivacySandbox', function() {
           manually_controlled: {value: false},
           manually_controlled_v2: {value: false},
         },
-        generated: {floc_enabled: {value: true}}
       };
       await flushTasks();
       metricsBrowserProxy.resetResolver('recordAction');
@@ -204,37 +201,6 @@ suite('PrivacySandbox', function() {
   test('resetFlocId', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#resetFlocIdButton')!.click();
     return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
-  });
-
-  test('prefObserver', async function() {
-    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
-
-    // When the FLoC generated preference is changed, the page should re-query
-    // for the FLoC id.
-    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
-    page.set('prefs.generated.floc_enabled.value', false);
-    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-  });
-
-  test('userActions', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#flocToggleButton')!.click();
-    assertEquals(
-        'Settings.PrivacySandbox.FlocDisabled',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    metricsBrowserProxy.resetResolver('recordAction');
-
-    page.shadowRoot!.querySelector<HTMLElement>('#flocToggleButton')!.click();
-    assertEquals(
-        'Settings.PrivacySandbox.FlocEnabled',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    metricsBrowserProxy.resetResolver('recordAction');
-
-    // Ensure that an action is only recorded in response to interaction with
-    // the toggle, and not for the generated preference changing.
-    page.set('prefs.generated.floc_enabled.value', false);
-    await flushTasks();
-    assertEquals(0, metricsBrowserProxy.getCallCount('recordAction'));
   });
 });
 

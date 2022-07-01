@@ -6442,7 +6442,6 @@ test("unit_tests") {
       "../browser/policy/policy_path_parser_unittest.cc",
       "../browser/policy/serial_allow_usb_devices_for_urls_policy_handler_unittest.cc",
       "../browser/policy/webhid_device_policy_handler_unittest.cc",
-      "../browser/privacy_sandbox/generated_floc_pref_unittest.cc",
       "../browser/profile_resetter/profile_resetter_unittest.cc",
       "../browser/profile_resetter/reset_report_uploader_unittest.cc",
       "../browser/profiles/guest_profile_creation_logger_unittest.cc",

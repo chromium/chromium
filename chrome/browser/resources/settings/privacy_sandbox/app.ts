@@ -46,6 +46,22 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     return {
       flocId_: Object,
 
+      /**
+       * Mock preference for FLoC toggle to always display as off and disabled
+       * as the feature has been removed from the codebase.
+       * TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
+       */
+      prefFlocToggle_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+            userControlDisabled: true,
+          };
+        },
+      },
+
       privacySandboxSettings3Enabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('privacySandboxSettings3Enabled'),
@@ -98,13 +114,10 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     };
   }
 
-  static get observers() {
-    return ['onFlocChanged_(prefs.generated.floc_enabled.*)'];
-  }
-
   private flocId_: FlocIdentifier;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private prefFlocToggle_: chrome.settingsPrivate.PrefObject;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
   private privacySandboxSettings3Enabled_: boolean;
@@ -164,10 +177,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
   }
 
-  private onFlocChanged_() {
-    this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-  }
-
   private onResetFlocClick_() {
     this.privacySandboxBrowserProxy_.resetFlocId();
   }
@@ -190,13 +199,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       this.topTopics_ = [];
       this.joiningSites_ = [];
     }
-  }
-
-  private onFlocToggleButtonChange_(event: Event) {
-    const flocEnabled = (event.target as SettingsToggleButtonElement).checked;
-    this.metricsBrowserProxy_.recordAction(
-        flocEnabled ? 'Settings.PrivacySandbox.FlocEnabled' :
-                      'Settings.PrivacySandbox.FlocDisabled');
   }
 
   private showFragment_(view: PrivacySandboxSettingsView): boolean {

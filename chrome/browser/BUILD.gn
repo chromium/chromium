@@ -4023,8 +4023,6 @@ static_library("browser") {
       "policy/webhid_device_policy_handler.h",
       "prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.cc",
       "prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h",
-      "privacy_sandbox/generated_floc_pref.cc",
-      "privacy_sandbox/generated_floc_pref.h",
       "process_singleton_modal_dialog_lock.cc",
       "process_singleton_modal_dialog_lock.h",
       "process_singleton_startup_lock.cc",
