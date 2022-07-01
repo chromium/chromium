@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -74,6 +75,23 @@ void MockQuotaManager::UpdateOrCreateBucket(
   buckets_.emplace_back(
       BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
   std::move(callback).Run(std::move(bucket));
+}
+
+QuotaErrorOr<BucketInfo> MockQuotaManager::GetOrCreateBucketSync(
+    const BucketInitParams& params) {
+  QuotaErrorOr<BucketInfo> bucket;
+  base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED);
+  UpdateOrCreateBucket(params, base::BindOnce(
+                                   [](base::WaitableEvent* waiter,
+                                      QuotaErrorOr<BucketInfo>* sync_bucket,
+                                      QuotaErrorOr<BucketInfo> result_bucket) {
+                                     *sync_bucket = std::move(result_bucket);
+                                     waiter->Signal();
+                                   },
+                                   &waiter, &bucket));
+  waiter.Wait();
+  return bucket;
 }
 
 void MockQuotaManager::CreateBucketForTesting(

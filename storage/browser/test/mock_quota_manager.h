@@ -52,6 +52,14 @@ class MockQuotaManager : public QuotaManager {
 
   // Overrides QuotaManager's implementation that maintains an internal
   // container of created buckets and avoids going to the DB.
+  // NOTE: the asychonrous version of this method `GetOrCreateBucket` is
+  // preferred; only use this synchronous version where asynchronous bucket
+  // retrieval is not possible.
+  QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+      const BucketInitParams& params);
+
+  // Overrides QuotaManager's implementation that maintains an internal
+  // container of created buckets and avoids going to the DB.
   void GetOrCreateBucketDeprecated(
       const BucketInitParams& bucket_params,
       blink::mojom::StorageType type,

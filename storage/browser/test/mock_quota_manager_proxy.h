@@ -48,6 +48,9 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
+  QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+      const BucketInitParams& params) override;
+
   void GetBucket(const blink::StorageKey& storage_key,
                  const std::string& bucket_name,
                  blink::mojom::StorageType type,

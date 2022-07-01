@@ -213,6 +213,50 @@ TEST_F(MockQuotaManagerTest, GetOrCreateBucket) {
   }
 }
 
+TEST_F(MockQuotaManagerTest, GetOrCreateBucketSync) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
+
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+
+  BucketInitParams params(kStorageKey1, kBucketName);
+  QuotaErrorOr<BucketInfo> bucket1 = manager()->GetOrCreateBucketSync(params);
+  EXPECT_TRUE(bucket1.ok());
+  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1->name, kBucketName);
+  EXPECT_EQ(bucket1->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+
+  params = BucketInitParams(kStorageKey2, kBucketName);
+  QuotaErrorOr<BucketInfo> bucket2 = manager()->GetOrCreateBucketSync(params);
+  EXPECT_TRUE(bucket2.ok());
+  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2->name, kBucketName);
+  EXPECT_EQ(bucket2->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+
+  params = BucketInitParams(kStorageKey1, kBucketName);
+  QuotaErrorOr<BucketInfo> dupe_bucket =
+      manager()->GetOrCreateBucketSync(params);
+  EXPECT_TRUE(dupe_bucket.ok());
+  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+
+  // GetOrCreateBucket actually creates buckets associated with all quota client
+  // types, so check them all.
+  for (auto client_type : AllQuotaClientTypes()) {
+    EXPECT_EQ(manager()->BucketDataCount(client_type), 2);
+    EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
+  }
+}
+
 TEST_F(MockQuotaManagerTest, CreateBucketForTesting) {
   const StorageKey kStorageKey1 =
       StorageKey::CreateFromStringForTesting("http://host1:1/");

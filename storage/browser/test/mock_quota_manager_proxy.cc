@@ -42,6 +42,13 @@ void MockQuotaManagerProxy::UpdateOrCreateBucket(
     mock_quota_manager_->UpdateOrCreateBucket(params, std::move(callback));
 }
 
+QuotaErrorOr<BucketInfo> MockQuotaManagerProxy::GetOrCreateBucketSync(
+    const BucketInitParams& params) {
+  return (mock_quota_manager_)
+             ? mock_quota_manager_->GetOrCreateBucketSync(params)
+             : QuotaError::kUnknownError;
+}
+
 void MockQuotaManagerProxy::CreateBucketForTesting(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,

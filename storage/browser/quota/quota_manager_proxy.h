@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // quota_manager_impl_task_runner. Additionally, the asychonrous version of
   // this method `GetOrCreateBucket` is preferred; only use this synchronous
   // version where asynchronous bucket retrieval is not possible.
-  QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+  virtual QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
       const BucketInitParams& params);
 
   // Same as GetOrCreateBucket but takes in StorageType. This should only be
