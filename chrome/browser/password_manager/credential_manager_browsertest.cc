@@ -29,6 +29,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
@@ -1003,6 +1004,71 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, CredentialsAutofilled) {
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
   WaitForElementValue("username_field", "user");
   WaitForElementValue("password_field", "12345");
+}
+
+class CredentialManagerPrerenderBrowserTest
+    : public CredentialManagerBrowserTest {
+ public:
+  CredentialManagerPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &CredentialManagerPrerenderBrowserTest::WebContents,
+            base::Unretained(this))) {}
+  ~CredentialManagerPrerenderBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    CredentialManagerBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that binding mojom::CredentialManager doesn't work in the prerendering.
+IN_PROC_BROWSER_TEST_F(CredentialManagerPrerenderBrowserTest,
+                       BindCredentialManagerInPrerender) {
+  // Save credentials with 'skip_zero_click' false.
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.password_value = u"password123";
+  signin_form.username_value = u"user";
+  signin_form.url = embedded_test_server()->base_url();
+  signin_form.skip_zero_click = true;
+  password_store->AddLogin(signin_form);
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto prerender_url =
+      embedded_test_server()->GetURL("/password/credentials.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
+
+  // It should not have binding mojom::CredentialManager.
+  EXPECT_FALSE(ChromePasswordManagerClient::FromWebContents(WebContents())
+                   ->has_binding_for_credential_manager());
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+
+  // The API should work.
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+
+  // Make sure that the prerender was activated.
+  EXPECT_TRUE(host_observer.was_activated());
+  // After the page is activated, it gets binding mojom::CredentialManager.
+  EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(WebContents())
+                  ->has_binding_for_credential_manager());
 }
 
 class CredentialManagerAvatarTest : public PasswordManagerBrowserTestBase {
