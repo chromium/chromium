@@ -335,11 +335,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1757773103848038814">Carattere monospazio</translation>
 <translation id="1763864636252898013">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile dal sistema operativo del dispositivo. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Il server a cui ti stai collegando, <ph name="ORIGIN" />, ha impostato un'intestazione
-    che richiede l'applicazione di un criterio di origine per tutte le richieste indirizzate al server. Tuttavia
-    l'intestazione non è in formato corretto e impedisce al browser di soddisfare
-    la tua richiesta per <ph name="SITE" />. I criteri di origine possono essere usati dagli
-    operatori del sito per configurare la sicurezza e altre proprietà del sito.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Scopri di più sulla modalità di navigazione in incognito in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Le tue schede aperte vengono visualizzate qui</translation>
@@ -1108,8 +1103,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3987940399970879459">Meno di 1 MB</translation>
 <translation id="3990250421422698716">Offset jog</translation>
 <translation id="3992684624889376114">Informazioni su questa pagina</translation>
-<translation id="3996311196211510766">Il sito <ph name="ORIGIN" /> ha richiesto l'applicazione di un criterio di origine
-    a tutte le richieste indirizzate a esso, ma questo criterio al momento non può essere applicato.</translation>
 <translation id="4006465311664329701">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
 <translation id="4009243425692662128">I contenuti delle pagine che stampi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere sottoposti a scansione alla ricerca di dati sensibili.</translation>
 <translation id="4010758435855888356">Vuoi consentire l'accesso allo spazio di archiviazione?</translation>
@@ -1174,11 +1167,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4202554117186904723">Quinto rullo</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controllare le configurazioni del firewall e antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
-<translation id="4209166701302774460">Il server a cui ti stai collegando, <ph name="ORIGIN" />, ha richiesto
-    l'applicazione di un criterio di origine per tutte le richieste indirizzate al server. Tuttavia, adesso non
-    è riuscito a pubblicare un criterio e ciò impedisce al browser
-    di soddisfare la tua richiesta per il sito <ph name="SITE" />. I criteri di origine possono essere usati dagli
-    operatori del sito per configurare la sicurezza e altre proprietà del sito.</translation>
 <translation id="4210602799576081649">Codice di verifica scaduto, richiedi nuovo codice</translation>
 <translation id="421066178035138955">Usare dati e dispositivi per realtà virtuale</translation>
 <translation id="4213305257324635756">Film di animazione</translation>
@@ -1206,7 +1194,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     &lt;p&gt;Se l'errore persiste, contatta il proprietario del sito web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica di rete<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Può chiedere di usare e muovere la videocamera</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Vai a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Valido</translation>
 <translation id="4250431568374086873">La connessione a questo sito non è completamente protetta</translation>
 <translation id="4250680216510889253">No</translation>
@@ -1410,7 +1397,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4796594887379589189">ID account lavoro</translation>
 <translation id="4798078619018708837">Inserisci la data di scadenza e il codice CVC della carta <ph name="CREDIT_CARD" /> per aggiornare i relativi dettagli. Dopo essere stati confermati, i dati della carta del tuo Account Google saranno condivisi con questo sito.</translation>
 <translation id="4800132727771399293">Controlla la data di scadenza e il codice CVC, poi riprova</translation>
-<translation id="480334179571489655">Errore norma di partenza</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4812751092864334025">Tecnologia indossabile</translation>
@@ -1805,7 +1791,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5903264686717710770">Titolo:</translation>
 <translation id="5904360430676679685">Famiglia e relazioni</translation>
-<translation id="5905445707201418379">Bloccato secondo la norma di partenza di <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizzati)</translation>
 <translation id="59174027418879706">Attivato</translation>
 <translation id="5919090499915321845">B10</translation>

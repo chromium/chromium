@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">Monospace қарпі</translation>
 <translation id="1763864636252898013">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификаты құрылғының операциялық жүйесі арқылы тексерілмеген. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Network Diagnostics құралын пайдаланып көріңіз<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Сіз өткелі тұрған <ph name="ORIGIN" /> сервері орнатқан атау
-    өзіне берілген сұраулардың барлығына түпнұсқа саясатының қолданылуын талап етті. Бірақ
-    атауының пішіні өзгерген, бұл — браузердің <ph name="SITE" /> сайтына берілген сұрауларды толтыруына
-    жол бермейді. Сайттың қауіпсіздік параметрлері мен
-    басқа сипаттарын конфигурациялау үшін сайт операторлары түпнұсқа саясаттарын қолдануы мүмкін.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium браузеріндегі инкогнито режимі туралы толығырақ<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Ашық қойынды осы жерден шығады</translation>
@@ -935,6 +930,7 @@
 <translation id="3477679029130949506">Фильм тізімдері және кинотеатрдан көрсету кестесі</translation>
 <translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3484560055331845446">Google аккаунтыңызға кіре алмай қалуыңыз мүмкін. Chrome браузері құпия сөзді қазір өзгертуге кеңес береді. Сонан соң аккаунтқа кіру сұралады.</translation>
+<translation id="3484861421501147767">Еске салғыш: сақталған промокодыңыз бар</translation>
 <translation id="3487845404393360112">4-науа</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
 бетінен табу</translation>
@@ -1109,8 +1105,6 @@
 <translation id="3987940399970879459">1 МБ-тан аз</translation>
 <translation id="3990250421422698716">Бірқалыпты ығысу</translation>
 <translation id="3992684624889376114">Осы бет туралы ақпарат</translation>
-<translation id="3996311196211510766"><ph name="ORIGIN" /> сайты өзінің барлық сұрауына түпнұсқа саясатын
-    қолдануын талап етті, бірақ бұл саясатты дәл қазір қолдану мүмкін емес.</translation>
 <translation id="4006465311664329701">Google Pay қызметіндегі төлеу әдістері, ұсыныстар және мекенжайлар</translation>
 <translation id="4009243425692662128">Сіз басып шығаратын беттердің мазмұны талдау үшін Google Cloud қызметіне немесе үшінші тараптарға жіберіледі. Мысалы, онда құпия деректердің бар-жоғы тексерілуі мүмкін.</translation>
 <translation id="4010758435855888356">Жадты пайдалануға рұқсат берілсін бе?</translation>
@@ -1175,11 +1169,6 @@
 <translation id="4202554117186904723">Бесінші орам</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Брандмауэр және антивирус конфигурацияларын тексеру<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Үлкен</translation>
-<translation id="4209166701302774460">Сіз кіргелі жатқан сервер (<ph name="ORIGIN" />) өзіне
-     жіберілген сұраулардың барлығына түпнұсқа саясатының қолданылуын талап етті. Бірақ ол
-    саясатты жеткізбеді, сондықтан браузер
-    <ph name="SITE" /> сайты үшін сұрауыңызды орындай алмайды. Сайттың қауіпсіздік параметрлері мен
-    басқа сипаттарын конфигурациялау үшін сайт операторлары түпнұсқа саясаттарын қолдануы мүмкін.</translation>
 <translation id="4210602799576081649">Растау кодының мерзімі өткен, жаңа код сұраңыз.</translation>
 <translation id="421066178035138955">Виртуалдық шындық құрылғыларын және деректерді пайдалану</translation>
 <translation id="4213305257324635756">Анимациялық фильмдер</translation>
@@ -1207,7 +1196,6 @@
   &lt;p&gt;Қате жойылмаса, веб-сайт иесіне хабарласыңыз.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Network Diagnostics құралын пайдаланып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Камераңызды қолдануға және жылжытуға рұқсат сұрай алады</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> сайтына өту<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Жарамды</translation>
 <translation id="4250431568374086873">Бұл сайтпен байланысыңыз толықтай қауіпсіз емес</translation>
 <translation id="4250680216510889253">Жоқ</translation>
@@ -1411,7 +1399,6 @@
 <translation id="4796594887379589189">Тапсырма аккаунтының идентификаторы</translation>
 <translation id="4798078619018708837">Карта мәліметтерін жаңарту үшін <ph name="CREDIT_CARD" /> картасының жарамдылық мерзімі мен CVC кодын енгізіңіз. Растағаннан кейін, Google аккаунтындағы карта мәліметтері осы сайтқа беріледі.</translation>
 <translation id="4800132727771399293">Жарамдылық мерзімі мен CVC кодын тексеріп, әрекетті қайталаңыз</translation>
-<translation id="480334179571489655">Бастапқы саясат қатесі</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Құрылғы әкімшісінің нұсқаулары:</translation>
 <translation id="4812751092864334025">Денеге тағылатын құрылғылар</translation>
@@ -1806,7 +1793,6 @@
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5903264686717710770">Атауы:</translation>
 <translation id="5904360430676679685">Отбасы және қарым-қатынас</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" /> бастапқы саясатына сәйкес бөгелді.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхрондалған)</translation>
 <translation id="59174027418879706">Қосылған</translation>
 <translation id="5919090499915321845">B10</translation>
@@ -2223,6 +2209,7 @@
             <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Бұл мекенжайға жөнелтілмейді. Басқа мекенжайды таңдаңыз.</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">Әкімші бұл деректің көшірілуіне тыйым салды.</translation>
 <translation id="7135130955892390533">Күйін көрсету</translation>
 <translation id="7138472120740807366">Жеткізу әдісі</translation>

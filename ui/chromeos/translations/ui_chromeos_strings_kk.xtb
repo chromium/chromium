@@ -341,6 +341,7 @@
 <translation id="3971140002794351170">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_PROVIDER_NAME" /> провайдерінің <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="3973925058222872294">Ағылшын (БK)</translation>
 <translation id="3975895378829046965">Бенгал (фонетикалық)</translation>
+<translation id="3991446849494482687">Құрылғыдағы SIM картасын құлыптау параметрі де өшіріледі.</translation>
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4017788180641807848">Ағылшын (АҚШ), Workman пернетақтасымен</translation>
 <translation id="4040753847560036377">PUK коды дұрыс емес.</translation>
@@ -769,6 +770,7 @@
 <translation id="7663224033570512922">Хинди</translation>
 <translation id="7693909743393669729">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады және қолданыстағы бөлімдердің барлығы (оның ішінде көрінбейтін бөлімдер) жойылып кетеді. Бұл әрекетті кері қайтару мүмкін емес.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> форматталмады.</translation>
+<translation id="76959938259365003">Себетті босату мүмкін болмады.</translation>
 <translation id="770015031906360009">грек</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> көшірілді.</translation>
 <translation id="7711920809702896782">Сурет ақпараты</translation>

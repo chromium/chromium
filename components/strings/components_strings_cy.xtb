@@ -335,11 +335,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1757773103848038814">Ffont Lled Sefydlog</translation>
 <translation id="1763864636252898013">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw system weithredu eich dyfais yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Rhowch gynnig ar redeg Diagnosteg Rhwydwaith Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Mae'r gweinydd rydych yn mynd iddo, <ph name="ORIGIN" />, wedi gosod pennawd
-    sy'n ei gwneud yn ofynnol i bolisi tarddiad gael ei gymhwyso i bob cais iddo. Ond
-    mae'r pennawd wedi'i gamffurfio, sy'n atal y porwr rhag cyflawni
-    eich cais ar gyfer <ph name="SITE" />. Gall gweithredwyr gwefannau ddefnyddio
-    polisïau tarddiad i ffurfweddu diogelwch a phriodweddau eraill ar gyfer gwefan.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Dysgu rhagor am y modd Anhysbys yn Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Mae eich tabiau sydd ar agor yn ymddangos yma</translation>
@@ -1111,8 +1106,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3987940399970879459">Llai nag 1 MB</translation>
 <translation id="3990250421422698716">Gwrthbwyso loncian</translation>
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
-<translation id="3996311196211510766">Mae'r wefan <ph name="ORIGIN" /> wedi gofyn bod polisi tarddiad
-    yn berthnasol i bob cais iddo, ond ar hyn o bryd ni ellir cymhwyso'r polisi hwn.</translation>
 <translation id="4006465311664329701">Dulliau Talu, Cynigion a Chyfeiriadau sy'n defnyddio Google Pay</translation>
 <translation id="4009243425692662128">Anfonir y cynnwys o dudalennau rydych yn eu hargraffu at Google Cloud neu drydydd partïon i'w dadansoddi. Er enghraifft, mae'n bosib y bydd yn cael ei sganio am ddata sensitif neu ddrwgwedd.</translation>
 <translation id="4010758435855888356">Caniatáu mynediad at y storfa?</translation>
@@ -1177,11 +1170,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4202554117186904723">Pumed Rôl</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Gwirio ffurfweddiadau wal dân a gwrthfeirysau<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Mawr</translation>
-<translation id="4209166701302774460">Mae'r gweinydd rydych yn mynd iddo, <ph name="ORIGIN" />, wedi gofyn i
-    bolisi tarddiad gael ei gymhwyso i bob cais. Ond mae bellach wedi methu
-    â chyflawni polisi, sy'n atal y porwr rhag cyflawni'ch gofynion
-    ar gyfer <ph name="SITE" />. Gall gweithredwyr gwefannau ddefnyddio
-    polisïau tarddiad i ffurfweddu diogelwch a phriodweddau eraill ar gyfer gwefan.</translation>
 <translation id="4210602799576081649">Mae'r cod dilysu wedi darfod, gofynnwch am god newydd</translation>
 <translation id="421066178035138955">Defnyddiwch ddyfeisiau a data rhithwirionedd</translation>
 <translation id="4213305257324635756">Ffilmiau animeiddiedig</translation>
@@ -1209,7 +1197,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
     &lt;p&gt;Os ydych yn parhau i weld y gwall, cysylltwch â pherchennog y wefan.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Rhowch gynnig ar redeg Diagnosteg Rhwydwaith<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Yn gallu gofyn am ddefnyddio a symud eich camera</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Parhau i <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Dilys</translation>
 <translation id="4250431568374086873">Nid yw eich cysylltiad â'r wefan hon yn gwbl ddiogel</translation>
 <translation id="4250680216510889253">Na</translation>
@@ -1413,7 +1400,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4796594887379589189">Rhif adnabod cyfrif swydd</translation>
 <translation id="4798078619018708837">Rhowch y dyddiad darfod a'r CVC ar gyfer <ph name="CREDIT_CARD" /> i ddiweddaru manylion eich cerdyn. Ar ôl i chi gadarnhau, bydd manylion cardiau o'ch Cyfrif Google yn cael eu rhannu â'r wefan hon.</translation>
 <translation id="4800132727771399293">Gwiriwch eich dyddiad darfod a'ch CGS a rhowch gynnig arall arni</translation>
-<translation id="480334179571489655">Gwall Polisi Tarddiad</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Cyfarwyddiadau gan weinyddwr eich dyfais:</translation>
 <translation id="4812751092864334025">Technoleg gwisgadwy</translation>
@@ -1808,7 +1794,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5901630391730855834">Melyn</translation>
 <translation id="5903264686717710770">Teitl:</translation>
 <translation id="5904360430676679685">Teulu a pherthnasoedd</translation>
-<translation id="5905445707201418379">Wedi'i rwystro yn unol â pholisi tarddiad <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (cysonwyd)</translation>
 <translation id="59174027418879706">Galluogwyd</translation>
 <translation id="5919090499915321845">B10</translation>

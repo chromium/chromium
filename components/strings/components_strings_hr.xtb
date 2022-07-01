@@ -335,11 +335,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1757773103848038814">Font Monospace</translation>
 <translation id="1763864636252898013">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; operativni sustav vašeg uređaja smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Pokušajte pokrenuti Mrežnu dijagnostiku sustava Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Poslužitelj kojem pristupate, <ph name="ORIGIN" />, postavio je zaglavlje
-    sa zahtjevom da se izvorno pravilo primjenjuje na sve zahtjeve upućene prema njemu. No
-    zaglavlje nije ispravno, što onemogućuje ispunjavanje
-    vašeg zahtjeva u pregledniku za web-lokaciju <ph name="SITE" />. Operatori web-lokacije mogu koristiti 
-    izvorna pravila radi konfiguracije zaštite i drugih svojstava web-lokacije.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Saznajte više o anonimnom načinu u Chromiumu<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Ovdje se prikazuju vaše otvorene kartice</translation>
@@ -1110,8 +1105,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3987940399970879459">Manje od 1 MB</translation>
 <translation id="3990250421422698716">Pomak u načinu rada Jog</translation>
 <translation id="3992684624889376114">Informacije o ovoj stranici</translation>
-<translation id="3996311196211510766">Web-lokacija <ph name="ORIGIN" /> zatražila je da se izvorno pravilo
-    primjenjuje na sve zahtjeve za nju, no to se pravilo trenutačno ne može primijeniti.</translation>
 <translation id="4006465311664329701">Načini plaćanja, ponude i adrese s Google Paya</translation>
 <translation id="4009243425692662128">Sadržaj stranica koje ispisujete šalje se na analizu Google Cloudu ili trećim stranama. Na primjer, može se pregledati radi otkrivanja osjetljivih podataka.</translation>
 <translation id="4010758435855888356">Želite li dopustiti pristup pohrani?</translation>
@@ -1176,12 +1169,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4202554117186904723">Peti kolut</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />provjerite vatrozid i konfiguraciju antivirusnog programa<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Velik</translation>
-<translation id="4209166701302774460">Poslužitelj kojem pristupate, <ph name="ORIGIN" />, zatražio je primjenu
-    izvornog pravila na sve zahtjeve upućene prema njemu. No sada nije
-    pružio pravilo i preglednik zbog toga ne može
-    ispuniti vaš zahtjev
-    za <ph name="SITE" />. Operatori web-lokacije mogu koristiti 
-    izvorna pravila radi konfiguracije sigurnosti i drugih svojstava web-lokacije.</translation>
 <translation id="4210602799576081649">Kontrolni kôd je istekao, zatražite novi kôd</translation>
 <translation id="421066178035138955">koristiti uređaje i podatke virtualne stvarnosti</translation>
 <translation id="4213305257324635756">Animirani filmovi</translation>
@@ -1209,7 +1196,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     &lt;p&gt;Ako i dalje vidite pogrešku, obratite se vlasniku web-lokacije.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Pokušajte pokrenuti Mrežnu dijagnostiku<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Može tražiti dopuštenje za upotrebu i pomicanje kamere</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Idi na web-lokaciju <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Važeći</translation>
 <translation id="4250431568374086873">Veza s ovom web-lokacijom nije potpuno sigurna</translation>
 <translation id="4250680216510889253">Ne</translation>
@@ -1413,7 +1399,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4796594887379589189">ID poslovnog računa</translation>
 <translation id="4798078619018708837">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /> da biste ažurirali podatke o kartici. Nakon što ih potvrdite, podaci o kartici s vašeg Google računa podijelit će se s ovom web-lokacijom.</translation>
 <translation id="4800132727771399293">Provjerite datum isteka i CVC pa pokušajte ponovo</translation>
-<translation id="480334179571489655">Pogreška izvornog pravila</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Upute administratora uređaja:</translation>
 <translation id="4812751092864334025">Nosiva tehnologija</translation>
@@ -1808,7 +1793,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5904360430676679685">Obitelj i veze</translation>
-<translation id="5905445707201418379">Blokirano izvornim pravilom koje određuje <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizirano)</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5919090499915321845">B10</translation>

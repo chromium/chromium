@@ -335,11 +335,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1757773103848038814">Fon Monospace</translation>
 <translation id="1763864636252898013">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh sistem pengendalian peranti anda. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Cuba jalankan Diagnostik Rangkaian Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Pelayan destinasi anda, <ph name="ORIGIN" />, telah menetapkan pengepala
-    yang menghendaki dasar asal dikenakan pada semua permintaan yang diterima oleh pelayan itu. Walau bagaimanapun,
-    pengepala tersebut telah rosak dan menghalang penyemak imbas daripada memenuhi
-    permintaan anda untuk <ph name="SITE" />. Dasar asal boleh digunakan oleh
-    pengendali tapak untuk mengkonfigurasi keselamatan dan sifat lain bagi tapak.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang Inkognito dalam Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Tab yang dibuka dipaparkan di sini</translation>
@@ -1112,8 +1107,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3987940399970879459">Kurang daripada 1 MB</translation>
 <translation id="3990250421422698716">Ofset jog</translation>
 <translation id="3992684624889376114">Perihal halaman ini</translation>
-<translation id="3996311196211510766"><ph name="ORIGIN" /> tapak telah meminta dasar asal
-    dikenakan pada semua permintaan yang diterima, tetapi dasar ini tidak dapat dikenakan pada masa ini.</translation>
 <translation id="4006465311664329701">Kaedah pembayaran, Tawaran dan Alamat yang Menggunakan Google Pay</translation>
 <translation id="4009243425692662128">Kandungan halaman yang anda cetak dihantar ke Google Cloud atau pihak ketiga untuk analisis. Contohnya, teks itu mungkin diimbas untuk mencari data sensitif.</translation>
 <translation id="4010758435855888356">Benarkan akses storan?</translation>
@@ -1178,11 +1171,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4202554117186904723">Gulungan Kelima</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Menyemak konfigurasi tembok api dan antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Besar</translation>
-<translation id="4209166701302774460">Pelayan destinasi anda, <ph name="ORIGIN" />, telah meminta
-    dasar asal dikenakan pada semua permintaan yang diterima oleh pelayan itu. Akan tetapi, kini pelayan itu gagal
-    menyampaikan dasar, yang menghalang penyemak imbas daripada memenuhi permintaan anda
-    untuk <ph name="SITE" />. Dasar asal boleh digunakan oleh pengendali tapak
-    untuk mengkonfigurasi keselamatan dan sifat lain bagi tapak.</translation>
 <translation id="4210602799576081649">Kod pengesahan sudah tamat tempoh, minta kod baharu</translation>
 <translation id="421066178035138955">Gunakan peranti dan data realiti maya</translation>
 <translation id="4213305257324635756">Filem animasi</translation>
@@ -1210,7 +1198,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     &lt;p&gt;Jika ralat masih kelihatan, hubungi pemilik laman web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Cuba jalankan Diagnostik Rangkaian<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Boleh meminta untuk menggunakan &amp; menggerakkan kamera anda</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Teruskan ke <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Sah</translation>
 <translation id="4250431568374086873">Sambungan anda ke tapak ini tidak selamat sepenuhnya</translation>
 <translation id="4250680216510889253">Tidak</translation>
@@ -1414,7 +1401,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4796594887379589189">ID akaun kerja</translation>
 <translation id="4798078619018708837">Masukkan tarikh tamat tempoh dan CVC <ph name="CREDIT_CARD" /> untuk mengemas kini butiran kad anda. Setelah anda mengesahkan maklumat, butiran kad daripada Akaun Google anda akan dikongsi dengan tapak ini.</translation>
 <translation id="4800132727771399293">Semak tarikh tamat tempoh serta CVC anda dan cuba lagi</translation>
-<translation id="480334179571489655">Ralat Dasar Asal</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Arahan daripada pentadbir peranti anda:</translation>
 <translation id="4812751092864334025">Teknologi boleh dipakai</translation>
@@ -1809,7 +1795,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903264686717710770">Tajuk:</translation>
 <translation id="5904360430676679685">Keluarga &amp; perhubungan</translation>
-<translation id="5905445707201418379">Disekat menurut dasar asal <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (disegerakkan)</translation>
 <translation id="59174027418879706">Didayakan</translation>
 <translation id="5919090499915321845">B10</translation>

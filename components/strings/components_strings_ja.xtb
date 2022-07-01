@@ -335,7 +335,6 @@
 <translation id="1757773103848038814">Monospace フォント</translation>
 <translation id="1763864636252898013">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のデバイスのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
-<translation id="1772163372082567643">アクセスしているサーバー <ph name="ORIGIN" /> では、サーバーへのすべてのリクエストにオリジン ポリシーを適用することを求めるヘッダーが設定されていますが、ヘッダーの形式が正しくないため、ブラウザは <ph name="SITE" /> のリクエストを満たすことができません。オリジン ポリシーは、サイトのセキュリティやその他のプロパティを設定する目的でパブリッシャーが使用するものです。</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium のシークレット モードについて<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">最近開いたタブがここに表示されます</translation>
@@ -1107,7 +1106,6 @@
 <translation id="3987940399970879459">1 MB 未満</translation>
 <translation id="3990250421422698716">ジョグ オフセット</translation>
 <translation id="3992684624889376114">このページについて</translation>
-<translation id="3996311196211510766">サイト <ph name="ORIGIN" /> では、サイトへのすべてのリクエストにオリジン ポリシーの適用を求めていますが、このポリシーは現在適用することができません。</translation>
 <translation id="4006465311664329701">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4009243425692662128">印刷するページのコンテンツは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
 <translation id="4010758435855888356">ストレージへのアクセスを許可しますか？</translation>
@@ -1172,7 +1170,6 @@
 <translation id="4202554117186904723">ロール 5</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ファイアウォールとウイルス対策の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
-<translation id="4209166701302774460">アクセスしているサーバー <ph name="ORIGIN" /> では、サーバーへのすべてのリクエストにオリジン ポリシーを適用することが求められていますが、ポリシーがサーバーから送信されなかったため、ブラウザは <ph name="SITE" /> のリクエストを満たすことができません。オリジン ポリシーは、サイトのセキュリティやその他のプロパティを設定する目的でパブリッシャーが使用するものです。</translation>
 <translation id="4210602799576081649">確認コードの有効期限が切れています。新しいコードをリクエストしてください</translation>
 <translation id="421066178035138955">バーチャル リアリティ デバイスとデータの使用</translation>
 <translation id="4213305257324635756">アニメ映画</translation>
@@ -1200,7 +1197,6 @@
     &lt;p&gt;引き続きエラーが表示される場合は、ウェブサイトの所有者にお問い合わせください。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> に移動<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有効</translation>
 <translation id="4250431568374086873">このサイトへの接続は完全には保護されていません</translation>
 <translation id="4250680216510889253">いいえ</translation>
@@ -1404,7 +1400,6 @@
 <translation id="4796594887379589189">ジョブ管理 ID</translation>
 <translation id="4798078619018708837">カード情報を更新するには <ph name="CREDIT_CARD" /> の有効期限と CVC を入力します。確認後、Google アカウントのカード情報がこのサイトと共有されます。</translation>
 <translation id="4800132727771399293">有効期限と CVC を確認してからもう一度お試しください</translation>
-<translation id="480334179571489655">オリジン ポリシーエラー</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="4812751092864334025">ウェアラブル技術</translation>
@@ -1799,7 +1794,6 @@
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903264686717710770">タイトル:</translation>
 <translation id="5904360430676679685">家族、人間関係</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" /> のオリジン ポリシーに沿ってブロックしました。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（同期済み）</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5919090499915321845">B10</translation>

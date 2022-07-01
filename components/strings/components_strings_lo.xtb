@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">ຟອນ Monospace</translation>
 <translation id="1763864636252898013">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນໂດຍລະບົບການດໍາເນີນງານຂອງອຸປະກອນຂອງທ່ານ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Windows Network Diagnostics<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">ເຊີບເວີທີ່ທ່ານຈະໄປຫາ, <ph name="ORIGIN" />, ໄດ້ຕັ້ງຄ່າສ່ວນຫົວ
-    ທີ່ກຳນົດໃຫ້ນຳໃຊ້ນະໂຍບາຍຕົ້ນທາງກັບທຸກຄຳຂໍທີ່ສົ່ງຫາມັນ. ແຕ່
-    ສ່ວນຫົວດັ່ງກ່າວມີຮູບແບບບໍ່ຖືກຕ້ອງ, ເຊິ່ງເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບດຳເນີນການຕາມ
-    ຄຳຂໍຂອງທ່ານສຳລັບ <ph name="SITE" /> ບໍ່ໄດ້. ນະໂຍບາຍຕົ້ນທາງສາມາດໃຊ້ໄດ້ໂດຍ
-    ຜູ້ໃຫ້ບໍລິການເວັບໄຊເພື່ອກຳນົດຄ່າຄວາມປອດໄພ ແລະ ຄຸນລັກສະນະອື່ນໆສຳລັບເວັບໄຊ.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ແຖບທີ່ເປີດຢູ່ຂອງທ່ານປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -1111,8 +1106,6 @@
 <translation id="3987940399970879459">ໜ້ອຍກວ່າ 1 MB</translation>
 <translation id="3990250421422698716">ການຊົດເຊີຍພື້ນຜິວທີ່ບໍ່ສະໝໍ່າສະເໝີ</translation>
 <translation id="3992684624889376114">ກ່ຽວກັບໜ້ານີ້</translation>
-<translation id="3996311196211510766">ເວັບໄຊ <ph name="ORIGIN" /> ໄດ້ຂໍໃຫ້ນຳໃຊ້ນະໂຍບາຍ
-    ຕົ້ນທາງກັບຄຳຂໍຂອງມັນທັງໝົດ, ແຕ່ລະບົບບໍ່ສາມາດນຳໃຊ້ນະໂຍບາຍນີ້ໄດ້ໃນປັດຈຸບັນນີ້.</translation>
 <translation id="4006465311664329701">ວິທີການຈ່າຍເງິນ, ຂໍ້ສະເໜີ ແລະ ທີ່ຢູ່ໂດຍໃຊ້ Google Pay</translation>
 <translation id="4009243425692662128">ເນື້ອຫາຂອງໜ້າທີ່ທ່ານພິມແມ່ນຖືກສົ່ງໄປໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມວິເຄາະ. ຕົວຢ່າງ: ມັນອາດຖືກສະແກນຫາຂໍ້ມູນລະອຽດອ່ອນ.</translation>
 <translation id="4010758435855888356">ອະນຸຍາດການເຂົ້າເຖິງບ່ອນຈັດເກັບຂໍ້ມູນບໍ?</translation>
@@ -1177,11 +1170,6 @@
 <translation id="4202554117186904723">ມ້ວນທີຫ້າ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າໄຟລ໌ວໍ ແລະ ການປ້ອງກັນໄວຣັສ<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">​ໃຫຍ່</translation>
-<translation id="4209166701302774460">ເຊີບເວີທີ່ທ່ານຈະໄປຫາ, <ph name="ORIGIN" />, ໄດ້ຂໍວ່າ
-    ຈະນຳໃຊ້ນະໂຍບາຍຕົ້ນທາງກັບທຸກຄຳຂໍທີ່ສົ່ງຫາມັນ. ແຕ່ດຽວນີ້ມັນສະແດງ
-    ນະໂຍບາຍບໍ່ສຳເລັດ ເຊິ່ງປ້ອງກັນບໍ່ໃຫ້ໂປຣແກຣມທ່ອງເວັບຕອບສະໜອງຄໍາຂໍຂອງທ່ານ
-    ສຳລັບ <ph name="SITE" />. ນະໂຍບາຍຕົ້ນທາງສາມາດໃຊ້ໄດ້ໂດຍຜູ້ໃຫ້ບໍລິການເວັບໄຊ
-    ເພື່ອກຳນົດຄ່າຄວາມປອດໄພ ແລະ ຄຸນລັກສະນະອື່ນໆສຳລັບເວັບໄຊ.</translation>
 <translation id="4210602799576081649">ລະຫັດການຢັ້ງຢືນໝົດອາຍຸແລ້ວ, ກະລຸນາຮ້ອງຂໍລະຫັດໃໝ່</translation>
 <translation id="421066178035138955">ໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີ</translation>
 <translation id="4213305257324635756">ໜັງກາຕູນ</translation>
@@ -1209,7 +1197,6 @@
     &lt;p&gt;ຖ້າທ່ານຍັງເຫັນຂໍ້ຜິດພາດຢູ່, ກະລຸນາຕິດຕໍ່ຫາເຈົ້າຂອງເວັບໄຊ.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">ສາມາດຂໍໃຊ້ ແລະ ເຄື່ອນກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />ໄປທີ່ <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">ຖືກຕ້ອງ</translation>
 <translation id="4250431568374086873">ການເຊື່ອມຕໍ່ຂອງທ່ານກັບເວັບໄຊນີ້ບໍ່ປອດໄພເຕັມສ່ວນ</translation>
 <translation id="4250680216510889253">ບໍ່ແມ່ນ</translation>
@@ -1413,7 +1400,6 @@
 <translation id="4796594887379589189">ID ບັນຊີວຽກ</translation>
 <translation id="4798078619018708837">ປ້ອນວັນທີໝົດອາຍຸ ແລະ CVC ສຳລັບ <ph name="CREDIT_CARD" /> ເພື່ອອັບເດດລາຍລະອຽດບັດຂອງທ່ານ. ຫຼັງຈາກທີ່ທ່ານຢືນຢັນ, ລະບົບຈະແບ່ງປັນລາຍລະອຽດບັດຈາກບັນຊີ Google ຂອງທ່ານກັບເວັບໄຊນີ້.</translation>
 <translation id="4800132727771399293">ກວດ​ເບິ່ງວັນ​ໝົດ​ອາ​ຍຸ ແລະ CVC ຂອງ​ທ່ານ ແລະ​ລອງ​ໃໝ່​ອີກ</translation>
-<translation id="480334179571489655">ຂໍ້ຜິດພາດຂອງນະໂຍບາຍຕົ້ນທາງ</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">ຄຳແນະນຳຈາກຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ:</translation>
 <translation id="4812751092864334025">ເທັກໂນໂລຢີທີ່ສວມໃສ່ໄດ້</translation>
@@ -1808,7 +1794,6 @@
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5903264686717710770">ຊື່:</translation>
 <translation id="5904360430676679685">ຄອບຄົວ ແລະ ຄວາມສຳພັນ</translation>
-<translation id="5905445707201418379">ບລັອກໄວ້ຕາມນະໂຍບາຍຕົ້ນທາງຂອງ <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="59174027418879706">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5919090499915321845">B10</translation>

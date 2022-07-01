@@ -771,6 +771,7 @@
 <translation id="7663224033570512922">Хинди</translation>
 <translation id="7693909743393669729">При форматировании диска все хранящиеся на нем данные и созданные разделы (включая скрытые) будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7695430100978772476">Не удалось отформатировать внешнее хранилище "<ph name="DRIVE_NAME" />".</translation>
+<translation id="76959938259365003">Не удалось очистить корзину.</translation>
 <translation id="770015031906360009">Греческий</translation>
 <translation id="7705251383879779343">Скопировано: <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">Информация об изображении</translation>

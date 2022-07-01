@@ -335,11 +335,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1757773103848038814">Font fiksne širine</translation>
 <translation id="1763864636252898013">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; operativni sistem uređaja nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Pokušajte da pokrenete Windows dijagnostiku mreže<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Server na koji idete, <ph name="ORIGIN" />, podesio je zaglavlje
-    koje zahteva da se smernice za poreklo primenjuju na sve zahteve ka njemu. Međutim,
-    format zaglavlja je netačan, što sprečava pregledač da ispuni
-    zahtev za <ph name="SITE" />. Pomoću smernica za poreklo
-    operatori sajtova mogu da konfigurišu bezbednost i druga svojstva za sajt.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Saznajte više o režimu Bez arhiviranja u Chromium-u<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Otvorene kartice se pojavljuju ovde</translation>
@@ -1111,8 +1106,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3987940399970879459">Manje od 1 MB</translation>
 <translation id="3990250421422698716">Protresanje radi poravnanja</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
-<translation id="3996311196211510766">Sajt <ph name="ORIGIN" /> je zatražio da se smernice za poreklo
-    primene na sve zahteve ka njemu, ali ove smernice trenutno ne mogu da se primene.</translation>
 <translation id="4006465311664329701">Načini plaćanja, ponude i adrese koji koriste Google Pay</translation>
 <translation id="4009243425692662128">Sadržaj stranica koje štampate se šalje u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skeniran u potrazi za osetljivim podacima.</translation>
 <translation id="4010758435855888356">Želite li da dozvolite pristup memorijskom prostoru?</translation>
@@ -1177,11 +1170,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4202554117186904723">Peti kotur</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />da proverite konfiguraciju zaštitnog zida i antivirusa<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Velika</translation>
-<translation id="4209166701302774460">Server na koji idete, <ph name="ORIGIN" />, zatražio je
-    da se smernice za poreklo primene na sve zahteve ka njemu. Međutim, slanje smernica nije uspelo,
-    pa pregledač ne može da ispuni vaš zahtev
-    za <ph name="SITE" />. Pomoću smernica za poreklo operatori sajtova
-    mogu da konfigurišu bezbednost i druga svojstva za sajt.</translation>
 <translation id="4210602799576081649">Verifikacioni kôd je istekao, zatražite novi</translation>
 <translation id="421066178035138955">koristi uređaje i podatke virtuelne realnosti</translation>
 <translation id="4213305257324635756">Animirani filmovi</translation>
@@ -1209,7 +1197,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     &lt;p&gt;Ako vam se i dalje prikazuje greška, kontaktirajte vlasnika veb-sajta.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Pokušajte da pokrenete dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Može da traži da koristi i pomera kameru</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Nastavite na <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Važeći</translation>
 <translation id="4250431568374086873">Veza sa ovim sajtom nije potpuno bezbedna</translation>
 <translation id="4250680216510889253">Ne</translation>
@@ -1413,7 +1400,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4796594887379589189">ID naloga zadatka</translation>
 <translation id="4798078619018708837">Unesite rok trajanja i CVC za karticu <ph name="CREDIT_CARD" /> da biste ažurirali podatke o kartici. Kada budete potvrdili, podaci o kartici sa Google naloga će se deliti sa ovim sajtom.</translation>
 <translation id="4800132727771399293">Proverite datum isteka i CVC i pokušajte ponovo</translation>
-<translation id="480334179571489655">Greška sa poreklom smernica</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Uputstva administratora uređaja:</translation>
 <translation id="4812751092864334025">Nosiva tehnologija</translation>
@@ -1808,7 +1794,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5904360430676679685">Porodični i drugi odnosi</translation>
-<translation id="5905445707201418379">Blokirano je u skladu sa smernicama za poreklo (<ph name="ORIGIN" />).</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizovano)</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5919090499915321845">B10</translation>

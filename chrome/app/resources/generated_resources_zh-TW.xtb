@@ -216,6 +216,7 @@
 <translation id="1197199342062592414">開始使用</translation>
 <translation id="11978075283960463">儲存在應用程式中的資料大小：<ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">停用</translation>
+<translation id="1198066799963193307">低視能語音工具</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199814941632954229">正在為這些憑證設定檔佈建憑證</translation>
 <translation id="120069043972472860">無法觀看</translation>
@@ -1496,6 +1497,7 @@
 <translation id="2371076942591664043">完成後開啟(&amp;D)</translation>
 <translation id="2373666622366160481">依紙張大小自動調整</translation>
 <translation id="2375406435414127095">連線至你的手機</translation>
+<translation id="2376056713414548745">朗讀內容</translation>
 <translation id="2377588536920405462">關閉裝置的主要位置資訊設定即可停用定位服務。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。</translation>
 <translation id="2377667304966270281">硬性錯誤數</translation>
 <translation id="237828693408258535">要翻譯這個網頁嗎？</translation>
@@ -2324,6 +2326,7 @@
 <translation id="3163511056918491211">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
 <translation id="3164329792803560526">這個分頁正與 <ph name="APP_NAME" /> 共用</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
+<translation id="3169930038976362151">選擇符合自身需求的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要按住桌面即可。</translation>
 <translation id="3170072451822350649">你也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">新分頁位於左側</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
@@ -3196,6 +3199,7 @@
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">複製版本詳細資料</translation>
 <translation id="4021941025609472374">關閉左側的分頁</translation>
+<translation id="402211067068791756">這會清除目前顯示的網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4025039777635956441">將所選網站設為靜音</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
@@ -3446,6 +3450,7 @@
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4282196459431406533">Smart Lock 已啟用</translation>
 <translation id="4284755288573763878">要關閉安全瀏覽強化防護功能嗎？</translation>
+<translation id="4284903252249997120">ChromeVox 螢幕閱讀器和隨選朗讀</translation>
 <translation id="4285418559658561636">更新密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428565720843367874">掃描這個檔案時，防毒軟體發生意外錯誤。</translation>
@@ -4984,6 +4989,7 @@
 <translation id="5827733057563115968">下一個字詞預測</translation>
 <translation id="5828545842856466741">新增設定檔...</translation>
 <translation id="5828633471261496623">列印中...</translation>
+<translation id="5828797982387013521">選取 Playbook</translation>
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
 <translation id="5832813618714645810">設定檔</translation>
@@ -5074,6 +5080,7 @@
 
   公開指數 (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> 位元)：
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">自動朗讀</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5920543303088087579">你的管理員禁止使用者連線到這個網路</translation>
@@ -5358,6 +5365,7 @@
 <translation id="6200151268994853226">管理擴充功能</translation>
 <translation id="6201608810045805374">要移除這個帳戶嗎？</translation>
 <translation id="6202304368170870640">你可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
+<translation id="6206199626856438589">系統會將你登出這些目前顯示的網站，包含已開啟的分頁</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
 <translation id="6207937957461833379">國家/地區</translation>
@@ -5904,6 +5912,7 @@
 <translation id="6733620523445262364">已建立「<ph name="BOOKMARK_TITLE" />」。</translation>
 <translation id="6735304988756581115">顯示 Cookie 和其他網站資料...</translation>
 <translation id="6736243959894955139">位址</translation>
+<translation id="6737393581255281855">要清除顯示的資料嗎？</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>
 <translation id="6738430949033571771">正在驗證帳戶...</translation>
 <translation id="6739923123728562974">顯示桌面捷徑</translation>
@@ -7196,6 +7205,7 @@
 <translation id="7988355189918024273">啟用無障礙功能</translation>
 <translation id="7988805580376093356">保留現有作業系統，並透過 USB 執行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7991296728590311172">切換控制功能設定</translation>
+<translation id="7992203134935383159">語音合成</translation>
 <translation id="7997826902155442747">處理優先順序</translation>
 <translation id="7999229196265990314">已建立下列檔案：
 
@@ -7582,6 +7592,7 @@
 <translation id="8366396658833131068">你的網路連線已恢復。請選取其他網路，或按底下的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>
 <translation id="8366694425498033255">選字鍵</translation>
 <translation id="8368859634510605990">開啟所有書籤(&amp;O)</translation>
+<translation id="8369028061188107403">這會清除目前顯示的網站所儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
 <translation id="8370294614544004647">闔上筆電時進入休眠狀態</translation>
 <translation id="8371695176452482769">請說話</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{關閉網站音訊}other{關閉多個網站的音訊}}</translation>

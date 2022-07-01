@@ -217,6 +217,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1197199342062592414">Commençons !</translation>
 <translation id="11978075283960463">Données stockées dans l'appli : <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Désactiver</translation>
+<translation id="1198066799963193307">Outils de synthèse vocale pour déficients visuels</translation>
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199814941632954229">Les certificats sont en cours de préparation pour ces profils</translation>
 <translation id="120069043972472860">Impossible à regarder</translation>
@@ -1497,6 +1498,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2371076942591664043">Ouvrir une fois le téléchargement &amp;terminé</translation>
 <translation id="2373666622366160481">Ajuster à la taille du papier</translation>
 <translation id="2375406435414127095">Connexion à votre téléphone</translation>
+<translation id="2376056713414548745">Lire à voix haute</translation>
 <translation id="2377588536920405462">Pour arrêter ce service, désactivez le paramètre de localisation principal sur votre appareil. Vous pouvez également désactiver l'utilisation du Wi-Fi, des réseaux mobiles et des capteurs dans les paramètres de localisation.</translation>
 <translation id="2377667304966270281">Défauts matériels</translation>
 <translation id="237828693408258535">Traduire cette page ?</translation>
@@ -2325,6 +2327,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3163511056918491211">Restaurez vos données ou changez d'appareil, facilement et à tout moment. Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="3164329792803560526">Partage de l'onglet avec <ph name="APP_NAME" />…</translation>
 <translation id="3165390001037658081">Certains opérateurs peuvent bloquer cette fonctionnalité.</translation>
+<translation id="3169930038976362151">Choisissez le thème adapté à vos besoins. Pour changer de thème, de fond d'écran, d'économiseur d'écran, etc., appuyez de manière prolongée sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également ignorer l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>
@@ -3198,6 +3201,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copier les détails de la version</translation>
 <translation id="4021941025609472374">Fermer les onglets à gauche</translation>
+<translation id="402211067068791756">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites affichés</translation>
 <translation id="4022426551683927403">&amp;Ajouter au dictionnaire</translation>
 <translation id="4025039777635956441">Bloquer le site sélectionné</translation>
 <translation id="4028467762035011525">Ajouter des modes de saisie</translation>
@@ -3448,6 +3452,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4282196459431406533">Smart Lock est activé</translation>
 <translation id="4284755288573763878">Désactiver la sécurité renforcée ?</translation>
+<translation id="4284903252249997120">Lecteur d'écran ChromeVox et Sélectionner pour prononcer</translation>
 <translation id="4285418559658561636">Mettre à jour le mot de passe</translation>
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="428565720843367874">Le logiciel antivirus a rencontré une erreur inattendue pendant l'analyse de ce fichier.</translation>
@@ -4989,6 +4994,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5827733057563115968">Prédiction du mot suivant</translation>
 <translation id="5828545842856466741">Ajouter un profil…</translation>
 <translation id="5828633471261496623">Impression...</translation>
+<translation id="5828797982387013521">Sélectionner un playbook</translation>
 <translation id="5830205393314753525">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Enregistrer la p&amp;age sous...</translation>
 <translation id="5832813618714645810">Profils</translation>
@@ -5079,6 +5085,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 
   Exposant public (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits) :
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">Lecture automatique</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5920543303088087579">Votre administrateur a désactivé la connexion à ce réseau</translation>
@@ -5364,6 +5371,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6200151268994853226">Gérer l'extension</translation>
 <translation id="6201608810045805374">Supprimer ce compte ?</translation>
 <translation id="6202304368170870640">Vous pouvez utiliser votre code pour vous connecter à votre appareil ou le déverrouiller.</translation>
+<translation id="6206199626856438589">Vous allez être déconnecté des sites affichés, y compris dans les onglets ouverts</translation>
 <translation id="6206311232642889873">Cop&amp;ier l'image</translation>
 <translation id="6207200176136643843">Réinitialiser le niveau de zoom par défaut</translation>
 <translation id="6207937957461833379">Pays/Région</translation>
@@ -5912,6 +5920,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6733620523445262364"><ph name="BOOKMARK_TITLE" /> a été créé.</translation>
 <translation id="6735304988756581115">Afficher les cookies et autres données des sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
+<translation id="6737393581255281855">Effacer les données affichées ?</translation>
 <translation id="6737663862851963468">Supprimer un ticket Kerberos</translation>
 <translation id="6738430949033571771">Validation du compte…</translation>
 <translation id="6739923123728562974">Afficher le raccourci sur le Bureau</translation>
@@ -7204,6 +7213,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7988355189918024273">Activer les fonctionnalités d'accessibilité</translation>
 <translation id="7988805580376093356">Exécutez <ph name="DEVICE_OS" /> depuis une clé USB pour conserver votre OS.</translation>
 <translation id="7991296728590311172">Paramètres Switch Access</translation>
+<translation id="7992203134935383159">Synthèse vocale</translation>
 <translation id="7997826902155442747">Priorité de traitement</translation>
 <translation id="7999229196265990314">Les fichiers suivants ont été créés :
 
@@ -7590,6 +7600,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8366396658833131068">Votre connexion réseau est rétablie. Veuillez sélectionner un autre réseau ou appuyer sur "Continuer" ci-dessous pour lancer votre application kiosque.</translation>
 <translation id="8366694425498033255">Touches de sélection</translation>
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
+<translation id="8369028061188107403">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites affichés et les applis installées</translation>
 <translation id="8370294614544004647">Mettre en veille lorsque l'ordinateur portable est fermé</translation>
 <translation id="8371695176452482769">Parlez maintenant.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Couper le son du site}one{Couper le son du site}other{Couper le son des sites}}</translation>

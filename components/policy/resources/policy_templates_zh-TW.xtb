@@ -4905,12 +4905,6 @@
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">對所有下載檔案執行安全瀏覽檢查</translation>
 <translation id="6433697627431665375">不允許將 <ph name="PRODUCT_NAME" /> 資料納入備份內容</translation>
-<translation id="6435570845618943258">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
-      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
-      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
-
-      我們計劃將這項政策從適用於 <ph name="MAC_OS_NAME" /> 107 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援 <ph name="MAC_OS_NAME" /> 的舊版憑證驗證器。
-      </translation>
 <translation id="6436052172226685535">LBS 的預設行為。</translation>
 <translation id="6438364096042399634">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商 ID 和產品 ID 組合。
 
@@ -5553,6 +5547,7 @@
 
           如果將這項政策設為停用，即使有視訊活動，系統仍會將使用者狀態視為閒置。</translation>
 <translation id="7086720321892395256">控管隱私保護畫面功能的使用者和裝置政策。</translation>
+<translation id="7090500018761495290">重新啟用 Event.path API，直到 M115 為止。</translation>
 <translation id="7090668780328470271">你可以透過這項政策建立網址模式清單，用於指定無法要求使用者授予 USB 裝置存取權的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。

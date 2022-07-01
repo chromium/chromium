@@ -335,10 +335,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1757773103848038814">Püsisammuga font</translation>
 <translation id="1763864636252898013">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, seadme operatsioonisüsteem ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proovige käitada Windowsi võrgudiagnostika tööriista<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Server, kuhu sisenete (<ph name="ORIGIN" />), on määranud päise,
-    mis nõuab lähtekohareegli rakendamist kõigi sellele saadetud taotluste puhul. Päis on aga valesti moodustatud ja see ei lase brauseril teie
-    saidile <ph name="SITE" /> esitatud taotlust täita. Saidioperaatorid saavad kasutada
-    lähtekohareegleid saidi turbe ja muude atribuutide seadistamiseks.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Lisateave Chromiumi inkognito režiimi kohta<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Teie avatud vahelehed kuvatakse siin</translation>
@@ -1110,8 +1106,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3987940399970879459">Alla 1 MB</translation>
 <translation id="3990250421422698716">Astme nihe</translation>
 <translation id="3992684624889376114">Lisateave selle lehe kohta</translation>
-<translation id="3996311196211510766">Sait <ph name="ORIGIN" /> nõuab, et lähtekohareeglit
-    kohaldataks kõigi taotluste puhul, kuid reeglit ei saa praegu rakendada.</translation>
 <translation id="4006465311664329701">Makseviisid, pakkumised ja aadressid, mis kasutavad Google Payd</translation>
 <translation id="4009243425692662128">Sisu teie prinditavatel lehtedel saadetakse analüüsiks Google Cloudile või kolmandatele osapooltele. Näiteks võidakse seda skannida tundlike andmete tuvastamiseks.</translation>
 <translation id="4010758435855888356">Kas lubada juurdepääs salvestusruumile?</translation>
@@ -1176,11 +1170,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4202554117186904723">Viies rull</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kontrollige tulemüüri ja viirusetõrje seadistusi<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Suur</translation>
-<translation id="4209166701302774460">Server, kuhu sisenete (<ph name="ORIGIN" />), nõuab, et
-    lähtekohareeglit kohaldataks iga sisenemistaotluse puhul. Reegli saatmine aga ebaõnnestus,
-    mis takistab brauseril täitmast teie sisenemistaotlust
-    saidile <ph name="SITE" />. Saidioperaatorid saavad kasutada
-    lähtekohareegleid saidi turbe ja muude atribuutide seadistamiseks.</translation>
 <translation id="4210602799576081649">Kinnituskood on aegunud, taotlege uut koodi</translation>
 <translation id="421066178035138955">Kasutada virtuaalreaalsuse seadmeid ja andmeid</translation>
 <translation id="4213305257324635756">Animafilmid</translation>
@@ -1208,7 +1197,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     &lt;p&gt;Kui viga ei kao, võtke ühendust veebisaidi omanikuga.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proovige käitada võrgudiagnostikat<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Saab küsida luba teie kaamera kasutamiseks ja liigutamiseks</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Edasi saidile <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Kehtiv</translation>
 <translation id="4250431568374086873">Teie ühendus selle saidiga pole täielikult turvaline</translation>
 <translation id="4250680216510889253">Ei</translation>
@@ -1412,7 +1400,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4796594887379589189">Töökonto ID</translation>
 <translation id="4798078619018708837">Kaardi üksikasjade värskendamiseks sisestage krediitkaardi <ph name="CREDIT_CARD" /> aegumiskuupäev ja CVC. Kui selle kinnitate, jagatakse teie Google'i kontol oleva kaardi üksikasju selle saidiga.</translation>
 <translation id="4800132727771399293">Kontrollige aegumiskuupäeva ja CVC-d ning proovige uuesti</translation>
-<translation id="480334179571489655">Algse reegli viga</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Juhised seadme administraatorilt:</translation>
 <translation id="4812751092864334025">Kehal kantav tehnoloogia</translation>
@@ -1807,7 +1794,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5903264686717710770">Pealkiri:</translation>
 <translation id="5904360430676679685">Perekond ja suhted</translation>
-<translation id="5905445707201418379">Blokeeritud saidi <ph name="ORIGIN" /> lähtekohareegli tõttu.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sünkroonitud)</translation>
 <translation id="59174027418879706">Lubatud</translation>
 <translation id="5919090499915321845">B10</translation>

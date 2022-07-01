@@ -335,11 +335,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1757773103848038814">Skrifttype med enkelt tegnafstand</translation>
 <translation id="1763864636252898013">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da operativsystemet på din enhed ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prøv at køre Windows Netværksdiagnosticering<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Den server, du er på vej til, <ph name="ORIGIN" />, har angivet en header,
-     som kræver, at der anvendes en politik for oprindelse på alle anmodninger, der sendes til den. Der er dog
-    en fejl i headeren, som forhindrer browseren i at opfylde
-    din anmodning til <ph name="SITE" />. Politikker for oprindelse kan anvendes af
-    websiteoperatorer til at konfigurere sikkerhed og andre egenskaber for et website.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Få flere oplysninger om inkognitotilstand i Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Dine åbne faner vises her</translation>
@@ -1111,8 +1106,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3987940399970879459">Mindre end 1 MB</translation>
 <translation id="3990250421422698716">Langsom offsetkørsel</translation>
 <translation id="3992684624889376114">Om denne side</translation>
-<translation id="3996311196211510766">Websitet <ph name="ORIGIN" /> har anmodet om, at en politik for oprindelse
-    skal gælde for alle anmodninger til websitet, men i øjeblikket kan denne politik ikke anvendes.</translation>
 <translation id="4006465311664329701">Betalingsmetoder, tilbud og adresser, der bruger Google Pay</translation>
 <translation id="4009243425692662128">Indholdet på de sider, du udskriver, sendes til analyse i Google Cloud eller hos tredjeparter. Tekst kan f.eks. blive scannet for følsomme oplysninger.</translation>
 <translation id="4010758435855888356">Vil du give adgang til lagerpladsen?</translation>
@@ -1177,11 +1170,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4202554117186904723">Femte papirrulle</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Tjekke firewall- og antiviruskonfigurationer<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Stor</translation>
-<translation id="4209166701302774460">Den server, du er på vej til, <ph name="ORIGIN" />, har anmodet om, at
-    der anvendes en politik for oprindelse på alle anmodninger, der sendes til den. Det er dog nu
-    mislykkedes at levere en politik, hvilket forhindrer browseren i at opfylde
-    din anmodning til <ph name="SITE" />. Politikker for oprindelse kan anvendes af
-    websiteoperatorer til at konfigurere sikkerhed og andre egenskaber for et website.</translation>
 <translation id="4210602799576081649">Bekræftelseskoden udløb. Anmod om en ny kode.</translation>
 <translation id="421066178035138955">Anvende virtual reality-enheder og -data</translation>
 <translation id="4213305257324635756">Animationsfilm</translation>
@@ -1209,7 +1197,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     &lt;p&gt;Hvis fejlen stadig vises, bør du kontakte ejeren af websitet.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prøv at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Websitet kan anmode om tilladelse til at bruge og bevæge dit kamera</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Fortsæt til <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Gyldig</translation>
 <translation id="4250431568374086873">Din forbindelse til dette website er ikke helt sikker</translation>
 <translation id="4250680216510889253">Nej</translation>
@@ -1413,7 +1400,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4796594887379589189">Jobkonto-id</translation>
 <translation id="4798078619018708837">Opdater dine kortoplysninger ved at indtaste udløbsdatoen og kontrolkoden for <ph name="CREDIT_CARD" />. Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
 <translation id="4800132727771399293">Kontrollér, om din kontrolkode og udløbsdato er korrekte, og prøv igen.</translation>
-<translation id="480334179571489655">Fejl i politik med samme oprindelse</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Vejledninger fra din enhedsadministrator:</translation>
 <translation id="4812751092864334025">Teknologi til at tage på</translation>
@@ -1808,7 +1794,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5904360430676679685">Familie og forhold</translation>
-<translation id="5905445707201418379">Blokeret i overensstemmelse med oprindelsespolitikken for <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniseret)</translation>
 <translation id="59174027418879706">Aktiveret</translation>
 <translation id="5919090499915321845">B10</translation>

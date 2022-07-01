@@ -5009,12 +5009,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realizar as verificações do "Navegação segura" em todos os arquivos transferidos por download</translation>
 <translation id="6433697627431665375">Evitar que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
-<translation id="6435570845618943258">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
-      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
-      Quando a configuração não for definida, tanto o verificador de certificados integrado quanto o legado poderão ser usados.
-
-      Esta política será removida no <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> versão 107, quando o suporte para o verificador de certificados legado no <ph name="MAC_OS_NAME" /> também será removido.
-      </translation>
 <translation id="6436052172226685535">Comportamento padrão para LBS.</translation>
 <translation id="6438364096042399634">Se a política for definida, será configurada uma lista de dispositivos USB que o usuário pode remover do driver de kernel dele para uso pela API chrome.usb diretamente dentro de um app da Web. As entradas são pares de um identificador de fornecedor e um identificador de produto USB para reconhecer um hardware específico.
 

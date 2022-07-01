@@ -335,11 +335,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1757773103848038814">Pisava s stalno širino</translation>
 <translation id="1763864636252898013">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; operacijski sistem vaše naprave ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje Omrežna diagnostika Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Strežnik, na katerega greste, <ph name="ORIGIN" />, je nastavil glavo,
-    ki zahteva, da se za vse zahteve, ki so mu poslane, uporabi pravilnik o izvoru. Vendar
-    je glava popačena, zaradi česar brskalnik ne more
-    izpolniti vaše zahteve za <ph name="SITE" />. Pravilnike izvora lahko uporabljajo
-    ponudniki spletnih mest zaradi konfiguriranja varnosti in drugih lastnosti spletnega mesta.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Preberite več o anonimnem načinu v Chromiumu<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Tu so prikazani odprti zavihki</translation>
@@ -1111,8 +1106,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3987940399970879459">Manj kot 1 MB</translation>
 <translation id="3990250421422698716">Zamik v načinu dela »jog«</translation>
 <translation id="3992684624889376114">O tej strani</translation>
-<translation id="3996311196211510766">Spletno mesto <ph name="ORIGIN" /> je zahtevalo, da izvorni pravilnik
-    velja za vse njegove zahteve, vendar tega pravilnika trenutno ni mogoče uveljaviti.</translation>
 <translation id="4006465311664329701">Plačilna sredstva, ponudbe in naslovi z Googlom Pay</translation>
 <translation id="4009243425692662128">Vsebina natisnjenih strani je poslana v Google Cloud ali drugim ponudnikom v analizo. Lahko je na primer pregledana glede tega, ali vsebuje občutljive podatke.</translation>
 <translation id="4010758435855888356">Želite odobriti dostop do shrambe?</translation>
@@ -1177,11 +1170,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4202554117186904723">Kolut 5</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />preveriti požarni zid in konfiguracije protivirusnega programa<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Velika</translation>
-<translation id="4209166701302774460">Strežnik, na katerega greste, <ph name="ORIGIN" />, je zahteval, da se
-    za vse zahteve, ki so mu poslane, uporabi pravilnik o izvoru. Vendar pa zdaj ni zagotovil
-    pravilnika, kar brskalniku preprečuje, da bi izpolnil vašo zahtevo
-    za <ph name="SITE" />. Pravilnike o izvoru lahko uporabljajo ponudniki spletnih mest
-    zaradi konfiguriranja varnosti in drugih lastnosti spletnega mesta.</translation>
 <translation id="4210602799576081649">Potrditvena koda je potekla, zahtevajte novo kodo.</translation>
 <translation id="421066178035138955">Uporaba naprav in podatkov za navidezno resničnost</translation>
 <translation id="4213305257324635756">Animirani filmi</translation>
@@ -1209,7 +1197,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;p&gt;Če je napaka še vedno prikazana, se obrnite na lastnika spletnega mesta.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje za omrežno diagnostiko<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Lahko zahteva uporabo in premik kamere.</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Nadaljuj na <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Veljavno</translation>
 <translation id="4250431568374086873">Povezava s tem mestom ni povsem varna.</translation>
 <translation id="4250680216510889253">Ne</translation>
@@ -1413,7 +1400,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4796594887379589189">ID računa za opravilo</translation>
 <translation id="4798078619018708837">Vnesite datum poteka in CVC za kreditno kartico <ph name="CREDIT_CARD" />, da posodobite podatke o kartici. Ko potrdite, bodo temu spletnemu mestu razkriti podatki o kreditni kartici iz Google Računa.</translation>
 <translation id="4800132727771399293">Preverite datum poteka in številko CVC ter poskusite znova</translation>
-<translation id="480334179571489655">Napaka pravilnika o izvoru</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Navodila skrbnika naprave:</translation>
 <translation id="4812751092864334025">Nosljiva tehnologija</translation>
@@ -1808,7 +1794,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5904360430676679685">Družina in odnosi</translation>
-<translation id="5905445707201418379">Blokirano v skladu s pravilnikom izvora za <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizirano)</translation>
 <translation id="59174027418879706">Omogočeno</translation>
 <translation id="5919090499915321845">B10</translation>

@@ -771,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Le formatage d'un disque entraîne la suppression de toutes les données qu'il contient et de toutes ses partitions, y compris les partitions invisibles. Cette action est irréversible.</translation>
 <translation id="7695430100978772476">Impossible de formater <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Échec du vidage de la corbeille.</translation>
 <translation id="770015031906360009">Grec</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copié.</translation>
 <translation id="7711920809702896782">Informations sur les fichiers image</translation>

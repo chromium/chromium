@@ -335,11 +335,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1757773103848038814">Police à chasse fixe</translation>
 <translation id="1763864636252898013">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre appareil. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Essayez d'exécuter les diagnostics réseau de Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Le serveur auquel vous accédez (<ph name="ORIGIN" />) a défini un en-tête exigeant
-    qu'une règle d'origine soit appliquée à toutes les requêtes qu'il reçoit. Dans le cas présent,
-    le format de l'en-tête étant incorrect, le navigateur ne peut pas traiter
-    votre requête concernant <ph name="SITE" />. Les exploitants de sites peuvent utiliser
-    des règles d'origine pour en configurer la sécurité et d'autres propriétés.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Les onglets ouverts s'affichent ici</translation>
@@ -1111,8 +1106,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
-<translation id="3996311196211510766">Le site <ph name="ORIGIN" /> a exigé qu'une règle d'origine
-    soit appliquée à toutes les requêtes qu'il reçoit. Or, cette règle n'est pas applicable actuellement.</translation>
 <translation id="4006465311664329701">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4009243425692662128">Le contenu des pages que vous imprimez est envoyé à Google Cloud ou à des tiers pour être analysé, par exemple pour vérifier qu'il ne contient pas de données sensibles.</translation>
 <translation id="4010758435855888356">Autoriser l'accès à l'espace de stockage ?</translation>
@@ -1177,11 +1170,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4202554117186904723">5e rouleau</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Vérifier les configurations du pare-feu et de l'antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
-<translation id="4209166701302774460">Le serveur auquel vous accédez (<ph name="ORIGIN" />) a exigé qu'une règle d'origine
-    soit appliquée à toutes les requêtes qu'il reçoit. La règle n'ayant pu être émise,
-    le navigateur ne peut pas traiter votre requête
-    concernant <ph name="SITE" />. Les exploitants de sites peuvent utiliser des règles d'origine
-    pour en configurer la sécurité et d'autres propriétés.</translation>
 <translation id="4210602799576081649">Le code de validation a expiré. Demandez-en un autre.</translation>
 <translation id="421066178035138955">Utiliser vos données et appareils de réalité virtuelle</translation>
 <translation id="4213305257324635756">Films d'animation</translation>
@@ -1209,7 +1197,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     &lt;p&gt;Si le message d'erreur s'affiche toujours, contactez le propriétaire du site.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Essayez d'exécuter les diagnostics réseau<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Peut demander à utiliser et bouger votre caméra</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Accéder au site <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Valide</translation>
 <translation id="4250431568374086873">Votre connexion à ce site n'est pas totalement sécurisée.</translation>
 <translation id="4250680216510889253">Non</translation>
@@ -1413,7 +1400,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4796594887379589189">Numéro de compte de travail</translation>
 <translation id="4798078619018708837">Saisissez la date d'expiration et le code CVC de la carte <ph name="CREDIT_CARD" /> pour mettre à jour les informations relatives à celle-ci. Une fois la validation effectuée, les informations relatives à la carte de votre compte Google seront partagées avec ce site.</translation>
 <translation id="4800132727771399293">Veuillez vérifier la date d'expiration et le code CVC, puis réessayez.</translation>
-<translation id="480334179571489655">Erreur concernant la règle relative à l'origine</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4812751092864334025">Accessoires connectés</translation>
@@ -1808,7 +1794,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903264686717710770">Titre :</translation>
 <translation id="5904360430676679685">Famille et relations personnelles</translation>
-<translation id="5905445707201418379">Bloqué selon la règle relative à l'origine de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronisés)</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5919090499915321845">B10</translation>

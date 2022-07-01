@@ -335,7 +335,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1757773103848038814">Neproporcionálne písmo</translation>
 <translation id="1763864636252898013">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, operačný systém vášho zariadenia nedôveruje jej bezpečnostnému certifikátu. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Skúste spustiť nástroj Diagnostika siete systému Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Server <ph name="ORIGIN" />, na ktorý prechádzate, nastavil hlavičku, ktorá požaduje, aby sa na všetky požiadavky odoslané na server vzťahovalo pravidlo pre zdroj. Hlavička má však nesprávny tvar a prehliadač preto nemôže vašej požiadavke pre web <ph name="SITE" /> vyhovieť. Pomocou pravidiel pre zdroj môžu operátori webu nakonfigurovať zabezpečenie a ďalšie vlastnosti webu.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Ďalšie informácie o režime inkognito v prehliadači Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Tu sa zobrazia otvorené karty</translation>
@@ -1103,7 +1102,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3987940399970879459">Menej ako 1 MB</translation>
 <translation id="3990250421422698716">Odsadenie zarovnania okrajov</translation>
 <translation id="3992684624889376114">Táto stránka</translation>
-<translation id="3996311196211510766">Web <ph name="ORIGIN" /> požiadal, aby sa na všetky jeho požiadavky vzťahovalo pravidlo pre zdroj, ale toto pravidlo sa momentálne nedá uplatniť.</translation>
 <translation id="4006465311664329701">Spôsoby platby, ponuky a adresy používajúce Google Pay</translation>
 <translation id="4009243425692662128">Obsah stránok, ktoré vytlačíte, sa odosiela na analýzu do služby Google Cloud alebo tretím stranám. Môže sa v ňom napríklad kontrolovať prítomnosť citlivých údajov.</translation>
 <translation id="4010758435855888356">Chcete povoliť prístup k úložisku?</translation>
@@ -1168,7 +1166,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4202554117186904723">Piaty kotúč</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Skontrolovať konfiguráciu brány firewall a antivírusového softvéru<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Veľké</translation>
-<translation id="4209166701302774460">Server <ph name="ORIGIN" />, na ktorý prechádzate, požiadal, aby sa na všetky naň odoslané požiadavky vzťahovalo pravidlo pre zdroj. Neposkytol však pravidlo, a preto prehliadač nemôže splniť vašu požiadavku pre web <ph name="SITE" />. Pomocou pravidiel pre zdroj môžu operátori webu nakonfigurovať zabezpečenie a ďalšie vlastnosti webu.</translation>
 <translation id="4210602799576081649">Overovací kód vypršal, požiadajte o nový</translation>
 <translation id="421066178035138955">Používať zariadenia a údaje virtuálnej reality</translation>
 <translation id="4213305257324635756">Animované filmy</translation>
@@ -1196,7 +1193,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
     &lt;p&gt;Ak sa chyba zobrazuje aj naďalej, kontaktujte vlastníka príslušného webu.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Skúste spustiť nástroj Diagnostika siete<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Môže žiadať o povolenie používať kameru a hýbať ňou</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Pokračovať na <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Platný</translation>
 <translation id="4250431568374086873">Spojenie s týmto webom nie je úplne zabezpečené</translation>
 <translation id="4250680216510889253">Nie</translation>
@@ -1400,7 +1396,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4796594887379589189">Číslo účtu úlohy</translation>
 <translation id="4798078619018708837">Ak chcete aktualizovať údaje o karte <ph name="CREDIT_CARD" />, zadajte dátum vypršania platnosti a kód CVC. Po potvrdení sa budú údaje o karte z vášho účtu Google zdieľať s týmto webom.</translation>
 <translation id="4800132727771399293">Skontrolujte dátum vypršania platnosti aj kód CVC a skúste to znova</translation>
-<translation id="480334179571489655">Chyba pravidla pôvodu</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Pokyny od správcu vášho zariadenia:</translation>
 <translation id="4812751092864334025">Nositeľné zariadenia</translation>
@@ -1795,7 +1790,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5903264686717710770">Názov:</translation>
 <translation id="5904360430676679685">Rodina a vzťahy</translation>
-<translation id="5905445707201418379">Blokované pravidlom pre zdroj <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronizované)</translation>
 <translation id="59174027418879706">Povolené</translation>
 <translation id="5919090499915321845">B10</translation>

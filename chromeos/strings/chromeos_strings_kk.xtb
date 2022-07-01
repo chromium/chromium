@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Қараңғы режимді қосу</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Үйлеспейтін құрамдастар<ph name="LINK_END" /> табылды. Барлық сәйкес құрамдастың анықталғанын тексеру үшін Chrome OS жүйесін соңғы нұсқаға жаңартыңыз.</translation>
 <translation id="2180197493692062006">Бірдеңе дұрыс болмады. Қолданбаны қайта ашып көріңіз.</translation>
+<translation id="2182088270354640012">Пікір қалдырғаныңызға рақмет! Пікіріңіз Chrome OS операциялық жүйесін жақсартуға көмектеседі және оны Chrome OS ұжымы қарап шығады. Келіп түскен шағымдардың көптігіне байланысты сізге тікелей жауап берілмейді.</translation>
 <translation id="2209788852729124853">Трафик есептегіштерін нөлдеу</translation>
 <translation id="2212733584906323460">Атаулар ажыратымдылығы</translation>
 <translation id="2217935453350629363">Қазіргі жылдамдық</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Қайта қосылуда…</translation>
 <translation id="2533048460510040082">Ұсынылған анықтамалық мазмұн</translation>
 <translation id="2536159006530886390">Интернетке қосыла алмай жатыр.</translation>
+<translation id="256360469103926202">Пікіріңіз ChromeOS операциялық жүйесін жақсартуға көмектеседі және оны біздің ұжым қарап шығады. Келіп түскен шағымдардың көптігіне байланысты жауап жібере алмаймыз.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
+<translation id="3275729367986477355">Аватар суреті</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды өзгерту}other{Файлдарды өзгерту}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Кілт бағыты</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Толық ақпарат алу үшін <ph name="BEGIN_LINK" />Анықтамалық орталыққа<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4793756956024303490">Сығу алгоритмі</translation>
 <translation id="4794140124556169553">Орталық процессор сынағын қоссаңыз, жүйенің өнімділігіне кері әсер болуы мүмкін.</translation>
+<translation id="4800589996161293643">Chromebook қауымдастығы</translation>
 <translation id="4804818685124855865">Ажырату</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
 <translation id="4809927044794281115">Жарық режим</translation>
@@ -487,6 +491,7 @@
 <translation id="5212543919916444558">Экранда мен көмектесе алатын ештеңе жоқ. Микрофон белгішесін түртіп, маған сұрақ қойыңыз.</translation>
 <translation id="5212593641110061691">Шағын формат</translation>
 <translation id="5222676887888702881">Шығу</translation>
+<translation id="522307662484862935">Электрондық мекенжайды енгізбеу</translation>
 <translation id="5227902338748591677">Қараңғы режим кестесі</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -613,6 +618,7 @@
 <translation id="6284632978374966585">Қараңғы режимді қосу</translation>
 <translation id="6295178529664209245">Жөндеуді жалғастырасыз ба?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тексерісінен бас тартылды.</translation>
+<translation id="631063167932043783">Зерттеу қолданбасы</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> құрылғысының микробағдарламасын жаңарту</translation>
 <translation id="6321407676395378991">Скринсейверді қосу</translation>
 <translation id="6325525973963619867">Қате шықты</translation>
@@ -641,6 +647,7 @@
 <translation id="6516990319416533844">Батареяны зарядтау жылдамдығын тексеру үшін оны қысқа уақыт пайдаланып, зарядын азайтыңыз.</translation>
 <translation id="6517239166834772319">Шолу</translation>
 <translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
+<translation id="6535178685492749208">Офлайн режимдесіз. Пікір кейінірек жіберіледі.</translation>
 <translation id="65587193855025101">Планшет</translation>
 <translation id="6564646048574748301">Сәтсіз: принтер қолжетімді емес</translation>
 <translation id="6566314079205407217">Бірнеше бетті сканерлеу</translation>
@@ -719,6 +726,7 @@
 <translation id="7297226631177386107">Брандмауэр арқылы HTTPS веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook анықтама форумындағы мамандардан сұраңыз.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Нәтижені Google Search-тен көру үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
@@ -761,6 +769,7 @@
 <translation id="773153675489693198">Цикл саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлісілген код</translation>
 <translation id="7762130827864645708">Құпия сөзіңіз өзгерді. Бұдан былай жаңа құпия сөзді пайдаланыңыз.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Жүйе мен қолданба туралы ақпаратты<ph name="END_LINK1" /> және <ph name="BEGIN_LINK2" />көрсеткіштерді<ph name="END_LINK2" /> жіберу</translation>
 <translation id="7763470514545477072">Домен суффиксі сәйкестігі</translation>
 <translation id="7769672763586021400">Үлгі идентификаторы</translation>
 <translation id="7784116172884276937">DNS серверлері реттелмеген.</translation>
@@ -830,6 +839,7 @@
 <translation id="8382302752385457774">Ақ белгі</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
+<translation id="8420955526972171689">Сынақтар жүргізіп, жабдық ақауларын жойыңыз.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Ендірілген пернетақта</translation>
 <translation id="8431300646573772016">ChromeOS жаңалықтары</translation>

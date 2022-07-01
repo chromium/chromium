@@ -335,7 +335,6 @@
 <translation id="1757773103848038814">고정폭 글꼴</translation>
 <translation id="1763864636252898013">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 기기의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
-<translation id="1772163372082567643">대상 서버인 <ph name="ORIGIN" />에서 헤더를 설정하여 서버로 전송되는 모든 요청에 출처 정책을 적용하도록 요청했습니다. 하지만 헤더의 형식이 잘못되어 브라우저에서 <ph name="SITE" />에 관한 요청을 처리할 수 없습니다. 사이트 운영자는 출처 정책을 사용해 사이트의 보안 및 기타 속성을 구성할 수 있습니다.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">열린 탭이 여기에 표시됩니다.</translation>
@@ -1107,7 +1106,6 @@
 <translation id="3987940399970879459">1MB 미만</translation>
 <translation id="3990250421422698716">조그 오프셋</translation>
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
-<translation id="3996311196211510766">사이트 <ph name="ORIGIN" />에서 모든 요청에 출처 정책을 적용하도록 요청했으나 이 정책은 현재 적용할 수 없습니다.</translation>
 <translation id="4006465311664329701">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
 <translation id="4009243425692662128">인쇄하는 페이지의 콘텐츠가 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있습니다.</translation>
 <translation id="4010758435855888356">저장소 액세스 권한을 허용하시겠습니까?</translation>
@@ -1172,7 +1170,6 @@
 <translation id="4202554117186904723">5번째 롤</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />방화벽 및 바이러스 백신 소프트웨어 설정 확인<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">크게</translation>
-<translation id="4209166701302774460">대상 서버인 <ph name="ORIGIN" />에서 서버로 전송되는 모든 요청에 출처 정책을 적용하도록 요청했습니다. 하지만 현재 정책을 전달하는 데 실패하여 브라우저에서 <ph name="SITE" />에 관한 요청을 처리할 수 없습니다. 사이트 운영자는 출처 정책을 사용해 사이트의 보안 및 기타 속성을 구성할 수 있습니다.</translation>
 <translation id="4210602799576081649">인증 코드가 만료되었습니다. 새 코드를 요청하세요.</translation>
 <translation id="421066178035138955">가상 현실 기기 및 데이터 사용</translation>
 <translation id="4213305257324635756">애니메이션 영화</translation>
@@ -1200,7 +1197,6 @@
     &lt;p&gt;계속해서 오류가 표시되면 웹사이트 소유자에게 문의하세요.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />네트워크 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="4230204356098880324">카메라 사용 및 이동을 요청할 수 있음</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" />(으)로 이동<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">유효</translation>
 <translation id="4250431568374086873">이 사이트의 보안 연결(HTTPS)은 완벽하지 않습니다.</translation>
 <translation id="4250680216510889253">아니요</translation>
@@ -1404,7 +1400,6 @@
 <translation id="4796594887379589189">작업 계정 ID</translation>
 <translation id="4798078619018708837">카드 세부정보를 업데이트하려면 <ph name="CREDIT_CARD" /> 카드의 만료일과 CVC를 입력하세요. 카드를 확인하면 Google 계정의 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="4800132727771399293">유효기간과 CVC를 확인한 후 다시 시도해 주세요.</translation>
-<translation id="480334179571489655">기존 정책 오류</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">기기 관리자가 제공하는 지침:</translation>
 <translation id="4812751092864334025">웨어러블 기술</translation>
@@ -1799,7 +1794,6 @@
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5903264686717710770">직책:</translation>
 <translation id="5904360430676679685">가족 및 대인관계</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" />의 기존 정책에 따라 차단됨</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />(동기화됨)</translation>
 <translation id="59174027418879706">사용 가능</translation>
 <translation id="5919090499915321845">B10</translation>

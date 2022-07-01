@@ -335,11 +335,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1757773103848038814">Enkelspasielettertipe</translation>
 <translation id="1763864636252898013">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur jou toestel se bedryfstelsel vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Probeer Windows Network Diagnostics uitvoer<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Die bediener waarheen jy nou gaan, <ph name="ORIGIN" />, het 'n opskrif gestel
-    wat vereis dat 'n oorsprongbeleid op alle versoeke daaraan toegepas word. Maar
-    die opskrif is misvormd, wat die blaaier verhinder om jou versoek
-    vir <ph name="SITE" /> uit te voer. Werfoperateurs kan oorsprongbeleide gebruik om
-    sekuriteit- en ander eienskappe vir 'n werf op te stel.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Kom meer te wete oor Incognito in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Jou oop oortjies verskyn hier</translation>
@@ -1111,8 +1106,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3987940399970879459">Minder as 1 MB</translation>
 <translation id="3990250421422698716">Gelykskudafwyking</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
-<translation id="3996311196211510766">Die werf <ph name="ORIGIN" /> het versoek dat 'n oorsprongbeleid
-    op alle versoeke daaraan toegepas word, maar hierdie beleid kan nie op die oomblik toegepas word nie.</translation>
 <translation id="4006465311664329701">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
 <translation id="4009243425692662128">Die inhoud van bladsye wat jy druk, word na Google Wolk of derde partye toe gestuur vir ontleding. Dit kan byvoorbeeld vir sensitiewe data geskandeer word.</translation>
 <translation id="4010758435855888356">Laat bergingtoegang toe?</translation>
@@ -1177,11 +1170,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4202554117186904723">Vyfde rol</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Die brandmuur- en antivirus-opstellings nagaan<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Groot</translation>
-<translation id="4209166701302774460">Die bediener waarheen jy nou gaan, <ph name="ORIGIN" />, het versoek dat
-    'n oorsprongbeleid op alle versoeke daaraan toegepas word. Maar dit kon nie nou
-   'n beleid lewer nie, wat die blaaier verhinder om jou versoek
-    vir <ph name="SITE" /> uit te voer. Werfoperateurs kan oorsprongbeleide gebruik om
-    sekuriteit- en ander eienskappe vir 'n werf op te stel.</translation>
 <translation id="4210602799576081649">Verifikasiekode het verval; vra vir 'n nuwe kode</translation>
 <translation id="421066178035138955">Gebruik virtuelerealiteittoestelle en -data</translation>
 <translation id="4213305257324635756">Animasieflieks</translation>
@@ -1209,7 +1197,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
     &lt;p&gt;Kontak die webwerfeienaar as jy steeds die fout sien.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Probeer netwerkdiagnostiek uitvoer<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Kan vra om jou kamera te gebruik en beweeg</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Gaan voort na <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Geldig</translation>
 <translation id="4250431568374086873">Jou verbinding aan hierdie werf is nie heeltemal veilig nie</translation>
 <translation id="4250680216510889253">Nee</translation>
@@ -1413,7 +1400,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4796594887379589189">Taakrekening-ID</translation>
 <translation id="4798078619018708837">Voer die vervaldatum en CVC vir <ph name="CREDIT_CARD" /> in om jou kaartbesonderhede op te dateer. Nadat jy bevestig het, sal kaartbesonderhede vanaf jou Google-rekening met hierdie werf gedeel word.</translation>
 <translation id="4800132727771399293">Gaan jou vervaldatum en CVC na en probeer weer</translation>
-<translation id="480334179571489655">Oorsprongbeleidfout</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instruksies deur jou toesteladministrateur:</translation>
 <translation id="4812751092864334025">Drabare tegnologie</translation>
@@ -1808,7 +1794,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5904360430676679685">Gesin en verhoudings</translation>
-<translation id="5905445707201418379">Geblokkeer ingevolge <ph name="ORIGIN" /> se oorsprongbeleid.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (gesinkroniseer)</translation>
 <translation id="59174027418879706">Geaktiveer</translation>
 <translation id="5919090499915321845">B10</translation>

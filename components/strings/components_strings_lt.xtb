@@ -335,11 +335,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1757773103848038814">Lygiaplotis šriftas</translation>
 <translation id="1763864636252898013">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas įrenginio operacinei sistemai. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Pabandykite paleisti „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Serveris, į kurį esate nukreipiami (<ph name="ORIGIN" />), nustatė antraštę,
-    pagal kurią reikalaujama, kad pradinė politika būtų taikoma visoms jam teikiamoms užklausoms. Bet
-    antraštė netinkamai suformatuota, todėl naršyklė negali įvykdyti
-    <ph name="SITE" /> užklausos. Pradinę politiką gali naudoti
-    svetainių operatoriai, siekdami konfigūruoti svetainės saugą ir kitas nuosavybes.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Sužinokite daugiau apie inkognito režimą naršyklėje „Chromium“<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Atidaryti skirtukai bus rodomi čia</translation>
@@ -1112,8 +1107,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3987940399970879459">Mažiau nei 1 MB</translation>
 <translation id="3990250421422698716">Kopijų atskyrimas</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
-<translation id="3996311196211510766">Svetainė <ph name="ORIGIN" /> pateikė užklausą taikyti pradinę politiką
-    visoms jos užklausoms, bet šiuo metu šios politikos taikyti negalima.</translation>
 <translation id="4006465311664329701">Mokėjimo metodai, pasiūlymai ir adresai naudojant „Google Pay“</translation>
 <translation id="4009243425692662128">Spausdinamų puslapių turinys siunčiamas į „Google Cloud“ arba trečiosioms šalims analizuoti. Pavyzdžiui, tekstas gali būti nuskaitytas, ar jame nėra neskelbtinų duomenų.</translation>
 <translation id="4010758435855888356">Suteikti prieigą prie saugyklos?</translation>
@@ -1178,11 +1171,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4202554117186904723">Penktas ritinėlis</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Patikrinti užkardos ir antivirusinės sistemos konfigūracijas<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Didelis</translation>
-<translation id="4209166701302774460">Serveris, į kurį esate nukreipiami (<ph name="ORIGIN" />), pateikė užklausą
-    taikyti pradinę politiką visoms jam teikiamoms užklausoms. Bet dabar jam nepavyko
-    pateikti politikos, todėl naršyklė negali vykdyti
-    <ph name="SITE" /> užklausos. Pradinę politiką gali naudoti svetainių operatoriai,
-    siekdami konfigūruoti svetainės saugą ir kitas nuosavybes.</translation>
 <translation id="4210602799576081649">Patvirtinimo kodas baigė galioti, pateikite užklausą dėl naujo kodo</translation>
 <translation id="421066178035138955">Naudoti virtualiosios realybės įrenginius ir duomenis</translation>
 <translation id="4213305257324635756">Animaciniai filmai</translation>
@@ -1210,7 +1198,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
     &lt;p&gt;Jei vis tiek rodoma klaida, susisiekite su svetainės savininku.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Pabandykite paleisti „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Gali būti prašoma naudoti ir perkelti fotoaparatą</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Eiti į <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Tinkamas</translation>
 <translation id="4250431568374086873">Ryšys su šia svetaine nėra visiškai saugus</translation>
 <translation id="4250680216510889253">Ne</translation>
@@ -1414,7 +1401,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4796594887379589189">Užduoties paskyros ID</translation>
 <translation id="4798078619018708837">Jei norite atnaujinti išsamią kortelės informaciją, įveskite „<ph name="CREDIT_CARD" />“ galiojimo laiko pabaigos datą ir kortelės saugos kodą (CVC). Kai patvirtinsite, „Google“ paskyroje nurodyta išsami kortelės informacija bus bendrinama su šia svetaine.</translation>
 <translation id="4800132727771399293">Patikrinkite kortelės galiojimo pabaigos datą bei saugos kodą (CVC) ir bandykite dar kart</translation>
-<translation id="480334179571489655">Pradinės politikos klaida</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
 <translation id="4812751092864334025">Nešiojamosios technologijos</translation>
@@ -1809,7 +1795,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5903264686717710770">Pavadinimas:</translation>
 <translation id="5904360430676679685">Šeima ir santykiai</translation>
-<translation id="5905445707201418379">Užblokuota vadovaujantis „<ph name="ORIGIN" />“ pradine politika.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinchronizuota)</translation>
 <translation id="59174027418879706">Įjungta</translation>
 <translation id="5919090499915321845">B10</translation>

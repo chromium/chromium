@@ -335,11 +335,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1757773103848038814">Jafnstafaletur</translation>
 <translation id="1763864636252898013">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; stýrikerfi tækisins treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prófaðu að keyra Windows-netgreiningu<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Netþjónninn sem þú valdir, <ph name="ORIGIN" />, er með stilltan haus
-    þar sem farið er fram á að upprunaregla sé notuð við allar aðgangsbeiðnir. En
-    hausinn er gallaður, sem kemur í veg fyrir að vafrinn geti uppfyllt
-    beiðni þína fyrir <ph name="SITE" />. Notendur síðu geta notað upprunareglur
-    til að stilla öryggi og aðra eiginleika síðu.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Nánar um huliðsstillingu í Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Opnir flipar birtast hér</translation>
@@ -1111,8 +1106,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3987940399970879459">Minna en 1 MB</translation>
 <translation id="3990250421422698716">Jöfnuð offsetprentun</translation>
 <translation id="3992684624889376114">Um þessa síðu</translation>
-<translation id="3996311196211510766">Vefsvæðið <ph name="ORIGIN" /> hefur beðið um að upprunaregla
-    gildi fyrir allar beiðnir þess, en ekki er hægt að nota þessa reglu eins og er.</translation>
 <translation id="4006465311664329701">Greiðslumátar, tilboð og heimilisföng sem nota Google Pay</translation>
 <translation id="4009243425692662128">Efni síðna sem þú prentar er sent til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum.</translation>
 <translation id="4010758435855888356">Veita aðgang að geymslurými?</translation>
@@ -1177,11 +1170,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4202554117186904723">Fimmta rúlla</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Athuga eldveggjar- og vírusvarnastillingar<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Stórt</translation>
-<translation id="4209166701302774460">Netþjónninn sem þú valdir, <ph name="ORIGIN" />, hefur beðið um að
-    upprunaregla sé notuð við allar aðgangsbeiðnir. En hann hefur ekki
-    afhent reglu, sem kemur í veg fyrir að vafrinn uppfylli beiðni þína
-    fyrir <ph name="SITE" />. Notendur síðu geta notað upprunareglur 
-    til að stilla öryggi og aðra eiginleika fyrir síðu.</translation>
 <translation id="4210602799576081649">Staðfestingarkóði er útrunninn, biddu um annan kóða</translation>
 <translation id="421066178035138955">Nota sýndarveruleikatæki og -gögn</translation>
 <translation id="4213305257324635756">Teiknimyndir</translation>
@@ -1209,7 +1197,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     &lt;p&gt;Ef þú færð áfram sömu villu skaltu hafa samband við eiganda vefsvæðisins.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prófaðu að keyra netgreiningu<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Getur beðið um að nota og færa myndavélina</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Halda áfram á <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Gilt</translation>
 <translation id="4250431568374086873">Tengingin við þetta vefsvæði er ekki alveg örugg</translation>
 <translation id="4250680216510889253">Nei</translation>
@@ -1413,7 +1400,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4796594887379589189">Auðkenni vinnslureiknings</translation>
 <translation id="4798078619018708837">Sláðu inn gildistíma og CVC-númerið fyrir <ph name="CREDIT_CARD" /> til að uppfæra kortaupplýsingarnar. Greiðslukortaupplýsingum af Google reikningnum þínum verður deilt með vefsvæðinu eftir að þú hefur staðfest.</translation>
 <translation id="4800132727771399293">Athugaðu gildistímann og CVC-númerið og reyndu aftur</translation>
-<translation id="480334179571489655">Villa í upprunareglu</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Leiðbeiningar frá stjórnanda tækisins:</translation>
 <translation id="4812751092864334025">Tækni sem notandi ber á sér</translation>
@@ -1808,7 +1794,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5901630391730855834">Gulur</translation>
 <translation id="5903264686717710770">Titill:</translation>
 <translation id="5904360430676679685">Fjölskylda og sambönd</translation>
-<translation id="5905445707201418379">Lokað á samkvæmt upprunareglu <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (samstillt)</translation>
 <translation id="59174027418879706">Virkt</translation>
 <translation id="5919090499915321845">B10</translation>

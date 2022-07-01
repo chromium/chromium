@@ -4977,12 +4977,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6424485010103067949"><ph name="OMA_URI" /> :</translation>
 <translation id="6424486395812679373">Procéder aux vérifications de la navigation sécurisée pour tous les fichiers téléchargés</translation>
 <translation id="6433697627431665375">Exclure des sauvegardes les données de <ph name="PRODUCT_NAME" /></translation>
-<translation id="6435570845618943258">Lorsque ce paramètre est activé : <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
-      Lorsqu'il est désactivé : <ph name="PRODUCT_NAME" /> vérifie ces certificats avec l'ancien outil de vérification fourni par la plate-forme.
-      Lorsqu'il n'est pas défini : l'outil de vérification intégré ou l'ancien outil peuvent être utilisés.
-
-      Cette règle doit être supprimée de <ph name="PRODUCT_NAME" /> pour la version 107 de <ph name="MAC_OS_NAME" />, lorsque l'ancien outil en question sur <ph name="MAC_OS_NAME" /> ne sera plus pris en charge.
-      </translation>
 <translation id="6436052172226685535">Comportement par défaut de LBS.</translation>
 <translation id="6438364096042399634">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour s'en servir via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un code produit associé à un appareil spécifique.
 
@@ -5628,6 +5622,7 @@ Si vous sélectionnez les options suivantes :
 
       Si cette règle est désactivée, le système peut considérer que l'utilisateur est inactif malgré l'activité vidéo.</translation>
 <translation id="7086720321892395256">Contrôle les règles relatives aux utilisateurs et aux appareils pour la fonctionnalité d'écran de confidentialité.</translation>
+<translation id="7090500018761495290">Réactiver l'API Event.path jusqu'à M115.</translation>
 <translation id="7090668780328470271">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs l'accès aux appareils USB.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.

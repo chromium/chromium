@@ -335,8 +335,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1757773103848038814">Sabit Aralıklı Yazı Tipi</translation>
 <translation id="1763864636252898013">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. cihazınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Ağ Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Ziyaret etmek üzere olduğunuz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını gerektiren bir üst bilgi ayarladı. Ancak üst bilgi yanlış biçimlendirildiği için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi yerine getiremiyor. Kaynak politikaları
-    site operatörleri tarafından sitenin güvenliğini ve diğer mülklerini yapılandırmak için kullanılabilir.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium'daki Gizli mod hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Açık sekmeleriniz burada görünür</translation>
@@ -1108,7 +1106,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3987940399970879459">1 MB'tan az</translation>
 <translation id="3990250421422698716">Jog ofset</translation>
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
-<translation id="3996311196211510766"><ph name="ORIGIN" /> sitesi, bir kaynak politikasının kendisine gelen tüm talepler için geçerli olmasını istedi, ancak bu politika şu anda uygulanamıyor.</translation>
 <translation id="4006465311664329701">Google Pay'i Kullanan Ödeme Yöntemleri, Teklifler ve Adresler</translation>
 <translation id="4009243425692662128">Yazdırdığınız sayfaların içeriği analiz edilmek üzere Google Cloud'a veya üçüncü taraflara gönderilir. Dosyalarınızın hassas veriler içerip içermediği kontrol edilir.</translation>
 <translation id="4010758435855888356">Depolama alanına erişime izin verilsin mi?</translation>
@@ -1173,8 +1170,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4202554117186904723">Beşinci Rulo</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Güvenlik duvarı ve virüsten korunma yapılandırmalarını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Büyük</translation>
-<translation id="4209166701302774460">Ziyaret etmek üzere olduğunuz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını talep etti. Ancak şimdi politika sunamadığı için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi yerine getiremiyor. Kaynak politikaları
-    site operatörleri tarafından sitenin güvenliğini ve diğer özelliklerini yapılandırmak için kullanılabilir.</translation>
 <translation id="4210602799576081649">Doğrulama kodunun süresi doldu. Yeni bir kod isteyin</translation>
 <translation id="421066178035138955">Sanal gerçeklik cihazlarını ve verilerini kullanmak</translation>
 <translation id="4213305257324635756">Animasyon filmleri</translation>
@@ -1202,7 +1197,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     &lt;p&gt;Hatayı görmeye devam ederseniz web sitesinin sahibiyle iletişime geçin.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Ağ Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Kameranızı kullanmak ve hareket ettirmek isteyebilir</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> sitesine git<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Geçerli</translation>
 <translation id="4250431568374086873">Bu siteye bağlantınız tam olarak güvenli değil</translation>
 <translation id="4250680216510889253">Hayır</translation>
@@ -1406,7 +1400,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4796594887379589189">İş hesabı kimliği</translation>
 <translation id="4798078619018708837">Kart bilgilerinizi güncellemek için <ph name="CREDIT_CARD" /> numaralı karta ait son kullanma tarihini ve CVC kodunu girin. Onayladığınızda Google Hesabınızdaki kart bilgileriniz bu siteyle paylaşılır.</translation>
 <translation id="4800132727771399293">Son kullanma tarihinizi ve CVC'nizi kontrol edip tekrar deneyin</translation>
-<translation id="480334179571489655">Kaynak Politikası Hatası</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Cihaz yöneticinizden talimatlar:</translation>
 <translation id="4812751092864334025">Giyilebilir teknoloji ürünleri</translation>
@@ -1801,7 +1794,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903264686717710770">Başlık:</translation>
 <translation id="5904360430676679685">Aile ve ilişkiler</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" /> sitesinin kaynak politikası uyarınca engellendi.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (senkronize edildi)</translation>
 <translation id="59174027418879706">Etkin</translation>
 <translation id="5919090499915321845">B10</translation>

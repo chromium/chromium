@@ -335,11 +335,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1757773103848038814">Phông chữ giãn cách đơn</translation>
 <translation id="1763864636252898013">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này không được hệ điều hành thiết bị của bạn tin cậy. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Thử chạy Chẩn đoán mạng của Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Máy chủ bạn định truy cập vào, <ph name="ORIGIN" />, đã đặt tiêu đề
-    yêu cầu phải áp dụng một chính sách nguồn gốc cho tất cả yêu cầu gửi tới máy chủ đó. Tuy nhiên,
-    tiêu đề đó không đúng định dạng. Điều này khiến trình duyệt không hoàn thành được
-    yêu cầu của bạn là truy cập vào <ph name="SITE" />. Nhà điều hành trang web có thể
-    dựa vào chính sách nguồn gốc để định cấu hình bảo mật và các thuộc tính khác cho trang web.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Tìm hiểu thêm về Chế độ ẩn danh trên Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Thẻ đang mở của bạn xuất hiện ở đây</translation>
@@ -1111,8 +1106,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3987940399970879459">Dưới 1 MB</translation>
 <translation id="3990250421422698716">Bù dịch chuyển</translation>
 <translation id="3992684624889376114">Giới thiệu về trang này</translation>
-<translation id="3996311196211510766">Trang web <ph name="ORIGIN" /> đã yêu cầu phải áp dụng một chính sách nguồn gốc
-    cho tất cả yêu cầu gửi tới trang web đó. Tuy nhiên, chính sách này hiện không áp dụng được.</translation>
 <translation id="4006465311664329701">Phương thức thanh toán, ưu đãi và địa chỉ sử dụng Google Pay</translation>
 <translation id="4009243425692662128">Nội dung của các trang bạn in được gửi tới Google Cloud hoặc các bên thứ ba để phân tích. Ví dụ: nội dung đó có thể được quét tìm dữ liệu nhạy cảm.</translation>
 <translation id="4010758435855888356">Cho phép quyền truy cập bộ nhớ?</translation>
@@ -1177,11 +1170,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4202554117186904723">Cuộn thứ năm</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kiểm tra tường lửa và cấu hình diệt vi-rút<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Lớn</translation>
-<translation id="4209166701302774460">Máy chủ bạn định truy cập vào, <ph name="ORIGIN" />, đã yêu cầu phải
-    áp dụng một chính sách nguồn gốc cho tất cả yêu cầu gửi tới máy chủ đó. Tuy nhiên, máy chủ đó hiện không
-    cung cấp được chính sách. Điều này khiến trình duyệt không hoàn thành được
-    yêu cầu của bạn là truy cập vào <ph name="SITE" />. Nhà điều hành trang web có thể dựa vào chính sách nguồn gốc
-    để định cấu hình bảo mật và các thuộc tính khác cho trang web.</translation>
 <translation id="4210602799576081649">Mã xác minh đã hết hạn, hãy yêu cầu mã mới</translation>
 <translation id="421066178035138955">Sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="4213305257324635756">Phim hoạt hình</translation>
@@ -1209,7 +1197,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     &lt;p&gt;Nếu bạn vẫn gặp lỗi này, hãy liên hệ với chủ sở hữu trang web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Thử chạy Chẩn đoán mạng<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Trang web có thể yêu cầu dùng và di chuyển máy ảnh của bạn</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Tiếp tục truy cập vào <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Hợp lệ</translation>
 <translation id="4250431568374086873">Kết nối của bạn tới trang web này không đủ an toàn</translation>
 <translation id="4250680216510889253">Không</translation>
@@ -1413,7 +1400,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4796594887379589189">Mã tài khoản lệnh</translation>
 <translation id="4798078619018708837">Hãy nhập ngày hết hạn và số CVC của <ph name="CREDIT_CARD" /> để cập nhật thông tin chi tiết thẻ của bạn. Sau khi bạn xác nhận, thông tin chi tiết thẻ trong Tài khoản Google của bạn sẽ được chia sẻ với trang web này.</translation>
 <translation id="4800132727771399293">Kiểm tra ngày hết hạn và CVC của bạn rồi thử lại</translation>
-<translation id="480334179571489655">Lỗi chính sách nguồn gốc</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Hướng dẫn từ quản trị viên thiết bị:</translation>
 <translation id="4812751092864334025">Sản phẩm công nghệ có thể bị đeo</translation>
@@ -1808,7 +1794,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5903264686717710770">Tiêu đề:</translation>
 <translation id="5904360430676679685">Gia đình và các mối quan hệ</translation>
-<translation id="5905445707201418379">Bị chặn theo chính sách nguồn gốc của <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (được đồng bộ hóa)</translation>
 <translation id="59174027418879706">Được kích hoạt</translation>
 <translation id="5919090499915321845">B10</translation>

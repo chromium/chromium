@@ -335,7 +335,6 @@
 <translation id="1757773103848038814">等寬字型</translation>
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得您裝置的操作系統的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
-<translation id="1772163372082567643">您的目標伺服器「<ph name="ORIGIN" />」已設定標題要求為收到的所有要求套用來源政策。不過，由於該標題格式錯誤，因此瀏覽器無法完成您向 <ph name="SITE" /> 提出的要求。網站網絡供應商可使用來源政策設定網站的安全性及其他屬性。</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />進一步瞭解 Chromium 無痕模式<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">您最近開啟的分頁會在這裡顯示</translation>
@@ -1106,7 +1105,6 @@
 <translation id="3987940399970879459">小於 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
 <translation id="3992684624889376114">關於本頁</translation>
-<translation id="3996311196211510766">網站 <ph name="ORIGIN" /> 指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
 <translation id="4006465311664329701">使用 Google Pay 儲存的付款方法、優惠和地址</translation>
 <translation id="4009243425692662128">您列印的頁面內容會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄文字，檢查是否含有敏感資料。</translation>
 <translation id="4010758435855888356">要授予儲存空間存取權嗎？</translation>
@@ -1171,7 +1169,6 @@
 <translation id="4202554117186904723">第五卷</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />檢查防火牆和防毒軟件設定<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
-<translation id="4209166701302774460">您的目標伺服器「<ph name="ORIGIN" />」要求為收到的所有要求套用來源政策。不過，由於該伺服器目前並未提供政策，因此瀏覽器無法完成您向 <ph name="SITE" /> 提出的要求。網站網絡供應商可使用來源政策設定網站的安全性及其他屬性。</translation>
 <translation id="4210602799576081649">驗證碼已過期，請要求新驗證碼</translation>
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
 <translation id="4213305257324635756">動畫電影</translation>
@@ -1199,7 +1196,6 @@
     &lt;p&gt;如果您仍然看到錯誤訊息，請聯絡網站擁有者。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="4230204356098880324">可要求使用和移動攝錄機</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />繼續前往 <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4250431568374086873">您與此網站的連線並非完全安全</translation>
 <translation id="4250680216510889253">否</translation>
@@ -1403,7 +1399,6 @@
 <translation id="4796594887379589189">工作帳戶 ID</translation>
 <translation id="4798078619018708837">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)，以更新您的信用卡詳細資料。確認後，您的 Google 帳戶會與這個網站共用您的信用卡資料。</translation>
 <translation id="4800132727771399293">請檢查您的到期日和卡片驗證碼 (CVC)，然後再試一次</translation>
-<translation id="480334179571489655">來源政策錯誤</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4812751092864334025">穿戴式裝置</translation>
@@ -1798,7 +1793,6 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903264686717710770">標題：</translation>
 <translation id="5904360430676679685">家庭和人際關係</translation>
-<translation id="5905445707201418379">已根據 <ph name="ORIGIN" /> 的安全政策封鎖。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919090499915321845">B10</translation>

@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">Monospace ෆොන්ට</translation>
 <translation id="1763864636252898013">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය ඔබගේ උපාංගයෙහි මෙහෙයුම් පද්ධතිය මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ජාල දෝෂහරණ ධාවනය කිරීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">ඔබ යන සේවාදායකය, <ph name="ORIGIN" />, එය වෙත කෙරෙන සියලුම
-    ඉල්ලීම්වලට මූලාරම්භ ප්‍රතිපත්තියක් යෙදෙන මාතෘකාවක් සකසා ඇත. නමුත්
-    මාතෘකාව වැරදිව ආකෘති කර ඇත, එය බ්‍රවුසරය
-    <ph name="SITE" /> සඳහා වන ඔබේ ඉල්ලීම ඉටු කිරීමෙන් වළක්වයි. වෙබ් අඩවියක් සඳහා ආරක්‍ෂාව සහ වෙනත් ලක්‍ෂණ
-    වින්‍යාස කිරීමට වෙබ් අඩවිය ක්‍රියා කරවන්නන් විසින් මූලාරම්භ ප්‍රතිපත්ති භාවිත කරනු ලැබිය හැක.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium හි අප්‍රසිද්ධ ගැන තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">ඔබේ විවෘත කළ පටිති මෙහි දිස් වේ</translation>
@@ -1111,8 +1106,6 @@
 <translation id="3987940399970879459">1 MBට වඩා අඩු</translation>
 <translation id="3990250421422698716">අනුලම්බයේ සෙමින් දුවන්න</translation>
 <translation id="3992684624889376114">මෙම පිටුව පිළිබඳ</translation>
-<translation id="3996311196211510766">මූලාරම්භ ප්‍රතිපත්තිය එය වෙත සියලුම ඉල්ලීම්වලට යෙදීමට <ph name="ORIGIN" /> වෙබ් අඩවිය
-    ඉල්ලා ඇති නමුත්, දැනට මෙම ප්‍රතිපත්තිය යෙදිය නොහැක.</translation>
 <translation id="4006465311664329701">Google Pay භාවිතයෙන් ගෙවීමේ ක්‍රම, දීමනා සහ ලිපින</translation>
 <translation id="4009243425692662128">ඔබ මුද්‍රණය කරන පිටුවල අන්තර්ගතය විශ්ලේෂණය සඳහා Google ක්ලවුඩ් හෝ තෙවන පාර්ශ්ව වෙත යවනු ලැබේ. උදාහරණයක් වශයෙන්, සංවේදි දත්ත සඳහා එය ස්කෑන් කරනු ලැබිය හැකිය.</translation>
 <translation id="4010758435855888356">ගබඩා ප්‍රවේශය ඉඩ දෙන්නද?</translation>
@@ -1177,8 +1170,6 @@
 <translation id="4202554117186904723">Fifth Roll</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />සුරැකුම් පවුර සහ ප්‍රතිවයිරස වින්‍යාස කිරීම් පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">විශාල</translation>
-<translation id="4209166701302774460">ඔබ යන සේවාදායකය, <ph name="ORIGIN" />, එය වෙත සියලුම ඉල්ලීම්වලට මූලාරම්භක ප්‍රතිපත්තියක් යෙදීමට ඉල්ලා ඇත. නමුත් එය දැන් ප්‍රතිපත්තියක් බෙදා හැරීමට අසමත් වී ඇත, එය <ph name="SITE" /> සඳහා වන ඔබේ ඉල්ලීම ඉටු කිරීමෙන් බ්‍රවුසරය වළක්වයි. වෙබ් අඩවියක් සඳහා ආරක්‍ෂාව සහ වෙනත් ලක්‍ෂණ
-    වින්‍යාස කිරීමට වෙබ් අඩවිය ක්‍රියා කරවන්නන් විසින් මූලාරම්භ ප්‍රතිපත්ති භාවිත කරනු ලැබිය හැක.</translation>
 <translation id="4210602799576081649">සත්‍යාපන කේතය කල් ඉකුත් වී ඇත, නව කේතයක් ඉල්ලන්න</translation>
 <translation id="421066178035138955">අතත්‍ය යථාර්ථ උපාංග සහ දත්ත භාවිත කරන්න</translation>
 <translation id="4213305257324635756">සජීවන චිත්‍රපට</translation>
@@ -1206,7 +1197,6 @@
     &lt;p&gt;ඔබට තවමත් දෝෂය පෙනේ නම්, වෙබ් අඩවි හිමිකරු සම්බන්ධ කර ගන්න.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ජාල දෝෂහරණ ධාවනය කිරීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">ඔබගේ කැමරාව භාවිත කිරීමට සහ චලනය කිරීමට ඉල්ලිය හැකිය</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> ‌වෙත යන්න<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">වලංගුයි</translation>
 <translation id="4250431568374086873">මෙම අඩවිය වෙත ඔබගේ සම්බන්ධතාවය සම්පූර්ණයෙන්ම සුරක්ෂිත නැත</translation>
 <translation id="4250680216510889253">නැත</translation>
@@ -1410,7 +1400,6 @@
 <translation id="4796594887379589189">වැඩ ගිණුම් හැඳුනුම</translation>
 <translation id="4798078619018708837">ඔබේ කාඩ්පත් විස්තර යාවත්කාලීන කිරීමට <ph name="CREDIT_CARD" /> සඳහා කල් ඉකුත් වීමේ දිනය සහ CVC ඇතුළත් කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="4800132727771399293">ඔබේ කල් ඉකුත් වූ දිනය සහ CVC, පරික්ෂා කර යළි උත්සාහ කරන්න</translation>
-<translation id="480334179571489655">මුල් ප්‍රතිපත්තිය දෝෂය</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">ඔබේ උපාංග පරිපාලකයාගෙන් ලැබෙන උපදෙස්:</translation>
 <translation id="4812751092864334025">පළඳිය හැකි තාක්ෂණය</translation>
@@ -1805,7 +1794,6 @@
 <translation id="5901630391730855834">කහ</translation>
 <translation id="5903264686717710770">මාතෘකාව:</translation>
 <translation id="5904360430676679685">පවුල සහ සම්බන්ධතා</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" />ගේ මූලාරම්භ ප්‍රතිපත්තියට අනුව අවහිර කර ඇත.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (සමමුහුර්තයි)</translation>
 <translation id="59174027418879706">සබලයි</translation>
 <translation id="5919090499915321845">B10</translation>

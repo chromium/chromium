@@ -771,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Si formateas una unidad, se borrarán todos los datos almacenados allí y se eliminarán todas las particiones existentes, incluidas las que no están visibles. No se puede deshacer esta acción.</translation>
 <translation id="7695430100978772476">No se pudo formatear <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">No se pudo vaciar la papelera.</translation>
 <translation id="770015031906360009">Griego</translation>
 <translation id="7705251383879779343">Se copió <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">Información de la imagen</translation>

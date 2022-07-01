@@ -335,11 +335,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1757773103848038814">Monospace-fontti</translation>
 <translation id="1763864636252898013">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; laitteesi käyttöjärjestelmä ei luota sen suojausvarmenteeseen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Kokeile Windowsin verkon diagnostiikkaa<ph name="END_LINK" /></translation>
-<translation id="1772163372082567643">Kohdepalvelin <ph name="ORIGIN" /> pyytää otsikossaan
-    alkuperäkäytännön soveltamista kaikkiin sen saamiin pyyntöihin. Koska
-    otsikko on muotoiltu väärin, selain ei voi täyttää
-    pyyntöäsi (<ph name="SITE" />). Alkuperäkäytäntöjen avulla
-    sivusto-operaattorit voivat määrittää sen tietosuojan ja muita ominaisuuksia.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Lue lisää Chromiumin incognito-tilasta<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0 (1 030 mm x 1 456 mm)</translation>
 <translation id="1787142507584202372">Avoimet välilehdet näkyvät tässä.</translation>
@@ -1112,8 +1107,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3987940399970879459">Alle 1 Mt</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
-<translation id="3996311196211510766">Sivusto <ph name="ORIGIN" /> pyytää alkuperäkäytännön
-    soveltamista kaikkiin sen pyyntöihin, mutta käytäntöä ei voi soveltaa tällä hetkellä.</translation>
 <translation id="4006465311664329701">Maksutavat, tarjoukset ja osoitteet Google Playta käyttäen</translation>
 <translation id="4009243425692662128">Tulostamiesi sivujen sisältö lähetetään Google Cloudin tai kolmansien osapuolten analysoitavaksi. Se voidaan esimerkiksi skannata arkaluontoisten tietojen varalta.</translation>
 <translation id="4010758435855888356">Sallitaanko tallennustilan pääsyoikeudet?</translation>
@@ -1178,11 +1171,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4202554117186904723">Viides rulla</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Tarkista palomuurin ja virustorjuntaohjelmiston määritykset.<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Suuri</translation>
-<translation id="4209166701302774460">Kohdepalvelin <ph name="ORIGIN" /> pyytää
-    alkuperäkäytännön soveltamista kaikkiin sen saamiin pyyntöihin. Käytännön palauttaminen ei kuitenkaan nyt onnistunut, 
-    , joten selain ei nyt voi toteuttaa
-    <ph name="SITE" />-pyyntöäsi. Alkuperäkäytäntöjen avulla sivuston operaattorit
-    voivat määrittää sen tietosuojan ja muita ominaisuuksia.</translation>
 <translation id="4210602799576081649">Vahvistuskoodi on vanhentunut, pyydä uutta koodia</translation>
 <translation id="421066178035138955">käyttää virtuaalitodellisuuslaitteita ja ‑dataa</translation>
 <translation id="4213305257324635756">Piirretyt elokuvat</translation>
@@ -1210,7 +1198,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     &lt;p&gt;Jos näet virheen vieläkin, ota yhteyttä verkkosivuston omistajaan.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Kokeile verkon diagnostiikkaa<ph name="END_LINK" /></translation>
 <translation id="4230204356098880324">Saa pyytää lupaa kameran käyttämiseen ja siirtämiseen</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Siirry sivustolle <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Voimassa</translation>
 <translation id="4250431568374086873">Yhteytesi sivustoon ei ole täysin suojattu.</translation>
 <translation id="4250680216510889253">Ei</translation>
@@ -1414,7 +1401,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4796594887379589189">Työpaikan tilin tunnus</translation>
 <translation id="4798078619018708837">Päivitä <ph name="CREDIT_CARD" /> ‑tiedot antamalla sen viimeinen voimassaolopäivä ja CVC. Vahvistamisen jälkeen korttitiedot Google-tililtäsi jaetaan tämän sivuston kanssa.</translation>
 <translation id="4800132727771399293">Tarkista vanhenemispäivä ja CVC ja yritä uudelleen.</translation>
-<translation id="480334179571489655">Käytännön alkuperävirhe</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Ohjeet laitteen järjestelmänvalvojalta</translation>
 <translation id="4812751092864334025">Puettava teknologia</translation>
@@ -1809,7 +1795,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903264686717710770">Otsikko:</translation>
 <translation id="5904360430676679685">Perhe ja ihmissuhteet</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" /> estää tämän alkuperäkäytännössään.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronoitu)</translation>
 <translation id="59174027418879706">Käytössä</translation>
 <translation id="5919090499915321845">B10</translation>

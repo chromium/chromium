@@ -219,6 +219,7 @@
 <translation id="1197199342062592414">आइए प्रारंभ करें</translation>
 <translation id="11978075283960463">ऐप्लिकेशन में सेव डेटा का साइज़: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">बंद करें</translation>
+<translation id="1198066799963193307">कम दृष्टि वाले लोगों के लिए, टेक्स्ट को बोली में बदलने वाले टूल से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="119944043368869598">सारा डेटा मिटाएं</translation>
 <translation id="1199814941632954229">प्रमाणपत्र की इन प्रोफ़ाइलों के लिए, प्रमाणपत्रों का इस्तेमाल किया जा रहा है</translation>
 <translation id="120069043972472860">न देखे जाने लायक</translation>
@@ -1512,6 +1513,7 @@
 <translation id="2371076942591664043">&amp;पू्र्ण होने पर खोलें</translation>
 <translation id="2373666622366160481">जिस कागज़ पर प्रिंट किया जाना है उसके आकार के हिसाब से फ़िट करें</translation>
 <translation id="2375406435414127095">अपने फ़ोन से जोड़ें</translation>
+<translation id="2376056713414548745">टेक्स्ट को ज़ोर से पढ़े जाने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="2377588536920405462">जगह की जानकारी देना बंद करने के लिए, आप डिवाइस की सेटिंग में जाकर 'जगह की सेटिंग' बंद कर सकते हैं. आप जगह की सेटिंग में जाकर वाई-फ़ाई, मोबाइल नेटवर्क, और जगह की जानकारी का पता लगाने वाले सेंसर का इस्तेमाल करना बंद भी कर सकते हैं.</translation>
 <translation id="2377667304966270281">हार्ड फ़ॉल्ट</translation>
 <translation id="237828693408258535">क्या इस पेज का अनुवाद करना चाहते हैं?</translation>
@@ -2339,6 +2341,7 @@
 <translation id="3163511056918491211">जब चाहें, आसानी से अपना डेटा वापस लाएं या डिवाइस बदलें. आपके डिवाइस के डेटा का बैक अप, Google पर अपलोड किया जाता है और आपके Google खाते के पासवर्ड से सुरक्षित किया जाता है.</translation>
 <translation id="3164329792803560526">इस टैब को <ph name="APP_NAME" /> के साथ शेयर किया जा रहा है</translation>
 <translation id="3165390001037658081">कुछ वाहक इस सुविधा को बंद कर सकते हैं.</translation>
+<translation id="3169930038976362151">अपनी ज़रूरतों के मुताबिक थीम चुनें. अपनी थीम, वॉलपेपर, स्क्रीन सेवर वगैरह बदलने के लिए, बस डेस्कटॉप पर बटन को दबाकर रखें.</translation>
 <translation id="3170072451822350649">आप प्रवेश करना छोड़ भी सकते हैं और <ph name="LINK_START" />अतिथि के रूप में ब्राउज़<ph name="LINK_END" /> कर सकते हैं.</translation>
 <translation id="31774765611822736">बाईं ओर का नया टैब</translation>
 <translation id="3177909033752230686">पेज की भाषा:</translation>
@@ -3211,6 +3214,7 @@
 <translation id="402184264550408568">(टीसीपी)</translation>
 <translation id="4021909830315618592">बिल्ड की जानकारी कॉपी करें</translation>
 <translation id="4021941025609472374">बाईं ओर के टैब बंद करें</translation>
+<translation id="402211067068791756">इससे, देखी गई साइटों के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="4022426551683927403">शब्दकोश में &amp;जोड़ें</translation>
 <translation id="4025039777635956441">चुनी गई साइट म्यूट करें</translation>
 <translation id="4028467762035011525">इनपुट का तरीका जोड़ें</translation>
@@ -3461,6 +3465,7 @@
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
 <translation id="4282196459431406533">Smart Lock चालू है</translation>
 <translation id="4284755288573763878">बेहतर सुरक्षा वाली ब्राउज़िंग बंद करनी है?</translation>
+<translation id="4284903252249997120">ChromeVox स्क्रीन रीडर और 'चुनें और सुनें' सुविधा</translation>
 <translation id="4285418559658561636">पासवर्ड अपडेट करें</translation>
 <translation id="4285498937028063278">टैब बड़ी करें</translation>
 <translation id="428565720843367874">इस फ़ाइल को स्कैन करते समय एंटी-वायरस साफ़्टवेयर अनपेक्षित रूप से विफल रहा.</translation>
@@ -5002,6 +5007,7 @@
 <translation id="5827733057563115968">अगले शब्द का अनुमान</translation>
 <translation id="5828545842856466741">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
+<translation id="5828797982387013521">प्लेबुक चुनें</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> को खोला नहीं जा सकता</translation>
 <translation id="5830720307094128296">पेज को इस रूप में सेव करें...</translation>
 <translation id="5832813618714645810">प्रोफ़ाइलें</translation>
@@ -5092,6 +5098,7 @@
 
   सार्वजनिक घातांक (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> बिट):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">टेक्स्ट को अपने-आप पढ़े जाने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5920543303088087579">इस नेटवर्क से कनेक्ट करने की सुविधा आपके व्यवस्थापक ने अक्षम कर दी है</translation>
@@ -5377,6 +5384,7 @@
 <translation id="6200151268994853226">एक्सटेंशन मैनेज करें</translation>
 <translation id="6201608810045805374">क्या आपको यह खाता हटाना है?</translation>
 <translation id="6202304368170870640">आप अपने डिवाइस में साइन इन करने या उसे अनलॉक करने के लिए अपने पिन का इस्तेमाल कर सकते हैं.</translation>
+<translation id="6206199626856438589">आपको उन साइटों से साइन आउट कर दिया जाएगा जिन्हें आपने देखा है. इसमें, वे साइटें भी शामिल हैं जो टैब में अभी खुली हुई हैं</translation>
 <translation id="6206311232642889873">इमेज को कॉपी करें</translation>
 <translation id="6207200176136643843">डिफ़ॉल्ट ज़ूम स्तर पर रीसेट करें</translation>
 <translation id="6207937957461833379">देश/क्षेत्र</translation>
@@ -5925,6 +5933,7 @@
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' बनाया गया.</translation>
 <translation id="6735304988756581115">कुकी और साइट के अन्य डेटा दिखाएं...</translation>
 <translation id="6736243959894955139">पता</translation>
+<translation id="6737393581255281855">क्या आपको दिखाया गया डेटा मिटाना है?</translation>
 <translation id="6737663862851963468">Kerberos टिकट हटाएं</translation>
 <translation id="6738430949033571771">खाते की पुष्टि की जा रही है...</translation>
 <translation id="6739923123728562974">डेस्कटॉप शॉर्टकट दिखाएं</translation>
@@ -7216,6 +7225,7 @@
 <translation id="7988355189918024273">सुलभता सुविधाएं चालू करें</translation>
 <translation id="7988805580376093356">अपना ओएस न हटाएं और <ph name="DEVICE_OS" /> को यूएसबी से चलाएं.</translation>
 <translation id="7991296728590311172">ऐक्सेस का तरीका बदलने की सेटिंग</translation>
+<translation id="7992203134935383159">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="7997826902155442747">प्राथमिकता संसाधित करें</translation>
 <translation id="7999229196265990314">निम्न फ़ाइलें बनाई गईं:
 
@@ -7602,6 +7612,7 @@
 <translation id="8366396658833131068">आपका नेटवर्क कनेक्शन रिस्टोर हो गया है. कृपया अपना किओस्क ऐप्लिकेशन लॉन्च करने के लिए कोई दूसरा नेटवर्क चुनें या नीचे दिया गया 'जारी रखें' बटन दबाएं.</translation>
 <translation id="8366694425498033255">चयन कुंजियां</translation>
 <translation id="8368859634510605990">सभी बुकमार्क &amp;खोलें</translation>
+<translation id="8369028061188107403">इससे, आपकी देखी गई साइटों और इंस्टॉल किए गए ऐप्लिकेशन के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="8370294614544004647">लैपटॉप बंद होने पर इसे स्लीप मोड में ले जाएं</translation>
 <translation id="8371695176452482769">अब बोलें</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्यूट करें}one{साइटें म्यूट करें}other{साइटें म्यूट करें}}</translation>

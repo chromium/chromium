@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1003222766972176318">یادآوری: پیشنهاد ذخیره‌شده دردسترس است</translation>
-<translation id="1008557486741366299">اکنون نه</translation>
+<translation id="1008557486741366299">حالا نه</translation>
 <translation id="100957008357583611">از مکان شما استفاده شود؟</translation>
 <translation id="1010200102790553230">بار کردن صفحه در فرصتی دیگر</translation>
 <translation id="1011206368273183593">درحال آماده‌سازی فایل‌ها</translation>
@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">قلم تک‌فاصله</translation>
 <translation id="1763864636252898013">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد سیستم‌عامل دستگاه شما نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows Network Diagnostics را اجرا کنید<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">سروری که به آن می‌روید، <ph name="ORIGIN" />، سرصفحه‌ای تنظیم کرده است که
-    ملزم می‌کند خط‌مشی مبدأ برای همه درخواست‌هایی که به سمت آن می‌رود اعمال شود. اما
-    قالب سرصفحه نادرست است و این موضوع اجازه نمی‌دهد 
-   مرورگر درخواستتان را برای <ph name="SITE" /> اجرا کند. اپراتورهای سایت می‌توانند از
-    خط‌مشی‌های اصلی برای پیکربندی امنیت و دیگر ویژگی‌های سایت استفاده کنند.</translation>
 <translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />درباره «حالت ناشناس» در Chromium بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">برگه‌های بازتان در اینجا نشان داده می‌شوند</translation>
@@ -934,7 +929,7 @@
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، اکنون باز است، برای جابه‌جا شدن به برگه باز، ابتدا دکمه Tab سپس Enter را فشار دهید</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3477679029130949506">فهرست فیلم و ساعات کار سینما</translation>
-<translation id="3479552764303398839">اکنون نه</translation>
+<translation id="3479552764303398839">حالا نه</translation>
 <translation id="3484560055331845446">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chrome توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
 <translation id="3484861421501147767">یادآوری: کد تبلیغاتی ذخیره‌شده دردسترس است</translation>
 <translation id="3487845404393360112">سینی ۴</translation>
@@ -1111,8 +1106,6 @@
 <translation id="3987940399970879459">کمتر از ۱ مگابایت</translation>
 <translation id="3990250421422698716">‏آفست Z شکل</translation>
 <translation id="3992684624889376114">درباره این صفحه</translation>
-<translation id="3996311196211510766">سایت <ph name="ORIGIN" /> درخواست کرده است خط‌مشی مبدأ
-    برای همه درخواست‌هایی به سمت آن می‌رود اعمال شود، اما این خط‌مشی درحال‌حاضر نمی‌تواند اعمال شود.</translation>
 <translation id="4006465311664329701">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
 <translation id="4009243425692662128">‏محتوای صفحه‌هایی که چاپ می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این محتوا ازنظر وجود داده‌های حساس بررسی شود.</translation>
 <translation id="4010758435855888356">دسترسی به فضای ذخیره‌سازی مجاز شود؟</translation>
@@ -1177,11 +1170,6 @@
 <translation id="4202554117186904723">رول پنجم</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />بررسی پیکربندی آنتی‌ویروس و دیوار آتش<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">بزرگ</translation>
-<translation id="4209166701302774460">سروری که به آن می‌روید، <ph name="ORIGIN" />، درخواست کرده است
-    خط‌مشی مبدأ برای همه درخواست‌هایی که به سمت آن می‌رود اعمال شود. اما این سرور درحال‌حاضر
-    خط‌مشی ارائه نکرده است و بدین ترتیب مرورگر نمی‌تواند درخواستتان
-    را برای <ph name="SITE" /> اجرا کند. اپراتورهای سایت می‌توانند از
-    خط‌مشی‌های مبدأ برای پیکربندی امنیت و دیگر ویژگی‌های سایت استفاده کنند.</translation>
 <translation id="4210602799576081649">کد درستی‌سنجی منقضی شده است؛ کد جدیدی درخواست کنید</translation>
 <translation id="421066178035138955">از دستگاه‌ها و داده‌های واقعیت مجازی استفاده کند</translation>
 <translation id="4213305257324635756">فیلم انیمیشن</translation>
@@ -1209,7 +1197,6 @@
     &lt;p&gt;اگر همچنان خطا را می‌بینید، با مالک وب‌سایت تماس بگیرید.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />عیب‌یابی شبکه را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">می‌تواند برای استفاده از دوربین و حرکت دادن آن درخواست دهد</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />ادامه به <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">معتبر</translation>
 <translation id="4250431568374086873">اتصال شما به این سایت کاملاً امن نیست</translation>
 <translation id="4250680216510889253">نه</translation>
@@ -1413,7 +1400,6 @@
 <translation id="4796594887379589189">شناسه حساب کار</translation>
 <translation id="4798078619018708837">‏برای به‌روزرسانی جزئیات کارت، تاریخ انقضا و CVC کارت <ph name="CREDIT_CARD" /> را وارد کنید. بعد از تأیید کردن، جزئیات کارت از حساب Google شما با این سایت هم‌رسانی می‌شود.</translation>
 <translation id="4800132727771399293">‏تاریخ انقضا و CVC را بررسی کرده و دوباره امتحان کنید</translation>
-<translation id="480334179571489655">خطای خط‌‌مشی اصلی</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
 <translation id="4812751092864334025">فناوری پوشیدنی</translation>
@@ -1808,7 +1794,6 @@
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5903264686717710770">عنوان:</translation>
 <translation id="5904360430676679685">خانواده و روابط</translation>
-<translation id="5905445707201418379">مسدودشده براساس خط‌مشی اصلی <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (همگام‌سازی‌شده)</translation>
 <translation id="59174027418879706">فعال شد</translation>
 <translation id="5919090499915321845">B10</translation>

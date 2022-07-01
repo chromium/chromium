@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">Sabit Ölçülü Şrift</translation>
 <translation id="1763864636252898013">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun təhlükəsizlik sertifikatı cihazınızın əməliyyat sistemi tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikasını işlətməyə çalışın<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Daxil olduğunuz server (<ph name="ORIGIN" />) ona yönləndirilən
-    bütün sorğulara mənbə siyasətin tətbiq edilməsini tələb edən başlıq ayarlayıb. Lakin
-    başlıq yanlış formadadır, bu da brauzerin <ph name="SITE" />
-    üzrə olan sorğunuzu yerinə yetirməsinə mane olur. Mənbə siyasətlər 
-    təhlükəsizlik və digər xüsusiyyətləri konfiqurasiya etmək üçün sayt operatorları tərəfindən istifadə edilə bilər.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium'da Anonim Rejim barədə məlumat<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Açıq tablarınız burada görünür</translation>
@@ -1107,8 +1102,6 @@
 <translation id="3987940399970879459">1 MB-dan az</translation>
 <translation id="3990250421422698716">Kənarını bükün</translation>
 <translation id="3992684624889376114">Bu səhifə haqqında</translation>
-<translation id="3996311196211510766"><ph name="ORIGIN" /> saytı ona yönləndirilən
-    bütün sorğulara mənbə siyasətin tətbiq edilməsini tələb edib, lakin bu siyasət hazırda tətbiq edilə bilmir.</translation>
 <translation id="4006465311664329701">Google Pay istifadə edən Ödəniş Metodları, Təkliflər və Ünvanlar</translation>
 <translation id="4009243425692662128">Çap etdiyiniz səhifələrin məzmunu təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas dataya görə skanlana bilər.</translation>
 <translation id="4010758435855888356">Yaddaşa giriş icazəsi verilsin?</translation>
@@ -1173,10 +1166,6 @@
 <translation id="4202554117186904723">Beşinci Rulon</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />güvənlik divarı və antivirus konfiqurasiyaları yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Böyük</translation>
-<translation id="4209166701302774460">Daxil olacağınız server <ph name="ORIGIN" />, ona göndərilən bütün giriş sorğulara
-    mənbə siyasətinin tətbiq edilməsini tələb edib. Lakin indi
-    siyasəti icra etmək alınmadı, bu isə brauzerin <ph name="SITE" /> saytı üçün sorğunuzu yerinə yetirməsinə icazə vermir. Mənbə siyasətlər
-    sayt üçün təhlükəsizlik və digər xüsusiyyətləri konfiqurasiya etmək üçün sayt operatorları tərəfindən istifadə edilə bilər.</translation>
 <translation id="4210602799576081649">Doğrulama kodunun müddəti bitib, yeni kod tələb edin</translation>
 <translation id="421066178035138955">Virtual reallıq cihazları və datanı istifadə etmək</translation>
 <translation id="4213305257324635756">Animasiya filmləri</translation>
@@ -1204,7 +1193,6 @@
     &lt;p&gt;Xətanı həll edə bilmirsinizsə, sayt sahibi ilə əlaqə saxlayın.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Şəbəkə Diaqnostikasını İşlətməyə Çalışın<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Saytlar kameranızdan istifadə etmək və onu hərəkət etdirmək üçün icazə istəyə bilər</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> ilə davam edin<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Düzgün</translation>
 <translation id="4250431568374086873">Bu sayta olan bağlantınız tam olaraq güvənli deyil</translation>
 <translation id="4250680216510889253">Yox</translation>
@@ -1408,7 +1396,6 @@
 <translation id="4796594887379589189">İş hesabı ID'si</translation>
 <translation id="4798078619018708837">Kart məlumatlarını yeniləmək üçün <ph name="CREDIT_CARD" /> kartının bitmə tarixini və CVC-ni daxil edin. Təsdiqlədikdən sonra Google Hesabındakı kart məlumatları bu saytda paylaşılacaq.</translation>
 <translation id="4800132727771399293">Bitmə tarixi və CVC nömrəsini yoxlayın və yenidən cəhd edin</translation>
-<translation id="480334179571489655">Mənbə Siyasəti Xətası</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Cihaz adminindən təlimatlar:</translation>
 <translation id="4812751092864334025">Daşına bilən texnologiya</translation>
@@ -1803,7 +1790,6 @@
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903264686717710770">Başlıq:</translation>
 <translation id="5904360430676679685">Ailə və münasibətlər</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" /> təhlükəsizlik siyasətinə əsasən blok edildi.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinxronlaşdırıldı)</translation>
 <translation id="59174027418879706">Aktiv edilib</translation>
 <translation id="5919090499915321845">B10</translation>

@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">‏גופן Monospace</translation>
 <translation id="1763864636252898013">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המכשיר. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">בשרת שאליו ביקשת לעבור, <ph name="ORIGIN" />, הוגדרה כותרת
-    שדורשת להחיל מדיניות מקור על כל הבקשות הנשלחות אליו. עם זאת,
-    פורמט הכותרת שגוי, ולכן הדפדפן לא יכול למלא
-    את הבקשה שלך בשביל <ph name="SITE" />. מפעילי אתרים יכולים להשתמש במדיניות מקור
-    כדי להגדיר מאפייני אבטחה ומאפיינים אחרים עבור אתר מסוים.</translation>
 <translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />מידע נוסף על מצב פרטי ב-Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">כאן מופיעות הכרטיסיות שפתחת</translation>
@@ -1111,8 +1106,6 @@
 <translation id="3987940399970879459">‏פחות מ-‎1 MB</translation>
 <translation id="3990250421422698716">היסט הלשונית</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
-<translation id="3996311196211510766">האתר <ph name="ORIGIN" /> ביקש להחיל מדיניות מקור
-    על כל הבקשות הנשלחות אליו, אבל לא ניתן כרגע להחיל את המדיניות הזו.</translation>
 <translation id="4006465311664329701">‏אמצעי תשלום, מבצעים וכתובות שנשמרו ב‑Google Pay</translation>
 <translation id="4009243425692662128">‏התוכן של הדפים המודפסים נשלח ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהטקסט יעבור סריקה כדי לאתר מידע אישי רגיש.</translation>
 <translation id="4010758435855888356">לאפשר את הגישה לאחסון?</translation>
@@ -1177,9 +1170,6 @@
 <translation id="4202554117186904723">הגליל החמישי</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />לבדוק את תצורת האנטי-וירוס וחומת האש<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">גדול</translation>
-<translation id="4209166701302774460">השרת שאליו ביקשת לעבור, <ph name="ORIGIN" />, ביקש
-    להחיל מדיניות מקור על כל הבקשות הנשלחות אליו. עם זאת, הוא לא הצליח לספק עכשיו מדיניות, ומצב זה מונע מהדפדפן למלא את הבקשה לעבור אל <ph name="SITE" />. מפעילי אתרים יכולים להשתמש במדיניות מקור
-    כדי להגדיר מאפייני אבטחה ומאפיינים אחרים עבור אתר מסוים.</translation>
 <translation id="4210602799576081649">פג התוקף של קוד האימות. צריך לבקש קוד חדש</translation>
 <translation id="421066178035138955">להשתמש במכשירי מציאות מדומה ובנתוני מציאות מדומה</translation>
 <translation id="4213305257324635756">סרטי אנימציה</translation>
@@ -1207,7 +1197,6 @@
     &lt;p&gt;אם השגיאה עדיין מופיעה, יש לפנות לבעלי האתר.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">האתר יכול לבקש הרשאה להשתמש במצלמה ולהזיז אותה</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />המשך אל <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">תקף</translation>
 <translation id="4250431568374086873">החיבור שלך לאתר הזה לא מאובטח בצורה מלאה</translation>
 <translation id="4250680216510889253">לא</translation>
@@ -1415,7 +1404,6 @@ Del</translation>
 <translation id="4796594887379589189">מזהה חשבון עבודה</translation>
 <translation id="4798078619018708837">‏כדי לעדכן את פרטי הכרטיס, יש להזין את תאריך התפוגה וקוד האימות של <ph name="CREDIT_CARD" />. אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
 <translation id="4800132727771399293">‏יש לבדוק את תאריך התפוגה ואת ה-CVC ולנסות שוב</translation>
-<translation id="480334179571489655">שגיאת מדיניות מקור</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
 <translation id="4812751092864334025">טכנולוגיה לבישה</translation>
@@ -1811,7 +1799,6 @@ Del</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903264686717710770">כותרת:</translation>
 <translation id="5904360430676679685">משפחה ומערכות יחסים</translation>
-<translation id="5905445707201418379">נחסם בהתאם למדיניות המקור של <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (מסונכרנים)</translation>
 <translation id="59174027418879706">מופעל</translation>
 <translation id="5919090499915321845">B10</translation>

@@ -771,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">En formatar una unitat, se n'esborren totes les dades que s'hi hagin emmagatzemat i se'n suprimeixen totes les particions existents, incloses algunes que potser no es veuen. Aquesta acció no es pot desfer.</translation>
 <translation id="7695430100978772476">No s'ha pogut formatar <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">No s'ha pogut buidar la paperera.</translation>
 <translation id="770015031906360009">Grec</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> s'ha copiat.</translation>
 <translation id="7711920809702896782">Informació de la imatge</translation>

@@ -216,6 +216,7 @@
 <translation id="1197199342062592414">现在开始吧</translation>
 <translation id="11978075283960463">存储在应用中的数据量：<ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">停用</translation>
+<translation id="1198066799963193307">弱视语音工具</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199814941632954229">正在为这些证书资料配置证书</translation>
 <translation id="120069043972472860">无法观看</translation>
@@ -1489,6 +1490,7 @@
 <translation id="2371076942591664043">完成时打开(&amp;D)</translation>
 <translation id="2373666622366160481">适合纸张大小</translation>
 <translation id="2375406435414127095">连接到您的手机</translation>
+<translation id="2376056713414548745">大声朗读</translation>
 <translation id="2377588536920405462">只需关闭您设备上的主要“位置信息”设置，即可关闭位置信息服务。您还可在“位置信息”设置中关闭那些使用 WLAN、移动网络和传感器来获取位置信息的功能。</translation>
 <translation id="2377667304966270281">硬故障数</translation>
 <translation id="237828693408258535">翻译此页？</translation>
@@ -2315,6 +2317,7 @@
 <translation id="3163511056918491211">随时轻松恢复数据或更换设备。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="3164329792803560526">与 <ph name="APP_NAME" /> 分享此标签页</translation>
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
+<translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177909033752230686">网页语言：</translation>
@@ -3187,6 +3190,7 @@
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">复制版本详情</translation>
 <translation id="4021941025609472374">关闭左侧标签页</translation>
+<translation id="402211067068791756">此操作会清除显示的网站所存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="4022426551683927403">添加到字典中(&amp;A)</translation>
 <translation id="4025039777635956441">将所选网站静音</translation>
 <translation id="4028467762035011525">添加输入法</translation>
@@ -3437,6 +3441,7 @@
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4282196459431406533">Smart Lock 已开启</translation>
 <translation id="4284755288573763878">关闭“增强型安全浏览”功能？</translation>
+<translation id="4284903252249997120">ChromeVox 屏幕阅读器和随选朗读功能</translation>
 <translation id="4285418559658561636">更新密码</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428565720843367874">防病毒软件在扫描此文件时意外失败。</translation>
@@ -4973,6 +4978,7 @@
 <translation id="5827733057563115968">下一字词预测</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
+<translation id="5828797982387013521">选择 playbook</translation>
 <translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
 <translation id="5832813618714645810">个人资料</translation>
@@ -5063,6 +5069,7 @@
 
   公开指数（<ph name="PUBLIC_EXPONENT_NUM_BITS" />位）：
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">自动朗读</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="59174027418879706">已启用</translation>
 <translation id="5920543303088087579">您的管理员已禁止连接到此网络</translation>
@@ -5347,6 +5354,7 @@
 <translation id="6200151268994853226">管理扩展程序</translation>
 <translation id="6201608810045805374">移除此帐号？</translation>
 <translation id="6202304368170870640">您可以使用 PIN 码登录或解锁您的设备。</translation>
+<translation id="6206199626856438589">您将从显示的网站（包括已打开的标签页中的网站）退出帐号</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
 <translation id="6207200176136643843">重置为默认缩放级别</translation>
 <translation id="6207937957461833379">国家/地区</translation>
@@ -5893,6 +5901,7 @@
 <translation id="6733620523445262364">已创建书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
+<translation id="6737393581255281855">清除所显示网站的数据？</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
 <translation id="6738430949033571771">正在验证帐号…</translation>
 <translation id="6739923123728562974">显示桌面快捷方式</translation>
@@ -7184,6 +7193,7 @@
 <translation id="7988355189918024273">启用辅助功能</translation>
 <translation id="7988805580376093356">请从 USB（而非您的操作系统）中运行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
+<translation id="7992203134935383159">语音合成</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7999229196265990314">已创建以下文件：
 
@@ -7570,6 +7580,7 @@
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>
 <translation id="8366694425498033255">选择键</translation>
 <translation id="8368859634510605990">打开所有书签(&amp;O)</translation>
+<translation id="8369028061188107403">此操作会清除显示的网站和安装的应用所存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>
 <translation id="8371695176452482769">请开始说话</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>

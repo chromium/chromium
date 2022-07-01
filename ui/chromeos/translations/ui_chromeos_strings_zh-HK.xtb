@@ -771,6 +771,7 @@
 <translation id="7663224033570512922">印度文</translation>
 <translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括隱藏的分割區。此操作無法復原。</translation>
 <translation id="7695430100978772476">無法格式化「<ph name="DRIVE_NAME" />」</translation>
+<translation id="76959938259365003">無法清空垃圾桶。</translation>
 <translation id="770015031906360009">希臘文</translation>
 <translation id="7705251383879779343">已複製 <ph name="FILE_NAME" />。</translation>
 <translation id="7711920809702896782">圖片資料</translation>

@@ -5025,12 +5025,6 @@ principal del string usuario-agente en 99.
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realiza las verificaciones de la Navegación segura en todos los archivos descargados</translation>
 <translation id="6433697627431665375">Impedir que se incluyan los datos de <ph name="PRODUCT_NAME" /> en las copias de seguridad</translation>
-<translation id="6435570845618943258">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
-      Si se inhabilita, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma.
-      Si no se establece, podrán utilizarse el verificador de certificados integrado o el heredado.
-
-      Se planea quitar esta política en la versión 107 de <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> cuando se quite la compatibilidad con el verificador de certificados heredado de <ph name="MAC_OS_NAME" />.
-      </translation>
 <translation id="6436052172226685535">Comportamiento predeterminado de LBS</translation>
 <translation id="6438364096042399634">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y el identificador del proveedor USB que permiten reconocer hardware específico.
 
@@ -5674,6 +5668,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si inhabilitas la política, el sistema podrá considerar que el usuario está inactivo, independientemente de la actividad del video.</translation>
 <translation id="7086720321892395256">Controla las políticas de dispositivo y usuario para la función de la pantalla de privacidad.</translation>
+<translation id="7090500018761495290">Volver a habilitar la API de Event.path hasta M115</translation>
 <translation id="7090668780328470271">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios no pueden pedir a los usuarios permiso para acceder a un dispositivo USB.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.

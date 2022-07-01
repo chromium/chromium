@@ -335,11 +335,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1757773103848038814">Fix szélességű betűtípus</translation>
 <translation id="1763864636252898013">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa az Ön eszközének operációs rendszere szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Próbálkozzon a Windows Hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">A felkeresni kívánt szerver (<ph name="ORIGIN" />) beállított fejléce eredetházirend alkalmazását
-    követeli meg az összes hozzá irányuló kérelem esetében. A
-    fejléc formátuma azonban nem megfelelő, így a böngésző nem tudja teljesíteni
-    a(z) <ph name="SITE" /> webhelyre irányuló kérelmet. Az eredetházirendek segítségével
-    a webhelyek üzemeltetői a webhely biztonsági és egyéb tulajdonságait konfigurálhatják.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />További információ a Chromium inkognitó módjáról<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">A megnyitott lapok helye</translation>
@@ -1109,8 +1104,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3987940399970879459">Kevesebb mint 1 MB</translation>
 <translation id="3990250421422698716">Példányok eltolása</translation>
 <translation id="3992684624889376114">Információ az oldalról</translation>
-<translation id="3996311196211510766">A(z) <ph name="ORIGIN" /> webhely egy adott eredetházirend alkalmazását kérte
-    az összes kérésére, de ez a házirend jelenleg nem alkalmazható.</translation>
 <translation id="4006465311664329701">A Google Pay szolgáltatásban használt fizetési módok, ajánlatok és címek</translation>
 <translation id="4009243425692662128">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a kinyomtatott oldalak tartalmát. A Google Cloud vagy a harmadik fél például bizalmas adatokat kereshet a szövegekben.</translation>
 <translation id="4010758435855888356">Engedélyezi a tárhelyhozzáférést?</translation>
@@ -1175,11 +1168,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4202554117186904723">5. tekercs</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />A tűzfal és a vírusirtó konfigurációjának ellenőrzése<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Nagy</translation>
-<translation id="4209166701302774460">A felkeresni kívánt szerver (<ph name="ORIGIN" />) egy adott eredetházirend
-    alkalmazását kérte az összes hozzá irányuló kérelem esetében. Most azonban nem sikerült
-    bemutatnia a házirendet, így a böngésző nem tudja teljesíteni
-    a(z) <ph name="SITE" /> webhelyre irányuló kérelmet. Az eredetházirendek segítségével a webhelyek üzemeltetői
-    a webhely biztonsági és egyéb tulajdonságait konfigurálhatják.</translation>
 <translation id="4210602799576081649">Az ellenőrző kód lejárt, kérjen újat.</translation>
 <translation id="421066178035138955">Virtuálisvalóság-eszközök és -adatok használata</translation>
 <translation id="4213305257324635756">Animációs filmek</translation>
@@ -1207,7 +1195,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     &lt;p&gt;Ha a hiba továbbra is fennáll, lépjen kapcsolatba a webhely tulajdonosával.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Próbálkozzon a Hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Engedélyt kérhet a kamera használatára vagy mozgatására</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Tovább ide: <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Érvényes</translation>
 <translation id="4250431568374086873">Kapcsolata a webhellyel nem teljesen biztonságos</translation>
 <translation id="4250680216510889253">Nem</translation>
@@ -1411,7 +1398,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4796594887379589189">Munkafiók azonosítója</translation>
 <translation id="4798078619018708837">A(z) <ph name="CREDIT_CARD" /> kártyához tartozó CVC-kód és lejárati dátum megadásával frissítheti a kártyaadatokat. A megerősítést követően a böngésző megosztja az Ön Google-fiókjából származó kártyaadatokat ezzel a webhellyel.</translation>
 <translation id="4800132727771399293">Ellenőrizze a lejárati dátumot és a CVC-t, majd próbálja újra</translation>
-<translation id="480334179571489655">Eredet házirendhibája</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Utasítások az eszköz rendszergazdájától:</translation>
 <translation id="4812751092864334025">Hordható technológia</translation>
@@ -1806,7 +1792,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5901630391730855834">Sárga</translation>
 <translation id="5903264686717710770">Megszólítás:</translation>
 <translation id="5904360430676679685">Család és kapcsolatok</translation>
-<translation id="5905445707201418379">Letiltva a(z) <ph name="ORIGIN" /> eredetházirendje miatt.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (szinkronizálva)</translation>
 <translation id="59174027418879706">Engedélyezve</translation>
 <translation id="5919090499915321845">B10</translation>

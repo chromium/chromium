@@ -335,10 +335,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1757773103848038814">Tipo de letra monoespazado</translation>
 <translation id="1763864636252898013">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu dispositivo non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">O servidor que vas visitar, <ph name="ORIGIN" />, definiu un título
-    que require que se aplique unha política de orixe a todas as solicitudes que reciba. Non
-    obstante, o título ten un formato incorrecto, o que impide que o navegador complete
-    a solicitude de <ph name="SITE" />. Os operadores dos sitios poden utilizar as políticas de orixe para configurar a seguranza e outras propiedades dos sitios.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Máis información sobre o modo de incógnito de Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">As pestanas abertas aparecerán aquí</translation>
@@ -1110,8 +1106,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Compensación mediante empurro</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
-<translation id="3996311196211510766">O sitio <ph name="ORIGIN" /> solicitou que se aplicase unha política de orixe
-    a todas as solicitudes que reciba, pero actualmente non se pode aplicar esta política.</translation>
 <translation id="4006465311664329701">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
 <translation id="4009243425692662128">O contido das páxinas que imprimas envíaselle a Google Cloud ou a terceiros para que o analicen. Por exemplo, poderíase comprobar se contén datos confidenciais.</translation>
 <translation id="4010758435855888356">Queres permitir o acceso ao almacenamento?</translation>
@@ -1176,11 +1170,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar a configuración do firewall e do antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
-<translation id="4209166701302774460">O servidor que vas visitar, <ph name="ORIGIN" />, solicitou que se aplicase
-    unha política de orixe a todas as solicitudes que reciba. Non obstante, agora non se emitiu
-     ningunha política, o que impide que o navegador complete a solicitude
-    de <ph name="SITE" />. Os operadores dos sitios poden utilizar as políticas de orixe
-    para configurar a seguranza e outras propiedades dos sitios.</translation>
 <translation id="4210602799576081649">O código de verificación está caducado. Solicita un novo</translation>
 <translation id="421066178035138955">Utilizar datos e dispositivos de realidade virtual</translation>
 <translation id="4213305257324635756">Películas de animación</translation>
@@ -1208,7 +1197,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;p&gt;Se aínda ves este erro, contacta co propietario do sitio web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Pode pedirche permiso para usar e mover a cámara</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ir a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">A túa conexión a este sitio non é completamente segura</translation>
 <translation id="4250680216510889253">Non</translation>
@@ -1412,7 +1400,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4796594887379589189">Código da conta para o traballo</translation>
 <translation id="4798078619018708837">Introduce a data de caducidade e o código CVC da tarxeta <ph name="CREDIT_CARD" /> para actualizar os datos. Unha vez confirmados, os detalles da tarxeta da túa Conta de Google compartiranse con este sitio.</translation>
 <translation id="4800132727771399293">Comproba a túa data de caducidade e o CVC e téntao de novo</translation>
-<translation id="480334179571489655">Produciuse un erro relacionado coa política de orixe</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Instrucións do administrador do teu dispositivo:</translation>
 <translation id="4812751092864334025">Tecnoloxía poñible</translation>
@@ -1807,7 +1794,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5904360430676679685">Familia e relacións</translation>
-<translation id="5905445707201418379">Bloqueouse debido á política de orixe de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
 <translation id="59174027418879706">Activado</translation>
 <translation id="5919090499915321845">B10</translation>

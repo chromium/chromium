@@ -218,6 +218,7 @@
 <translation id="1197199342062592414">आता सुरू करूया</translation>
 <translation id="11978075283960463">अ‍ॅपमध्ये स्टोअर केलेला डेटा: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">डीॲक्टिव्हेट करा</translation>
+<translation id="1198066799963193307">दृष्टिदोष असणाऱ्यांसाठी स्पीच टूल</translation>
 <translation id="119944043368869598">सर्व साफ करा</translation>
 <translation id="1199814941632954229">या सर्टिफिकेट प्रोफाइलसाठी सर्टिफिकेटची तरतूद केली जात आहे</translation>
 <translation id="120069043972472860">पाहण्यायोग्य नाही</translation>
@@ -1510,6 +1511,7 @@
 <translation id="2371076942591664043">&amp;पूर्ण झाल्यानंतर उघडा</translation>
 <translation id="2373666622366160481">कागदाच्या आकारात बसवा</translation>
 <translation id="2375406435414127095">तुमच्या फोनशी कनेक्ट करा</translation>
+<translation id="2376056713414548745">मोठ्‍याने वाचा</translation>
 <translation id="2377588536920405462">तुमच्या डिव्हाइसवर मुख्य स्थान सेटिंग बंद करून तुम्ही स्थान बंद करू शकता. तुम्ही स्थान सेटिंग्जमध्ये स्थानासाठी वाय-फाय, मोबाइल नेटवर्क आणि सेन्सरचा वापरदेखील बंद करू शकता.</translation>
 <translation id="2377667304966270281">हार्ड फॉल्ट</translation>
 <translation id="237828693408258535">या पेजचे भाषांतर करायचे?</translation>
@@ -2338,6 +2340,7 @@
 <translation id="3163511056918491211">तुमचा डेटा सहजरीत्‍या रिस्टोअर करा किंवा डिव्हाइस कधीही स्विच करा. तुमचे बॅकअप Google वर अपलोड केले जातात आणि तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" /> यावर हा टॅब शेअर करत आहे</translation>
 <translation id="3165390001037658081">काही वाहक हे वैशिष्ट्य ब्लॉक करू शकतात.</translation>
+<translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
 <translation id="31774765611822736">डावीकडील नवीन टॅब</translation>
 <translation id="3177909033752230686">पृष्ठ भाषा:</translation>
@@ -3211,6 +3214,7 @@
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">बिल्डसंबंधित तपशील कॉपी करा</translation>
 <translation id="4021941025609472374">डावीकडील टॅब बंद करा</translation>
+<translation id="402211067068791756">यामुळे प्रदर्शित केलेल्या साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ होईल</translation>
 <translation id="4022426551683927403">शब्दकोशात &amp;जोडा</translation>
 <translation id="4025039777635956441">निवडलेली साइट म्यूट करा</translation>
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
@@ -3459,6 +3463,7 @@
 <translation id="4281844954008187215">सेवा अटी</translation>
 <translation id="4282196459431406533">Smart Lock सुरू आहे</translation>
 <translation id="4284755288573763878">वर्धित सुरक्षा बंद करायची का?</translation>
+<translation id="4284903252249997120">ChromeVox स्क्रीन रीडर आणि बोलण्यासाठी निवडा</translation>
 <translation id="4285418559658561636">पासवर्ड अपडेट करा</translation>
 <translation id="4285498937028063278">अनपिन</translation>
 <translation id="428565720843367874">या फाईलचे स्कॅनिंग करताना अँटी-व्हायरस सॉफ्टवेअर अनपेक्षितपणे अयशस्वी झाले.</translation>
@@ -5000,6 +5005,7 @@
 <translation id="5827733057563115968">पुढील शब्दांचा अंदाज</translation>
 <translation id="5828545842856466741">प्रोफाइल जोडा…</translation>
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
+<translation id="5828797982387013521">प्लेबुक निवडा</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> उघडू शकत नाही</translation>
 <translation id="5830720307094128296">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
 <translation id="5832813618714645810">प्रोफाइल</translation>
@@ -5090,6 +5096,7 @@
 
   सार्वजनिक एक्सपोनेंट (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> बिट):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="5916655001090539219">ऑटोमॅटिक वाचन</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="59174027418879706">सक्षम</translation>
 <translation id="5920543303088087579">तुमच्या ॲडमिनिस्ट्रेटरने या नेटवर्कशी कनेक्‍ट करणे अक्षम केले आहे</translation>
@@ -5376,6 +5383,7 @@
 <translation id="6200151268994853226">एक्स्टेंशन व्यवस्थापित करा</translation>
 <translation id="6201608810045805374">हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="6202304368170870640">तुमच्या डिव्हाइसमध्ये साइन इन करण्यासाठी किंवा ते अनलॉक करण्यासाठी तुम्ही तुमचा पिन वापरू शकता.</translation>
+<translation id="6206199626856438589">प्रदर्शित केलेल्या साइटमधून तुम्हाला साइन आउट केले जाईल, ज्यामध्ये उघड्या टॅबचा समावेश आहे</translation>
 <translation id="6206311232642889873">इमेज कॉ&amp;पी करा</translation>
 <translation id="6207200176136643843">झूम स्तर डीफॉल्टवर रीसेट करा</translation>
 <translation id="6207937957461833379">देश/प्रदेश</translation>
@@ -5922,6 +5930,7 @@
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' तयार केले.</translation>
 <translation id="6735304988756581115">कुकीज आणि इतर साइट डेटा दर्शवा...</translation>
 <translation id="6736243959894955139">पत्ता</translation>
+<translation id="6737393581255281855">प्रदर्शित केलेला डेटा साफ करायचा आहे का?</translation>
 <translation id="6737663862851963468">Kerberos तिकीट काढा</translation>
 <translation id="6738430949033571771">खात्याची पडताळणी करत आहे...</translation>
 <translation id="6739923123728562974">डेस्कटॉप शॉर्टकट दर्शवा</translation>
@@ -7212,6 +7221,7 @@
 <translation id="7988355189918024273">ॲक्सेस वैशिष्ट्ये सक्षम करा</translation>
 <translation id="7988805580376093356">तुमचे OS ठेवा आणि <ph name="DEVICE_OS" /> हे USB वरून रन करा.</translation>
 <translation id="7991296728590311172">स्विच ॲक्सेस सेटिंग्ज</translation>
+<translation id="7992203134935383159">स्पीच सिंथेसिस</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राधान्य</translation>
 <translation id="7999229196265990314">खालील फाइल तयार केल्या:
 
@@ -7598,6 +7608,7 @@
 <translation id="8366396658833131068">तुमची नेटवर्क कनेक्टिव्हिटी पुनर्संचयित झाली आहे. कृपया एक भिन्न नेटवर्क निवडा किंवा तुमचा कियोस्क ॲप लाँच करण्यासाठी खालील 'सुरू ठेवा' बटण दाबा.</translation>
 <translation id="8366694425498033255">निवड की</translation>
 <translation id="8368859634510605990">सर्व बुकमार्क &amp;उघडा</translation>
+<translation id="8369028061188107403">यामुळे प्रदर्शित केलेल्या साइटनी आणि इंस्टॉल केलेल्या अ‍ॅप्सनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ होईल</translation>
 <translation id="8370294614544004647">लॅपटॉप बंद केल्यावर स्लीप मोड ऑन करा</translation>
 <translation id="8371695176452482769">आता बोला</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्यूट करा}other{साइट म्यूट करा}}</translation>

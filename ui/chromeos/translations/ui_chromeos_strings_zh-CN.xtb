@@ -766,6 +766,7 @@
 <translation id="7663224033570512922">印地语</translation>
 <translation id="7693909743393669729">将 U 盘格式化会清空其中存储的所有数据，并会移除所有现有分区（包括未必可见的分区）。此操作无法撤消。</translation>
 <translation id="7695430100978772476">无法将“<ph name="DRIVE_NAME" />”格式化</translation>
+<translation id="76959938259365003">未能清空回收站。</translation>
 <translation id="770015031906360009">希腊语</translation>
 <translation id="7705251383879779343">已复制 <ph name="FILE_NAME" />。</translation>
 <translation id="7711920809702896782">图片信息</translation>

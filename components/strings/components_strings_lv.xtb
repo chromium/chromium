@@ -335,11 +335,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1757773103848038814">Vienplatuma fonts</translation>
 <translation id="1763864636252898013">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu jūsu ierīces operētājsistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Mēģiniet palaist Windows tīkla diagnostiku<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Visiem pieprasījumiem uz serveri <ph name="ORIGIN" />, kurā ir iestatīta galvene,
-    ir jāpiemēro izcelsmes politika. Taču
-    galvene ir nepareizi izveidota, kas neļauj pārlūkam izpildīt
-    jūsu pieprasījumu vietnei <ph name="SITE" />. Vietņu operatori var izmantot
-    izcelsmes politikas, lai konfigurētu drošību un citus vietnes rekvizītus.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Uzzināt vairāk par inkognito režīmu pārlūkā Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Šeit tiks parādītas jūsu atvērtās cilnes</translation>
@@ -1110,8 +1105,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
 <translation id="3990250421422698716">Ofseta izlīdzināšana</translation>
 <translation id="3992684624889376114">Par šo lapu</translation>
-<translation id="3996311196211510766">Vietne <ph name="ORIGIN" /> ir pieprasījusi, lai izcelsmes politika attiektos uz visu
-    tās pieprasījumu, taču šobrīd šo politiku nevar piemērot.</translation>
 <translation id="4006465311664329701">Maksājumu veidi, piedāvājumi un adreses no pakalpojuma Google Pay</translation>
 <translation id="4009243425692662128">Jūsu izdrukāto lapu saturs tiek nosūtīts uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, saturs var tikt pārmeklēts, lai konstatētu, vai tajā ir ietverti sensitīvi dati.</translation>
 <translation id="4010758435855888356">Vai atļaut piekļuvi krātuvei?</translation>
@@ -1176,11 +1169,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4202554117186904723">Piektais rullis</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Pārbaudiet ugunsmūri un pretvīrusu programmu konfigurācijas<ph name="END_LINK" />.</translation>
 <translation id="4209092469652827314">Liels</translation>
-<translation id="4209166701302774460">Visiem pieprasījumiem uz serveri <ph name="ORIGIN" /> ir jāpiemēro
-    izcelsmes politika. Taču šobrīd serveris nevar
-    iesniegt politiku, kas neļauj pārlūkam izpildīt jūsu pieprasījumu
-    vietnei <ph name="SITE" />. Vietņu operatori var izmantot
-    izcelsmes politikas, lai konfigurētu drošību un citus vietnes rekvizītus.</translation>
 <translation id="4210602799576081649">Verifikācijas koda termiņš ir beidzies. Pieprasiet jaunu kodu.</translation>
 <translation id="421066178035138955">izmantot virtuālās realitātes ierīces un datus</translation>
 <translation id="4213305257324635756">Animācijas filmas</translation>
@@ -1208,7 +1196,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     &lt;p&gt;Ja kļūda joprojām tiek rādīta, sazinieties ar vietnes īpašnieku.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Mēģiniet palaist tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Var pieprasīt atļauju izmantot kameru un mainīt tās pozīciju</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Pāriet uz vietni <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Derīgs</translation>
 <translation id="4250431568374086873">Jūsu savienojums ar šo vietni nav pavisam drošs.</translation>
 <translation id="4250680216510889253">Nē</translation>
@@ -1412,7 +1399,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4796594887379589189">Darba konta ID</translation>
 <translation id="4798078619018708837">Lai atjauninātu kartes informāciju, ievadiet kredītkartes <ph name="CREDIT_CARD" /> derīguma termiņu un CVC kodu. Pēc apstiprināšanas kartes informācija no Google konta tiks kopīgota ar šo vietni.</translation>
 <translation id="4800132727771399293">Pārbaudiet derīguma termiņu un CVC kodu un mēģiniet vēlreiz.</translation>
-<translation id="480334179571489655">Izcelsmes politikas kļūda</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Ierīces administratora norādījumi</translation>
 <translation id="4812751092864334025">Valkājamo ierīču tehnoloģijas</translation>
@@ -1807,7 +1793,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5903264686717710770">Nosaukums:</translation>
 <translation id="5904360430676679685">Ģimene un attiecības</translation>
-<translation id="5905445707201418379">Bloķēts, pamatojoties uz <ph name="ORIGIN" /> izcelsmes politiku.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (veikta sinhronizācija)</translation>
 <translation id="59174027418879706">Iespējots</translation>
 <translation id="5919090499915321845">B10</translation>

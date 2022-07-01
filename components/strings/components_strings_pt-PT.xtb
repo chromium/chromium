@@ -335,11 +335,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1757773103848038814">Tipo de letra de monoespaço</translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu dispositivo não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Experimente executar o Diagnóstico de rede do Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">O servidor ao qual irá aceder, <ph name="ORIGIN" />, definiu um cabeçalho
-    que solicita que seja aplicada uma política de origem a todos os pedidos. Contudo,
-    o cabeçalho está formatado incorretamente, o que impede que o navegador satisfaça
-    o seu pedido para <ph name="SITE" />. As políticas de origem podem ser utilizadas
-    pelos operadores de sites para configurar a segurança e outras propriedades de um site.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Saiba mais sobre a Navegação anónima no Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Os separadores abertos aparecem aqui</translation>
@@ -1111,8 +1106,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
-<translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que seja aplicada uma política de origem
-    a todos os pedidos, mas, de momento, não é possível aplicar essa política.</translation>
 <translation id="4006465311664329701">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que imprime é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais.</translation>
 <translation id="4010758435855888356">Permitir o acesso ao armazenamento?</translation>
@@ -1177,11 +1170,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Verificar as configurações da firewall e de antivírus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
-<translation id="4209166701302774460">O servidor ao qual irá aceder, <ph name="ORIGIN" />, solicitou que seja aplicada uma
-    política de origem a todos os pedidos. Contudo, não
-    conseguiu devolver uma política, o que impede o navegador de satisfazer
-    o seu pedido para <ph name="SITE" />. As políticas de origem podem ser utilizadas
-    pelos operadores de sites para configurar a segurança e outras propriedades de um site.</translation>
 <translation id="4210602799576081649">Código de validação expirado, solicite um novo código</translation>
 <translation id="421066178035138955">Utilizar dados e dispositivos de realidade virtual</translation>
 <translation id="4213305257324635756">Filmes de animação</translation>
@@ -1209,7 +1197,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     &lt;p&gt;Se o erro persistir, contacte o proprietário do Website.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Experimente executar o Diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Pode solicitar a utilização e a movimentação da câmara</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Continuar para <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">A ligação a este site não é totalmente segura</translation>
 <translation id="4250680216510889253">Não</translation>
@@ -1413,7 +1400,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4796594887379589189">ID da conta da tarefa</translation>
 <translation id="4798078619018708837">Introduza a data de validade e o Código de Segurança/CVC de <ph name="CREDIT_CARD" /> para atualizar os detalhes do cartão. Depois de confirmar, os detalhes do cartão da sua Conta Google são partilhados com este site.</translation>
 <translation id="4800132727771399293">Verifique a data de validade e o Código de Segurança/CVC e tente novamente</translation>
-<translation id="480334179571489655">Erro de política de origem</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4812751092864334025">Tecnologia em dispositivos de vestir</translation>
@@ -1808,7 +1794,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5904360430676679685">Família e relações</translation>
-<translation id="5905445707201418379">Bloqueado de acordo com a política de origem de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5919090499915321845">B10</translation>

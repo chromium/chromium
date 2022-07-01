@@ -335,10 +335,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1757773103848038814">Monospace font</translation>
 <translation id="1763864636252898013">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your device's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Try running Windows Network Diagnostics<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">The server that you are going to, <ph name="ORIGIN" />, has set a header
-    requiring that an origin policy is to be applied to all requests to it. But
-    the header is malformed, which prevents the browser from fulfilling
-    your request for <ph name="SITE" />. Origin policies can be used by site operators to configure security and other properties for a site.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Learn more about Incognito in Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Your open tabs appear here</translation>
@@ -1110,8 +1106,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3987940399970879459">Less than 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3992684624889376114">About this page</translation>
-<translation id="3996311196211510766">The site <ph name="ORIGIN" /> has requested that an origin policy will
-    apply to all requests to it, but this policy cannot presently be applied.</translation>
 <translation id="4006465311664329701">Payment methods, offers and addresses using Google Pay</translation>
 <translation id="4009243425692662128">The content of pages that you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="4010758435855888356">Allow storage access?</translation>
@@ -1176,11 +1170,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4202554117186904723">Fifth roll</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Checking firewall and antivirus configurations<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Large</translation>
-<translation id="4209166701302774460">The server that you are going to, <ph name="ORIGIN" />, has requested that
-    an origin policy will be applied to all requests to it. But it has now failed to
-    deliver a policy, which prevents the browser from fulfilling your request
-    for <ph name="SITE" />. Origin policies can be used by site operators
-    to configure security and other properties for a site.</translation>
 <translation id="4210602799576081649">Verification code expired. Request a new code</translation>
 <translation id="421066178035138955">Use virtual reality devices and data</translation>
 <translation id="4213305257324635756">Animated movies</translation>
@@ -1208,7 +1197,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     &lt;p&gt;If you still see the error, contact the website owner.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Try running Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Can ask to use and move your camera</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Proceed to <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Valid</translation>
 <translation id="4250431568374086873">Your connection to this site is not fully secure</translation>
 <translation id="4250680216510889253">No</translation>
@@ -1412,7 +1400,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4796594887379589189">Job account ID</translation>
 <translation id="4798078619018708837">Enter the expiry date and CVC for <ph name="CREDIT_CARD" /> to update your card details. Once you confirm, card details from your Google Account will be shared with this site.</translation>
 <translation id="4800132727771399293">Check your expiration date and CVC and try again</translation>
-<translation id="480334179571489655">Origin Policy Error</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="4812751092864334025">Wearable technology</translation>
@@ -1807,7 +1794,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903264686717710770">Title:</translation>
 <translation id="5904360430676679685">Family and relationships</translation>
-<translation id="5905445707201418379">Blocked according to <ph name="ORIGIN" />'s origin policy.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
 <translation id="59174027418879706">Enabled</translation>
 <translation id="5919090499915321845">B10</translation>

@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">Monospace ફૉન્ટ</translation>
 <translation id="1763864636252898013">આ સર્વર સાબિત કરી શક્યું નથી કે એ <ph name="DOMAIN" /> છે; એનું સુરક્ષા પ્રમાણપત્ર તમારા ડિવાઇસની ઑપરેટિંગ સિસ્ટમ દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">તમે જે સર્વર પર જઈ રહ્યાં છો, <ph name="ORIGIN" />, તેણે એવું હેડર સેટ કર્યું છે
-    કે જે તેના માટેની બધી વિનંતીઓ પર ઑરિજિન પૉલિસી લાગુ કરવાનું જરૂરી બનાવશે. પરંતુ
-    હેડર દૂષિત છે, જે બ્રાઉઝરને
-    <ph name="SITE" /> માટેની તમારી વિનંતી પૂરી કરતા અટકાવે છે. સાઇટ ઑપરેટર ઑરિજિન
-    પૉલિસીઓનો ઉપયોગ સાઇટ માટે સુરક્ષા અને અન્ય પ્રોપર્ટીની ગોઠવણી કરવા માટે કરી શકે છે.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromiumમાં છૂપા મોડ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">તમારા ખુલ્લા ટૅબ્સ અહીં દેખાય છે</translation>
@@ -1111,8 +1106,6 @@
 <translation id="3987940399970879459">1 MB કરતાં ઓછું</translation>
 <translation id="3990250421422698716">બહાર નીકળેલા ભાગને અંદર દબાવો</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
-<translation id="3996311196211510766">આ સાઇટ <ph name="ORIGIN" /> દ્વારા વિનંતી કરવામાં આવી છે કે ઑરિજિન પૉલિસી તેની
-    બધી વિનંતી પર લાગુ થાય છે, પણ હાલમાં આ પૉલિસી લાગુ કરી શકાતી નથી.</translation>
 <translation id="4006465311664329701">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
 <translation id="4009243425692662128">તમે પ્રિન્ટ કરશો તે પેજનું કન્ટેન્ટ વિશ્લેષણ માટે, Google Cloud કે ત્રીજા પક્ષને મોકલવામાં આવશે. ઉદાહરણ તરીકે, તેને સંવેદનશીલ વ્યક્તિગત ડેટા માટે સ્કૅન કરવામાં આવી શકે છે.</translation>
 <translation id="4010758435855888356">શું સ્ટોરેજના ઍક્સેસની મંજૂરી આપીએ?</translation>
@@ -1177,11 +1170,6 @@
 <translation id="4202554117186904723">પાંચમો રોલ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ફાયરવોલ અને એન્ટીવાઇરસ ગોઠવણી તપાસીને<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">મોટું</translation>
-<translation id="4209166701302774460">તમે જેના પર જવાનો પ્રયાસ કરી રહ્યાં છો, તે <ph name="ORIGIN" />, સર્વર દ્વારા વિનંતી કરવામાં આવી છે
-    કે ઑરિજિન નીતિ તેના પરની બધી વિનંતીઓ પર લાગુ થશે. પણ તે હમણાં એવી નીતિ વિતરિત
-    કરવામાં નિષ્ફળ થયું કે જે બ્રાઉઝરને તમારી <ph name="SITE" /> માટેની વિનંતી પૂરી કરવાથી
-    અટકાવે છે. સાઇટ ઑપરેટર ઑરિજિન નીતિનો ઉપયોગ સાઇટ માટે
-    સુરક્ષા અને અન્ય પ્રોપર્ટીની ગોઠવણી કરવા માટે કરી શકે છે.</translation>
 <translation id="4210602799576081649">ચકાસણી કોડની સમયસીમા સમાપ્ત થઈ ગઈ છે, નવા કોડની વિનંતી કરો</translation>
 <translation id="421066178035138955">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરો</translation>
 <translation id="4213305257324635756">ઍનિમેટેડ મૂવી</translation>
@@ -1209,7 +1197,6 @@
     &lt;p&gt;જો હજુ તમને ભૂલ દેખાય, તો વેબસાઇટના માલિકનો સંપર્ક કરો.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">તમારા કૅમેરાનો ઉપયોગ કરવાનું અને તેને ખસેડવાનું પૂછી શકે છે</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> પર આગળ વધો<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">માન્યતા</translation>
 <translation id="4250431568374086873">આ સાઇટ પરનું તમારું કનેક્શન પૂર્ણપણે સુરક્ષિત નથી</translation>
 <translation id="4250680216510889253">નહીં</translation>
@@ -1413,7 +1400,6 @@
 <translation id="4796594887379589189">જોબ એકાઉન્ટ ID</translation>
 <translation id="4798078619018708837">તમારા કાર્ડની વિગતો અપડેટ કરવા <ph name="CREDIT_CARD" />ની સમાપ્તિ તારીખ અને CVC દાખલ કરો. તમે ખાતરી કરી લો, પછી આ સાઇટ સાથે તમારા Google એકાઉન્ટમાંથી કાર્ડની વિગતો શેર કરવામાં આવશે.</translation>
 <translation id="4800132727771399293">તમારી સમાપ્તિ તારીખ અને CVC તપાસો અને ફરીથી પ્રયાસ કરો</translation>
-<translation id="480334179571489655">ઑરિજિન પૉલિસી ભૂલ</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">તમારા ડિવાઇસ વ્યવસ્થાપક તરફથી સૂચનાઓ</translation>
 <translation id="4812751092864334025">પહેરી શકાય તેવી ટેક્નોલોજી</translation>
@@ -1808,7 +1794,6 @@
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5903264686717710770">શીર્ષક:</translation>
 <translation id="5904360430676679685">કુટુંબ અને સંબંધો</translation>
-<translation id="5905445707201418379"><ph name="ORIGIN" />ની ઑરિજિન પૉલિસી અનુસાર બ્લૉક કરેલી છે.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (સમન્વયિત)</translation>
 <translation id="59174027418879706">સક્ષમ કરેલું</translation>
 <translation id="5919090499915321845">B10</translation>

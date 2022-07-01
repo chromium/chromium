@@ -335,7 +335,6 @@
 <translation id="1757773103848038814">等宽字体</translation>
 <translation id="1763864636252898013">此服务器无法证明它是<ph name="DOMAIN" />；您设备的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
-<translation id="1772163372082567643">您要访问的服务器 <ph name="ORIGIN" /> 已设定标头，其中要求收到的所有请求都应用一项来源政策。但该标头的格式不正确，导致浏览器无法实现您对 <ph name="SITE" /> 的访问请求。网站运营商可以使用来源政策为网站配置安全属性及其他属性。</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />详细了解 Chromium 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">您打开的标签页会显示在此处</translation>
@@ -1103,7 +1102,6 @@
 <translation id="3987940399970879459">小于 1 MB</translation>
 <translation id="3990250421422698716">撞页偏移</translation>
 <translation id="3992684624889376114">关于此页面</translation>
-<translation id="3996311196211510766">网站 <ph name="ORIGIN" /> 已要求收到的所有请求都应用一项来源政策，但此政策目前无法应用。</translation>
 <translation id="4006465311664329701">Google Pay 中存储的付款方式、优惠和地址信息</translation>
 <translation id="4009243425692662128">您打印的页面内容会被发送到 Google Cloud 或第三方进行分析。例如，这类内容可能会被扫描，以确定其中是否包含敏感数据。</translation>
 <translation id="4010758435855888356">允许使用存储空间？</translation>
@@ -1168,7 +1166,6 @@
 <translation id="4202554117186904723">第 5 卷</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
-<translation id="4209166701302774460">您要访问的服务器 <ph name="ORIGIN" /> 已要求收到的所有请求都应用一项来源政策。但该服务器目前并未提供任何政策，导致浏览器无法实现您对 <ph name="SITE" /> 的访问请求。网站运营商可以使用来源政策为网站配置安全属性及其他属性。</translation>
 <translation id="4210602799576081649">验证码已失效，请申请新的验证码</translation>
 <translation id="421066178035138955">使用虚拟实境设备和数据</translation>
 <translation id="4213305257324635756">动画片</translation>
@@ -1196,7 +1193,6 @@
     &lt;p&gt;如果您仍会看到这条错误消息，请与网站所有者联系。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="4230204356098880324">可以询问能否使用和移动您的摄像头</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />继续前往 <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4250431568374086873">您与此网站之间建立的连接并非完全安全</translation>
 <translation id="4250680216510889253">否</translation>
@@ -1400,7 +1396,6 @@
 <translation id="4796594887379589189">工作帐号 ID</translation>
 <translation id="4798078619018708837">请输入 <ph name="CREDIT_CARD" /> 的失效日期和银行卡验证码 (CVC)，以更新您的信用卡详细信息。待您确认后，系统便会将您 Google 帐号中的信用卡详细信息共享给该网站。</translation>
 <translation id="4800132727771399293">请检查您的到期日期和银行卡验证码 (CVC)，然后重试</translation>
-<translation id="480334179571489655">来源政策错误</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4812751092864334025">穿戴式技术</translation>
@@ -1795,7 +1790,6 @@
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903264686717710770">标题：</translation>
 <translation id="5904360430676679685">家庭与人际关系</translation>
-<translation id="5905445707201418379">已根据 <ph name="ORIGIN" /> 的来源政策而屏蔽。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
 <translation id="59174027418879706">已启用</translation>
 <translation id="5919090499915321845">B10</translation>

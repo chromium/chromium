@@ -5033,12 +5033,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Lakukan pemeriksaan Safe Browsing pada semua file yang didownload</translation>
 <translation id="6433697627431665375">Cegah data <ph name="PRODUCT_NAME" /> disertakan dalam cadangan</translation>
-<translation id="6435570845618943258">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
-      Jika setelan ini dinonaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat lama yang disediakan oleh platform.
-      Jika setelan ini tidak ditetapkan, pemverifikasi sertifikat yang lama atau bawaan dapat digunakan.
-
-      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" /> versi 107 dan saat ini terjadi, dukungan untuk pemverifikasi sertifikat versi lama di <ph name="MAC_OS_NAME" /> akan dihapus.
-      </translation>
 <translation id="6436052172226685535">Perilaku default untuk LBS.</translation>
 <translation id="6438364096042399634">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas pengguna dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.
 

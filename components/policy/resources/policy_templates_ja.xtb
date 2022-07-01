@@ -4720,12 +4720,6 @@
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">すべてのダウンロード ファイルに対してセーフ ブラウジング チェックを行う</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" /> データをバックアップに含めることを許可しない</translation>
-<translation id="6435570845618943258">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
-      無効な場合、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
-      未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
-
-      このポリシーは <ph name="MAC_OS_NAME" /> バージョン 107 の <ph name="PRODUCT_NAME" /> で削除される予定です（<ph name="MAC_OS_NAME" /> での従来の証明書確認機能のサポートがバージョン 107 で削除されるため）。
-      </translation>
 <translation id="6436052172226685535">LBS のデフォルトの動作。</translation>
 <translation id="6438364096042399634">このポリシーでは、ユーザーがカーネル ドライバから分離してウェブアプリ内で直接 chrome.usb API を通じて使用できる USB デバイスのリストを定義できます。USB ベンダー ID と商品 ID をペアで入力し、個々のハードウェアを特定できるようにします。
 

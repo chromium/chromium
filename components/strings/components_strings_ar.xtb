@@ -335,11 +335,6 @@
 <translation id="1757773103848038814">‏خط Monospace</translation>
 <translation id="1763864636252898013">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثوقة من خلال نظام تشغيل جهازك. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />تجربة تشغيل بيانات التشخيص لشبكة Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">إنّ خادم <ph name="ORIGIN" /> الذي تنتقل إليه أعدّ عنوانًا يتطلّب
-    تطبيق سياسة المصدر على جميع الطلبات المقدّمة إليه، ولكن
-    العنوان غير صالح، مما يمنع المتصفِّح من إكمال
-    طلبك ذي الصلة بالموقع الإلكتروني <ph name="SITE" />. ويمكن استخدام سياسات المصدر من خلال
-    عوامل تشغيل المواقع الإلكترونية لضبط الأمان والخصائص الأخرى لموقع إلكتروني.</translation>
 <translation id="1774592222195216949">‏<ph name="BEGIN_LINK" />مزيد من المعلومات حول وضع التصفّح المتخفي في متصفّح Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">تظهر علامات التبويب المفتوحة هنا</translation>
@@ -1113,8 +1108,6 @@
 <translation id="3987940399970879459">أقل من ميغابايت واحد</translation>
 <translation id="3990250421422698716">ترتيب النسخ مع الفصل بينها</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
-<translation id="3996311196211510766">لقد طلب الموقع الإلكتروني <ph name="ORIGIN" /> تطبيق سياسة المصدر
-    على جميع الطلبات المقدَّمة إليه، ولكن يتعذّر تطبيق هذه السياسة حاليًا.</translation>
 <translation id="4006465311664329701">‏طرق الدفع والعروض الترويجية والعناوين التي تستخدم Google Pay</translation>
 <translation id="4009243425692662128">‏يتم إرسال محتوى الصفحات التي تطبعها إلى Google Cloud أو أطراف خارجية لتحليله. على سبيل المثال، قد يتم فحص هذا المحتوى بحثًا عن بيانات حسّاسة.</translation>
 <translation id="4010758435855888356">هل تريد السماح بالوصول إلى مساحة التخزين؟</translation>
@@ -1179,11 +1172,6 @@
 <translation id="4202554117186904723">اللفافة الخامسة</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />التحقق من عمليات ضبط الجدار الناري وبرامج مكافحة الفيروسات<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">كبير</translation>
-<translation id="4209166701302774460">إن خادم <ph name="ORIGIN" /> الذي تنتقل إليه قد طلب تطبيق
-    سياسة المصدر على جميع الطلبات المقدَّمة إليه، ولكن تعذّر الآن
-    عرض سياسة، مما يمنع المتصفِّح من إكمال طلبك
-    ذي الصلة بالموقع الإلكتروني <ph name="SITE" />. ويمكن استخدام سياسات المصدر من خلال
-    عوامل تشغيل الموقع الإلكتروني لضبط الأمان والخصائص الأخرى لموقع إلكتروني.</translation>
 <translation id="4210602799576081649">انتهت صلاحية رمز إثبات الهوية، يُرجى طلب رمز جديد.</translation>
 <translation id="421066178035138955">استخدام أجهزة الواقع الافتراضي وبياناتها</translation>
 <translation id="4213305257324635756">أفلام رسومات متحركة</translation>
@@ -1211,7 +1199,6 @@
     &lt;p&gt;في حال استمرار ظهور هذا الخطأ، اتصِل بمالك الموقع الإلكتروني.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />تجربة تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">السماح للموقع الإلكتروني بطلب استخدام الكاميرا وتحريكها</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />المتابعة إلى <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">صالح</translation>
 <translation id="4250431568374086873">إن اتصالك بهذا الموقع غير آمن تمامًا</translation>
 <translation id="4250680216510889253">لا</translation>
@@ -1416,7 +1403,6 @@
 <translation id="4796594887379589189">رقم تعريف حساب المهمة</translation>
 <translation id="4798078619018708837">‏يمكنك إدخال تاريخ انتهاء الصلاحية ورمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /> لتحديث تفاصيلها. وبعد التأكيد، ستتم مشاركة تفاصيل البطاقة من حسابك على Google مع هذا الموقع الإلكتروني.</translation>
 <translation id="4800132727771399293">‏تحقق من تاريخ انتهاء الصلاحية ورمز التحقق من البطاقة (CVC) وأعد المحاولة مرة أخرى.</translation>
-<translation id="480334179571489655">خطأ في سياسة المصدر</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">تعليمات من مشرف الجهاز:</translation>
 <translation id="4812751092864334025">أجهزة قابلة للارتداء</translation>
@@ -1811,7 +1797,6 @@
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5903264686717710770">العنوان:</translation>
 <translation id="5904360430676679685">الأسرة وتكوين العلاقات</translation>
-<translation id="5905445707201418379">تم الحظر وفقًا لسياسة المصدر <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (تمت المزامنة)</translation>
 <translation id="59174027418879706">تم التفعيل</translation>
 <translation id="5919090499915321845">B10</translation>

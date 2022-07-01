@@ -335,10 +335,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1757773103848038814">Fonti ya "Monospace"</translation>
 <translation id="1763864636252898013">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama hakiaminiwi na mfumo wa uendeshaji wa kifaa chako. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Jaribu kutumia zana ya Kuchunguza Mtandao wa Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">Seva ambako unaenda, <ph name="ORIGIN" />, ina mada
-    inayotaka sera ya asili itumike katika maombi yote inayopokea. Lakini
-    mada si sahihi, hali inayozuia kivinjari kisitekeleze
-    ombi lako la <ph name="SITE" />. Sera za asili zinaweza kutumiwa na wahudumu wa tovuti kuweka mipangilio ya usalama na sifa nyingine za tovuti.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu Hali fiche kwenye Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Vichupo vyako vilivyo wazi huonekana hapa</translation>
@@ -1110,8 +1106,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3987940399970879459">Chini ya MB 1</translation>
 <translation id="3990250421422698716">Kunja kuwa katika muundo wa Z</translation>
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
-<translation id="3996311196211510766">Tovuti ya <ph name="ORIGIN" /> inataka sera ya asili
-    itumike kwenye maombi yote inayopokea, lakini sera hii haiwezi kutumika kwa sasa.</translation>
 <translation id="4006465311664329701">Njia za Kulipa, Ofa na Anwani Zinazotumia Google Pay</translation>
 <translation id="4009243425692662128">Maudhui ya kurasa unazochapisha yanatumwa kwenda katika huduma za Google Cloud au kwa washirika wengine kwa ajili ya uchambuzi. Kwa mfano, yanaweza kuchanganuliwa ili kubaini data nyeti.</translation>
 <translation id="4010758435855888356">Ungependa kuruhusu nafasi ya hifadhi ifikiwe?</translation>
@@ -1176,11 +1170,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4202554117186904723">Gombo la Tano</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kuangalia mipangilio ya kinga mtandao na kingavirusi<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Kubwa</translation>
-<translation id="4209166701302774460">Seva ambako unaenda, <ph name="ORIGIN" />, inataka
-    sera ya asili itumike katika maombi yote inayopokea. Lakini kwa sasa imeshindwa
-    kutuma sera, hali inayozuia kivinjari kisitekeleze
-    ombi lako la <ph name="SITE" />. Sera za asili zinaweza kutumiwa na wahudumu wa tovuti
-    ili kuweka mipangilio ya usalama na sifa nyingine za tovuti.</translation>
 <translation id="4210602799576081649">Muda wa kutumia nambari hii ya kuthibitisha umeisha, omba utumiwe nambari mpya ya kuthibitisha</translation>
 <translation id="421066178035138955">Tumia data na vifaa vya uhalisia pepe</translation>
 <translation id="4213305257324635756">Filamu zilizohuishwa</translation>
@@ -1208,7 +1197,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
     &lt;p&gt;Kama bado unaona hitilafu, wasiliana na mmiliki wa tovuti.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Jaribu kutumia zana ya Kuchunguza Mtandao<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Inaweza kuomba ruhusa ya kutumia na kusogeza kamera yako</translation>
-<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Endelea kwenye <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Halali</translation>
 <translation id="4250431568374086873">Muunganisho wako kwenye tovuti hii si salama kabisa</translation>
 <translation id="4250680216510889253">La</translation>
@@ -1412,7 +1400,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4796594887379589189">Kitambulisho cha akaunti ya kazini</translation>
 <translation id="4798078619018708837">Ili usasishe maelezo ya kadi yako, weka tarehe ya mwisho wa matumizi na CVC ya <ph name="CREDIT_CARD" />. Baada ya kuthibitisha, maelezo ya kadi kutoka Akaunti yako ya Google yatashirikiwa na tovuti hii.</translation>
 <translation id="4800132727771399293">Angalia tarehe yako ya kuisha muda na CVC na ujaribu tena</translation>
-<translation id="480334179571489655">Hitilafu ya Sera Asili</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Maagizo kutoka kwa msimamizi wa kifaa chako:</translation>
 <translation id="4812751092864334025">Teknolojia ya vifaa vya kuvaliwa</translation>
@@ -1807,7 +1794,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5903264686717710770">Kichwa:</translation>
 <translation id="5904360430676679685">Familia na mahusiano</translation>
-<translation id="5905445707201418379">Imezuiwa kulingana na sera ya asili ya <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (imesawazishwa)</translation>
 <translation id="59174027418879706">Imewezeshwa</translation>
 <translation id="5919090499915321845">B10</translation>
