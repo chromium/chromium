@@ -15,7 +15,9 @@
 
 #include "base/check_op.h"
 #include "base/debug/alias.h"
+#if !BUILDFLAG(IS_NACL)
 #include "base/debug/crash_logging.h"
+#endif  // !BUILDFLAG(IS_NACL)
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
@@ -41,8 +43,10 @@ void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
     // redundant, then remove it.
     DEBUG_ALIAS_FOR_CSTR(log_message_str, str.c_str(), 1024);
 
+#if !BUILDFLAG(IS_NACL)
     // Report the log message as DCHECK_MESSAGE in the dump we're about to do.
     SCOPED_CRASH_KEY_STRING256("Logging", "DCHECK_MESSAGE", str);
+#endif  // !BUILDFLAG(IS_NACL)
 
     // Note that dumping may fail if the crash handler hasn't been set yet. In
     // that case we want to try again on the next failing DCHECK.
