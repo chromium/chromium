@@ -45,12 +45,16 @@ struct OverlayInfo;
 interface VideoFrameHandleReleaser {
   // Signals that the VideoFrame identified by |release_token| should be
   // released. |release_sync_token| indicates the last use of the VideoFrame
-  // (in a GPU command buffer) by the client.
-  //
-  // TODO(sandersd): Do we need release notification for non-texture
-  // VideoFrames? If so, |release_sync_token| should be optional.
+  // (in a GPU command buffer) by the client. If the VideoDecoder outputs frames
+  // that have a callback for releasing mailboxes (i.e.,
+  // VideoFrame::HasReleaseMailboxCB() returns true), the |release_sync_token|
+  // is required but may be empty, and in that case, implementations should let
+  // the about-to-be-released VideoFrame retain whatever SyncToken it has. For
+  // other frames, it's assumed that the frame can be released immediately upon
+  // calling ReleaseVideoFrame() and |release_sync_token| does not need to be
+  // supplied (and should be ignored by implementations if supplied).
   ReleaseVideoFrame(mojo_base.mojom.UnguessableToken release_token,
-                    gpu.mojom.SyncToken release_sync_token);
+                    gpu.mojom.SyncToken? release_sync_token);
 };
 
 // A Mojo equivalent of media::VideoDecoder. In practice, this is used for

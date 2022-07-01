@@ -79,16 +79,30 @@ class VideoFrameHandleReleaserImpl final
   }
 
   // mojom::MojoVideoFrameHandleReleaser implementation
-  void ReleaseVideoFrame(const base::UnguessableToken& release_token,
-                         const gpu::SyncToken& release_sync_token) final {
+  void ReleaseVideoFrame(
+      const base::UnguessableToken& release_token,
+      const absl::optional<gpu::SyncToken>& release_sync_token) final {
     DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
     auto it = video_frames_.find(release_token);
     if (it == video_frames_.end()) {
       mojo::ReportBadMessage("Unknown |release_token|.");
       return;
     }
-    SimpleSyncTokenClient client(release_sync_token);
-    it->second->UpdateReleaseSyncToken(&client);
+    if (it->second->HasReleaseMailboxCB()) {
+      if (!release_sync_token) {
+        mojo::ReportBadMessage(
+            "A SyncToken is required to release frames that have a callback "
+            "for releasing mailboxes.");
+        return;
+      }
+      // An empty *|release_sync_token| can be taken as a signal that the
+      // about-to-be-released VideoFrame was never used by the client.
+      // Therefore, we should let that frame retain whatever SyncToken it has.
+      if (release_sync_token->HasData()) {
+        SimpleSyncTokenClient client(*release_sync_token);
+        it->second->UpdateReleaseSyncToken(&client);
+      }
+    }
     video_frames_.erase(it);
   }
 

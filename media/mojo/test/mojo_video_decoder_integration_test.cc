@@ -25,6 +25,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/media_log.h"
 #include "media/base/mock_media_log.h"
+#include "media/base/simple_sync_token_client.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
@@ -465,6 +466,12 @@ TEST_F(MojoVideoDecoderIntegrationTest, Release) {
   Mock::VerifyAndClearExpectations(&output_cb_);
 
   EXPECT_CALL(release_cb, Run(_));
+  gpu::SyncToken release_sync_token(gpu::CommandBufferNamespace::GPU_IO,
+                                    gpu::CommandBufferId(),
+                                    /*release_count=*/1u);
+  release_sync_token.SetVerifyFlush();
+  SimpleSyncTokenClient client(release_sync_token);
+  frame->UpdateReleaseSyncToken(&client);
   frame = nullptr;
   RunUntilIdle();
 }

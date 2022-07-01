@@ -56,7 +56,7 @@ class MockVideoFrameHandleReleaser : public mojom::VideoFrameHandleReleaser {
   // mojom::VideoFrameHandleReleaser implementation.
   MOCK_METHOD2(ReleaseVideoFrame,
                void(const base::UnguessableToken& release_token,
-                    const gpu::SyncToken& release_sync_token));
+                    const absl::optional<gpu::SyncToken>& release_sync_token));
 
  private:
   mojo::Receiver<mojom::VideoFrameHandleReleaser>
@@ -658,6 +658,37 @@ TEST_F(StableVideoDecoderServiceTest,
   EXPECT_CALL(reset_cb_to_send, Run());
   stable_video_decoder_remote->Reset(reset_cb_to_send.Get());
   stable_video_decoder_remote.FlushForTesting();
+}
+
+// Tests that a call to
+// stable::mojom::VideoFrameHandleReleaser::ReleaseVideoFrame() gets routed
+// correctly to the underlying mojom::VideoFrameHandleReleaser.
+TEST_F(StableVideoDecoderServiceTest, VideoFramesCanBeReleased) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto auxiliary_endpoints = ConstructStableVideoDecoder(
+      stable_video_decoder_remote, *mock_video_decoder_raw,
+      /*expect_construct_call=*/true);
+  ASSERT_TRUE(auxiliary_endpoints);
+  ASSERT_TRUE(auxiliary_endpoints->stable_video_frame_handle_releaser_remote);
+  ASSERT_TRUE(auxiliary_endpoints->mock_video_frame_handle_releaser);
+
+  const base::UnguessableToken release_token_to_send =
+      base::UnguessableToken::Create();
+  const absl::optional<gpu::SyncToken> expected_release_sync_token =
+      absl::nullopt;
+
+  EXPECT_CALL(
+      *auxiliary_endpoints->mock_video_frame_handle_releaser,
+      ReleaseVideoFrame(release_token_to_send, expected_release_sync_token));
+  auxiliary_endpoints->stable_video_frame_handle_releaser_remote
+      ->ReleaseVideoFrame(release_token_to_send);
+  auxiliary_endpoints->stable_video_frame_handle_releaser_remote
+      .FlushForTesting();
 }
 
 TEST_F(StableVideoDecoderServiceTest,
