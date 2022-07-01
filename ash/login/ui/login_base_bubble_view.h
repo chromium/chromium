@@ -94,7 +94,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   void ScheduleAnimation(bool visible);
 
   // Determine the position of the bubble prior to showing.
-  gfx::Point CalculatePosition();
+  virtual gfx::Point CalculatePosition();
 
   views::View* anchor_view_;
 

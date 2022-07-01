@@ -3361,7 +3361,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(1);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message hidden if device is not with kiosk license and has
@@ -3407,7 +3407,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(0);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license, no
@@ -3431,7 +3431,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(0);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license and no
@@ -3456,12 +3456,12 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(0);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
 
   SetNumberOfKioskApps(1);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
 }
 
 }  // namespace ash

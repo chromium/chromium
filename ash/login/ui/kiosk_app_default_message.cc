@@ -36,20 +36,13 @@ constexpr int kTitleLineHeight = 20;
 }  // namespace
 
 KioskAppDefaultMessage::KioskAppDefaultMessage()
-    : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE),
+    : LoginBaseBubbleView(/*anchor_view=*/nullptr),
       background_animator_(
           /* Don't pass the Shelf so the translucent color is always used. */
           nullptr,
           Shell::Get()->wallpaper_controller()) {
   auto* layout_provider = views::LayoutProvider::Get();
-  set_close_on_deactivate(false);
-  set_margins(gfx::Insets(layout_provider->GetDistanceMetric(
-      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL)));
-  SetShowCloseButton(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
+  set_persistent(true);
   background_animator_.Init(ShelfBackgroundType::kDefaultBg);
   background_animator_observation_.Observe(&background_animator_);
 
@@ -74,27 +67,31 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   title_->SetMultiLine(true);
   TrayPopupUtils::SetLabelFontList(title_,
                                    TrayPopupUtils::FontStyle::kSmallTitle);
-
-  // TODO(crbug.com/1334979): We should refactor KioskAppDefaultMessage so that
-  // it's own by LockContentsView.
-  views::DialogDelegate::CreateDialogWidget(
-      this, nullptr /* context */,
-      Shell::GetContainer(
-          ash::Shell::GetRootWindowForNewWindows(),
-          kShellWindowId_LockScreenRelatedContainersContainer) /* parent */);
-
-  GetBubbleFrameView()->SetCornerRadius(
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
-  GetBubbleFrameView()->SetBackgroundColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent90));
 }
 
 KioskAppDefaultMessage::~KioskAppDefaultMessage() = default;
 
+gfx::Size KioskAppDefaultMessage::CalculatePreferredSize() const {
+  auto* layout_provider = views::LayoutProvider::Get();
+
+  // width = left_margin + icon_width + component_distance + title_width +
+  // right_margin
+  int width = icon_->CalculatePreferredSize().width() +
+              layout_provider->GetDistanceMetric(
+                  views::DISTANCE_RELATED_CONTROL_HORIZONTAL) +
+              title_->CalculatePreferredSize().width() +
+              2 * layout_provider->GetDistanceMetric(
+                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+  // height = upper_margin + icon_height + lower_margin
+  int height =
+      kIconSize + 2 * layout_provider->GetDistanceMetric(
+                          views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+
+  return gfx::Size(width, height);
+}
+
 void KioskAppDefaultMessage::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  LoginBaseBubbleView::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
 
   SkColor icon_color = color_provider->GetContentLayerColor(
@@ -105,6 +102,12 @@ void KioskAppDefaultMessage::OnThemeChanged() {
   SkColor label_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   title_->SetEnabledColor(label_color);
+}
+
+gfx::Point KioskAppDefaultMessage::CalculatePosition() {
+  return gfx::Point(parent()->GetLocalBounds().width() / 2,
+                    parent()->GetLocalBounds().height() / 2) -
+         gfx::Vector2d(width() / 2, height());
 }
 
 }  // namespace ash

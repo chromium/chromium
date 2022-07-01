@@ -2642,15 +2642,11 @@ void LockContentsView::UpdateKioskDefaultMessageVisibility() {
     return;
 
   if (!kiosk_default_message_) {
-    // KioskAppDefaultMessage is owned by itself and would be destroyed when
-    // its widget got destroyed, which happened when the widget's window got
-    // destroyed.
-    kiosk_default_message_ = new KioskAppDefaultMessage();
+    kiosk_default_message_ =
+        AddChildView(std::make_unique<KioskAppDefaultMessage>());
   }
-  if (has_kiosk_apps_)
-    kiosk_default_message_->GetWidget()->Hide();
-  else
-    kiosk_default_message_->GetWidget()->Show();
+
+  kiosk_default_message_->SetVisible(!has_kiosk_apps_);
 }
 
 void LockContentsView::SetKioskLicenseModeForTesting(

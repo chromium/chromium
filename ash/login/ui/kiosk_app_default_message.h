@@ -6,10 +6,10 @@
 #define ASH_LOGIN_UI_KIOSK_APP_DEFAULT_MESSAGE_H_
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/shelf/shelf_background_animator.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "base/scoped_observation.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
 class ImageView;
@@ -22,16 +22,21 @@ namespace ash {
 // KioskAppDefaultMessage is owned by itself and would be destroyed when its
 // widget got destroyed, which happened when the widget's window got destroyed.
 class ASH_EXPORT KioskAppDefaultMessage
-    : public views::BubbleDialogDelegateView,
+    : public LoginBaseBubbleView,
       public ShelfBackgroundAnimatorObserver {
  public:
   KioskAppDefaultMessage();
+
   KioskAppDefaultMessage(const KioskAppDefaultMessage&) = delete;
   KioskAppDefaultMessage& operator=(const KioskAppDefaultMessage&) = delete;
   ~KioskAppDefaultMessage() override;
 
   // views::View:
+  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+
+  // LoginBaseBubbleView
+  gfx::Point CalculatePosition() override;
 
  private:
   views::ImageView* icon_ = nullptr;

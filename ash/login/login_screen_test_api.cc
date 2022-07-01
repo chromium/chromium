@@ -281,8 +281,7 @@ bool LoginScreenTestApi::IsKioskDefaultMessageShown() {
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   LockContentsView::TestApi test_api(lock_screen_test.contents_view());
   return test_api.kiosk_default_message() &&
-         test_api.kiosk_default_message()->GetWidget() &&
-         test_api.kiosk_default_message()->GetWidget()->IsVisible();
+         test_api.kiosk_default_message()->GetVisible();
 }
 
 // static
