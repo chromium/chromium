@@ -45,6 +45,69 @@ CreateFirstPartySetsAccessDelegateParams(bool enabled) {
 
 }  // namespace
 
+// No-op FirstPartySetsAccessDelegate should just pass queries to
+// FirstPartySetsManager synchronously.
+class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
+ public:
+  NoopFirstPartySetsAccessDelegateTest()
+      : first_party_sets_manager_(/*enabled=*/true),
+        delegate_(
+            /*receiver=*/mojo::NullReceiver(),
+            /*params=*/nullptr,
+            &first_party_sets_manager_) {
+    first_party_sets_manager_.SetCompleteSets({
+        {kSet1Member1, kSet1Owner},
+        {kSet1Member2, kSet1Owner},
+        {kSet1Owner, kSet1Owner},
+        {kSet2Member1, kSet2Owner},
+        {kSet2Owner, kSet2Owner},
+    });
+  }
+
+  FirstPartySetsAccessDelegate& delegate() { return delegate_; }
+
+ private:
+  FirstPartySetsManager first_party_sets_manager_;
+  FirstPartySetsAccessDelegate delegate_;
+};
+
+TEST_F(NoopFirstPartySetsAccessDelegateTest, IsEnabled) {
+  EXPECT_TRUE(delegate().is_enabled());
+}
+
+TEST_F(NoopFirstPartySetsAccessDelegateTest, ComputeMetadata) {
+  EXPECT_THAT(
+      delegate()
+          .ComputeMetadata(kSet1Member1, &kSet1Owner,
+                           {kSet1Member1, kSet1Owner}, base::NullCallback())
+          ->context(),
+      net::SamePartyContext(Type::kSameParty));
+}
+
+TEST_F(NoopFirstPartySetsAccessDelegateTest, Sets) {
+  EXPECT_THAT(delegate().Sets(base::NullCallback()),
+              FirstPartySetsAccessDelegate::SetsByOwner({
+                  {kSet1Owner, {kSet1Owner, kSet1Member1, kSet1Member2}},
+                  {kSet2Owner, {kSet2Owner, kSet2Member1}},
+              }));
+}
+
+TEST_F(NoopFirstPartySetsAccessDelegateTest, FindOwner) {
+  EXPECT_THAT(delegate().FindOwner(kSet1Owner, base::NullCallback()),
+              absl::make_optional(kSet1Owner));
+  EXPECT_THAT(delegate().FindOwner(kSet2Member1, base::NullCallback()),
+              absl::make_optional(kSet2Owner));
+}
+
+TEST_F(NoopFirstPartySetsAccessDelegateTest, FindOwners) {
+  EXPECT_THAT(
+      delegate().FindOwners({kSet1Member1, kSet2Member1}, base::NullCallback()),
+      FirstPartySetsAccessDelegate::OwnersResult({
+          {kSet1Member1, kSet1Owner},
+          {kSet2Member1, kSet2Owner},
+      }));
+}
+
 class FirstPartySetsAccessDelegateTest : public ::testing::Test {
  public:
   explicit FirstPartySetsAccessDelegateTest(bool enabled)
