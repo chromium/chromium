@@ -935,6 +935,7 @@
 <translation id="3477679029130949506">फ़िल्मों की सूचियां और थिएटर में शो का समय</translation>
 <translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3484560055331845446">आप अपने Google खाते का ऐक्सेस खो सकते हैं. Chrome आपको इसी समय अपना पासवर्ड बदलने का सुझाव देता है. आपको साइन इन करने को कहा जाएगा.</translation>
+<translation id="3484861421501147767">रिमाइंडर: सेव किया गया प्रोमो कोड उपलब्ध है</translation>
 <translation id="3487845404393360112">ट्रे 4</translation>
 <translation id="3495081129428749620">पेज में ढूंढें
     <ph name="PAGE_TITLE" /></translation>
@@ -2223,6 +2224,7 @@
             <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">इस पते पर शिप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">आपके एडमिन ने इस डेटा को कॉपी किए जाने पर रोक लगाई है.</translation>
 <translation id="7135130955892390533">स्थिति दिखाएं</translation>
 <translation id="7138472120740807366">वितरण का तरीका</translation>

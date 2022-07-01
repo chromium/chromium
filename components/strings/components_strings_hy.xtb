@@ -935,6 +935,7 @@
 <translation id="3477679029130949506">Կինոթատրոնների և թատրոնների խաղացանկեր</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3484560055331845446">Հնարավոր է՝ չկարողանաք մտնել ձեր Google հաշիվ։ Chrome-ը խորհուրդ է տալիս փոխել գաղտնաբառը, որից հետո հարկավոր կլինի նորից մուտք գործել։</translation>
+<translation id="3484861421501147767">Հիշեցում․ առկա է պահված պրոմոկոդ</translation>
 <translation id="3487845404393360112">Դարակ 4</translation>
 <translation id="3495081129428749620">Որոնում
     <ph name="PAGE_TITLE" /> էջում</translation>
@@ -2224,6 +2225,7 @@
             <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">Ձեր ադմինիստրատորն արգելել է այս տվյալների պատճենումը։</translation>
 <translation id="7135130955892390533">Ցուցադրել կարգավիճակը</translation>
 <translation id="7138472120740807366">Առաքման եղանակ</translation>

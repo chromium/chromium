@@ -932,6 +932,7 @@
 <translation id="3477679029130949506">திரைப்படப் பட்டியல்கள் &amp; தியேட்டர் காட்சிநேரங்கள்</translation>
 <translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
 <translation id="3484560055331845446">உங்கள் Google கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றுமாறு Chrome பரிந்துரைக்கிறது. அதற்கு நீங்கள் உள்நுழைய வேண்டும்.</translation>
+<translation id="3484861421501147767">நினைவூட்டல்: சேமித்த விளம்பரக் குறியீடு உள்ளது</translation>
 <translation id="3487845404393360112">தட்டு 4</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" /> பக்கத்தில் கண்டறிக</translation>
 <translation id="350069200438440499">ஃபைல் பெயர்:</translation>
@@ -2218,6 +2219,7 @@
             <ph name="LIST_ITEM" />படிவங்களில் டைப் செய்த தகவல்கள்<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">இந்த முகவரிக்கு அனுப்ப முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">இந்தத் தரவை நகலெடுப்பதை உங்கள் நிர்வாகி தடுத்துள்ளார்.</translation>
 <translation id="7135130955892390533">நிலையைக் காட்டு</translation>
 <translation id="7138472120740807366">டெலிவரி முறை</translation>

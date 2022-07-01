@@ -931,6 +931,7 @@
 <translation id="3477679029130949506">電影場次與放映時間</translation>
 <translation id="3479552764303398839">現在不要</translation>
 <translation id="3484560055331845446">為避免失去 Google 帳戶存取權，Chrome 建議你立即變更密碼。系統會要求你登入帳戶。</translation>
+<translation id="3484861421501147767">提醒：可使用已儲存的促銷代碼</translation>
 <translation id="3487845404393360112">紙匣 4</translation>
 <translation id="3495081129428749620">在
     「<ph name="PAGE_TITLE" />」網頁中尋找</translation>
@@ -2214,6 +2215,7 @@
             <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">無法運送到這個地址，請改用其他地址。</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">管理員已禁止複製這個資料。</translation>
 <translation id="7135130955892390533">顯示狀態</translation>
 <translation id="7138472120740807366">快遞方式</translation>

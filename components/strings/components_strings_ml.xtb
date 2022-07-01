@@ -933,6 +933,7 @@
 <translation id="3477679029130949506">സിനിമാ വിവരങ്ങളും തിയറ്റർ പ്രദർശന സമയവും</translation>
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
 <translation id="3484560055331845446">നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടപ്പെടാനിടയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‌വേഡ് മാറ്റാൻ Chrome ശുപാർശ ചെയ്യുന്നു. സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.</translation>
+<translation id="3484861421501147767">റിമൈൻഡർ: സംരക്ഷിച്ചിരിക്കുന്ന പ്രമോ കോഡ് ലഭ്യമാണ്</translation>
 <translation id="3487845404393360112">ട്രേ 4</translation>
 <translation id="3495081129428749620">പേജിൽ കണ്ടെത്തുക
     <ph name="PAGE_TITLE" /></translation>
@@ -2219,6 +2220,7 @@
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകുന്ന വിവരങ്ങൾ<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">ഈ വിലാസത്തിലേക്ക് ഷിപ്പ് ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">ഈ ഡാറ്റ പകർത്തുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ നിരോധിച്ചിരിക്കുന്നു.</translation>
 <translation id="7135130955892390533">സ്‌റ്റാറ്റസ് കാണിക്കുക</translation>
 <translation id="7138472120740807366">ഡെലിവറി രീതി</translation>

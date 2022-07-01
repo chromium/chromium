@@ -936,6 +936,7 @@
 <translation id="3477679029130949506">Καταχωρίσεις ταινιών και ώρες προβολής αιθουσών</translation>
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3484560055331845446">Μπορεί να χάσετε την πρόσβαση στον Λογαριασμό σας Google. Το Chrome συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα. Θα σας ζητηθεί να συνδεθείτε.</translation>
+<translation id="3484861421501147767">Υπενθύμιση: Διατίθεται αποθηκευμένος κωδικός προσφοράς</translation>
 <translation id="3487845404393360112">Δίσκος 4</translation>
 <translation id="3495081129428749620">Εύρεση στη σελίδα
     <ph name="PAGE_TITLE" /></translation>
@@ -2227,6 +2228,7 @@
             <ph name="LIST_ITEM" />Πληροφορίες που εισάγετε σε φόρμες<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Δεν είναι δυνατή η αποστολή σε αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">Ο διαχειριστής απαγορεύει την αντιγραφή αυτών των δεδομένων.</translation>
 <translation id="7135130955892390533">Εμφάνιση κατάστασης</translation>
 <translation id="7138472120740807366">Μέθοδος προβολής</translation>

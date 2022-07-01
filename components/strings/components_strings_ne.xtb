@@ -932,6 +932,7 @@
 <translation id="3477679029130949506">चलचित्र तथा नाटकघरको समयतालिका</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3484560055331845446">तपाईं आफ्नो Google खातामाथिको पहुँच गुमाउन सक्नुहुन्छ। Chrome तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ। तपाईंलाई साइन इन गर्न लगाइने छ।</translation>
+<translation id="3484861421501147767">रिमाइन्डर: सेभ गरिएको प्रोमो कोड उपलब्ध छ</translation>
 <translation id="3487845404393360112">ट्रे ४</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
     पृष्ठमा फेला पार्नुहोस्</translation>
@@ -2219,6 +2220,7 @@
             <ph name="LIST_ITEM" />फाराममा भरिएको जानकारी<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">यो ठेगानामा ढुवानी गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">तपाईंका एड्मिनले लगाएको प्रतिबन्धका कारण यो डेटा कपी गर्न मिल्दैन।</translation>
 <translation id="7135130955892390533">स्थिति देखाउनुहोस्</translation>
 <translation id="7138472120740807366">डेलिभरीको विधि</translation>
