@@ -114,6 +114,16 @@ LIBLOUIS_TEST_F('testTranslateGermanGrade2Braille', function(liblouis) {
   });
 });
 
+LIBLOUIS_TEST_F('testTranslateSpaceIsNotDropped', function(liblouis) {
+  this.withTranslator(liblouis, 'en-ueb-g2.ctb', function(translator) {
+    translator.translate(
+        ' ', [],
+        this.newCallback(function(cells, textToBraille, brailleToText) {
+          assertEqualsUint8Array([0x0], cells);
+        }));
+  });
+});
+
 LIBLOUIS_TEST_F('testBackTranslateGermanComputerBraille', function(liblouis) {
   this.withTranslator(liblouis, 'de-de-comp8.ctb', function(translator) {
     const cells = new Uint8Array([0xb3]);

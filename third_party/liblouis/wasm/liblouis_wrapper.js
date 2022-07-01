@@ -156,6 +156,7 @@ LiblouisWrapper.prototype = {
     // length given by liblouis.
     let outLen = inLen;
     const maxAlloc = (inLen + 1) * 8;
+    let msg;
     while (outLen < maxAlloc) {
       // This is required as consecutive tries to [back]Translate requires
       // resetting the value of this int pointer.
@@ -189,7 +190,7 @@ LiblouisWrapper.prototype = {
       const actualInLen = this.module.getValue(inLenPtr, 'i32');
       const actualOutLen = this.module.getValue(outLenPtr, 'i32');
       if ((inLen - 1) <= actualInLen && actualOutLen > 0) {
-        const msg = {in_reply_to: messageId, success: true};
+        msg = {in_reply_to: messageId, success: true};
         if (backTranslate) {
           let outBuf = '';
           for (let i = 0; i < actualOutLen; i++) {
@@ -213,7 +214,6 @@ LiblouisWrapper.prototype = {
         // next uprev to LibLouis.
         if (backTranslate || actualInLen !== 1 || actualOutLen !== 1 ||
             msg['cells'] !== '00') {
-          self.postMessage(JSON.stringify(msg));
           break;
         }
       }
@@ -221,9 +221,11 @@ LiblouisWrapper.prototype = {
       outLen = outLen * 2;
     }
 
-    this.pool_.freeAll();
+    if (msg) {
+      self.postMessage(JSON.stringify(msg));
+    }
 
-    // TODO: raise an error if we didn't send a result in the loop above.
+    this.pool_.freeAll();
   },
 
   getHexEncoding_: function(bufPtr, len) {
