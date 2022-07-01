@@ -47,3 +47,5 @@ Local Modifications:
    base::subtle::ResetFDOwnership() API
  - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
  - Qualified calls to bit_cast<>() with base::.
+ - MultiprocessExec.MultiprocessExec is disabled entirely on the Mac.
+   https://crbug.com/1341377
