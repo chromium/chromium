@@ -392,9 +392,9 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___stdio_exit')) {
-        Object.defineProperty(Module['ready'], '___stdio_exit', { configurable: true, get: function() { abort('You are getting ___stdio_exit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '___stdio_exit', { configurable: true, set: function() { abort('You are setting ___stdio_exit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_fflush')) {
+        Object.defineProperty(Module['ready'], '_fflush', { configurable: true, get: function() { abort('You are getting _fflush on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_fflush', { configurable: true, set: function() { abort('You are setting _fflush on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
       }
     
 
@@ -432,9 +432,7 @@ Module['ready'] = new Promise(function(resolve, reject) {
         err('warning: you defined Module.locateFilePackage, that has been renamed to Module.locateFile (using your locateFilePackage for now)');
       }
       var REMOTE_PACKAGE_NAME = Module['locateFile'] ? Module['locateFile'](REMOTE_PACKAGE_BASE, '') : REMOTE_PACKAGE_BASE;
-
-      var REMOTE_PACKAGE_SIZE = metadata['remote_package_size'];
-      var PACKAGE_UUID = metadata['package_uuid'];
+var REMOTE_PACKAGE_SIZE = metadata['remote_package_size'];
 
       function fetchRemotePackage(packageName, packageSize, callback, errback) {
         if (typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string') {
@@ -582,7 +580,7 @@ Module['ready'] = new Promise(function(resolve, reject) {
     }
 
     }
-    loadPackage({"files": [{"filename": "/en-nabcc.utb", "start": 0, "end": 7265}, {"filename": "/no-no-generic.ctb", "start": 7265, "end": 20743}, {"filename": "/Se-Se-g1.utb", "start": 20743, "end": 25784}, {"filename": "/afr-za-g1.ctb", "start": 25784, "end": 28442}, {"filename": "/afr-za-g2.ctb", "start": 28442, "end": 58577}, {"filename": "/de-eurobrl6.dis", "start": 58577, "end": 60841}, {"filename": "/bh.tbl", "start": 60841, "end": 61387}, {"filename": "/Makefile.in", "start": 61387, "end": 134191}, {"filename": "/et-g0.utb", "start": 134191, "end": 139227}, {"filename": "/en-in-g1.ctb", "start": 139227, "end": 142652}, {"filename": "/es.tbl", "start": 142652, "end": 143257}, {"filename": "/he-IL.utb", "start": 143257, "end": 154046}, {"filename": "/fr-bfu-comp68.cti", "start": 154046, "end": 164731}, {"filename": "/mn-MN-common.cti", "start": 164731, "end": 168021}, {"filename": "/lt.tbl", "start": 168021, "end": 168724}, {"filename": "/Pl-Pl-g1.utb", "start": 168724, "end": 179094}, {"filename": "/ca-chardefs.cti", "start": 179094, "end": 195212}, {"filename": "/hyph_nb_NO.dic", "start": 195212, "end": 381890}, {"filename": "/ja-kantenji.utb", "start": 381890, "end": 644766}, {"filename": "/si-in-g1.utb", "start": 644766, "end": 645983}, {"filename": "/da-dk-octobraille.dis", "start": 645983, "end": 659208}, {"filename": "/gon.tbl", "start": 659208, "end": 659754}, {"filename": "/gez.tbl", "start": 659754, "end": 660431}, {"filename": "/cvox-common.cti", "start": 660431, "end": 661036}, {"filename": "/ko-2006-g1.ctb", "start": 661036, "end": 662815}, {"filename": "/bh.ctb", "start": 662815, "end": 663741}, {"filename": "/sl-si-comp8.ctb", "start": 663741, "end": 672618}, {"filename": "/wordcx.dis", "start": 672618, "end": 676472}, {"filename": "/gu-in-g1.utb", "start": 676472, "end": 677689}, {"filename": "/my-g2.ctb", "start": 677689, "end": 808013}, {"filename": "/de-g1-core-patterns.dic", "start": 808013, "end": 844108}, {"filename": "/ks-in-g1.utb", "start": 844108, "end": 845327}, {"filename": "/kok.tbl", "start": 845327, "end": 845877}, {"filename": "/sv-1996.ctb", "start": 845877, "end": 853617}, {"filename": "/de-g1-detailed.ctb", "start": 853617, "end": 856461}, {"filename": "/fi.utb", "start": 856461, "end": 865363}, {"filename": "/litdigits6DotsPlusDot6.uti", "start": 865363, "end": 866344}, {"filename": "/de-g0.utb", "start": 866344, "end": 868192}, {"filename": "/fi-fi-8dot.ctb", "start": 868192, "end": 876733}, {"filename": "/unicode.dis", "start": 876733, "end": 882707}, {"filename": "/kk.utb", "start": 882707, "end": 885301}, {"filename": "/litdigits6Dots.uti", "start": 885301, "end": 886258}, {"filename": "/kha.tbl", "start": 886258, "end": 886819}, {"filename": "/bel-comp.utb", "start": 886819, "end": 888352}, {"filename": "/hyph_eo.dic", "start": 888352, "end": 899019}, {"filename": "/gd.ctb", "start": 899019, "end": 904308}, {"filename": "/tr-g2.tbl", "start": 904308, "end": 904898}, {"filename": "/ukmaths_single_cell_defs.cti", "start": 904898, "end": 906430}, {"filename": "/no-no-8dot.utb", "start": 906430, "end": 926592}, {"filename": "/da-dk-g18.ctb", "start": 926592, "end": 951802}, {"filename": "/ckb.tbl", "start": 951802, "end": 952365}, {"filename": "/zhcn-g2.ctb", "start": 952365, "end": 1569838}, {"filename": "/ve-za-g1.utb", "start": 1569838, "end": 1572550}, {"filename": "/ru-letters.dis", "start": 1572550, "end": 1575382}, {"filename": "/zh_HK.tbl", "start": 1575382, "end": 1575712}, {"filename": "/hr-digits.uti", "start": 1575712, "end": 1577155}, {"filename": "/ukmaths_unicode_defs.cti", "start": 1577155, "end": 1592704}, {"filename": "/ethio-g1.ctb", "start": 1592704, "end": 1600476}, {"filename": "/he-IL-comp8.utb", "start": 1600476, "end": 1619778}, {"filename": "/sk-sk.utb", "start": 1619778, "end": 1622826}, {"filename": "/pi.tbl", "start": 1622826, "end": 1623368}, {"filename": "/no-no-8dot-fallback-6dot-g0.utb", "start": 1623368, "end": 1625726}, {"filename": "/ar-ar-comp8.utb", "start": 1625726, "end": 1634942}, {"filename": "/pl.tbl", "start": 1634942, "end": 1635173}, {"filename": "/bg.tbl", "start": 1635173, "end": 1635859}, {"filename": "/ko-2006.cti", "start": 1635859, "end": 1639818}, {"filename": "/hi-in-g1.utb", "start": 1639818, "end": 1641034}, {"filename": "/ru-brf.dis", "start": 1641034, "end": 1643564}, {"filename": "/no-no-chardefs6.uti", "start": 1643564, "end": 1656513}, {"filename": "/hr-g1.tbl", "start": 1656513, "end": 1656661}, {"filename": "/mr-in-g1.utb", "start": 1656661, "end": 1657879}, {"filename": "/us-table.dis", "start": 1657879, "end": 1659441}, {"filename": "/maketablelist.sh", "start": 1659441, "end": 1660459}, {"filename": "/hr-comp8.tbl", "start": 1660459, "end": 1661149}, {"filename": "/is.ctb", "start": 1661149, "end": 1667050}, {"filename": "/ka-in-g1.utb", "start": 1667050, "end": 1668265}, {"filename": "/pa.tbl", "start": 1668265, "end": 1668829}, {"filename": "/marburg_single_cell_defs.cti", "start": 1668829, "end": 1670344}, {"filename": "/README", "start": 1670344, "end": 1670505}, {"filename": "/countries.cti", "start": 1670505, "end": 1677208}, {"filename": "/latinLetterDef6Dots.uti", "start": 1677208, "end": 1679201}, {"filename": "/zh_CHN.tbl", "start": 1679201, "end": 1680081}, {"filename": "/en-chess.ctb", "start": 1680081, "end": 1681579}, {"filename": "/hu-backtranslate-word-corrections.cti", "start": 1681579, "end": 1702104}, {"filename": "/hyph_en_US.dic", "start": 1702104, "end": 1738571}, {"filename": "/ro.ctb", "start": 1738571, "end": 1743579}, {"filename": "/es-old.dis", "start": 1743579, "end": 1751184}, {"filename": "/hu.tbl", "start": 1751184, "end": 1751683}, {"filename": "/en-gb-g1.utb", "start": 1751683, "end": 1765929}, {"filename": "/tr.tbl", "start": 1765929, "end": 1766611}, {"filename": "/en-ueb-chardefs.uti", "start": 1766611, "end": 1794255}, {"filename": "/zu-za-g2.ctb", "start": 1794255, "end": 1795322}, {"filename": "/lt.ctb", "start": 1795322, "end": 1812435}, {"filename": "/ar-ar-g1-core.uti", "start": 1812435, "end": 1822914}, {"filename": "/el.ctb", "start": 1822914, "end": 1853717}, {"filename": "/ta.tbl", "start": 1853717, "end": 1854395}, {"filename": "/ne.ctb", "start": 1854395, "end": 1855287}, {"filename": "/ar.tbl", "start": 1855287, "end": 1855799}, {"filename": "/en-us-mathtext.ctb", "start": 1855799, "end": 1876247}, {"filename": "/digits6Dots.uti", "start": 1876247, "end": 1877165}, {"filename": "/bo.ctb", "start": 1877165, "end": 1884413}, {"filename": "/digits6DotsPlusDot6.uti", "start": 1884413, "end": 1885478}, {"filename": "/kn.tbl", "start": 1885478, "end": 1886042}, {"filename": "/dra.ctb", "start": 1886042, "end": 1886947}, {"filename": "/cs.tbl", "start": 1886947, "end": 1887579}, {"filename": "/sot-za-g1.ctb", "start": 1887579, "end": 1890309}, {"filename": "/ba.utb", "start": 1890309, "end": 1892774}, {"filename": "/de-accents-detailed.cti", "start": 1892774, "end": 1910196}, {"filename": "/fa-ir-g1.utb", "start": 1910196, "end": 1916367}, {"filename": "/tt.utb", "start": 1916367, "end": 1919055}, {"filename": "/sv.tbl", "start": 1919055, "end": 1919619}, {"filename": "/cs-comp8.utb", "start": 1919619, "end": 1933122}, {"filename": "/corrections.cti", "start": 1933122, "end": 1934614}, {"filename": "/uk-comp.utb", "start": 1934614, "end": 1936525}, {"filename": "/vi-lettersdef.uti", "start": 1936525, "end": 1945711}, {"filename": "/it-it-comp6.utb", "start": 1945711, "end": 1950586}, {"filename": "/grc-international-decomposed.uti", "start": 1950586, "end": 1967032}, {"filename": "/latinUppercaseComp6.uti", "start": 1967032, "end": 1968900}, {"filename": "/Makefile.am", "start": 1968900, "end": 1975709}, {"filename": "/hi.tbl", "start": 1975709, "end": 1976269}, {"filename": "/mn-in-g1.utb", "start": 1976269, "end": 1977485}, {"filename": "/de-g2.ctb", "start": 1977485, "end": 1979124}, {"filename": "/da-dk-g26l-lit.ctb", "start": 1979124, "end": 1995194}, {"filename": "/sl.tbl", "start": 1995194, "end": 1995837}, {"filename": "/de-eurobrl6u.dis", "start": 1995837, "end": 1997928}, {"filename": "/ko.cti", "start": 1997928, "end": 2003528}, {"filename": "/sr.tbl", "start": 2003528, "end": 2004193}, {"filename": "/tsn-za-g1.ctb", "start": 2004193, "end": 2005335}, {"filename": "/np-in-g1.utb", "start": 2005335, "end": 2006552}, {"filename": "/ko-g2.ctb", "start": 2006552, "end": 2008448}, {"filename": "/fa-ir-comp8.ctb", "start": 2008448, "end": 2014120}, {"filename": "/no-no-generic.dis", "start": 2014120, "end": 2028293}, {"filename": "/en-ueb-g1.ctb", "start": 2028293, "end": 2033296}, {"filename": "/pl-pl-comp8.ctb", "start": 2033296, "end": 2051633}, {"filename": "/IPA.utb", "start": 2051633, "end": 2058933}, {"filename": "/or.tbl", "start": 2058933, "end": 2059493}, {"filename": "/en_CA.ctb", "start": 2059493, "end": 2067597}, {"filename": "/gu.tbl", "start": 2067597, "end": 2068163}, {"filename": "/hu-hu-g2.ctb", "start": 2068163, "end": 2081633}, {"filename": "/da-dk-g26.ctb", "start": 2081633, "end": 2110931}, {"filename": "/gurumuki.cti", "start": 2110931, "end": 2121039}, {"filename": "/telugu.cti", "start": 2121039, "end": 2131016}, {"filename": "/ru-unicode.dis", "start": 2131016, "end": 2134041}, {"filename": "/dra.tbl", "start": 2134041, "end": 2134729}, {"filename": "/kmr.tbl", "start": 2134729, "end": 2139506}, {"filename": "/de-accents.cti", "start": 2139506, "end": 2156845}, {"filename": "/controlchars.cti", "start": 2156845, "end": 2157890}, {"filename": "/mun.ctb", "start": 2157890, "end": 2158812}, {"filename": "/mwr.ctb", "start": 2158812, "end": 2159739}, {"filename": "/hu-chardefs.cti", "start": 2159739, "end": 2172038}, {"filename": "/es-g2.ctb", "start": 2172038, "end": 2197714}, {"filename": "/hyph_nl_NL.dic", "start": 2197714, "end": 2281239}, {"filename": "/ve-za-g2.ctb", "start": 2281239, "end": 2286091}, {"filename": "/vi.ctb", "start": 2286091, "end": 2298232}, {"filename": "/cop-eg-comp8.utb", "start": 2298232, "end": 2306917}, {"filename": "/loweredDigits8Dots.uti", "start": 2306917, "end": 2307853}, {"filename": "/ml.tbl", "start": 2307853, "end": 2308531}, {"filename": "/hyph_de_DE.dic", "start": 2308531, "end": 2345332}, {"filename": "/no-no-g1.ctb", "start": 2345332, "end": 2349464}, {"filename": "/bo.tbl", "start": 2349464, "end": 2350146}, {"filename": "/en-us-brf.dis", "start": 2350146, "end": 2352584}, {"filename": "/de-g0-detailed.utb", "start": 2352584, "end": 2355617}, {"filename": "/mun.tbl", "start": 2355617, "end": 2356163}, {"filename": "/da-dk-g28l.ctb", "start": 2356163, "end": 2406493}, {"filename": "/hyph_it_IT.dic", "start": 2406493, "end": 2408699}, {"filename": "/Es-Es-G0.utb", "start": 2408699, "end": 2416931}, {"filename": "/hu-exceptionwords.cti", "start": 2416931, "end": 2533238}, {"filename": "/hyph_ru.dic", "start": 2533238, "end": 2600774}, {"filename": "/de-chess.ctb", "start": 2600774, "end": 2602263}, {"filename": "/tr-g1.ctb", "start": 2602263, "end": 2604897}, {"filename": "/braille-patterns.cti", "start": 2604897, "end": 2631328}, {"filename": "/bn.tbl", "start": 2631328, "end": 2631892}, {"filename": "/kh-in-g1.utb", "start": 2631892, "end": 2633084}, {"filename": "/awa.tbl", "start": 2633084, "end": 2633647}, {"filename": "/ckb-chardefs.cti", "start": 2633647, "end": 2642210}, {"filename": "/ar-ar-g2.ctb", "start": 2642210, "end": 2654009}, {"filename": "/es-chardefs.cti", "start": 2654009, "end": 2668605}, {"filename": "/es-g1.ctb", "start": 2668605, "end": 2669842}, {"filename": "/vi-vn-g1.ctb", "start": 2669842, "end": 2687477}, {"filename": "/pt-pt-g2.ctb", "start": 2687477, "end": 2709037}, {"filename": "/lv.tbl", "start": 2709037, "end": 2709714}, {"filename": "/eo-g1-x-system.ctb", "start": 2709714, "end": 2712675}, {"filename": "/zh-hk.ctb", "start": 2712675, "end": 2977594}, {"filename": "/mwr.tbl", "start": 2977594, "end": 2978144}, {"filename": "/hyph_brl_da_dk.dic", "start": 2978144, "end": 3039362}, {"filename": "/hyph_cs_CZ.dic", "start": 3039362, "end": 3061105}, {"filename": "/is-chardefs6.cti", "start": 3061105, "end": 3068646}, {"filename": "/eo.tbl", "start": 3068646, "end": 3069315}, {"filename": "/nl-chardefs.uti", "start": 3069315, "end": 3091394}, {"filename": "/ne.tbl", "start": 3091394, "end": 3091956}, {"filename": "/marburg_unicode_defs.cti", "start": 3091956, "end": 3107504}, {"filename": "/ur-pk-g2.ctb", "start": 3107504, "end": 3160401}, {"filename": "/et.ctb", "start": 3160401, "end": 3164506}, {"filename": "/sd.tbl", "start": 3164506, "end": 3165068}, {"filename": "/IPA-unicode-range.uti", "start": 3165068, "end": 3178256}, {"filename": "/wiskunde-chardefs.cti", "start": 3178256, "end": 3196815}, {"filename": "/nl-BE.dis", "start": 3196815, "end": 3198471}, {"filename": "/de-g1.ctb", "start": 3198471, "end": 3200259}, {"filename": "/as.tbl", "start": 3200259, "end": 3200825}, {"filename": "/fr-bfu-comp8.utb", "start": 3200825, "end": 3217284}, {"filename": "/ms-my-g2.ctb", "start": 3217284, "end": 3362674}, {"filename": "/ml-in-g1.utb", "start": 3362674, "end": 3363893}, {"filename": "/en-us-g1.ctb", "start": 3363893, "end": 3368200}, {"filename": "/zu-za-g1.utb", "start": 3368200, "end": 3369269}, {"filename": "/grc-international-composed.uti", "start": 3369269, "end": 3385573}, {"filename": "/is-chardefs8.cti", "start": 3385573, "end": 3406815}, {"filename": "/mn-MN-g2.ctb", "start": 3406815, "end": 3408758}, {"filename": "/km-g1.utb", "start": 3408758, "end": 3417979}, {"filename": "/bra.tbl", "start": 3417979, "end": 3418538}, {"filename": "/kannada.cti", "start": 3418538, "end": 3427249}, {"filename": "/se-se.dis", "start": 3427249, "end": 3441940}, {"filename": "/sk-sk-g1.utb", "start": 3441940, "end": 3447875}, {"filename": "/zh_TW.tbl", "start": 3447875, "end": 3448332}, {"filename": "/sk-translation.cti", "start": 3448332, "end": 3450941}, {"filename": "/et.tbl", "start": 3450941, "end": 3451625}, {"filename": "/br-in-g1.utb", "start": 3451625, "end": 3452839}, {"filename": "/tr-g2.ctb", "start": 3452839, "end": 3466074}, {"filename": "/en-us-compbrl.uti", "start": 3466074, "end": 3468241}, {"filename": "/cs-translation.cti", "start": 3468241, "end": 3470768}, {"filename": "/en-us-emphasis.uti", "start": 3470768, "end": 3472210}, {"filename": "/ru-ru-g1.ctb", "start": 3472210, "end": 3490790}, {"filename": "/xh-za-g1.utb", "start": 3490790, "end": 3493065}, {"filename": "/gr-pl-comp8.uti", "start": 3493065, "end": 3508555}, {"filename": "/hr-chardefs.cti", "start": 3508555, "end": 3525076}, {"filename": "/fr-bfu-comp6.utb", "start": 3525076, "end": 3543642}, {"filename": "/ta.ctb", "start": 3543642, "end": 3544562}, {"filename": "/sr-g1.ctb", "start": 3544562, "end": 3547894}, {"filename": "/lt-6dot.tbl", "start": 3547894, "end": 3548062}, {"filename": "/it-it-comp8.utb", "start": 3548062, "end": 3576911}, {"filename": "/ukchardefs.cti", "start": 3576911, "end": 3580145}, {"filename": "/te-in-g1.utb", "start": 3580145, "end": 3581358}, {"filename": "/hyph_nn_NO.dic", "start": 3581358, "end": 3768036}, {"filename": "/da-dk-g26-lit.ctb", "start": 3768036, "end": 3789852}, {"filename": "/hy.ctb", "start": 3789852, "end": 3795278}, {"filename": "/en-us-comp8-ext.utb", "start": 3795278, "end": 3821400}, {"filename": "/hyph_sv_SE.dic", "start": 3821400, "end": 3852659}, {"filename": "/se-se.ctb", "start": 3852659, "end": 3862900}, {"filename": "/is.tbl", "start": 3862900, "end": 3863471}, {"filename": "/boxes.ctb", "start": 3863471, "end": 3873776}, {"filename": "/hyph_da_DK.dic", "start": 3873776, "end": 3935174}, {"filename": "/no-no-g3.ctb", "start": 3935174, "end": 3954005}, {"filename": "/de-g1-core.cti", "start": 3954005, "end": 3956082}, {"filename": "/en_CA.tbl", "start": 3956082, "end": 3956807}, {"filename": "/ckb-g1.ctb", "start": 3956807, "end": 3958017}, {"filename": "/no-no-g2.ctb", "start": 3958017, "end": 3971030}, {"filename": "/bel.utb", "start": 3971030, "end": 3972594}, {"filename": "/da-dk-8miscChars.cti", "start": 3972594, "end": 3976474}, {"filename": "/ckb-translation.cti", "start": 3976474, "end": 3980015}, {"filename": "/nl-NL-g0.utb", "start": 3980015, "end": 3990994}, {"filename": "/ur-pk-g1.utb", "start": 3990994, "end": 4003300}, {"filename": "/devanagari.cti", "start": 4003300, "end": 4012607}, {"filename": "/be-in-g1.utb", "start": 4012607, "end": 4013822}, {"filename": "/ca.tbl", "start": 4013822, "end": 4014383}, {"filename": "/en-ueb-g2.ctb", "start": 4014383, "end": 4206151}, {"filename": "/tr.ctb", "start": 4206151, "end": 4210832}, {"filename": "/vi-vn-g2.ctb", "start": 4210832, "end": 4233514}, {"filename": "/de-de.dis", "start": 4233514, "end": 4248115}, {"filename": "/gd.tbl", "start": 4248115, "end": 4248813}, {"filename": "/hu-backtranslate-correction.dis", "start": 4248813, "end": 4250168}, {"filename": "/hu-hu-g1_braille_input.cti", "start": 4250168, "end": 4265357}, {"filename": "/pt-pt-comp8.ctb", "start": 4265357, "end": 4269042}, {"filename": "/or-in-g1.utb", "start": 4269042, "end": 4270253}, {"filename": "/no-no-comp8.ctb", "start": 4270253, "end": 4291185}, {"filename": "/cy.tbl", "start": 4291185, "end": 4291787}, {"filename": "/en-us-comp6.ctb", "start": 4291787, "end": 4296722}, {"filename": "/da-dk-g08.ctb", "start": 4296722, "end": 4310249}, {"filename": "/unicode-braille.utb", "start": 4310249, "end": 4335082}, {"filename": "/cs-g1.ctb", "start": 4335082, "end": 4336436}, {"filename": "/sl-si-g1.utb", "start": 4336436, "end": 4352645}, {"filename": "/ru-compbrl.ctb", "start": 4352645, "end": 4359955}, {"filename": "/grc-international-en.utb", "start": 4359955, "end": 4364677}, {"filename": "/sa.tbl", "start": 4364677, "end": 4365243}, {"filename": "/xh-za-g2.ctb", "start": 4365243, "end": 4374136}, {"filename": "/pu-in-g1.utb", "start": 4374136, "end": 4375352}, {"filename": "/hu-hu-g2_exceptions.cti", "start": 4375352, "end": 4417408}, {"filename": "/bengali.cti", "start": 4417408, "end": 4427745}, {"filename": "/no-no-braillo-047-01.dis", "start": 4427745, "end": 4435564}, {"filename": "/tsn-za-g2.ctb", "start": 4435564, "end": 4436703}, {"filename": "/uk.utb", "start": 4436703, "end": 4438905}, {"filename": "/printables.cti", "start": 4438905, "end": 4440739}, {"filename": "/uni-text.dis", "start": 4440739, "end": 4455355}, {"filename": "/pi.ctb", "start": 4455355, "end": 4456279}, {"filename": "/latinLetterDef8Dots.uti", "start": 4456279, "end": 4458067}, {"filename": "/bg.dis", "start": 4458067, "end": 4459816}, {"filename": "/de-comp6.utb", "start": 4459816, "end": 4474963}, {"filename": "/ko-chars.cti", "start": 4474963, "end": 4857311}, {"filename": "/digits8Dots.uti", "start": 4857311, "end": 4858239}, {"filename": "/pt-pt-g1.utb", "start": 4858239, "end": 4866606}, {"filename": "/ga-g2.ctb", "start": 4866606, "end": 4871392}, {"filename": "/en-us-g2.ctb", "start": 4871392, "end": 4899322}, {"filename": "/vi-saigon-g1.ctb", "start": 4899322, "end": 4920903}, {"filename": "/de-chardefs6.cti", "start": 4920903, "end": 4937810}, {"filename": "/mt.ctb", "start": 4937810, "end": 4942361}, {"filename": "/Makefile", "start": 4942361, "end": 4996246}, {"filename": "/as-in-g1.utb", "start": 4996246, "end": 4997462}, {"filename": "/sk-g1.ctb", "start": 4997462, "end": 4998894}, {"filename": "/hyph_es_ES.dic", "start": 4998894, "end": 5003111}, {"filename": "/en-us-comp8.ctb", "start": 5003111, "end": 5004743}, {"filename": "/en-chardefs.cti", "start": 5004743, "end": 5013053}, {"filename": "/spaces.uti", "start": 5013053, "end": 5015155}, {"filename": "/tamil.cti", "start": 5015155, "end": 5018373}, {"filename": "/de-de-comp8.ctb", "start": 5018373, "end": 5027706}, {"filename": "/hu-hu-comp8.ctb", "start": 5027706, "end": 5032509}, {"filename": "/ta-ta-g1.ctb", "start": 5032509, "end": 5037548}, {"filename": "/malayalam.cti", "start": 5037548, "end": 5056287}, {"filename": "/te.tbl", "start": 5056287, "end": 5056849}, {"filename": "/kok.ctb", "start": 5056849, "end": 5057776}, {"filename": "/de-g2-core-patterns.dic", "start": 5057776, "end": 5250344}, {"filename": "/hyph_fr_FR.dic", "start": 5250344, "end": 5258323}, {"filename": "/cy-cy-g1.utb", "start": 5258323, "end": 5272120}, {"filename": "/loweredDigits6Dots.uti", "start": 5272120, "end": 5273046}, {"filename": "/ru-litbrl.ctb", "start": 5273046, "end": 5308199}, {"filename": "/sah.utb", "start": 5308199, "end": 5310853}, {"filename": "/no-no.dis", "start": 5310853, "end": 5324497}, {"filename": "/bg.utb", "start": 5324497, "end": 5335958}, {"filename": "/ar-ar-math.uti", "start": 5335958, "end": 5356823}, {"filename": "/fr-bfu-g2.ctb", "start": 5356823, "end": 5501213}, {"filename": "/zh-chn.ctb", "start": 5501213, "end": 6764349}, {"filename": "/ar-ar-g1.utb", "start": 6764349, "end": 6765559}, {"filename": "/mr.tbl", "start": 6765559, "end": 6766123}, {"filename": "/mt.tbl", "start": 6766123, "end": 6766805}, {"filename": "/en-ueb-math.ctb", "start": 6766805, "end": 6768850}, {"filename": "/da-dk-g28.ctb", "start": 6768850, "end": 6830923}, {"filename": "/nso-za-g1.utb", "start": 6830923, "end": 6832317}, {"filename": "/en_GB.tbl", "start": 6832317, "end": 6833152}, {"filename": "/cs-chardefs.cti", "start": 6833152, "end": 6857411}, {"filename": "/ko-g1-rules.cti", "start": 6857411, "end": 6881092}, {"filename": "/en_US.tbl", "start": 6881092, "end": 6881931}, {"filename": "/no-no-g0.utb", "start": 6881931, "end": 6888642}, {"filename": "/mn-MN-g1.utb", "start": 6888642, "end": 6890589}, {"filename": "/de-g0-core.uti", "start": 6890589, "end": 6916945}, {"filename": "/lt-6dot.utb", "start": 6916945, "end": 6928897}, {"filename": "/gon.ctb", "start": 6928897, "end": 6929841}, {"filename": "/sv-1989.ctb", "start": 6929841, "end": 6939446}, {"filename": "/it.tbl", "start": 6939446, "end": 6940012}, {"filename": "/ko-2006-g2.ctb", "start": 6940012, "end": 6941987}, {"filename": "/vi-charsdef.uti", "start": 6941987, "end": 6944636}, {"filename": "/compress.cti", "start": 6944636, "end": 6946055}, {"filename": "/ru.ctb", "start": 6946055, "end": 6981825}, {"filename": "/hyph_pt_PT.dic", "start": 6981825, "end": 6983113}, {"filename": "/oriya.cti", "start": 6983113, "end": 6992646}, {"filename": "/hr-comp8.utb", "start": 6992646, "end": 7003163}, {"filename": "/eurodefs.cti", "start": 7003163, "end": 7006209}, {"filename": "/Lv-Lv-g1.utb", "start": 7006209, "end": 7026893}, {"filename": "/hyph_pl_PL.dic", "start": 7026893, "end": 7057444}, {"filename": "/unicode-without-blank.dis", "start": 7057444, "end": 7058346}, {"filename": "/my-g1.utb", "start": 7058346, "end": 7078579}, {"filename": "/sr-chardefs.cti", "start": 7078579, "end": 7087320}, {"filename": "/en-us-interline.ctb", "start": 7087320, "end": 7115296}, {"filename": "/sot-za-g2.ctb", "start": 7115296, "end": 7121582}, {"filename": "/da-dk-6miscChars.cti", "start": 7121582, "end": 7142208}, {"filename": "/ca-g1.ctb", "start": 7142208, "end": 7143966}, {"filename": "/iu-ca-g1.ctb", "start": 7143966, "end": 7152138}, {"filename": "/da-dk-g16.ctb", "start": 7152138, "end": 7160234}, {"filename": "/text_nabcc.dis", "start": 7160234, "end": 7181884}, {"filename": "/haw-us-g1.ctb", "start": 7181884, "end": 7183467}, {"filename": "/eo-g1.ctb", "start": 7183467, "end": 7186353}, {"filename": "/sin.utb", "start": 7186353, "end": 7187708}, {"filename": "/vi-puncsdef.uti", "start": 7187708, "end": 7205313}, {"filename": "/uz-g1.utb", "start": 7205313, "end": 7208870}, {"filename": "/sk.tbl", "start": 7208870, "end": 7209533}, {"filename": "/sin.cti", "start": 7209533, "end": 7220497}, {"filename": "/vi-vn-g0.utb", "start": 7220497, "end": 7223617}, {"filename": "/zh-tw.ctb", "start": 7223617, "end": 8684521}, {"filename": "/chr-us-g1.ctb", "start": 8684521, "end": 8690083}, {"filename": "/ga-g1.utb", "start": 8690083, "end": 8693346}, {"filename": "/kru.tbl", "start": 8693346, "end": 8693894}, {"filename": "/no-no-latinLetterDef6Dots_diacritics.uti", "start": 8693894, "end": 8742986}, {"filename": "/cy-cy-g2.ctb", "start": 8742986, "end": 8747291}, {"filename": "/da-dk-g16-lit.ctb", "start": 8747291, "end": 8756697}, {"filename": "/mni.tbl", "start": 8756697, "end": 8757264}, {"filename": "/es-new.dis", "start": 8757264, "end": 8764875}, {"filename": "/hy.tbl", "start": 8764875, "end": 8765559}, {"filename": "/mao-nz-g1.ctb", "start": 8765559, "end": 8767359}, {"filename": "/ko-g2-rules.cti", "start": 8767359, "end": 9042135}, {"filename": "/de-chardefs8.cti", "start": 9042135, "end": 9062133}, {"filename": "/latinLowercase.uti", "start": 9062133, "end": 9072579}, {"filename": "/nl-comp8.utb", "start": 9072579, "end": 9082600}, {"filename": "/aw-in-g1.utb", "start": 9082600, "end": 9083816}, {"filename": "/hr-translation.cti", "start": 9083816, "end": 9092274}, {"filename": "/no.tbl", "start": 9092274, "end": 9092624}, {"filename": "/ro.tbl", "start": 9092624, "end": 9093308}, {"filename": "/kru.ctb", "start": 9093308, "end": 9094234}, {"filename": "/ru-litbrl-detailed.utb", "start": 9094234, "end": 9098331}, {"filename": "/nso-za-g2.ctb", "start": 9098331, "end": 9099722}, {"filename": "/zhcn-g1.ctb", "start": 9099722, "end": 9775779}, {"filename": "/en-gb-comp8.ctb", "start": 9775779, "end": 9778038}, {"filename": "/gujarati.cti", "start": 9778038, "end": 9787641}, {"filename": "/da-dk-g26l.ctb", "start": 9787641, "end": 9802789}, {"filename": "/hr-g1.ctb", "start": 9802789, "end": 9804299}, {"filename": "/de-g2-core.cti", "start": 9804299, "end": 9835636}, {"filename": "/grc-international-common.uti", "start": 9835636, "end": 9839109}, {"filename": "/nemethdefs.cti", "start": 9839109, "end": 9855605}, {"filename": "/nl.tbl", "start": 9855605, "end": 9856319}, {"filename": "/bg.ctb", "start": 9856319, "end": 9863139}, {"filename": "/ko-g1.ctb", "start": 9863139, "end": 9864833}, {"filename": "/sa-in-g1.utb", "start": 9864833, "end": 9866052}, {"filename": "/en-GB-g2.ctb", "start": 9866052, "end": 9885706}, {"filename": "/sk-chardefs.cti", "start": 9885706, "end": 9911737}, {"filename": "/pt.tbl", "start": 9911737, "end": 9912349}, {"filename": "/en_US-comp8-ext.tbl", "start": 9912349, "end": 9912738}, {"filename": "/hyph_hu_HU.dic", "start": 9912738, "end": 10788842}, {"filename": "/hu-hu-g1.ctb", "start": 10788842, "end": 10793748}], "remote_package_size": 10793748, "package_uuid": "3ca34660-b0a9-49fc-a117-bc05482944c8"});
+    loadPackage({"files": [{"filename": "/en-nabcc.utb", "start": 0, "end": 7265}, {"filename": "/no-no-generic.ctb", "start": 7265, "end": 20743}, {"filename": "/Se-Se-g1.utb", "start": 20743, "end": 25784}, {"filename": "/afr-za-g1.ctb", "start": 25784, "end": 28442}, {"filename": "/afr-za-g2.ctb", "start": 28442, "end": 58577}, {"filename": "/de-eurobrl6.dis", "start": 58577, "end": 60841}, {"filename": "/bh.tbl", "start": 60841, "end": 61387}, {"filename": "/Makefile.in", "start": 61387, "end": 134172}, {"filename": "/et-g0.utb", "start": 134172, "end": 139208}, {"filename": "/en-in-g1.ctb", "start": 139208, "end": 142633}, {"filename": "/es.tbl", "start": 142633, "end": 143238}, {"filename": "/he-IL.utb", "start": 143238, "end": 154027}, {"filename": "/fr-bfu-comp68.cti", "start": 154027, "end": 164712}, {"filename": "/mn-MN-common.cti", "start": 164712, "end": 168002}, {"filename": "/lt.tbl", "start": 168002, "end": 168705}, {"filename": "/Pl-Pl-g1.utb", "start": 168705, "end": 179075}, {"filename": "/ca-chardefs.cti", "start": 179075, "end": 195193}, {"filename": "/hyph_nb_NO.dic", "start": 195193, "end": 381871}, {"filename": "/ja-kantenji.utb", "start": 381871, "end": 644747}, {"filename": "/si-in-g1.utb", "start": 644747, "end": 645964}, {"filename": "/da-dk-octobraille.dis", "start": 645964, "end": 659189}, {"filename": "/gon.tbl", "start": 659189, "end": 659735}, {"filename": "/gez.tbl", "start": 659735, "end": 660412}, {"filename": "/cvox-common.cti", "start": 660412, "end": 661017}, {"filename": "/ko-2006-g1.ctb", "start": 661017, "end": 662796}, {"filename": "/bh.ctb", "start": 662796, "end": 663722}, {"filename": "/sl-si-comp8.ctb", "start": 663722, "end": 672599}, {"filename": "/wordcx.dis", "start": 672599, "end": 676453}, {"filename": "/gu-in-g1.utb", "start": 676453, "end": 677670}, {"filename": "/my-g2.ctb", "start": 677670, "end": 807994}, {"filename": "/de-g1-core-patterns.dic", "start": 807994, "end": 844089}, {"filename": "/ks-in-g1.utb", "start": 844089, "end": 845308}, {"filename": "/kok.tbl", "start": 845308, "end": 845858}, {"filename": "/sv-1996.ctb", "start": 845858, "end": 853598}, {"filename": "/de-g1-detailed.ctb", "start": 853598, "end": 856442}, {"filename": "/fi.utb", "start": 856442, "end": 865344}, {"filename": "/litdigits6DotsPlusDot6.uti", "start": 865344, "end": 866325}, {"filename": "/de-g0.utb", "start": 866325, "end": 868173}, {"filename": "/fi-fi-8dot.ctb", "start": 868173, "end": 876714}, {"filename": "/unicode.dis", "start": 876714, "end": 882688}, {"filename": "/kk.utb", "start": 882688, "end": 885282}, {"filename": "/litdigits6Dots.uti", "start": 885282, "end": 886239}, {"filename": "/kha.tbl", "start": 886239, "end": 886800}, {"filename": "/bel-comp.utb", "start": 886800, "end": 888333}, {"filename": "/hyph_eo.dic", "start": 888333, "end": 899000}, {"filename": "/gd.ctb", "start": 899000, "end": 904289}, {"filename": "/tr-g2.tbl", "start": 904289, "end": 904879}, {"filename": "/ukmaths_single_cell_defs.cti", "start": 904879, "end": 906411}, {"filename": "/no-no-8dot.utb", "start": 906411, "end": 926573}, {"filename": "/da-dk-g18.ctb", "start": 926573, "end": 951783}, {"filename": "/ckb.tbl", "start": 951783, "end": 952346}, {"filename": "/zhcn-g2.ctb", "start": 952346, "end": 1569819}, {"filename": "/ve-za-g1.utb", "start": 1569819, "end": 1572531}, {"filename": "/ru-letters.dis", "start": 1572531, "end": 1575363}, {"filename": "/zh_HK.tbl", "start": 1575363, "end": 1575693}, {"filename": "/hr-digits.uti", "start": 1575693, "end": 1577136}, {"filename": "/ukmaths_unicode_defs.cti", "start": 1577136, "end": 1592685}, {"filename": "/ethio-g1.ctb", "start": 1592685, "end": 1600457}, {"filename": "/he-IL-comp8.utb", "start": 1600457, "end": 1619759}, {"filename": "/sk-sk.utb", "start": 1619759, "end": 1622807}, {"filename": "/pi.tbl", "start": 1622807, "end": 1623349}, {"filename": "/no-no-8dot-fallback-6dot-g0.utb", "start": 1623349, "end": 1625707}, {"filename": "/ar-ar-comp8.utb", "start": 1625707, "end": 1634923}, {"filename": "/pl.tbl", "start": 1634923, "end": 1635154}, {"filename": "/bg.tbl", "start": 1635154, "end": 1635840}, {"filename": "/ko-2006.cti", "start": 1635840, "end": 1639799}, {"filename": "/hi-in-g1.utb", "start": 1639799, "end": 1641015}, {"filename": "/ru-brf.dis", "start": 1641015, "end": 1643545}, {"filename": "/no-no-chardefs6.uti", "start": 1643545, "end": 1656494}, {"filename": "/hr-g1.tbl", "start": 1656494, "end": 1656642}, {"filename": "/mr-in-g1.utb", "start": 1656642, "end": 1657860}, {"filename": "/us-table.dis", "start": 1657860, "end": 1659422}, {"filename": "/maketablelist.sh", "start": 1659422, "end": 1660440}, {"filename": "/hr-comp8.tbl", "start": 1660440, "end": 1661130}, {"filename": "/is.ctb", "start": 1661130, "end": 1667031}, {"filename": "/ka-in-g1.utb", "start": 1667031, "end": 1668246}, {"filename": "/pa.tbl", "start": 1668246, "end": 1668810}, {"filename": "/marburg_single_cell_defs.cti", "start": 1668810, "end": 1670325}, {"filename": "/README", "start": 1670325, "end": 1670486}, {"filename": "/countries.cti", "start": 1670486, "end": 1677189}, {"filename": "/latinLetterDef6Dots.uti", "start": 1677189, "end": 1679182}, {"filename": "/zh_CHN.tbl", "start": 1679182, "end": 1680062}, {"filename": "/en-chess.ctb", "start": 1680062, "end": 1681560}, {"filename": "/hu-backtranslate-word-corrections.cti", "start": 1681560, "end": 1736003}, {"filename": "/hyph_en_US.dic", "start": 1736003, "end": 1772470}, {"filename": "/ro.ctb", "start": 1772470, "end": 1777478}, {"filename": "/es-old.dis", "start": 1777478, "end": 1785083}, {"filename": "/hu.tbl", "start": 1785083, "end": 1785582}, {"filename": "/en-gb-g1.utb", "start": 1785582, "end": 1799828}, {"filename": "/tr.tbl", "start": 1799828, "end": 1800510}, {"filename": "/en-ueb-chardefs.uti", "start": 1800510, "end": 1828154}, {"filename": "/zu-za-g2.ctb", "start": 1828154, "end": 1829221}, {"filename": "/lt.ctb", "start": 1829221, "end": 1846334}, {"filename": "/ar-ar-g1-core.uti", "start": 1846334, "end": 1856826}, {"filename": "/el.ctb", "start": 1856826, "end": 1887629}, {"filename": "/ta.tbl", "start": 1887629, "end": 1888307}, {"filename": "/ne.ctb", "start": 1888307, "end": 1889199}, {"filename": "/ar.tbl", "start": 1889199, "end": 1889711}, {"filename": "/en-us-mathtext.ctb", "start": 1889711, "end": 1910159}, {"filename": "/digits6Dots.uti", "start": 1910159, "end": 1911077}, {"filename": "/bo.ctb", "start": 1911077, "end": 1918325}, {"filename": "/digits6DotsPlusDot6.uti", "start": 1918325, "end": 1919390}, {"filename": "/kn.tbl", "start": 1919390, "end": 1919954}, {"filename": "/dra.ctb", "start": 1919954, "end": 1920859}, {"filename": "/cs.tbl", "start": 1920859, "end": 1921491}, {"filename": "/sot-za-g1.ctb", "start": 1921491, "end": 1924221}, {"filename": "/ba.utb", "start": 1924221, "end": 1926686}, {"filename": "/de-accents-detailed.cti", "start": 1926686, "end": 1944108}, {"filename": "/fa-ir-g1.utb", "start": 1944108, "end": 1950279}, {"filename": "/tt.utb", "start": 1950279, "end": 1952967}, {"filename": "/sv.tbl", "start": 1952967, "end": 1953531}, {"filename": "/cs-comp8.utb", "start": 1953531, "end": 1967034}, {"filename": "/corrections.cti", "start": 1967034, "end": 1968526}, {"filename": "/uk-comp.utb", "start": 1968526, "end": 1970437}, {"filename": "/vi-lettersdef.uti", "start": 1970437, "end": 1979623}, {"filename": "/it-it-comp6.utb", "start": 1979623, "end": 1984498}, {"filename": "/grc-international-decomposed.uti", "start": 1984498, "end": 2000944}, {"filename": "/latinUppercaseComp6.uti", "start": 2000944, "end": 2002812}, {"filename": "/Makefile.am", "start": 2002812, "end": 2009582}, {"filename": "/hi.tbl", "start": 2009582, "end": 2010142}, {"filename": "/mn-in-g1.utb", "start": 2010142, "end": 2011358}, {"filename": "/de-g2.ctb", "start": 2011358, "end": 2013224}, {"filename": "/da-dk-g26l-lit.ctb", "start": 2013224, "end": 2029294}, {"filename": "/sl.tbl", "start": 2029294, "end": 2029937}, {"filename": "/de-eurobrl6u.dis", "start": 2029937, "end": 2032028}, {"filename": "/ko.cti", "start": 2032028, "end": 2037628}, {"filename": "/sr.tbl", "start": 2037628, "end": 2038293}, {"filename": "/tsn-za-g1.ctb", "start": 2038293, "end": 2039435}, {"filename": "/np-in-g1.utb", "start": 2039435, "end": 2040652}, {"filename": "/ko-g2.ctb", "start": 2040652, "end": 2042548}, {"filename": "/fa-ir-comp8.ctb", "start": 2042548, "end": 2048220}, {"filename": "/no-no-generic.dis", "start": 2048220, "end": 2062393}, {"filename": "/en-ueb-g1.ctb", "start": 2062393, "end": 2067409}, {"filename": "/pl-pl-comp8.ctb", "start": 2067409, "end": 2085746}, {"filename": "/IPA.utb", "start": 2085746, "end": 2093046}, {"filename": "/or.tbl", "start": 2093046, "end": 2093606}, {"filename": "/en_CA.ctb", "start": 2093606, "end": 2101710}, {"filename": "/gu.tbl", "start": 2101710, "end": 2102276}, {"filename": "/hu-hu-g2.ctb", "start": 2102276, "end": 2115776}, {"filename": "/da-dk-g26.ctb", "start": 2115776, "end": 2145074}, {"filename": "/gurumuki.cti", "start": 2145074, "end": 2163029}, {"filename": "/telugu.cti", "start": 2163029, "end": 2173006}, {"filename": "/ru-unicode.dis", "start": 2173006, "end": 2176031}, {"filename": "/dra.tbl", "start": 2176031, "end": 2176719}, {"filename": "/kmr.tbl", "start": 2176719, "end": 2181496}, {"filename": "/de-accents.cti", "start": 2181496, "end": 2198835}, {"filename": "/controlchars.cti", "start": 2198835, "end": 2199880}, {"filename": "/mun.ctb", "start": 2199880, "end": 2200802}, {"filename": "/mwr.ctb", "start": 2200802, "end": 2201729}, {"filename": "/hu-chardefs.cti", "start": 2201729, "end": 2214098}, {"filename": "/es-g2.ctb", "start": 2214098, "end": 2239774}, {"filename": "/hyph_nl_NL.dic", "start": 2239774, "end": 2323299}, {"filename": "/ve-za-g2.ctb", "start": 2323299, "end": 2328151}, {"filename": "/vi.ctb", "start": 2328151, "end": 2340292}, {"filename": "/cop-eg-comp8.utb", "start": 2340292, "end": 2348977}, {"filename": "/loweredDigits8Dots.uti", "start": 2348977, "end": 2349913}, {"filename": "/ml.tbl", "start": 2349913, "end": 2350591}, {"filename": "/hyph_de_DE.dic", "start": 2350591, "end": 2387392}, {"filename": "/no-no-g1.ctb", "start": 2387392, "end": 2391524}, {"filename": "/bo.tbl", "start": 2391524, "end": 2392206}, {"filename": "/en-us-brf.dis", "start": 2392206, "end": 2394644}, {"filename": "/de-g0-detailed.utb", "start": 2394644, "end": 2397677}, {"filename": "/mun.tbl", "start": 2397677, "end": 2398223}, {"filename": "/da-dk-g28l.ctb", "start": 2398223, "end": 2448553}, {"filename": "/hyph_it_IT.dic", "start": 2448553, "end": 2450759}, {"filename": "/Es-Es-G0.utb", "start": 2450759, "end": 2458991}, {"filename": "/hu-exceptionwords.cti", "start": 2458991, "end": 2587917}, {"filename": "/hyph_ru.dic", "start": 2587917, "end": 2655453}, {"filename": "/de-chess.ctb", "start": 2655453, "end": 2656942}, {"filename": "/tr-g1.ctb", "start": 2656942, "end": 2659576}, {"filename": "/braille-patterns.cti", "start": 2659576, "end": 2686007}, {"filename": "/bn.tbl", "start": 2686007, "end": 2686571}, {"filename": "/kh-in-g1.utb", "start": 2686571, "end": 2687763}, {"filename": "/awa.tbl", "start": 2687763, "end": 2688326}, {"filename": "/ckb-chardefs.cti", "start": 2688326, "end": 2696889}, {"filename": "/ar-ar-g2.ctb", "start": 2696889, "end": 2708688}, {"filename": "/es-chardefs.cti", "start": 2708688, "end": 2723284}, {"filename": "/es-g1.ctb", "start": 2723284, "end": 2724521}, {"filename": "/vi-vn-g1.ctb", "start": 2724521, "end": 2742156}, {"filename": "/pt-pt-g2.ctb", "start": 2742156, "end": 2763716}, {"filename": "/lv.tbl", "start": 2763716, "end": 2764393}, {"filename": "/eo-g1-x-system.ctb", "start": 2764393, "end": 2767354}, {"filename": "/zh-hk.ctb", "start": 2767354, "end": 3032273}, {"filename": "/mwr.tbl", "start": 3032273, "end": 3032823}, {"filename": "/hyph_brl_da_dk.dic", "start": 3032823, "end": 3094041}, {"filename": "/hyph_cs_CZ.dic", "start": 3094041, "end": 3115784}, {"filename": "/is-chardefs6.cti", "start": 3115784, "end": 3123325}, {"filename": "/eo.tbl", "start": 3123325, "end": 3123994}, {"filename": "/nl-chardefs.uti", "start": 3123994, "end": 3146073}, {"filename": "/ne.tbl", "start": 3146073, "end": 3146635}, {"filename": "/marburg_unicode_defs.cti", "start": 3146635, "end": 3162183}, {"filename": "/ur-pk-g2.ctb", "start": 3162183, "end": 3215080}, {"filename": "/et.ctb", "start": 3215080, "end": 3219185}, {"filename": "/sd.tbl", "start": 3219185, "end": 3219747}, {"filename": "/IPA-unicode-range.uti", "start": 3219747, "end": 3232935}, {"filename": "/wiskunde-chardefs.cti", "start": 3232935, "end": 3251494}, {"filename": "/nl-BE.dis", "start": 3251494, "end": 3253150}, {"filename": "/de-g1.ctb", "start": 3253150, "end": 3254938}, {"filename": "/as.tbl", "start": 3254938, "end": 3255504}, {"filename": "/fr-bfu-comp8.utb", "start": 3255504, "end": 3271963}, {"filename": "/ms-my-g2.ctb", "start": 3271963, "end": 3417353}, {"filename": "/ml-in-g1.utb", "start": 3417353, "end": 3418572}, {"filename": "/en-us-g1.ctb", "start": 3418572, "end": 3422879}, {"filename": "/zu-za-g1.utb", "start": 3422879, "end": 3423948}, {"filename": "/grc-international-composed.uti", "start": 3423948, "end": 3440252}, {"filename": "/is-chardefs8.cti", "start": 3440252, "end": 3461494}, {"filename": "/mn-MN-g2.ctb", "start": 3461494, "end": 3463437}, {"filename": "/km-g1.utb", "start": 3463437, "end": 3472658}, {"filename": "/bra.tbl", "start": 3472658, "end": 3473217}, {"filename": "/kannada.cti", "start": 3473217, "end": 3481928}, {"filename": "/se-se.dis", "start": 3481928, "end": 3496619}, {"filename": "/sk-sk-g1.utb", "start": 3496619, "end": 3502554}, {"filename": "/zh_TW.tbl", "start": 3502554, "end": 3503011}, {"filename": "/et.tbl", "start": 3503011, "end": 3503695}, {"filename": "/br-in-g1.utb", "start": 3503695, "end": 3504909}, {"filename": "/tr-g2.ctb", "start": 3504909, "end": 3518144}, {"filename": "/en-us-compbrl.uti", "start": 3518144, "end": 3520311}, {"filename": "/cs-translation.cti", "start": 3520311, "end": 3522838}, {"filename": "/en-us-emphasis.uti", "start": 3522838, "end": 3524280}, {"filename": "/ru-ru-g1.ctb", "start": 3524280, "end": 3542860}, {"filename": "/xh-za-g1.utb", "start": 3542860, "end": 3545135}, {"filename": "/gr-pl-comp8.uti", "start": 3545135, "end": 3560625}, {"filename": "/hr-chardefs.cti", "start": 3560625, "end": 3577146}, {"filename": "/fr-bfu-comp6.utb", "start": 3577146, "end": 3595712}, {"filename": "/ta.ctb", "start": 3595712, "end": 3596632}, {"filename": "/sr-g1.ctb", "start": 3596632, "end": 3599964}, {"filename": "/lt-6dot.tbl", "start": 3599964, "end": 3600132}, {"filename": "/it-it-comp8.utb", "start": 3600132, "end": 3628981}, {"filename": "/ukchardefs.cti", "start": 3628981, "end": 3632215}, {"filename": "/te-in-g1.utb", "start": 3632215, "end": 3633428}, {"filename": "/hyph_nn_NO.dic", "start": 3633428, "end": 3820106}, {"filename": "/da-dk-g26-lit.ctb", "start": 3820106, "end": 3841922}, {"filename": "/hy.ctb", "start": 3841922, "end": 3847348}, {"filename": "/en-us-comp8-ext.utb", "start": 3847348, "end": 3873470}, {"filename": "/hyph_sv_SE.dic", "start": 3873470, "end": 3904729}, {"filename": "/se-se.ctb", "start": 3904729, "end": 3914970}, {"filename": "/is.tbl", "start": 3914970, "end": 3915541}, {"filename": "/boxes.ctb", "start": 3915541, "end": 3925846}, {"filename": "/hyph_da_DK.dic", "start": 3925846, "end": 3987244}, {"filename": "/no-no-g3.ctb", "start": 3987244, "end": 4006374}, {"filename": "/de-g1-core.cti", "start": 4006374, "end": 4009121}, {"filename": "/en_CA.tbl", "start": 4009121, "end": 4009846}, {"filename": "/ckb-g1.ctb", "start": 4009846, "end": 4011056}, {"filename": "/no-no-g2.ctb", "start": 4011056, "end": 4024069}, {"filename": "/bel.utb", "start": 4024069, "end": 4025633}, {"filename": "/da-dk-8miscChars.cti", "start": 4025633, "end": 4029513}, {"filename": "/ckb-translation.cti", "start": 4029513, "end": 4033054}, {"filename": "/nl-NL-g0.utb", "start": 4033054, "end": 4044038}, {"filename": "/ur-pk-g1.utb", "start": 4044038, "end": 4056344}, {"filename": "/devanagari.cti", "start": 4056344, "end": 4065651}, {"filename": "/be-in-g1.utb", "start": 4065651, "end": 4066866}, {"filename": "/ca.tbl", "start": 4066866, "end": 4067427}, {"filename": "/en-ueb-g2.ctb", "start": 4067427, "end": 4259195}, {"filename": "/tr.ctb", "start": 4259195, "end": 4263876}, {"filename": "/vi-vn-g2.ctb", "start": 4263876, "end": 4286558}, {"filename": "/de-de.dis", "start": 4286558, "end": 4301159}, {"filename": "/gd.tbl", "start": 4301159, "end": 4301857}, {"filename": "/hu-backtranslate-correction.dis", "start": 4301857, "end": 4303212}, {"filename": "/hu-hu-g1_braille_input.cti", "start": 4303212, "end": 4318816}, {"filename": "/pt-pt-comp8.ctb", "start": 4318816, "end": 4322501}, {"filename": "/or-in-g1.utb", "start": 4322501, "end": 4323712}, {"filename": "/no-no-comp8.ctb", "start": 4323712, "end": 4344644}, {"filename": "/cy.tbl", "start": 4344644, "end": 4345246}, {"filename": "/en-us-comp6.ctb", "start": 4345246, "end": 4350181}, {"filename": "/da-dk-g08.ctb", "start": 4350181, "end": 4363708}, {"filename": "/unicode-braille.utb", "start": 4363708, "end": 4388541}, {"filename": "/cs-g1.ctb", "start": 4388541, "end": 4389895}, {"filename": "/sl-si-g1.utb", "start": 4389895, "end": 4406116}, {"filename": "/ru-compbrl.ctb", "start": 4406116, "end": 4413426}, {"filename": "/grc-international-en.utb", "start": 4413426, "end": 4418148}, {"filename": "/sa.tbl", "start": 4418148, "end": 4418714}, {"filename": "/xh-za-g2.ctb", "start": 4418714, "end": 4427607}, {"filename": "/pu-in-g1.utb", "start": 4427607, "end": 4429468}, {"filename": "/hu-hu-g2_exceptions.cti", "start": 4429468, "end": 4472190}, {"filename": "/bengali.cti", "start": 4472190, "end": 4482527}, {"filename": "/no-no-braillo-047-01.dis", "start": 4482527, "end": 4490346}, {"filename": "/tsn-za-g2.ctb", "start": 4490346, "end": 4491485}, {"filename": "/uk.utb", "start": 4491485, "end": 4493687}, {"filename": "/printables.cti", "start": 4493687, "end": 4495521}, {"filename": "/uni-text.dis", "start": 4495521, "end": 4510137}, {"filename": "/pi.ctb", "start": 4510137, "end": 4511061}, {"filename": "/latinLetterDef8Dots.uti", "start": 4511061, "end": 4512849}, {"filename": "/bg.dis", "start": 4512849, "end": 4514598}, {"filename": "/de-comp6.utb", "start": 4514598, "end": 4529745}, {"filename": "/ko-chars.cti", "start": 4529745, "end": 4912093}, {"filename": "/digits8Dots.uti", "start": 4912093, "end": 4913021}, {"filename": "/pt-pt-g1.utb", "start": 4913021, "end": 4921388}, {"filename": "/ga-g2.ctb", "start": 4921388, "end": 4926174}, {"filename": "/en-us-g2.ctb", "start": 4926174, "end": 4954104}, {"filename": "/vi-saigon-g1.ctb", "start": 4954104, "end": 4975685}, {"filename": "/de-chardefs6.cti", "start": 4975685, "end": 4992592}, {"filename": "/mt.ctb", "start": 4992592, "end": 4997143}, {"filename": "/Makefile", "start": 4997143, "end": 5051005}, {"filename": "/as-in-g1.utb", "start": 5051005, "end": 5052221}, {"filename": "/sk-g1.ctb", "start": 5052221, "end": 5127038}, {"filename": "/hyph_es_ES.dic", "start": 5127038, "end": 5131255}, {"filename": "/en-us-comp8.ctb", "start": 5131255, "end": 5132887}, {"filename": "/en-chardefs.cti", "start": 5132887, "end": 5141197}, {"filename": "/spaces.uti", "start": 5141197, "end": 5143299}, {"filename": "/tamil.cti", "start": 5143299, "end": 5146517}, {"filename": "/de-de-comp8.ctb", "start": 5146517, "end": 5155850}, {"filename": "/hu-hu-comp8.ctb", "start": 5155850, "end": 5160653}, {"filename": "/ta-ta-g1.ctb", "start": 5160653, "end": 5165692}, {"filename": "/malayalam.cti", "start": 5165692, "end": 5184431}, {"filename": "/te.tbl", "start": 5184431, "end": 5184993}, {"filename": "/kok.ctb", "start": 5184993, "end": 5185920}, {"filename": "/de-g2-core-patterns.dic", "start": 5185920, "end": 5378488}, {"filename": "/hyph_fr_FR.dic", "start": 5378488, "end": 5386467}, {"filename": "/cy-cy-g1.utb", "start": 5386467, "end": 5400264}, {"filename": "/loweredDigits6Dots.uti", "start": 5400264, "end": 5401190}, {"filename": "/ru-litbrl.ctb", "start": 5401190, "end": 5436659}, {"filename": "/sah.utb", "start": 5436659, "end": 5439313}, {"filename": "/no-no.dis", "start": 5439313, "end": 5452957}, {"filename": "/bg.utb", "start": 5452957, "end": 5464418}, {"filename": "/ar-ar-math.uti", "start": 5464418, "end": 5485283}, {"filename": "/fr-bfu-g2.ctb", "start": 5485283, "end": 5629673}, {"filename": "/zh-chn.ctb", "start": 5629673, "end": 6892809}, {"filename": "/ar-ar-g1.utb", "start": 6892809, "end": 6894019}, {"filename": "/mr.tbl", "start": 6894019, "end": 6894583}, {"filename": "/mt.tbl", "start": 6894583, "end": 6895265}, {"filename": "/en-ueb-math.ctb", "start": 6895265, "end": 6897310}, {"filename": "/da-dk-g28.ctb", "start": 6897310, "end": 6959383}, {"filename": "/nso-za-g1.utb", "start": 6959383, "end": 6960777}, {"filename": "/en_GB.tbl", "start": 6960777, "end": 6961612}, {"filename": "/cs-chardefs.cti", "start": 6961612, "end": 6985871}, {"filename": "/ko-g1-rules.cti", "start": 6985871, "end": 7009552}, {"filename": "/de-g2-detailed.ctb", "start": 7009552, "end": 7011826}, {"filename": "/en_US.tbl", "start": 7011826, "end": 7012665}, {"filename": "/no-no-g0.utb", "start": 7012665, "end": 7019376}, {"filename": "/mn-MN-g1.utb", "start": 7019376, "end": 7021323}, {"filename": "/de-g0-core.uti", "start": 7021323, "end": 7048203}, {"filename": "/lt-6dot.utb", "start": 7048203, "end": 7060188}, {"filename": "/gon.ctb", "start": 7060188, "end": 7061132}, {"filename": "/sv-1989.ctb", "start": 7061132, "end": 7070737}, {"filename": "/it.tbl", "start": 7070737, "end": 7071303}, {"filename": "/ko-2006-g2.ctb", "start": 7071303, "end": 7073278}, {"filename": "/vi-charsdef.uti", "start": 7073278, "end": 7075927}, {"filename": "/compress.cti", "start": 7075927, "end": 7077346}, {"filename": "/ru.ctb", "start": 7077346, "end": 7113116}, {"filename": "/hyph_pt_PT.dic", "start": 7113116, "end": 7114404}, {"filename": "/oriya.cti", "start": 7114404, "end": 7123937}, {"filename": "/hr-comp8.utb", "start": 7123937, "end": 7134454}, {"filename": "/eurodefs.cti", "start": 7134454, "end": 7137500}, {"filename": "/Lv-Lv-g1.utb", "start": 7137500, "end": 7158184}, {"filename": "/hyph_pl_PL.dic", "start": 7158184, "end": 7188735}, {"filename": "/unicode-without-blank.dis", "start": 7188735, "end": 7189637}, {"filename": "/my-g1.utb", "start": 7189637, "end": 7209870}, {"filename": "/sr-chardefs.cti", "start": 7209870, "end": 7218611}, {"filename": "/en-us-interline.ctb", "start": 7218611, "end": 7246587}, {"filename": "/sot-za-g2.ctb", "start": 7246587, "end": 7252873}, {"filename": "/da-dk-6miscChars.cti", "start": 7252873, "end": 7273499}, {"filename": "/ca-g1.ctb", "start": 7273499, "end": 7275257}, {"filename": "/iu-ca-g1.ctb", "start": 7275257, "end": 7283429}, {"filename": "/da-dk-g16.ctb", "start": 7283429, "end": 7291525}, {"filename": "/text_nabcc.dis", "start": 7291525, "end": 7313175}, {"filename": "/haw-us-g1.ctb", "start": 7313175, "end": 7314758}, {"filename": "/eo-g1.ctb", "start": 7314758, "end": 7317644}, {"filename": "/sin.utb", "start": 7317644, "end": 7318999}, {"filename": "/vi-puncsdef.uti", "start": 7318999, "end": 7336616}, {"filename": "/uz-g1.utb", "start": 7336616, "end": 7340173}, {"filename": "/sin.cti", "start": 7340173, "end": 7351137}, {"filename": "/vi-vn-g0.utb", "start": 7351137, "end": 7354257}, {"filename": "/zh-tw.ctb", "start": 7354257, "end": 8815161}, {"filename": "/chr-us-g1.ctb", "start": 8815161, "end": 8820723}, {"filename": "/ga-g1.utb", "start": 8820723, "end": 8823986}, {"filename": "/kru.tbl", "start": 8823986, "end": 8824534}, {"filename": "/no-no-latinLetterDef6Dots_diacritics.uti", "start": 8824534, "end": 8873626}, {"filename": "/cy-cy-g2.ctb", "start": 8873626, "end": 8877931}, {"filename": "/da-dk-g16-lit.ctb", "start": 8877931, "end": 8887337}, {"filename": "/mni.tbl", "start": 8887337, "end": 8887904}, {"filename": "/es-new.dis", "start": 8887904, "end": 8895515}, {"filename": "/hy.tbl", "start": 8895515, "end": 8896199}, {"filename": "/mao-nz-g1.ctb", "start": 8896199, "end": 8897999}, {"filename": "/ko-g2-rules.cti", "start": 8897999, "end": 9172775}, {"filename": "/de-chardefs8.cti", "start": 9172775, "end": 9192773}, {"filename": "/latinLowercase.uti", "start": 9192773, "end": 9203219}, {"filename": "/nl-comp8.utb", "start": 9203219, "end": 9213240}, {"filename": "/aw-in-g1.utb", "start": 9213240, "end": 9214456}, {"filename": "/hr-translation.cti", "start": 9214456, "end": 9222926}, {"filename": "/ro.tbl", "start": 9222926, "end": 9223610}, {"filename": "/kru.ctb", "start": 9223610, "end": 9224536}, {"filename": "/ru-litbrl-detailed.utb", "start": 9224536, "end": 9228657}, {"filename": "/nso-za-g2.ctb", "start": 9228657, "end": 9230048}, {"filename": "/zhcn-g1.ctb", "start": 9230048, "end": 9906105}, {"filename": "/en-gb-comp8.ctb", "start": 9906105, "end": 9908387}, {"filename": "/gujarati.cti", "start": 9908387, "end": 9917990}, {"filename": "/da-dk-g26l.ctb", "start": 9917990, "end": 9933138}, {"filename": "/hr-g1.ctb", "start": 9933138, "end": 9934648}, {"filename": "/de-g2-core.cti", "start": 9934648, "end": 9968948}, {"filename": "/grc-international-common.uti", "start": 9968948, "end": 9972421}, {"filename": "/nemethdefs.cti", "start": 9972421, "end": 9988917}, {"filename": "/nl.tbl", "start": 9988917, "end": 9989631}, {"filename": "/bg.ctb", "start": 9989631, "end": 9996451}, {"filename": "/ko-g1.ctb", "start": 9996451, "end": 9998145}, {"filename": "/sa-in-g1.utb", "start": 9998145, "end": 9999364}, {"filename": "/en-GB-g2.ctb", "start": 9999364, "end": 10019018}, {"filename": "/pt.tbl", "start": 10019018, "end": 10019630}, {"filename": "/en_US-comp8-ext.tbl", "start": 10019630, "end": 10020019}, {"filename": "/hyph_hu_HU.dic", "start": 10020019, "end": 10896123}, {"filename": "/hu-hu-g1.ctb", "start": 10896123, "end": 10900989}], "remote_package_size": 10900989});
 
   })();
 
@@ -623,7 +621,7 @@ var ENVIRONMENT_IS_NODE = typeof process == 'object' && typeof process.versions 
 var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
 
 if (Module['ENVIRONMENT']) {
-  throw new Error('Module.ENVIRONMENT has been deprecated. To force the environment, use the ENVIRONMENT compile-time option (for example, -s ENVIRONMENT=web or -s ENVIRONMENT=node)');
+  throw new Error('Module.ENVIRONMENT has been deprecated. To force the environment, use the ENVIRONMENT compile-time option (for example, -sENVIRONMENT=web or -sENVIRONMENT=node)');
 }
 
 // `/` should be present at the end if `scriptDirectory` is not empty
@@ -904,7 +902,7 @@ var WORKERFS = 'WORKERFS is no longer included by default; build with -lworkerfs
 var NODEFS = 'NODEFS is no longer included by default; build with -lnodefs.js';
 
 
-assert(!ENVIRONMENT_IS_SHELL, "shell environment detected but not enabled at build time.  Add 'shell' to `-s ENVIRONMENT` to enable.");
+assert(!ENVIRONMENT_IS_SHELL, "shell environment detected but not enabled at build time.  Add 'shell' to `-sENVIRONMENT` to enable.");
 
 
 
@@ -914,10 +912,10 @@ var POINTER_SIZE = 4;
 
 function getNativeTypeSize(type) {
   switch (type) {
-    case 'i1': case 'i8': return 1;
-    case 'i16': return 2;
-    case 'i32': return 4;
-    case 'i64': return 8;
+    case 'i1': case 'i8': case 'u8': return 1;
+    case 'i16': case 'u16': return 2;
+    case 'i32': case 'u32': return 4;
+    case 'i64': case 'u64': return 8;
     case 'float': return 4;
     case 'double': return 8;
     default: {
@@ -945,6 +943,37 @@ function warnOnce(text) {
 // include: runtime_functions.js
 
 
+// This gives correct answers for everything less than 2^{14} = 16384
+// I hope nobody is contemplating functions with 16384 arguments...
+function uleb128Encode(n) {
+  assert(n < 16384);
+  if (n < 128) {
+    return [n];
+  }
+  return [(n % 128) | 128, n >> 7];
+}
+
+// Converts a signature like 'vii' into a description of the wasm types, like
+// { parameters: ['i32', 'i32'], results: [] }.
+function sigToWasmTypes(sig) {
+  var typeNames = {
+    'i': 'i32',
+    'j': 'i64',
+    'f': 'f32',
+    'd': 'f64',
+    'p': 'i32',
+  };
+  var type = {
+    parameters: [],
+    results: sig[0] == 'v' ? [] : [typeNames[sig[0]]]
+  };
+  for (var i = 1; i < sig.length; ++i) {
+    assert(sig[i] in typeNames, 'invalid signature char: ' + sig[i]);
+    type.parameters.push(typeNames[sig[i]]);
+  }
+  return type;
+}
+
 // Wraps a JS function as a wasm function with a given signature.
 function convertJsFunctionToWasm(func, sig) {
 
@@ -953,27 +982,12 @@ function convertJsFunctionToWasm(func, sig) {
   // Otherwise, construct a minimal wasm module importing the JS function and
   // re-exporting it.
   if (typeof WebAssembly.Function == "function") {
-    var typeNames = {
-      'i': 'i32',
-      'j': 'i64',
-      'f': 'f32',
-      'd': 'f64'
-    };
-    var type = {
-      parameters: [],
-      results: sig[0] == 'v' ? [] : [typeNames[sig[0]]]
-    };
-    for (var i = 1; i < sig.length; ++i) {
-      type.parameters.push(typeNames[sig[i]]);
-    }
-    return new WebAssembly.Function(type, func);
+    return new WebAssembly.Function(sigToWasmTypes(sig), func);
   }
 
   // The module is static, with the exception of the type section, which is
   // generated based on the signature passed in.
   var typeSection = [
-    0x01, // id: section,
-    0x00, // length: 0 (placeholder)
     0x01, // count: 1
     0x60, // form: func
   ];
@@ -981,14 +995,16 @@ function convertJsFunctionToWasm(func, sig) {
   var sigParam = sig.slice(1);
   var typeCodes = {
     'i': 0x7f, // i32
+    'p': 0x7f, // i32
     'j': 0x7e, // i64
     'f': 0x7d, // f32
     'd': 0x7c, // f64
   };
 
   // Parameters, length + signatures
-  typeSection.push(sigParam.length);
+  typeSection = typeSection.concat(uleb128Encode(sigParam.length));
   for (var i = 0; i < sigParam.length; ++i) {
+    assert(sigParam[i] in typeCodes, 'invalid signature char: ' + sigParam[i]);
     typeSection.push(typeCodes[sigParam[i]]);
   }
 
@@ -1000,9 +1016,12 @@ function convertJsFunctionToWasm(func, sig) {
     typeSection = typeSection.concat([0x01, typeCodes[sigRet]]);
   }
 
-  // Write the overall length of the type section back into the section header
-  // (excepting the 2 bytes for the section id and length)
-  typeSection[1] = typeSection.length - 2;
+  // Write the section code and overall length of the type section into the
+  // section header
+  typeSection = [0x01 /* Type section code */].concat(
+    uleb128Encode(typeSection.length),
+    typeSection
+  );
 
   // Rest of the module is static
   var bytes = new Uint8Array([
@@ -1130,7 +1149,7 @@ function ignoredModuleProp(prop) {
 function unexportedMessage(sym, isFSSybol) {
   var msg = "'" + sym + "' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)";
   if (isFSSybol) {
-    msg += '. Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you';
+    msg += '. Alternatively, forcing filesystem support (-sFORCE_FILESYSTEM) can export this for you';
   }
   return msg;
 }
@@ -1177,49 +1196,6 @@ if (typeof WebAssembly != 'object') {
   abort('no native wasm support detected');
 }
 
-// include: runtime_safe_heap.js
-
-
-// In MINIMAL_RUNTIME, setValue() and getValue() are only available when building with safe heap enabled, for heap safety checking.
-// In traditional runtime, setValue() and getValue() are always available (although their use is highly discouraged due to perf penalties)
-
-/** @param {number} ptr
-    @param {number} value
-    @param {string} type
-    @param {number|boolean=} noSafe */
-function setValue(ptr, value, type = 'i8', noSafe) {
-  if (type.charAt(type.length-1) === '*') type = 'i32';
-    switch (type) {
-      case 'i1': HEAP8[((ptr)>>0)] = value; break;
-      case 'i8': HEAP8[((ptr)>>0)] = value; break;
-      case 'i16': HEAP16[((ptr)>>1)] = value; break;
-      case 'i32': HEAP32[((ptr)>>2)] = value; break;
-      case 'i64': (tempI64 = [value>>>0,(tempDouble=value,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((ptr)>>2)] = tempI64[0],HEAP32[(((ptr)+(4))>>2)] = tempI64[1]); break;
-      case 'float': HEAPF32[((ptr)>>2)] = value; break;
-      case 'double': HEAPF64[((ptr)>>3)] = value; break;
-      default: abort('invalid type for setValue: ' + type);
-    }
-}
-
-/** @param {number} ptr
-    @param {string} type
-    @param {number|boolean=} noSafe */
-function getValue(ptr, type = 'i8', noSafe) {
-  if (type.charAt(type.length-1) === '*') type = 'i32';
-    switch (type) {
-      case 'i1': return HEAP8[((ptr)>>0)];
-      case 'i8': return HEAP8[((ptr)>>0)];
-      case 'i16': return HEAP16[((ptr)>>1)];
-      case 'i32': return HEAP32[((ptr)>>2)];
-      case 'i64': return HEAP32[((ptr)>>2)];
-      case 'float': return HEAPF32[((ptr)>>2)];
-      case 'double': return Number(HEAPF64[((ptr)>>3)]);
-      default: abort('invalid type for getValue: ' + type);
-    }
-  return null;
-}
-
-// end include: runtime_safe_heap.js
 // Wasm globals
 
 var wasmMemory;
@@ -1277,7 +1253,10 @@ function ccall(ident, returnType, argTypes, args, opts) {
   };
 
   function convertReturnValue(ret) {
-    if (returnType === 'string') return UTF8ToString(ret);
+    if (returnType === 'string') {
+      
+      return UTF8ToString(ret);
+    }
     if (returnType === 'boolean') return Boolean(ret);
     return ret;
   }
@@ -1425,7 +1404,6 @@ function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
  * @return {string}
  */
 function UTF8ToString(ptr, maxBytesToRead) {
-  ;
   return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : '';
 }
 
@@ -1784,8 +1762,8 @@ assert(typeof Int32Array != 'undefined' && typeof Float64Array !== 'undefined' &
        'JS engine does not provide full typed array support');
 
 // If memory is defined in wasm, the user can't provide it.
-assert(!Module['wasmMemory'], 'Use of `wasmMemory` detected.  Use -s IMPORTED_MEMORY to define wasmMemory externally');
-assert(INITIAL_MEMORY == 167772160, 'Detected runtime INITIAL_MEMORY setting.  Use -s IMPORTED_MEMORY to define wasmMemory dynamically');
+assert(!Module['wasmMemory'], 'Use of `wasmMemory` detected.  Use -sIMPORTED_MEMORY to define wasmMemory externally');
+assert(INITIAL_MEMORY == 167772160, 'Detected runtime INITIAL_MEMORY setting.  Use -sIMPORTED_MEMORY to define wasmMemory dynamically');
 
 // include: runtime_init_table.js
 // In regular non-RELOCATABLE mode the table is exported
@@ -1807,7 +1785,7 @@ function writeStackCookie() {
   HEAP32[((max)>>2)] = 0x2135467;
   HEAP32[(((max)+(4))>>2)] = 0x89BACDFE;
   // Also test the global address 0 for integrity.
-  HEAP32[0] = 0x63736d65; /* 'emsc' */
+  HEAPU32[0] = 0x63736d65; /* 'emsc' */
 }
 
 function checkStackCookie() {
@@ -1816,10 +1794,10 @@ function checkStackCookie() {
   var cookie1 = HEAPU32[((max)>>2)];
   var cookie2 = HEAPU32[(((max)+(4))>>2)];
   if (cookie1 != 0x2135467 || cookie2 != 0x89BACDFE) {
-    abort('Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x2135467, but received 0x' + cookie2.toString(16) + ' 0x' + cookie1.toString(16));
+    abort('Stack overflow! Stack cookie has been overwritten at 0x' + max.toString(16) + ', expected hex dwords 0x89BACDFE and 0x2135467, but received 0x' + cookie2.toString(16) + ' 0x' + cookie1.toString(16));
   }
   // Also test the global address 0 for integrity.
-  if (HEAP32[0] !== 0x63736d65 /* 'emsc' */) abort('Runtime error: The application has corrupted its heap memory area (address zero)!');
+  if (HEAPU32[0] !== 0x63736d65 /* 'emsc' */) abort('Runtime error: The application has corrupted its heap memory area (address zero)!');
 }
 
 // end include: runtime_stack_check.js
@@ -1831,7 +1809,7 @@ function checkStackCookie() {
   var h16 = new Int16Array(1);
   var h8 = new Int8Array(h16.buffer);
   h16[0] = 0x6373;
-  if (h8[0] !== 0x73 || h8[1] !== 0x63) throw 'Runtime error: expected the system to be little-endian! (Run with -s SUPPORT_BIG_ENDIAN=1 to bypass)';
+  if (h8[0] !== 0x73 || h8[1] !== 0x63) throw 'Runtime error: expected the system to be little-endian! (Run with -sSUPPORT_BIG_ENDIAN to bypass)';
 })();
 
 // end include: runtime_assertions.js
@@ -1859,9 +1837,10 @@ function preRun() {
 }
 
 function initRuntime() {
-  checkStackCookie();
   assert(!runtimeInitialized);
   runtimeInitialized = true;
+
+  checkStackCookie();
 
   
 if (!Module["noFSInit"] && !FS.init.initialized)
@@ -1999,9 +1978,6 @@ function removeRunDependency(id) {
   }
 }
 
-Module["preloadedImages"] = {}; // maps url to image data
-Module["preloadedAudios"] = {}; // maps url to audio data
-
 /** @param {string|number=} what */
 function abort(what) {
   {
@@ -2021,12 +1997,16 @@ function abort(what) {
   // Use a wasm runtime error, because a JS error might be seen as a foreign
   // exception, which means we'd run destructors on it. We need the error to
   // simply make the program stop.
+  // FIXME This approach does not work in Wasm EH because it currently does not assume
+  // all RuntimeErrors are from traps; it decides whether a RuntimeError is from
+  // a trap or not based on a hidden field within the object. So at the moment
+  // we don't have a way of throwing a wasm trap from JS. TODO Make a JS API that
+  // allows this in the wasm spec.
 
   // Suppress closure compiler warning here. Closure compiler's builtin extern
   // defintion for WebAssembly.RuntimeError claims it takes no arguments even
   // though it can.
   // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure gets fixed.
-
   /** @suppress {checkTypes} */
   var e = new WebAssembly.RuntimeError(what);
 
@@ -2205,6 +2185,13 @@ function createWasm() {
         !isDataURI(wasmBinaryFile) &&
         // Don't use streaming for file:// delivered objects in a webview, fetch them synchronously.
         !isFileURI(wasmBinaryFile) &&
+        // Avoid instantiateStreaming() on Node.js environment for now, as while
+        // Node.js v18.1.0 implements it, it does not have a full fetch()
+        // implementation yet.
+        //
+        // Reference:
+        //   https://github.com/emscripten-core/emscripten/pull/16917
+        !ENVIRONMENT_IS_NODE &&
         typeof fetch == 'function') {
       return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
         // Suppress closure warning here since the upstream definition for
@@ -2295,7 +2282,7 @@ var ASM_CONSTS = {
       return ret;
     }
   function demangle(func) {
-      warnOnce('warning: build with  -s DEMANGLE_SUPPORT=1  to link in libcxxabi demangling');
+      warnOnce('warning: build with -sDEMANGLE_SUPPORT to link in libcxxabi demangling');
       return func;
     }
 
@@ -2307,6 +2294,26 @@ var ASM_CONSTS = {
           var y = demangle(x);
           return x === y ? x : (y + ' [' + x + ']');
         });
+    }
+
+  
+    /**
+     * @param {number} ptr
+     * @param {string} type
+     */
+  function getValue(ptr, type = 'i8') {
+      if (type.endsWith('*')) type = 'i32';
+      switch (type) {
+        case 'i1': return HEAP8[((ptr)>>0)];
+        case 'i8': return HEAP8[((ptr)>>0)];
+        case 'i16': return HEAP16[((ptr)>>1)];
+        case 'i32': return HEAP32[((ptr)>>2)];
+        case 'i64': return HEAP32[((ptr)>>2)];
+        case 'float': return HEAPF32[((ptr)>>2)];
+        case 'double': return Number(HEAPF64[((ptr)>>3)]);
+        default: abort('invalid type for getValue: ' + type);
+      }
+      return null;
     }
 
   var wasmTableMirror = [];
@@ -2335,8 +2342,8 @@ var ASM_CONSTS = {
   function jsStackTrace() {
       var error = new Error();
       if (!error.stack) {
-        // IE10+ special cases: It does have callstack info, but it is only populated if an Error object is thrown,
-        // so try that as a special-case.
+        // IE10+ special cases: It does have callstack info, but it is only
+        // populated if an Error object is thrown, so try that as a special-case.
         try {
           throw new Error();
         } catch(e) {
@@ -2349,9 +2356,32 @@ var ASM_CONSTS = {
       return error.stack.toString();
     }
 
+  
+    /**
+     * @param {number} ptr
+     * @param {number} value
+     * @param {string} type
+     */
+  function setValue(ptr, value, type = 'i8') {
+      if (type.endsWith('*')) type = 'i32';
+      switch (type) {
+        case 'i1': HEAP8[((ptr)>>0)] = value; break;
+        case 'i8': HEAP8[((ptr)>>0)] = value; break;
+        case 'i16': HEAP16[((ptr)>>1)] = value; break;
+        case 'i32': HEAP32[((ptr)>>2)] = value; break;
+        case 'i64': (tempI64 = [value>>>0,(tempDouble=value,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((ptr)>>2)] = tempI64[0],HEAP32[(((ptr)+(4))>>2)] = tempI64[1]); break;
+        case 'float': HEAPF32[((ptr)>>2)] = value; break;
+        case 'double': HEAPF64[((ptr)>>3)] = value; break;
+        default: abort('invalid type for setValue: ' + type);
+      }
+    }
+
   function setWasmTableEntry(idx, func) {
       wasmTable.set(idx, func);
-      wasmTableMirror[idx] = func;
+      // With ABORT_ON_WASM_EXCEPTIONS wasmTable.get is overriden to return wrapped
+      // functions so we need to call it here to retrieve the potential wrapper correctly
+      // instead of just storing 'func' directly into wasmTableMirror
+      wasmTableMirror[idx] = wasmTable.get(idx);
     }
 
   function stackTrace() {
@@ -2365,10 +2395,10 @@ var ASM_CONSTS = {
       return value;
     }
   
-  var PATH = {splitPath:function(filename) {
+  var PATH = {isAbs:(path) => path.charAt(0) === '/',splitPath:(filename) => {
         var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
         return splitPathRe.exec(filename).slice(1);
-      },normalizeArray:function(parts, allowAboveRoot) {
+      },normalizeArray:(parts, allowAboveRoot) => {
         // if the path tries to go above the root, `up` ends up > 0
         var up = 0;
         for (var i = parts.length - 1; i >= 0; i--) {
@@ -2390,13 +2420,11 @@ var ASM_CONSTS = {
           }
         }
         return parts;
-      },normalize:function(path) {
-        var isAbsolute = path.charAt(0) === '/',
+      },normalize:(path) => {
+        var isAbsolute = PATH.isAbs(path),
             trailingSlash = path.substr(-1) === '/';
         // Normalize the path
-        path = PATH.normalizeArray(path.split('/').filter(function(p) {
-          return !!p;
-        }), !isAbsolute).join('/');
+        path = PATH.normalizeArray(path.split('/').filter((p) => !!p), !isAbsolute).join('/');
         if (!path && !isAbsolute) {
           path = '.';
         }
@@ -2404,7 +2432,7 @@ var ASM_CONSTS = {
           path += '/';
         }
         return (isAbsolute ? '/' : '') + path;
-      },dirname:function(path) {
+      },dirname:(path) => {
         var result = PATH.splitPath(path),
             root = result[0],
             dir = result[1];
@@ -2417,7 +2445,7 @@ var ASM_CONSTS = {
           dir = dir.substr(0, dir.length - 1);
         }
         return root + dir;
-      },basename:function(path) {
+      },basename:(path) => {
         // EMSCRIPTEN return '/'' for '/', not an empty string
         if (path === '/') return '/';
         path = PATH.normalize(path);
@@ -2425,12 +2453,10 @@ var ASM_CONSTS = {
         var lastSlash = path.lastIndexOf('/');
         if (lastSlash === -1) return path;
         return path.substr(lastSlash+1);
-      },extname:function(path) {
-        return PATH.splitPath(path)[3];
       },join:function() {
         var paths = Array.prototype.slice.call(arguments, 0);
         return PATH.normalize(paths.join('/'));
-      },join2:function(l, r) {
+      },join2:(l, r) => {
         return PATH.normalize(l + '/' + r);
       }};
   
@@ -2466,15 +2492,13 @@ var ASM_CONSTS = {
             return ''; // an invalid portion invalidates the whole thing
           }
           resolvedPath = path + '/' + resolvedPath;
-          resolvedAbsolute = path.charAt(0) === '/';
+          resolvedAbsolute = PATH.isAbs(path);
         }
         // At this point the path should be resolved to a full absolute path, but
         // handle relative paths to be safe (might happen when process.cwd() fails)
-        resolvedPath = PATH.normalizeArray(resolvedPath.split('/').filter(function(p) {
-          return !!p;
-        }), !resolvedAbsolute).join('/');
+        resolvedPath = PATH.normalizeArray(resolvedPath.split('/').filter((p) => !!p), !resolvedAbsolute).join('/');
         return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-      },relative:function(from, to) {
+      },relative:(from, to) => {
         from = PATH_FS.resolve(from).substr(1);
         to = PATH_FS.resolve(to).substr(1);
         function trim(arr) {
@@ -2925,11 +2949,7 @@ var ASM_CONSTS = {
         },allocate:function(stream, offset, length) {
           MEMFS.expandFileStorage(stream.node, offset + length);
           stream.node.usedBytes = Math.max(stream.node.usedBytes, offset + length);
-        },mmap:function(stream, address, length, position, prot, flags) {
-          if (address !== 0) {
-            // We don't currently support location hints for the address of the mapping
-            throw new FS.ErrnoError(28);
-          }
+        },mmap:function(stream, length, position, prot, flags) {
           if (!FS.isFile(stream.node.mode)) {
             throw new FS.ErrnoError(43);
           }
@@ -3211,22 +3231,42 @@ var ASM_CONSTS = {
         throw new FS.ErrnoError(33);
       },getStream:(fd) => FS.streams[fd],createStream:(stream, fd_start, fd_end) => {
         if (!FS.FSStream) {
-          FS.FSStream = /** @constructor */ function(){};
-          FS.FSStream.prototype = {
+          FS.FSStream = /** @constructor */ function() {
+            this.shared = { };
+          };
+          FS.FSStream.prototype = {};
+          Object.defineProperties(FS.FSStream.prototype, {
             object: {
+              /** @this {FS.FSStream} */
               get: function() { return this.node; },
+              /** @this {FS.FSStream} */
               set: function(val) { this.node = val; }
             },
             isRead: {
+              /** @this {FS.FSStream} */
               get: function() { return (this.flags & 2097155) !== 1; }
             },
             isWrite: {
+              /** @this {FS.FSStream} */
               get: function() { return (this.flags & 2097155) !== 0; }
             },
             isAppend: {
+              /** @this {FS.FSStream} */
               get: function() { return (this.flags & 1024); }
-            }
-          };
+            },
+            flags: {
+              /** @this {FS.FSStream} */
+              get: function() { return this.shared.flags; },
+              /** @this {FS.FSStream} */
+              set: function(val) { this.shared.flags = val; },
+            },
+            position : {
+              /** @this {FS.FSStream} */
+              get: function() { return this.shared.position; },
+              /** @this {FS.FSStream} */
+              set: function(val) { this.shared.position = val; },
+            },
+          });
         }
         // clone it, so we can return an instance of FSStream
         stream = Object.assign(new FS.FSStream(), stream);
@@ -3690,7 +3730,7 @@ var ASM_CONSTS = {
         node.node_ops.setattr(node, {
           timestamp: Math.max(atime, mtime)
         });
-      },open:(path, flags, mode, fd_start, fd_end) => {
+      },open:(path, flags, mode) => {
         if (path === "") {
           throw new FS.ErrnoError(44);
         }
@@ -3750,7 +3790,7 @@ var ASM_CONSTS = {
           }
         }
         // do truncation if necessary
-        if ((flags & 512)) {
+        if ((flags & 512) && !created) {
           FS.truncate(node, 0);
         }
         // we've already handled these, don't pass down to the underlying vfs
@@ -3767,7 +3807,7 @@ var ASM_CONSTS = {
           // used by the file family libc calls (fopen, fwrite, ferror, etc.)
           ungotten: [],
           error: false
-        }, fd_start, fd_end);
+        });
         // call the new stream's open function
         if (stream.stream_ops.open) {
           stream.stream_ops.open(stream);
@@ -3880,7 +3920,7 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(138);
         }
         stream.stream_ops.allocate(stream, offset, length);
-      },mmap:(stream, address, length, position, prot, flags) => {
+      },mmap:(stream, length, position, prot, flags) => {
         // User requests writing to file (prot & PROT_WRITE != 0).
         // Checking if we have permissions to write to the file unless
         // MAP_PRIVATE flag is set. According to POSIX spec it is possible
@@ -3898,7 +3938,7 @@ var ASM_CONSTS = {
         if (!stream.stream_ops.mmap) {
           throw new FS.ErrnoError(43);
         }
-        return stream.stream_ops.mmap(stream, address, length, position, prot, flags);
+        return stream.stream_ops.mmap(stream, length, position, prot, flags);
       },msync:(stream, buffer, offset, length, mmapFlags) => {
         if (!stream || !stream.stream_ops.msync) {
           return 0;
@@ -4099,9 +4139,8 @@ var ASM_CONSTS = {
         FS.createStandardStreams();
       },quit:() => {
         FS.init.initialized = false;
-        // Call musl-internal function to close all stdio streams, so nothing is
-        // left in internal buffers.
-        ___stdio_exit();
+        // force-flush all streams, so we get musl std streams printed out
+        _fflush(0);
         // close all of our streams
         for (var i = 0; i < FS.streams.length; i++) {
           var stream = FS.streams[i];
@@ -4394,9 +4433,7 @@ var ASM_CONSTS = {
             return fn.apply(null, arguments);
           };
         });
-        // use a custom read function
-        stream_ops.read = (stream, buffer, offset, length, position) => {
-          FS.forceLoadFile(node);
+        function writeChunks(stream, buffer, offset, length, position) {
           var contents = stream.node.contents;
           if (position >= contents.length)
             return 0;
@@ -4412,6 +4449,21 @@ var ASM_CONSTS = {
             }
           }
           return size;
+        }
+        // use a custom read function
+        stream_ops.read = (stream, buffer, offset, length, position) => {
+          FS.forceLoadFile(node);
+          return writeChunks(stream, buffer, offset, length, position)
+        };
+        // use a custom mmap function
+        stream_ops.mmap = (stream, length, position, prot, flags) => {
+          FS.forceLoadFile(node);
+          var ptr = mmapAlloc(length);
+          if (!ptr) {
+            throw new FS.ErrnoError(48);
+          }
+          writeChunks(stream, HEAP8, ptr, length, position);
+          return { ptr: ptr, allocated: true };
         };
         node.stream_ops = stream_ops;
         return node;
@@ -4529,7 +4581,7 @@ var ASM_CONSTS = {
         abort('FS.standardizePath has been removed; use PATH.normalize instead');
       }};
   var SYSCALLS = {DEFAULT_POLLMASK:5,calculateAt:function(dirfd, path, allowEmpty) {
-        if (path[0] === '/') {
+        if (PATH.isAbs(path)) {
           return path;
         }
         // relative path
@@ -4581,77 +4633,6 @@ var ASM_CONSTS = {
       },doMsync:function(addr, stream, len, flags, offset) {
         var buffer = HEAPU8.slice(addr, addr + len);
         FS.msync(stream, buffer, offset, len, flags);
-      },doMkdir:function(path, mode) {
-        // remove a trailing slash, if one - /a/b/ has basename of '', but
-        // we want to create b in the context of this function
-        path = PATH.normalize(path);
-        if (path[path.length-1] === '/') path = path.substr(0, path.length-1);
-        FS.mkdir(path, mode, 0);
-        return 0;
-      },doMknod:function(path, mode, dev) {
-        // we don't want this in the JS API as it uses mknod to create all nodes.
-        switch (mode & 61440) {
-          case 32768:
-          case 8192:
-          case 24576:
-          case 4096:
-          case 49152:
-            break;
-          default: return -28;
-        }
-        FS.mknod(path, mode, dev);
-        return 0;
-      },doReadlink:function(path, buf, bufsize) {
-        if (bufsize <= 0) return -28;
-        var ret = FS.readlink(path);
-  
-        var len = Math.min(bufsize, lengthBytesUTF8(ret));
-        var endChar = HEAP8[buf+len];
-        stringToUTF8(ret, buf, bufsize+1);
-        // readlink is one of the rare functions that write out a C string, but does never append a null to the output buffer(!)
-        // stringToUTF8() always appends a null byte, so restore the character under the null byte after the write.
-        HEAP8[buf+len] = endChar;
-  
-        return len;
-      },doAccess:function(path, amode) {
-        if (amode & ~7) {
-          // need a valid mode
-          return -28;
-        }
-        var lookup = FS.lookupPath(path, { follow: true });
-        var node = lookup.node;
-        if (!node) {
-          return -44;
-        }
-        var perms = '';
-        if (amode & 4) perms += 'r';
-        if (amode & 2) perms += 'w';
-        if (amode & 1) perms += 'x';
-        if (perms /* otherwise, they've just passed F_OK */ && FS.nodePermissions(node, perms)) {
-          return -2;
-        }
-        return 0;
-      },doReadv:function(stream, iov, iovcnt, offset) {
-        var ret = 0;
-        for (var i = 0; i < iovcnt; i++) {
-          var ptr = HEAP32[(((iov)+(i*8))>>2)];
-          var len = HEAP32[(((iov)+(i*8 + 4))>>2)];
-          var curr = FS.read(stream, HEAP8,ptr, len, offset);
-          if (curr < 0) return -1;
-          ret += curr;
-          if (curr < len) break; // nothing more to read
-        }
-        return ret;
-      },doWritev:function(stream, iov, iovcnt, offset) {
-        var ret = 0;
-        for (var i = 0; i < iovcnt; i++) {
-          var ptr = HEAP32[(((iov)+(i*8))>>2)];
-          var len = HEAP32[(((iov)+(i*8 + 4))>>2)];
-          var curr = FS.write(stream, HEAP8,ptr, len, offset);
-          if (curr < 0) return -1;
-          ret += curr;
-        }
-        return ret;
       },varargs:undefined,get:function() {
         assert(SYSCALLS.varargs != undefined);
         SYSCALLS.varargs += 4;
@@ -4664,10 +4645,6 @@ var ASM_CONSTS = {
         var stream = FS.getStream(fd);
         if (!stream) throw new FS.ErrnoError(8);
         return stream;
-      },get64:function(low, high) {
-        if (low >= 0) assert(high === 0);
-        else assert(high === -1);
-        return low;
       }};
   function ___syscall_fcntl64(fd, cmd, varargs) {
   SYSCALLS.varargs = varargs;
@@ -4681,7 +4658,7 @@ var ASM_CONSTS = {
             return -28;
           }
           var newStream;
-          newStream = FS.open(stream.path, stream.flags, 0, arg);
+          newStream = FS.createStream(stream, arg);
           return newStream.fd;
         }
         case 1:
@@ -4714,7 +4691,7 @@ var ASM_CONSTS = {
         case 8:
           return -28; // These are for sockets. We don't have them fully implemented yet.
         case 9:
-          // musl trusts getown return values, due to a bug where they must be, as they overlap with errors. just return -1 here, so fnctl() returns that, and we set errno ourselves.
+          // musl trusts getown return values, due to a bug where they must be, as they overlap with errors. just return -1 here, so fcntl() returns that, and we set errno ourselves.
           setErrNo(28);
           return -1;
         default: {
@@ -4849,12 +4826,12 @@ var ASM_CONSTS = {
       HEAPU8.copyWithin(dest, src, src + num);
     }
 
-  function _emscripten_get_heap_max() {
+  function getHeapMax() {
       return HEAPU8.length;
     }
   
   function abortOnCannotGrowMemory(requestedSize) {
-      abort('Cannot enlarge memory arrays to size ' + requestedSize + ' bytes (OOM). Either (1) compile with  -s INITIAL_MEMORY=X  with X higher than the current value ' + HEAP8.length + ', (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ');
+      abort('Cannot enlarge memory arrays to size ' + requestedSize + ' bytes (OOM). Either (1) compile with -sINITIAL_MEMORY=X with X higher than the current value ' + HEAP8.length + ', (2) compile with -sALLOW_MEMORY_GROWTH which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with -sABORTING_MALLOC=0');
     }
   function _emscripten_resize_heap(requestedSize) {
       var oldSize = HEAPU8.length;
@@ -4901,7 +4878,7 @@ var ASM_CONSTS = {
       var bufSize = 0;
       getEnvStrings().forEach(function(string, i) {
         var ptr = environ_buf + bufSize;
-        HEAP32[(((__environ)+(i * 4))>>2)] = ptr;
+        HEAPU32[(((__environ)+(i*4))>>2)] = ptr;
         writeAsciiToMemory(string, ptr);
         bufSize += string.length + 1;
       });
@@ -4910,12 +4887,12 @@ var ASM_CONSTS = {
 
   function _environ_sizes_get(penviron_count, penviron_buf_size) {
       var strings = getEnvStrings();
-      HEAP32[((penviron_count)>>2)] = strings.length;
+      HEAPU32[((penviron_count)>>2)] = strings.length;
       var bufSize = 0;
       strings.forEach(function(string) {
         bufSize += string.length + 1;
       });
-      HEAP32[((penviron_buf_size)>>2)] = bufSize;
+      HEAPU32[((penviron_buf_size)>>2)] = bufSize;
       return 0;
     }
 
@@ -4937,11 +4914,25 @@ var ASM_CONSTS = {
   }
   }
 
+  /** @param {number=} offset */
+  function doReadv(stream, iov, iovcnt, offset) {
+      var ret = 0;
+      for (var i = 0; i < iovcnt; i++) {
+        var ptr = HEAPU32[((iov)>>2)];
+        var len = HEAPU32[(((iov)+(4))>>2)];
+        iov += 8;
+        var curr = FS.read(stream, HEAP8,ptr, len, offset);
+        if (curr < 0) return -1;
+        ret += curr;
+        if (curr < len) break; // nothing more to read
+      }
+      return ret;
+    }
   function _fd_read(fd, iov, iovcnt, pnum) {
   try {
   
       var stream = SYSCALLS.getStreamFromFD(fd);
-      var num = SYSCALLS.doReadv(stream, iov, iovcnt);
+      var num = doReadv(stream, iov, iovcnt);
       HEAP32[((pnum)>>2)] = num;
       return 0;
     } catch (e) {
@@ -4950,21 +4941,16 @@ var ASM_CONSTS = {
   }
   }
 
+  function convertI32PairToI53Checked(lo, hi) {
+      assert(lo == (lo >>> 0) || lo == (lo|0)); // lo should either be a i32 or a u32
+      assert(hi === (hi|0));                    // hi should be a i32
+      return ((hi + 0x200000) >>> 0 < 0x400001 - !!lo) ? (lo >>> 0) + hi * 4294967296 : NaN;
+    }
   function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
   try {
   
-      
+      var offset = convertI32PairToI53Checked(offset_low, offset_high); if (isNaN(offset)) return 61;
       var stream = SYSCALLS.getStreamFromFD(fd);
-      var HIGH_OFFSET = 0x100000000; // 2^32
-      // use an unsigned operator on low and shift high by 32-bits
-      var offset = offset_high * HIGH_OFFSET + (offset_low >>> 0);
-  
-      var DOUBLE_LIMIT = 0x20000000000000; // 2^53
-      // we also check for equality since DOUBLE_LIMIT + 1 == DOUBLE_LIMIT
-      if (offset <= -DOUBLE_LIMIT || offset >= DOUBLE_LIMIT) {
-        return -61;
-      }
-  
       FS.llseek(stream, offset, whence);
       (tempI64 = [stream.position>>>0,(tempDouble=stream.position,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((newOffset)>>2)] = tempI64[0],HEAP32[(((newOffset)+(4))>>2)] = tempI64[1]);
       if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
@@ -4975,13 +4961,25 @@ var ASM_CONSTS = {
   }
   }
 
+  /** @param {number=} offset */
+  function doWritev(stream, iov, iovcnt, offset) {
+      var ret = 0;
+      for (var i = 0; i < iovcnt; i++) {
+        var ptr = HEAPU32[((iov)>>2)];
+        var len = HEAPU32[(((iov)+(4))>>2)];
+        iov += 8;
+        var curr = FS.write(stream, HEAP8,ptr, len, offset);
+        if (curr < 0) return -1;
+        ret += curr;
+      }
+      return ret;
+    }
   function _fd_write(fd, iov, iovcnt, pnum) {
   try {
   
-      ;
       var stream = SYSCALLS.getStreamFromFD(fd);
-      var num = SYSCALLS.doWritev(stream, iov, iovcnt);
-      HEAP32[((pnum)>>2)] = num;
+      var num = doWritev(stream, iov, iovcnt);
+      HEAPU32[((pnum)>>2)] = num;
       return 0;
     } catch (e) {
     if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
@@ -5039,7 +5037,7 @@ var ASM_CONSTS = {
    }
   });
   FS.FSNode = FSNode;
-  FS.staticInit();Module["FS_createPath"] = FS.createPath;Module["FS_createDataFile"] = FS.createDataFile;Module["FS_createPreloadedFile"] = FS.createPreloadedFile;Module["FS_createLazyFile"] = FS.createLazyFile;Module["FS_createDevice"] = FS.createDevice;Module["FS_unlink"] = FS.unlink;;
+  FS.staticInit();Module["FS_createPath"] = FS.createPath;Module["FS_createDataFile"] = FS.createDataFile;Module["FS_createPreloadedFile"] = FS.createPreloadedFile;Module["FS_unlink"] = FS.unlink;Module["FS_createLazyFile"] = FS.createLazyFile;Module["FS_createDevice"] = FS.createDevice;;
 ERRNO_CODES = {
       'EPERM': 63,
       'ENOENT': 44,
@@ -5474,7 +5472,7 @@ var __lou_charToFallbackDots = Module["__lou_charToFallbackDots"] = createExport
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
-var ___stdio_exit = Module["___stdio_exit"] = createExportWrapper("__stdio_exit");
+var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
 var _malloc = Module["_malloc"] = createExportWrapper("malloc");
@@ -5520,27 +5518,19 @@ var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
 
 // === Auto-generated postamble setup entry stuff ===
 
-Module["intArrayFromString"] = intArrayFromString;
-Module["intArrayToString"] = intArrayToString;
 Module["ccall"] = ccall;
 Module["cwrap"] = cwrap;
-Module["setValue"] = setValue;
-Module["getValue"] = getValue;
 Module["allocate"] = allocate;
 unexportedRuntimeFunction('UTF8ArrayToString', false);
 unexportedRuntimeFunction('UTF8ToString', false);
 unexportedRuntimeFunction('stringToUTF8Array', false);
 unexportedRuntimeFunction('stringToUTF8', false);
 unexportedRuntimeFunction('lengthBytesUTF8', false);
-unexportedRuntimeFunction('stackTrace', false);
 unexportedRuntimeFunction('addOnPreRun', false);
 unexportedRuntimeFunction('addOnInit', false);
 unexportedRuntimeFunction('addOnPreMain', false);
 unexportedRuntimeFunction('addOnExit', false);
 unexportedRuntimeFunction('addOnPostRun', false);
-unexportedRuntimeFunction('writeStringToMemory', false);
-unexportedRuntimeFunction('writeArrayToMemory', false);
-unexportedRuntimeFunction('writeAsciiToMemory', false);
 Module["addRunDependency"] = addRunDependency;
 Module["removeRunDependency"] = removeRunDependency;
 unexportedRuntimeFunction('FS_createFolder', false);
@@ -5557,9 +5547,7 @@ unexportedRuntimeFunction('alignFunctionTables', false);
 unexportedRuntimeFunction('registerFunctions', false);
 unexportedRuntimeFunction('addFunction', false);
 unexportedRuntimeFunction('removeFunction', false);
-unexportedRuntimeFunction('getFuncWrapper', false);
 unexportedRuntimeFunction('prettyPrint', false);
-unexportedRuntimeFunction('dynCall', false);
 unexportedRuntimeFunction('getCompilerSetting', false);
 unexportedRuntimeFunction('print', false);
 unexportedRuntimeFunction('printErr', false);
@@ -5568,8 +5556,33 @@ unexportedRuntimeFunction('setTempRet0', false);
 unexportedRuntimeFunction('callMain', false);
 unexportedRuntimeFunction('abort', false);
 unexportedRuntimeFunction('keepRuntimeAlive', false);
+unexportedRuntimeFunction('wasmMemory', false);
+unexportedRuntimeFunction('warnOnce', false);
+unexportedRuntimeFunction('stackSave', false);
+unexportedRuntimeFunction('stackRestore', false);
+unexportedRuntimeFunction('stackAlloc', false);
+unexportedRuntimeFunction('AsciiToString', false);
+unexportedRuntimeFunction('stringToAscii', false);
+Module["UTF16ToString"] = UTF16ToString;
+Module["stringToUTF16"] = stringToUTF16;
+unexportedRuntimeFunction('lengthBytesUTF16', false);
+unexportedRuntimeFunction('UTF32ToString', false);
+unexportedRuntimeFunction('stringToUTF32', false);
+unexportedRuntimeFunction('lengthBytesUTF32', false);
+unexportedRuntimeFunction('allocateUTF8', false);
+unexportedRuntimeFunction('allocateUTF8OnStack', false);
+unexportedRuntimeFunction('ExitStatus', false);
+Module["intArrayFromString"] = intArrayFromString;
+Module["intArrayToString"] = intArrayToString;
+unexportedRuntimeFunction('writeStringToMemory', false);
+unexportedRuntimeFunction('writeArrayToMemory', false);
+unexportedRuntimeFunction('writeAsciiToMemory', false);
+Module["writeStackCookie"] = writeStackCookie;
+Module["checkStackCookie"] = checkStackCookie;
+unexportedRuntimeFunction('ptrToString', false);
 unexportedRuntimeFunction('zeroMemory', false);
 unexportedRuntimeFunction('stringToNewUTF8', false);
+unexportedRuntimeFunction('getHeapMax', false);
 unexportedRuntimeFunction('abortOnCannotGrowMemory', false);
 unexportedRuntimeFunction('emscripten_realloc_buffer', false);
 unexportedRuntimeFunction('ENV', false);
@@ -5611,10 +5624,23 @@ unexportedRuntimeFunction('asmjsMangle', false);
 unexportedRuntimeFunction('asyncLoad', false);
 unexportedRuntimeFunction('alignMemory', false);
 unexportedRuntimeFunction('mmapAlloc', false);
+unexportedRuntimeFunction('writeI53ToI64', false);
+unexportedRuntimeFunction('writeI53ToI64Clamped', false);
+unexportedRuntimeFunction('writeI53ToI64Signaling', false);
+unexportedRuntimeFunction('writeI53ToU64Clamped', false);
+unexportedRuntimeFunction('writeI53ToU64Signaling', false);
+unexportedRuntimeFunction('readI53FromI64', false);
+unexportedRuntimeFunction('readI53FromU64', false);
+unexportedRuntimeFunction('convertI32PairToI53', false);
+unexportedRuntimeFunction('convertI32PairToI53Checked', false);
+unexportedRuntimeFunction('convertU32PairToI53', false);
 unexportedRuntimeFunction('reallyNegative', false);
 unexportedRuntimeFunction('unSign', false);
+unexportedRuntimeFunction('strLen', false);
 unexportedRuntimeFunction('reSign', false);
 unexportedRuntimeFunction('formatString', false);
+Module["setValue"] = setValue;
+Module["getValue"] = getValue;
 unexportedRuntimeFunction('PATH', false);
 unexportedRuntimeFunction('PATH_FS', false);
 unexportedRuntimeFunction('SYSCALLS', false);
@@ -5641,6 +5667,8 @@ unexportedRuntimeFunction('fillOrientationChangeEventData', false);
 unexportedRuntimeFunction('registerOrientationChangeEventCallback', false);
 unexportedRuntimeFunction('fillFullscreenChangeEventData', false);
 unexportedRuntimeFunction('registerFullscreenChangeEventCallback', false);
+unexportedRuntimeFunction('JSEvents_requestFullscreen', false);
+unexportedRuntimeFunction('JSEvents_resizeCanvasForFullscreen', false);
 unexportedRuntimeFunction('registerRestoreOldStyle', false);
 unexportedRuntimeFunction('hideEverythingExceptGivenElement', false);
 unexportedRuntimeFunction('restoreHiddenElements', false);
@@ -5670,15 +5698,9 @@ unexportedRuntimeFunction('jsStackTrace', false);
 unexportedRuntimeFunction('stackTrace', false);
 unexportedRuntimeFunction('getEnvStrings', false);
 unexportedRuntimeFunction('checkWasiClock', false);
-unexportedRuntimeFunction('writeI53ToI64', false);
-unexportedRuntimeFunction('writeI53ToI64Clamped', false);
-unexportedRuntimeFunction('writeI53ToI64Signaling', false);
-unexportedRuntimeFunction('writeI53ToU64Clamped', false);
-unexportedRuntimeFunction('writeI53ToU64Signaling', false);
-unexportedRuntimeFunction('readI53FromI64', false);
-unexportedRuntimeFunction('readI53FromU64', false);
-unexportedRuntimeFunction('convertI32PairToI53', false);
-unexportedRuntimeFunction('convertU32PairToI53', false);
+unexportedRuntimeFunction('doReadv', false);
+unexportedRuntimeFunction('doWritev', false);
+unexportedRuntimeFunction('dlopenMissingError', false);
 unexportedRuntimeFunction('setImmediateWrapped', false);
 unexportedRuntimeFunction('clearImmediateWrapped', false);
 unexportedRuntimeFunction('polyfillSetImmediate', false);
@@ -5686,12 +5708,9 @@ unexportedRuntimeFunction('uncaughtExceptionCount', false);
 unexportedRuntimeFunction('exceptionLast', false);
 unexportedRuntimeFunction('exceptionCaught', false);
 unexportedRuntimeFunction('ExceptionInfo', false);
-unexportedRuntimeFunction('CatchInfo', false);
 unexportedRuntimeFunction('exception_addRef', false);
 unexportedRuntimeFunction('exception_decRef', false);
 unexportedRuntimeFunction('Browser', false);
-unexportedRuntimeFunction('funcWrappers', false);
-unexportedRuntimeFunction('getFuncWrapper', false);
 unexportedRuntimeFunction('setMainLoop', false);
 unexportedRuntimeFunction('wget', false);
 Module["FS"] = FS;
@@ -5727,22 +5746,6 @@ unexportedRuntimeFunction('GLFW', false);
 unexportedRuntimeFunction('GLEW', false);
 unexportedRuntimeFunction('IDBStore', false);
 unexportedRuntimeFunction('runAndAbortIfError', false);
-unexportedRuntimeFunction('warnOnce', false);
-unexportedRuntimeFunction('stackSave', false);
-unexportedRuntimeFunction('stackRestore', false);
-unexportedRuntimeFunction('stackAlloc', false);
-unexportedRuntimeFunction('AsciiToString', false);
-unexportedRuntimeFunction('stringToAscii', false);
-Module["UTF16ToString"] = UTF16ToString;
-Module["stringToUTF16"] = stringToUTF16;
-unexportedRuntimeFunction('lengthBytesUTF16', false);
-unexportedRuntimeFunction('UTF32ToString', false);
-unexportedRuntimeFunction('stringToUTF32', false);
-unexportedRuntimeFunction('lengthBytesUTF32', false);
-unexportedRuntimeFunction('allocateUTF8', false);
-unexportedRuntimeFunction('allocateUTF8OnStack', false);
-Module["writeStackCookie"] = writeStackCookie;
-Module["checkStackCookie"] = checkStackCookie;
 Module["ALLOC_NORMAL"] = ALLOC_NORMAL;
 unexportedRuntimeSymbol('ALLOC_STACK', false);
 
@@ -5770,8 +5773,8 @@ function stackCheckInit() {
   // This is normally called automatically during __wasm_call_ctors but need to
   // get these values before even running any of the ctors so we call it redundantly
   // here.
-  // TODO(sbc): Move writeStackCookie to native to to avoid this.
   _emscripten_stack_init();
+  // TODO(sbc): Move writeStackCookie to native to to avoid this.
   writeStackCookie();
 }
 
@@ -5783,7 +5786,7 @@ function run(args) {
     return;
   }
 
-  stackCheckInit();
+    stackCheckInit();
 
   preRun();
 
@@ -5846,7 +5849,7 @@ function checkUnflushedContent() {
     has = true;
   }
   try { // it doesn't matter if it fails
-    ___stdio_exit();
+    _fflush(0);
     // also flush in the JS FS layer
     ['stdout', 'stderr'].forEach(function(name) {
       var info = FS.analyzePath('/dev/' + name);
