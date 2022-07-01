@@ -8,6 +8,7 @@ import("//build/config/arm.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/logging.gni")
 import("//build/config/ui.gni")
 import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
@@ -77,6 +78,12 @@ config("media_config") {
   }
   if (use_cras) {
     defines += [ "USE_CRAS" ]
+  }
+
+  if (!use_runtime_vlog) {
+    # Enable VLOG() on ChromeOS-Ash, otherwise disabled.
+    assert(is_chromeos_ash,
+           "Non-ChromeOS-Ash builds should not use runtime vlog")
   }
 }
 
