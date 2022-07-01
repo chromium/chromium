@@ -18,10 +18,10 @@
 @interface InterruptibleChromeCoordinator : ChromeCoordinator
 
 // Interrupt the coordinator to immediately tear down the views it manages.
-// Dependending on |action|, the interruption may be done asynchronously
+// Dependending on `action`, the interruption may be done asynchronously
 // with/without an animation, or without dismissing the views when the
-// interruption is for shutdown (e.g., tearing down the scene). |completion| is
-// called when the interruption is done. Simply calls |completion| if the
+// interruption is for shutdown (e.g., tearing down the scene). `completion` is
+// called when the interruption is done. Simply calls `completion` if the
 // method is not overridden.
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion;

@@ -80,7 +80,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED);
   }
   if (!self.primaryActionString) {
-    // |primaryActionString| could already be set using the consumer methods.
+    // `primaryActionString` could already be set using the consumer methods.
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
@@ -259,13 +259,13 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 #pragma mark - Private
 
-// Callback for |identityControl|.
+// Callback for `identityControl`.
 - (void)identityButtonControlTapped:(id)sender forEvent:(UIEvent*)event {
   UITouch* touch = event.allTouches.anyObject;
   [self.delegate showAccountPickerFromPoint:[touch locationInView:nil]];
 }
 
-// Updates the UI to adapt for |identityAvailable| or not.
+// Updates the UI to adapt for `identityAvailable` or not.
 - (void)updateUIForIdentityAvailable:(BOOL)identityAvailable {
   self.identityControl.hidden = !identityAvailable;
   if (identityAvailable) {
@@ -327,8 +327,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.
   textView.selectedTextRange = nil;
 }

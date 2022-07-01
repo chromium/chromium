@@ -40,12 +40,12 @@ class SyncService;
 @property(nonatomic, assign) BOOL addedAccount;
 
 // The designated initializer.
-// |accountManagerService| account manager service.
-// |authenticationService| authentication service.
-// |localPrefService| application local pref.
-// |prefService| user pref.
-// |syncService| sync service.
-// |showFREConsent| YES if the screen needs to display the term of service.
+// `accountManagerService` account manager service.
+// `authenticationService` authentication service.
+// `localPrefService` application local pref.
+// `prefService` user pref.
+// `syncService` sync service.
+// `showFREConsent` YES if the screen needs to display the term of service.
 - (instancetype)
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService

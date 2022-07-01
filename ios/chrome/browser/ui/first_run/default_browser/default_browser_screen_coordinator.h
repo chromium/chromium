@@ -12,8 +12,8 @@
 // Coordinator to present the default browser screen.
 @interface DefaultBrowserScreenCoordinator : ChromeCoordinator
 
-// Initiates a DefaultBrowserCoordinator with |navigationController|,
-// |browser| and |delegate|.
+// Initiates a DefaultBrowserCoordinator with `navigationController`,
+// `browser` and `delegate`.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

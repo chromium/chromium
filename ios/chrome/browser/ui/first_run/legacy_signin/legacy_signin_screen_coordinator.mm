@@ -276,7 +276,7 @@
 
 #pragma mark - Private
 
-// Dismisses the Signed Out modal if it is still present and |skipScreens|.
+// Dismisses the Signed Out modal if it is still present and `skipScreens`.
 - (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
@@ -295,7 +295,7 @@
 }
 
 // Completes the presentation of the screen, recording the metrics and notifying
-// the delegate to skip the rest of the FRE if |skipRemainingScreens| is YES, or
+// the delegate to skip the rest of the FRE if `skipRemainingScreens` is YES, or
 // to continue the FRE.
 - (void)finishPresentingAndSkipRemainingScreens:(BOOL)skipRemainingScreens {
   if (self.firstRun) {

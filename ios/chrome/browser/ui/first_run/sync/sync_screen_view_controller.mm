@@ -177,7 +177,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
 #pragma mark - Private
 
-// Push the string id to |_contentStringIds| and returns NSString.
+// Push the string id to `_contentStringIds` and returns NSString.
 - (NSString*)contentTextWithStringID:(const int)stringID {
   [self.delegate addConsentStringID:stringID];
   return l10n_util::GetNSString(stringID);

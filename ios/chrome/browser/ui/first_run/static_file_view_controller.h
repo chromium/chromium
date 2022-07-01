@@ -14,7 +14,7 @@ class ChromeBrowserState;
 @interface StaticFileViewController : UIViewController
 
 // Initializes with the given URL to display and browser state. Neither
-// |browserState| nor |URL| may be nil.
+// `browserState` nor `URL` may be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                                  URL:(NSURL*)URL;
 

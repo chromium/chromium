@@ -258,7 +258,7 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
       /*default_group_name=*/kDefaultGroup, low_entropy_provider);
 
   // Finalize the group choice and activate the trial - similar to a variation
-  // config that's marked with |starts_active| true. This is required for
+  // config that's marked with `starts_active` true. This is required for
   // studies that register variation ids, so they don't reveal extra information
   // beyond the low-entropy source.
   const std::string& group_name = trial->group_name();

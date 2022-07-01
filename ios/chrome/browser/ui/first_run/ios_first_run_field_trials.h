@@ -37,7 +37,7 @@ class FirstRunFieldTrialGroup {
 // at first run must be pre-defined in client code.
 class FirstRunFieldTrialConfig {
  public:
-  // Initializes with |trial_name| as the name of the FieldTrial.
+  // Initializes with `trial_name` as the name of the FieldTrial.
   FirstRunFieldTrialConfig(const std::string& trial_name);
 
   FirstRunFieldTrialConfig(const FirstRunFieldTrialConfig&) = delete;
@@ -46,13 +46,13 @@ class FirstRunFieldTrialConfig {
   ~FirstRunFieldTrialConfig();
 
   // Creates and returns a one-time randomized FieldTrial with
-  // |default_group_name| with groups configured with Google Variation IDs.
+  // `default_group_name` with groups configured with Google Variation IDs.
   scoped_refptr<base::FieldTrial> CreateOneTimeRandomizedTrial(
       const std::string& default_group_name,
       const base::FieldTrial::EntropyProvider& low_entropy_provider);
 
-  // Adds a new FieldTrial group of |name| with a probability of |percentage|.
-  // |variation| defines a server-side variation configuration (non-trigger).
+  // Adds a new FieldTrial group of `name` with a probability of `percentage`.
+  // `variation` defines a server-side variation configuration (non-trigger).
   void AddGroup(const std::string& name,
                 variations::VariationID variation,
                 base::FieldTrial::Probability percentage);

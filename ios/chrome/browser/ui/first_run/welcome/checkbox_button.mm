@@ -65,7 +65,7 @@ const CGFloat kAnimationDuration = 0.25;
 
     // Layout constraints for the custom button and image. The label is on the
     // left of the image, and both are centered vertically. The image is only
-    // visible if the |selected| property is YES, otherwise it is hidden (but
+    // visible if the `selected` property is YES, otherwise it is hidden (but
     // still takes the same amount of space in the layout). For RTL, the layout
     // is flipped horizontally, meaning the label is to the right of the image.
     [NSLayoutConstraint activateConstraints:@[

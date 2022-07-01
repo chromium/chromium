@@ -67,7 +67,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   // Set banner.
   self.bannerName = kSigninBannerName;
 
-  // Set |self.titleText| and |self.subtitleText|.
+  // Set `self.titleText` and `self.subtitleText`.
   switch (self.signinStatus) {
     case SigninScreenConsumerSigninStatusAvailable: {
       self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
@@ -99,7 +99,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   }
   [self generateDisclaimer];
 
-  // Add |self.identityControl| if needed.
+  // Add `self.identityControl` if needed.
   if (self.signinStatus != SigninScreenConsumerSigninStatusDisabled) {
     [self.specificContentView addSubview:self.identityControl];
 
@@ -142,8 +142,8 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   }
 
   // Set primary button if sign-in is disabled. For other cases, the primary
-  // button is set with |setSelectedIdentityUserName:email:givenName:avatar:|
-  // or |noIdentityAvailable|.
+  // button is set with `setSelectedIdentityUserName:email:givenName:avatar:`
+  // or `noIdentityAvailable`.
   DCHECK(self.primaryActionString ||
          self.signinStatus == SigninScreenConsumerSigninStatusDisabled);
   if (self.signinStatus == SigninScreenConsumerSigninStatusDisabled) {
@@ -231,13 +231,13 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   self.disclaimerURLs = urls;
 }
 
-// Callback for |identityControl|.
+// Callback for `identityControl`.
 - (void)identityButtonControlTapped:(id)sender forEvent:(UIEvent*)event {
   UITouch* touch = event.allTouches.anyObject;
   [self.delegate showAccountPickerFromPoint:[touch locationInView:nil]];
 }
 
-// Updates the UI to adapt for |identityAvailable| or not.
+// Updates the UI to adapt for `identityAvailable` or not.
 - (void)updateUIForIdentityAvailable:(BOOL)identityAvailable {
   self.identityControl.hidden = !identityAvailable;
   if (identityAvailable) {

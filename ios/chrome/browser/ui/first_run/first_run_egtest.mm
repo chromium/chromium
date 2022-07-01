@@ -212,7 +212,7 @@ GREYLayoutConstraint* BelowConstraint() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Scrolls down to |elementMatcher| in the scrollable content of the first run
+// Scrolls down to `elementMatcher` in the scrollable content of the first run
 // screen.
 - (void)scrollToElementAndAssertVisibility:(id<GREYMatcher>)elementMatcher {
   id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
@@ -608,7 +608,7 @@ GREYLayoutConstraint* BelowConstraint() {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  // Check that the title of the primary button updates for |fakeIdentity|.
+  // Check that the title of the primary button updates for `fakeIdentity`.
   [[EarlGrey selectElementWithMatcher:GetYesImInButton()]
       performAction:grey_tap()];
 
@@ -634,7 +634,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [self scrollToElementAndAssertVisibility:identityButton];
   [[EarlGrey selectElementWithMatcher:identityButton] performAction:grey_tap()];
 
-  // Check that |fakeIdentity2| is displayed.
+  // Check that `fakeIdentity2` is displayed.
   [self scrollToElementAndAssertVisibility:IdentityCellMatcherForEmail(
                                                fakeIdentity2.userEmail)];
   // Check that 'Add Account' is displayed.
@@ -642,12 +642,12 @@ GREYLayoutConstraint* BelowConstraint() {
             grey_accessibilityLabel(l10n_util::GetNSString(
                 IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT))];
 
-  // Select |fakeIdentity2|.
+  // Select `fakeIdentity2`.
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity2.userEmail)]
       performAction:grey_tap()];
 
-  // Check that the title of the primary button updates for |fakeIdentity2|.
+  // Check that the title of the primary button updates for `fakeIdentity2`.
   [self scrollToElementAndAssertVisibility:GetYesImInButton()];
 }
 

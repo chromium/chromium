@@ -10,8 +10,8 @@
 // Handles sign-in screen UI updates.
 @protocol LegacySigninScreenConsumer <NSObject>
 
-// Sets the |userName|, |email|, |givenName| and |avatar| of the selected
-// identity. The |userName| and |givenName| can be nil. Notifies the UI that an
+// Sets the `userName`, `email`, `givenName` and `avatar` of the selected
+// identity. The `userName` and `givenName` can be nil. Notifies the UI that an
 // identity is available.
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email

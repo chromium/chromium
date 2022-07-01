@@ -16,7 +16,7 @@ class Browser;
 // Chrome Terms of Service before proceeding to use Chrome.
 //
 // Note: On iPhone, this controller supports portrait orientation only. It
-// should always be presented in an |OrientationLimitingNavigationController|.
+// should always be presented in an `OrientationLimitingNavigationController`.
 @interface WelcomeToChromeViewController : UIViewController
 
 // True when the stats checkbox should be checked by default.

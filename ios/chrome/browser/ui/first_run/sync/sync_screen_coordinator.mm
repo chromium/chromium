@@ -281,14 +281,14 @@
 
 #pragma mark - Private
 
-// Dismisses the Signed Out modal if it is still present and |skipScreens|.
+// Dismisses the Signed Out modal if it is still present and `skipScreens`.
 - (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
   [self.delegate skipAll];
 }
 
-// Starts syncing or opens |advancedSettings|.
+// Starts syncing or opens `advancedSettings`.
 - (void)startSyncOrAdvancedSettings:(BOOL)advancedSettings {
   self.advancedSettingsRequested = advancedSettings;
   int confirmationID = advancedSettings
