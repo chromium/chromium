@@ -35,6 +35,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
                 new ModuleDescriptor(id, name, () => Promise.resolve(null))));
     const customizeModules = document.createElement('ntp-customize-modules');
     document.body.appendChild(customizeModules);
+    assertStyle(customizeModules.$.container, 'display', 'none');
     callbackRouterRemote.setDisabledModules(
         allDisabled,
         modules.filter(({disabled}) => disabled).map(({id}) => id));
@@ -364,5 +365,12 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
     // Assert.
     assertEquals(0, subToggleRows.length);
+  });
+
+  test('should show modules after loaded', async () => {
+    const customizeModules = await createCustomizeModules(true, [
+      {id: 'foo', name: 'foo name', disabled: false},
+    ]);
+    assertNotStyle(customizeModules.$.container, 'display', 'none');
   });
 });
