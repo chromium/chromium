@@ -137,7 +137,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   bool IsSupportedProfile(VideoCodecProfile profile);
 
   // Create codec-specific AcceleratedVideoDecoder and reset related variables.
-  bool CreateAvd();
+  bool CreateDecoder();
 
   // Video profile we are decoding.
   VideoCodecProfile profile_;
@@ -149,7 +149,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   gfx::Size pic_size_;
 
   // Video decoder used to parse stream headers by software.
-  std::unique_ptr<AcceleratedVideoDecoder> avd_;
+  std::unique_ptr<AcceleratedVideoDecoder> decoder_;
 
   // The decode request which is currently processed.
   absl::optional<DecodeRequest> current_decode_request_;
