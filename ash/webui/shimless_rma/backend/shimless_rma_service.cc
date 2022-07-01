@@ -100,6 +100,9 @@ ShimlessRmaService::ShimlessRmaService(
     : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
   RmadClient::Get()->AddObserver(this);
 
+  // Enable accessibility features.
+  shimless_rma_delegate_->RefreshAccessibilityManagerProfile();
+
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
 

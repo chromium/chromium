@@ -106,6 +106,7 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
 
   void ExitRmaThenRestartChrome() override {}
   void ShowDiagnosticsDialog() override {}
+  void RefreshAccessibilityManagerProfile() override {}
 };
 
 }  // namespace

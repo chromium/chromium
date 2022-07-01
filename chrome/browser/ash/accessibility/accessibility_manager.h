@@ -360,6 +360,9 @@ class AccessibilityManager
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value);
 
+  // Called when Shimless RMA launches to enable accessibility features.
+  void OnShimlessRmaLaunched();
+
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaError(speech::LanguageCode language_code) override;
@@ -456,6 +459,9 @@ class AccessibilityManager
 
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override;
+
+  // Sets the current profile using the active profile.
+  void SetActiveProfile();
 
   // extensions::api::braille_display_private::BrailleObserver implementation.
   // Enables spoken feedback if a braille display becomes available.

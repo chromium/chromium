@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
@@ -33,6 +35,12 @@ void ChromeShimlessRmaDelegate::ShowDiagnosticsDialog() {
   }
 
   chromeos::DiagnosticsDialog::ShowDialog();
+}
+
+void ChromeShimlessRmaDelegate::RefreshAccessibilityManagerProfile() {
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+  DCHECK(accessibility_manager);
+  accessibility_manager->OnShimlessRmaLaunched();
 }
 
 }  // namespace shimless_rma

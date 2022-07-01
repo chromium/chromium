@@ -1516,8 +1516,16 @@ void AccessibilityManager::OnAppTerminating() {
   app_terminating_ = true;
 }
 
+void AccessibilityManager::OnShimlessRmaLaunched() {
+  SetActiveProfile();
+}
+
 void AccessibilityManager::OnLoginOrLockScreenVisible() {
   // Update `profile_` when entering the login screen.
+  SetActiveProfile();
+}
+
+void AccessibilityManager::SetActiveProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (ProfileHelper::IsSigninProfile(profile))
     SetProfile(profile);
