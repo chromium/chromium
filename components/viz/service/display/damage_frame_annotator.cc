@@ -28,7 +28,7 @@ void DamageFrameAnnotator::AnnotateAggregatedFrame(AggregatedFrame* frame) {
 
   annotations_.push_back(
       AnnotationData{gfx::Rect(damage_rect.size()), transform,
-                     Highlight{SkColorSetARGB(128, 255, 0, 0), 4}});
+                     Highlight{SkColor4f{1.0, 0, 0, 0.5}, 4}});
 
   AnnotateRootRenderPass(root_render_pass);
   annotations_.clear();
@@ -58,10 +58,8 @@ void DamageFrameAnnotator::AnnotateRootRenderPass(
 
     DebugBorderDrawQuad* new_quad =
         static_cast<DebugBorderDrawQuad*>(*quad_iter);
-    // TODO(crbug.com/1308932) SkColor4f for annotation highlights
     new_quad->SetNew(new_sqs, annotation.rect, annotation.rect,
-                     SkColor4f::FromColor(annotation.highlight.color),
-                     annotation.highlight.width);
+                     annotation.highlight.color, annotation.highlight.width);
 
     ++quad_iter;
   }

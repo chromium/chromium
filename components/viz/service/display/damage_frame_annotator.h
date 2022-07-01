@@ -32,7 +32,7 @@ class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
 
  private:
   struct Highlight {
-    SkColor color;
+    SkColor4f color;
     int width;
   };
 
