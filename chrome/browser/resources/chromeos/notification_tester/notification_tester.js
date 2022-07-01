@@ -62,6 +62,48 @@ export class NotificationTester extends PolymerElement {
         type: Array,
         value: FormSelectOptions.ICON_OPTIONS,
       },
+      /*
+       * @private
+       */
+      smallImageSelectList: {
+        type: Array,
+        value: FormSelectOptions.SMALL_IMAGE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      sourceSelectList: {
+        type: Array,
+        value: FormSelectOptions.SOURCE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      notificationTypeSelectList: {
+        type: Array,
+        value: FormSelectOptions.NOTIFICATION_TYPE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      prioritySelectList: {
+        type: Array,
+        value: FormSelectOptions.PRIORITY_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      progressStatusSelectList: {
+        type: Array,
+        value: FormSelectOptions.PROGRESS_STATUS_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      notificationIDSelectList: {
+        type: Array,
+        value: FormSelectOptions.NOTIFICATION_ID_OPTIONS,
+      },
     };
   }
 

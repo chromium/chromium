@@ -66,6 +66,12 @@
 
   cr-radio-button {
     padding: 0 auto;
+    --cr-radio-button-label-spacing: 10px;
+  }
+
+  cr-radio-group#progress-percent > cr-radio-button,
+  cr-radio-group#num-buttons > cr-radio-button {
+    --cr-radio-group-item-padding: 6px;
   }
 
   .config-form > button {
@@ -79,6 +85,7 @@
     padding: 0.25em 0.5em;
     width: max-content;
   }
+
 </style>
 <app-header>
   <app-toolbar>Notification Tester</app-toolbar>
@@ -97,21 +104,26 @@
       </div>
 
       <select-custom select-value="" display-label="Notification Type"
-      select-elements="[[iconSelectList]]" selectid="notification-type"></select-custom>
+      select-elements="[[notificationTypeSelectList]]"
+      selectid="notification-type" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="" display-label="Notification ID"
+      select-elements="[[notificationIDSelectList]]"
+      selectid="notification-id"></select-custom>
 
       <select-custom select-value="{{notifMetadata.title}}" display-label="Title"
-        select-elements="[[titleSelectList]]" selectid="title"></select-custom>
+      select-elements="[[titleSelectList]]" selectid="title"></select-custom>
 
       <select-custom select-value="{{notifMetadata.message}}"
-        display-label="Message" select-elements="[[messageSelectList]]"
-        selectid="message"></select-custom>
+      display-label="Message" select-elements="[[messageSelectList]]"
+      selectid="message"></select-custom>
 
       <select-custom select-value="{{notifMetadata.icon}}" display-label="Icon"
-        select-elements="[[iconSelectList]]" selectid="icon"
-        no-custom-input="true"></select-custom>
-      
+      select-elements="[[iconSelectList]]" selectid="icon"
+      no-custom-input="true"></select-custom>
+    
       <select-custom select-value="" display-label="Source"
-        select-elements="[[iconSelectList]]" selectid="source"></select-custom>
+      select-elements="[[sourceSelectList]]" selectid="source"></select-custom>
     </div>
     <div class="config-form">
       <h2> Rich Notification Data (optional fields) </h2>
@@ -120,11 +132,11 @@
       display-label="Image" select-elements="[[imageSelectList]]"
       selectid="image" no-custom-input="true"></select-custom>
 
-      <select-custom select-value="" display-label="Small Image" select-elements="[[imageSelectList]]"
+      <select-custom select-value="" display-label="Small Image" select-elements="[[smallImageSelectList]]"
       selectid="small-image" no-custom-input="true"></select-custom>
 
       <select-custom select-value="" display-label="Priority"
-      select-elements="[[iconSelectList]]" selectid="priority" no-custom-input="true"></select-custom>
+      select-elements="[[prioritySelectList]]" selectid="priority" no-custom-input="true"></select-custom>
       
       <div class="form-item">
         <label for="never-timeout">Never Timeout</label>
@@ -142,21 +154,35 @@
       </div>
 
       <h3> Type Specific Fields </h3>
+      
+      <div class="form-item">
+        <label for="num-notif-items"> # Notif Items </label>
+        <cr-radio-group id="num-notif-items" selected="2">
+          <cr-radio-button name="0" label="0"></cr-radio-button>
+          <cr-radio-button name="1" label="1"></cr-radio-button>
+          <cr-radio-button name="2" label="2"></cr-radio-button>
+          <cr-radio-button name="3" label="3"></cr-radio-button>
+          <cr-radio-button name="4" label="4"></cr-radio-button>
+        </cr-radio-group>
+      </div>
 
-      <select-custom select-value="" display-label="# Notif. Items"
-      select-elements="[[iconSelectList]]" selectid="num-notif-items"
-      no-custom-input="true"></select-custom>
+      <div class="form-item">
+        <label for="progress-percent"> Progress % </label>
+        <cr-radio-group id="progress-percent" selected="none">
+          <cr-radio-button name="none" label="N/A"></cr-radio-button>
+          <cr-radio-button name="0" label="0%"></cr-radio-button>
+          <cr-radio-button name="50" label="50%"></cr-radio-button>
+          <cr-radio-button name="100" label="100%"></cr-radio-button>
+        </cr-radio-group>
+      </div>
 
-      <select-custom select-value="" display-label="Progress %"
-      select-elements="[[iconSelectList]]" selectid="progress-percent"
-      no-custom-input="true"></select-custom>
-        
+      <select-custom select-value="" display-label="Progress Status"
+      select-elements="[[progressStatusSelectList]]" selectid="prog-status"></select-custom>
     </div>
   </div>
   <div class="column">
     <div class="config-form">
       <h2> Buttons </h2>
-      
       <div class="form-item">
         <label for="show-settings">Show Settings</label>
         <cr-checkbox id="show-settings"></cr-checkbox>
@@ -167,10 +193,15 @@
         <cr-checkbox id="show-snooze"></cr-checkbox>
       </div>
 
-      <select-custom select-value="" display-label="# Buttons"
-      select-elements="[[iconSelectList]]" selectid="num-buttons"
-      no-custom-input="true"></select-custom>
-
+      <div class="form-item">
+        <label for="num-buttons"> # Buttons </label>
+        <cr-radio-group id="num-buttons" selected="None">
+          <cr-radio-button name="none" label="None"></cr-radio-button>
+          <cr-radio-button name="1" label="1"></cr-radio-button>
+          <cr-radio-button name="2" label="2"></cr-radio-button>
+          <cr-radio-button name="3" label="3"></cr-radio-button>
+        </cr-radio-group>
+      </div>
     </div>
     <div class="config-form">
       <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
