@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
@@ -31,6 +32,7 @@
 #include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/linux_ui/linux_ui.h"
 
 namespace qt {
 
@@ -113,14 +115,16 @@ class QtNativeTheme : public ui::NativeThemeAura {
   raw_ptr<QtInterface> const shim_;
 };
 
-QtUi::QtUi() = default;
+QtUi::QtUi(std::unique_ptr<views::LinuxUI> fallback_linux_ui)
+    : fallback_linux_ui_(std::move(fallback_linux_ui)) {}
 
 QtUi::~QtUi() = default;
 
 std::unique_ptr<ui::LinuxInputMethodContext> QtUi::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return fallback_linux_ui_
+             ? fallback_linux_ui_->CreateInputMethodContext(delegate)
+             : nullptr;
 }
 
 gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() const {
@@ -147,8 +151,9 @@ void QtUi::GetDefaultFontDescription(std::string* family_out,
 ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
     ui::SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return fallback_linux_ui_ ? fallback_linux_ui_->CreateSelectFileDialog(
+                                  listener, std::move(policy))
+                            : nullptr;
 }
 
 bool QtUi::Initialize() {
@@ -254,8 +259,8 @@ float QtUi::GetDeviceScaleFactor() const {
 }
 
 bool QtUi::PreferDarkTheme() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return color_utils::IsDark(
+      shim_->GetColor(ColorType::kWindowBg, ColorState::kNormal));
 }
 
 bool QtUi::AnimationsEnabled() const {
@@ -273,8 +278,8 @@ views::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame) {
 }
 
 base::flat_map<std::string, std::string> QtUi::GetKeyboardLayoutMap() {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return {};
+  return fallback_linux_ui_ ? fallback_linux_ui_->GetKeyboardLayoutMap()
+                            : base::flat_map<std::string, std::string>{};
 }
 
 std::string QtUi::GetCursorThemeName() {
@@ -316,13 +321,13 @@ bool QtUi::MatchEvent(const ui::Event& event,
 #if BUILDFLAG(ENABLE_PRINTING)
 printing::PrintDialogLinuxInterface* QtUi::CreatePrintDialog(
     printing::PrintingContextLinux* context) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return fallback_linux_ui_ ? fallback_linux_ui_->CreatePrintDialog(context)
+                            : nullptr;
 }
 
 gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::Size();
+  return fallback_linux_ui_ ? fallback_linux_ui_->GetPdfPaperSize(context)
+                            : gfx::Size();
 }
 #endif
 
@@ -496,8 +501,9 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
   }
 }
 
-std::unique_ptr<views::LinuxUI> CreateQtUi() {
-  return std::make_unique<QtUi>();
+std::unique_ptr<views::LinuxUI> CreateQtUi(
+    std::unique_ptr<views::LinuxUI> fallback_linux_ui) {
+  return std::make_unique<QtUi>(std::move(fallback_linux_ui));
 }
 
 }  // namespace qt

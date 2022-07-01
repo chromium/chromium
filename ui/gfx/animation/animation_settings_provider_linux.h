@@ -23,6 +23,8 @@ class ANIMATION_EXPORT AnimationSettingsProviderLinux {
 
   static AnimationSettingsProviderLinux* GetInstance();
 
+  static void SetInstance(AnimationSettingsProviderLinux* instance);
+
  protected:
   AnimationSettingsProviderLinux();
 

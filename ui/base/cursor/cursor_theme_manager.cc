@@ -4,8 +4,6 @@
 
 #include "ui/base/cursor/cursor_theme_manager.h"
 
-#include "base/check.h"
-#include "base/check_op.h"
 #include "base/observer_list.h"
 
 namespace ui {
@@ -16,14 +14,16 @@ CursorThemeManager* g_instance = nullptr;
 
 }
 
-CursorThemeManager::~CursorThemeManager() {
-  DCHECK_EQ(g_instance, this);
-  g_instance = nullptr;
-}
+CursorThemeManager::~CursorThemeManager() = default;
 
 // static
 CursorThemeManager* CursorThemeManager::GetInstance() {
   return g_instance;
+}
+
+// static
+void CursorThemeManager::SetInstance(CursorThemeManager* instance) {
+  g_instance = instance;
 }
 
 void CursorThemeManager::AddObserver(CursorThemeManagerObserver* observer) {
@@ -40,9 +40,6 @@ void CursorThemeManager::RemoveObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observers_.RemoveObserver(observer);
 }
 
-CursorThemeManager::CursorThemeManager() {
-  DCHECK(!g_instance);
-  g_instance = this;
-}
+CursorThemeManager::CursorThemeManager() = default;
 
 }  // namespace ui

@@ -4,8 +4,6 @@
 
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
 
-#include "base/check_op.h"
-
 namespace gfx {
 
 // static
@@ -17,14 +15,14 @@ AnimationSettingsProviderLinux* AnimationSettingsProviderLinux::GetInstance() {
   return instance_;
 }
 
-AnimationSettingsProviderLinux::AnimationSettingsProviderLinux() {
-  DCHECK(!instance_);
-  instance_ = this;
+// static
+void AnimationSettingsProviderLinux::SetInstance(
+    AnimationSettingsProviderLinux* instance) {
+  instance_ = instance;
 }
 
-AnimationSettingsProviderLinux::~AnimationSettingsProviderLinux() {
-  DCHECK_EQ(instance_, this);
-  instance_ = nullptr;
-}
+AnimationSettingsProviderLinux::AnimationSettingsProviderLinux() = default;
+
+AnimationSettingsProviderLinux::~AnimationSettingsProviderLinux() = default;
 
 }  // namespace gfx

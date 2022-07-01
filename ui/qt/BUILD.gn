@@ -90,6 +90,7 @@ component("qt") {
     "//base",
     "//printing/buildflags",
     "//skia",
+    "//ui/base/ime/linux",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/gfx",

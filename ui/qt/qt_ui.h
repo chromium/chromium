@@ -24,7 +24,7 @@ class QtNativeTheme;
 // Interface to QT desktop features.
 class QtUi : public views::LinuxUI, QtInterface::Delegate {
  public:
-  QtUi();
+  explicit QtUi(std::unique_ptr<views::LinuxUI> fallback_linux_uik);
 
   QtUi(const QtUi&) = delete;
   QtUi& operator=(const QtUi&) = delete;
@@ -97,6 +97,10 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
 
   absl::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
 
+  // TODO(https://crbug.com/1317782): This is a fallback for any unimplemented
+  // functionality in the QT backend and should eventually be removed.
+  std::unique_ptr<views::LinuxUI> fallback_linux_ui_;
+
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.
   CmdLineArgs cmd_line_;
@@ -116,7 +120,8 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
 
 // This should be the only symbol exported from this component.
 COMPONENT_EXPORT(QT)
-std::unique_ptr<views::LinuxUI> CreateQtUi();
+std::unique_ptr<views::LinuxUI> CreateQtUi(
+    std::unique_ptr<views::LinuxUI> fallback_linux_ui);
 
 }  // namespace qt
 
