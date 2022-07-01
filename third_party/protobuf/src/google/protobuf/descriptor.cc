@@ -302,13 +302,13 @@ class FlatAllocation {
   }
 
   template <typename U>
-  __attribute__((no_sanitize("cfi-unrelated-cast", "vptr")))
+  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
   U* Begin() const {
     return reinterpret_cast<U*>(data() + BeginOffset<U>());
   }
 
   template <typename U>
-  __attribute__((no_sanitize("cfi-unrelated-cast", "vptr")))
+  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
   U* End() const {
     return reinterpret_cast<U*>(data() + EndOffset<U>());
   }

@@ -764,6 +764,12 @@
 #define PROTOBUF_UNUSED
 #endif
 
+#if __has_attribute(no_sanitize)
+#define PROTOBUF_NO_SANITIZE(...) __attribute__((no_sanitize(__VA_ARGS__)))
+#else
+#define PROTOBUF_NO_SANITIZE
+#endif
+
 // ThreadSafeArenaz is turned off completely in opensource builds.
 
 // Windows declares several inconvenient macro names.  We #undef them and then
