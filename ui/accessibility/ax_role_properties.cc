@@ -547,7 +547,6 @@ bool IsReadOnlySupported(const ax::mojom::Role role) {
     case ax::mojom::Role::kSwitch:
     case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kTextFieldWithComboBox:
-    case ax::mojom::Role::kToggleButton:
     case ax::mojom::Role::kTreeGrid:
       return true;
 

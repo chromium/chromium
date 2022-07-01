@@ -659,6 +659,10 @@ class AX_EXPORT AXNode final {
   // of a list marker node. Returns false otherwise.
   bool IsInListMarker() const;
 
+  // Returns true if this node is a popup button that is a parent to a menu list
+  // popup.
+  bool IsMenuListPopUpButton() const;
+
   // Returns true if this node is a collapsed popup button that is parent to a
   // menu list popup.
   bool IsCollapsedMenuListPopUpButton() const;
