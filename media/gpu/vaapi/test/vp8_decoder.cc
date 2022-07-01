@@ -31,13 +31,14 @@ void CheckedMemcpy(To& to, From& from) {
 Vp8Decoder::Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        const VaapiDevice& va_device,
                        SharedVASurface::FetchPolicy fetch_policy)
-    : VideoDecoder(std::move(ivf_parser), va_device, fetch_policy),
+    : VideoDecoder(va_device, fetch_policy),
       va_config_(
           std::make_unique<ScopedVAConfig>(va_device_,
                                            VAProfile::VAProfileVP8Version0_3,
                                            VA_RT_FORMAT_YUV420)),
       vp8_parser_(std::make_unique<Vp8Parser>()),
-      ref_frames_(kNumVp8ReferenceBuffers) {
+      ref_frames_(kNumVp8ReferenceBuffers),
+      ivf_parser_(std::move(ivf_parser)) {
   std::fill(ref_frames_.begin(), ref_frames_.end(), nullptr);
 }
 

@@ -531,9 +531,7 @@ unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        const VaapiDevice& va_device,
                        SharedVASurface::FetchPolicy fetch_policy)
-    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
-                                 va_device,
-                                 fetch_policy),
+    : VideoDecoder::VideoDecoder(va_device, fetch_policy),
       buffer_pool_(std::make_unique<libgav1::BufferPool>(
           /*on_frame_buffer_size_changed=*/nullptr,
           /*get_frame_buffer=*/nullptr,
@@ -541,7 +539,8 @@ Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
           /*callback_private_data=*/nullptr)),
       state_(std::make_unique<libgav1::DecoderState>()),
       ref_frames_(kAv1NumRefFrames),
-      display_surfaces_(kAv1NumRefFrames) {}
+      display_surfaces_(kAv1NumRefFrames),
+      ivf_parser_(std::move(ivf_parser)) {}
 
 Av1Decoder::~Av1Decoder() {
   // We destroy the state explicitly to ensure it's destroyed before the

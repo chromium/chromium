@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
@@ -29,6 +30,7 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
+#include "media/gpu/video_frame_mapper_factory.h"
 
 namespace media {
 
@@ -821,6 +823,8 @@ void V4L2ImageProcessorBackend::V4L2VFRecycleTask(V4L2ReadableBufferRef buf) {
   ProcessJobsTask();
 }
 
+int num_dumped_frames = 0;
+
 void V4L2ImageProcessorBackend::Dequeue() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
@@ -889,6 +893,33 @@ void V4L2ImageProcessorBackend::Dequeue() {
       default:
         NOTREACHED();
         return;
+    }
+
+    auto frame_mapper = VideoFrameMapperFactory::CreateMapper(
+        output_frame->format(), output_frame->storage_type(), true);
+    if (frame_mapper && output_frame->format() == PIXEL_FORMAT_NV12) {
+      output_frame = frame_mapper->Map(std::move(output_frame), PROT_READ);
+      char filename[256];
+      snprintf(filename, 256, "/usr/local/out_frame%d", num_dumped_frames++);
+      FILE* out_file = fopen(filename, "w+");
+      for (int i = 0; i < output_frame->visible_rect().width() *
+                              output_frame->visible_rect().height();
+           i++)
+        fputc(output_frame->visible_data(VideoFrame::kYPlane)[i], out_file);
+#define ALIGN(x, y) ((x + (y - 1)) & (~(y - 1)))
+      for (int j = 0;
+           j < ALIGN(output_frame->visible_rect().width(), 2) / 2 *
+                   ALIGN(output_frame->visible_rect().height(), 2) / 2;
+           j++)
+        fputc(output_frame->visible_data(VideoFrame::kUVPlane)[j * 2],
+              out_file);
+      for (int j = 0;
+           j < ALIGN(output_frame->visible_rect().width(), 2) / 2 *
+                   ALIGN(output_frame->visible_rect().height(), 2) / 2;
+           j++)
+        fputc(output_frame->visible_data(VideoFrame::kUVPlane)[j * 2 + 1],
+              out_file);
+      fclose(out_file);
     }
 
     const auto timestamp = job_record->input_frame->timestamp();
