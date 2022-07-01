@@ -44,9 +44,9 @@ class AutofillPaymentMethodsDelegate {
   void Cleanup(JNIEnv* env);
 
   // Trigger enrollment/unenrollment action.
-  void OfferVirtualCardEnrollment(JNIEnv* env,
-                                  int64_t instrument_id,
-                                  const JavaParamRef<jobject>& jcallback);
+  void InitVirtualCardEnrollment(JNIEnv* env,
+                                 int64_t instrument_id,
+                                 const JavaParamRef<jobject>& jcallback);
   void EnrollOfferedVirtualCard(JNIEnv* env);
   void UnenrollVirtualCard(JNIEnv* env, int64_t instrument_id);
 

@@ -294,8 +294,6 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   MOCK_METHOD(bool, ShouldParseForms, (const std::vector<FormData>&), ());
 };
 
-class MockAutofillClient : public TestAutofillClient {};
-
 class TestContentAutofillDriver : public ContentAutofillDriver {
  public:
   TestContentAutofillDriver(content::RenderFrameHost* rfh,
@@ -338,7 +336,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
 
-    test_autofill_client_ = std::make_unique<MockAutofillClient>();
+    test_autofill_client_ = std::make_unique<TestAutofillClient>();
     router_ = std::make_unique<ContentAutofillRouter>();
     driver_ = std::make_unique<TestContentAutofillDriver>(
         web_contents()->GetPrimaryMainFrame(), router_.get(),
@@ -392,7 +390,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
   bool autofill_across_iframes_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<MockAutofillClient> test_autofill_client_;
+  std::unique_ptr<TestAutofillClient> test_autofill_client_;
   std::unique_ptr<ContentAutofillRouter> router_;
   std::unique_ptr<TestContentAutofillDriver> driver_;
 

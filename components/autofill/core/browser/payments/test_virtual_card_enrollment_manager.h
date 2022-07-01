@@ -26,8 +26,16 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   bool GetAvatarAnimationComplete() const { return avatar_animation_complete_; }
 
+  void SetAvatarAnimationComplete(bool avatar_animation_complete) {
+    avatar_animation_complete_ = avatar_animation_complete;
+  }
+
   bool GetEnrollResponseDetailsReceived() const {
     return enroll_response_details_received_;
+  }
+
+  void SetEnrollResponseDetailsReceived(bool enroll_response_details_received) {
+    enroll_response_details_received_ = enroll_response_details_received;
   }
 
   AutofillClient::PaymentsRpcResult GetPaymentsRpcResult() { return result_; }
@@ -41,6 +49,8 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
   void SetResetCalled(bool reset_called) { reset_called_ = reset_called; }
 
   bool GetBubbleShown() { return bubble_shown_; }
+
+  void SetBubbleShown(bool bubble_shown) { bubble_shown_ = bubble_shown; }
 
   VirtualCardEnrollmentProcessState* GetVirtualCardEnrollmentProcessState() {
     return &state_;

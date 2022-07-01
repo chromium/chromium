@@ -364,8 +364,10 @@ void CreditCardSaveManager::OnDidUploadCard(
             upload_card_response_details.virtual_card_enrollment_state);
         uploaded_card->set_instrument_id(
             upload_card_response_details.instrument_id.value());
-        client_->GetVirtualCardEnrollmentManager()->OfferVirtualCardEnroll(
-            *uploaded_card, VirtualCardEnrollmentSource::kUpstream);
+        client_->GetVirtualCardEnrollmentManager()->InitVirtualCardEnroll(
+            *uploaded_card, VirtualCardEnrollmentSource::kUpstream,
+            std::move(upload_card_response_details
+                          .get_details_for_enrollment_response_details));
       }
     }
   } else if (show_save_prompt_.has_value() && show_save_prompt_.value()) {

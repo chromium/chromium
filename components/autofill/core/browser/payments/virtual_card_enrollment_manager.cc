@@ -61,9 +61,12 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
-void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
+void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source,
+    absl::optional<
+        payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+        get_details_for_enrollment_response_details,
     const raw_ptr<PrefService> user_prefs,
     RiskAssessmentFunction risk_assessment_function,
     VirtualCardEnrollmentFieldsLoadedCallback
@@ -77,36 +80,26 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     return;
   }
 
-  Reset();
-  DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Hide the bubble and icon if it is already showing for a previous enrollment
-  // bubble.
-  DCHECK(autofill_client_);
-  autofill_client_->HideVirtualCardEnrollBubbleAndIconIfVisible();
-#endif
+  SetInitialVirtualCardEnrollFields(credit_card,
+                                    virtual_card_enrollment_source);
 
-  state_.virtual_card_enrollment_fields.credit_card = credit_card;
-  risk_assessment_function_ = std::move(risk_assessment_function);
-  virtual_card_enrollment_fields_loaded_callback_ =
-      std::move(virtual_card_enrollment_fields_loaded_callback);
-
-  // The |card_art_image| might not be synced yet from the sync server which
-  // will result in a nullptr. This situation can occur in the upstream flow.
-  // If it is not synced, GetCreditCardArtImageForUrl() will send a fetch
-  // request to sync the |card_art_image|, and before showing the
-  // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
-  // from the local cache.
-  raw_ptr<gfx::Image> card_art_image =
-      personal_data_manager_->GetCreditCardArtImageForUrl(
-          credit_card.card_art_url());
-  if (card_art_image && !card_art_image->IsEmpty()) {
-    state_.virtual_card_enrollment_fields.card_art_image =
-        card_art_image->ToImageSkia();
+  if (get_details_for_enrollment_response_details.has_value() &&
+      IsValidGetDetailsForEnrollmentResponseDetails(
+          get_details_for_enrollment_response_details.value())) {
+    SetGetDetailsForEnrollmentResponseDetails(
+        get_details_for_enrollment_response_details.value());
   }
 
-  state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
-      virtual_card_enrollment_source;
+  // |autofill_client_| being nullptr denotes that we are in the Clank settings
+  // page virtual card enrollment use case, so we will need to use
+  // |risk_assessment_function_| to load risk data as we do not have access to
+  // web contents, and |virtual_card_enrollment_fields_loaded_callback_| to
+  // display the UI.
+  if (!autofill_client_) {
+    risk_assessment_function_ = std::move(risk_assessment_function);
+    virtual_card_enrollment_fields_loaded_callback_ =
+        std::move(virtual_card_enrollment_fields_loaded_callback);
+  }
 
   LoadRiskDataAndContinueFlow(
       user_prefs,
@@ -120,8 +113,10 @@ void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
       VirtualCardEnrollmentSource::kUpstream) {
     avatar_animation_complete_ = true;
 
-    if (enroll_response_details_received_)
+    if (enroll_response_details_received_) {
+      EnsureCardArtImageIsSetBeforeShowingUI();
       ShowVirtualCardEnrollBubble();
+    }
   }
 }
 
@@ -292,8 +287,8 @@ void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
     // use case, so we load risk data using a method that does not require web
     // contents to be present.
     std::move(risk_assessment_function_)
-        .Run(/*obfuscated_gaia_id=*/0, user_prefs, std::move(callback), nullptr,
-             gfx::Rect());
+        .Run(/*obfuscated_gaia_id=*/0, user_prefs, std::move(callback),
+             /*web_contents=*/nullptr, gfx::Rect());
   }
 }
 
@@ -337,7 +332,41 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
 void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
     const std::string& risk_data) {
   state_.risk_data = risk_data;
-  GetDetailsForEnroll();
+
+  // If we are in the upstream case and the
+  // GetDetailsForEnrollmentResponseDetails were already received, then we
+  // received it from the UploadCardResponseDetails. Thus, we can skip making
+  // another GetDetailsForEnrollmentRequest and go straight to showing the
+  // bubble if the avatar animation is complete.
+  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+          VirtualCardEnrollmentSource::kUpstream &&
+      enroll_response_details_received_) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableToolbarStatusChip) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillCreditCardUploadFeedback) &&
+        !avatar_animation_complete_) {
+      // If status chip and upload feedback is enabled, we need to make sure
+      // we wait for the upload card animation to complete before showing the
+      // virtual card enroll bubble, or else we will have a conflict and the
+      // virtual card enroll bubble will not show.
+      return;
+    }
+#endif
+
+    // We are about to show the virtual card enroll bubble, so make sure the
+    // card art image is set to then display in the bubble.
+    EnsureCardArtImageIsSetBeforeShowingUI();
+
+    // Shows the virtual card enroll bubble.
+    ShowVirtualCardEnrollBubble();
+  } else {
+    // We are not in the upstream case where we received the
+    // GetDetailsForEnrollmentResponseDetails in the UploadCardResponseDetails,
+    // so we need to make a GetDetailsForEnroll request.
+    GetDetailsForEnroll();
+  }
 }
 
 void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
@@ -367,8 +396,6 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     AutofillClient::PaymentsRpcResult result,
     const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
         response) {
-  enroll_response_details_received_ = true;
-
   if (get_details_for_enrollment_request_sent_timestamp_.has_value()) {
     LogGetDetailsForEnrollmentRequestLatency(
         state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
@@ -393,8 +420,51 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     return;
   }
 
+  // The response is already checked in
+  // GetDetailsForEnrollmentRequest::IsResponseComplete(), so we should have a
+  // valid GetDetailsForEnrollmentResponseDetails here.
+  DCHECK(IsValidGetDetailsForEnrollmentResponseDetails(response));
+  SetGetDetailsForEnrollmentResponseDetails(response);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableToolbarStatusChip) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillCreditCardUploadFeedback) &&
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+          VirtualCardEnrollmentSource::kUpstream &&
+      !avatar_animation_complete_) {
+    // If status chip and upload feedback is enabled, we need to make sure
+    // we wait for the upload card animation to complete before showing the
+    // virtual card enroll bubble, or else we will have a conflict and the
+    // virtual card enroll bubble will not show.
+    return;
+  }
+#endif
+
+  // We are about to show the UI for virtual card enrollment, so make sure the
+  // card art image is set to then display in the bubble.
+  EnsureCardArtImageIsSetBeforeShowingUI();
+
+  if (autofill_client_) {
+    ShowVirtualCardEnrollBubble();
+  } else {
+    // If the |autofill_client_| is not present, it means that the request is
+    // from Android settings page, thus run the callback with the
+    // |virtual_card_enrollment_fields_|, which would show the enrollment
+    // dialog.
+    std::move(virtual_card_enrollment_fields_loaded_callback_)
+        .Run(&state_.virtual_card_enrollment_fields);
+  }
+}
+
+void VirtualCardEnrollmentManager::SetGetDetailsForEnrollmentResponseDetails(
+    const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+        response) {
+  enroll_response_details_received_ = true;
   state_.virtual_card_enrollment_fields.google_legal_message =
       std::move(response.google_legal_message);
+
   // Issuer legal message is empty for some issuers.
   if (!response.issuer_legal_message.empty()) {
     state_.virtual_card_enrollment_fields.issuer_legal_message =
@@ -406,53 +476,80 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   // if the user decides to enroll |state_|'s |virtual_card_enrollment_fields|'s
   // |credit_card| as a virtual card.
   state_.vcn_context_token = response.vcn_context_token;
+}
 
-  // Tries to get the card art image again from the local cache. If the card art
-  // image is not available, then we fall back to the network image instead. The
-  // card art image might not be present in the upstream flow if the chrome sync
-  // server has not synced down the card art url yet for the card just uploaded.
-  if (!state_.virtual_card_enrollment_fields.card_art_image) {
-    raw_ptr<gfx::Image> cached_card_art_image =
-        personal_data_manager_->GetCachedCardArtImageForUrl(
-            state_.virtual_card_enrollment_fields.credit_card.card_art_url());
-    if (cached_card_art_image && !cached_card_art_image->IsEmpty()) {
-      // We found a card art image in the cache, so set |state_|'s
-      // |virtual_card_enrollment_fields|'s |card_art_image| to it.
-      state_.virtual_card_enrollment_fields.card_art_image =
-          cached_card_art_image->ToImageSkia();
-    } else {
-      // We did not find a card art image in the cache, so set |state_|'s
-      // |virtual_card_enrollment_fields|'s |card_art_image| to the network
-      // image instead.
-      state_.virtual_card_enrollment_fields.card_art_image =
-          ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              CreditCard::IconResourceId(
-                  state_.virtual_card_enrollment_fields.credit_card.network()));
-    }
-  }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableToolbarStatusChip) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback) &&
-      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
-          VirtualCardEnrollmentSource::kUpstream &&
-      !avatar_animation_complete_) {
+void VirtualCardEnrollmentManager::EnsureCardArtImageIsSetBeforeShowingUI() {
+  if (state_.virtual_card_enrollment_fields.card_art_image)
     return;
+
+  // Tries to get the card art image from the local cache. If the card art
+  // image is not available, then we fall back to the network image instead.
+  // The card art image might not be present in the upstream flow if the
+  // chrome sync server has not synced down the card art url yet for the card
+  // just uploaded.
+  raw_ptr<gfx::Image> cached_card_art_image =
+      personal_data_manager_->GetCachedCardArtImageForUrl(
+          state_.virtual_card_enrollment_fields.credit_card.card_art_url());
+  if (cached_card_art_image && !cached_card_art_image->IsEmpty()) {
+    // We found a card art image in the cache, so set |state_|'s
+    // |virtual_card_enrollment_fields|'s |card_art_image| to it.
+    state_.virtual_card_enrollment_fields.card_art_image =
+        cached_card_art_image->ToImageSkia();
+  } else {
+    // We did not find a card art image in the cache, so set |state_|'s
+    // |virtual_card_enrollment_fields|'s |card_art_image| to the network
+    // image instead.
+    state_.virtual_card_enrollment_fields.card_art_image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            CreditCard::IconResourceId(
+                state_.virtual_card_enrollment_fields.credit_card.network()));
   }
+}
+
+void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
+    const CreditCard& credit_card,
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) {
+  Reset();
+
+  DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Hide the bubble and icon if it is already showing for a previous enrollment
+  // bubble.
+  DCHECK(autofill_client_);
+  autofill_client_->HideVirtualCardEnrollBubbleAndIconIfVisible();
 #endif
 
-  if (autofill_client_) {
-    ShowVirtualCardEnrollBubble();
-  } else {
-    // If the `autofill_client_` is not present, it means that the request is
-    // from Android settings page, thus run the callback with the
-    // `virtual_card_enrollment_fields_`, which would show the enrollment
-    // dialog.
-    std::move(virtual_card_enrollment_fields_loaded_callback_)
-        .Run(&state_.virtual_card_enrollment_fields);
+  state_.virtual_card_enrollment_fields.credit_card = credit_card;
+
+  // The |card_art_image| might not be synced yet from the sync server which
+  // will result in a nullptr. This situation can occur in the upstream flow.
+  // If it is not synced, GetCreditCardArtImageForUrl() will send a fetch
+  // request to sync the |card_art_image|, and before showing the
+  // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
+  // from the local cache.
+  raw_ptr<gfx::Image> card_art_image =
+      personal_data_manager_->GetCreditCardArtImageForUrl(
+          credit_card.card_art_url());
+  if (card_art_image && !card_art_image->IsEmpty()) {
+    state_.virtual_card_enrollment_fields.card_art_image =
+        card_art_image->ToImageSkia();
   }
+
+  state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
+      virtual_card_enrollment_source;
+}
+
+bool VirtualCardEnrollmentManager::
+    IsValidGetDetailsForEnrollmentResponseDetails(
+        const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+            get_details_for_enrollment_response_details) {
+  if (get_details_for_enrollment_response_details.google_legal_message.empty())
+    return false;
+
+  if (get_details_for_enrollment_response_details.vcn_context_token.empty())
+    return false;
+
+  return true;
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
