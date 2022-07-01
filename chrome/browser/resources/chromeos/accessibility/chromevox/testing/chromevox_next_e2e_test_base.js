@@ -120,6 +120,9 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
       await importModule(
           'CommandHandler', '/chromevox/background/command_handler.js');
       await importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/command_handler_interface.js');
+      await importModule(
           'GestureCommandHandler',
           '/chromevox/background/gesture_command_handler.js');
 

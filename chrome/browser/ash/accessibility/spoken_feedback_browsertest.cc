@@ -138,9 +138,7 @@ void LoggedInSpokenFeedbackTest::SendKeyPressWithSearchAndControlAndShift(
 
 void LoggedInSpokenFeedbackTest::SendStickyKeyCommand() {
   // To avoid flakes in sending keys, execute the command directly in js.
-  extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId,
-      "CommandHandlerInterface.instance.onCommand('toggleStickyMode');");
+  ExecuteCommandHandlerCommand("toggleStickyMode");
 }
 
 void LoggedInSpokenFeedbackTest::SendMouseMoveTo(const gfx::Point& location) {
@@ -183,6 +181,16 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
                         "autofocus>Click me</button>")));
   });
   sm_.ExpectSpeech("Click me");
+}
+
+void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
+    std::string command) {
+  extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId,
+      "import('/chromevox/background/"
+      "command_handler_interface.js').then(module => "
+      "module.CommandHandlerInterface.instance.onCommand('" +
+          command + "'));");
 }
 
 // Flaky test, crbug.com/1081563
@@ -269,11 +277,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
 // logged in.
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandlerInterface.instance.onCommand('showLearnModePage');");
-  });
+  sm_.Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -306,11 +310,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
 
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandlerInterface.instance.onCommand('showLearnModePage');");
-  });
+  sm_.Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");

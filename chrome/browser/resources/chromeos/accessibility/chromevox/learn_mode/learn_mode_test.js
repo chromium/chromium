@@ -19,6 +19,14 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
     window.doBrailleKeyEvent = this.doBrailleKeyEvent.bind(this);
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'CommandHandlerInterface',
+        '/chromevox/background/command_handler_interface.js');
+  }
+
   async runOnLearnModePage() {
     return new Promise(async resolve => {
       const mockFeedback = this.createMockFeedback();

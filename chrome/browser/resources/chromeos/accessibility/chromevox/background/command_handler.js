@@ -11,6 +11,7 @@ import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_c
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 import {Color} from '/chromevox/background/color.js';
+import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
 import {TypingEcho} from '/chromevox/background/editing/editable_text_base.js';
 import {EventSourceState} from '/chromevox/background/event_source.js';

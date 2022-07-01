@@ -6,6 +6,7 @@ import {BrailleCommandHandler} from '/chromevox/background/braille/braille_comma
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 import {CommandHandler} from '/chromevox/background/command_handler.js';
+import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
 import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';

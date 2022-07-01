@@ -6,6 +6,7 @@
  * @fileoverview Handles gesture-based commands.
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
 import {EventSourceState} from '/chromevox/background/event_source.js';
 import {GestureInterface} from '/chromevox/background/gesture_interface.js';
 import {Output} from '/chromevox/background/output/output.js';

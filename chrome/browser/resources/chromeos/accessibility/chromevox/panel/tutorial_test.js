@@ -16,6 +16,9 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
+        'CommandHandlerInterface',
+        '/chromevox/background/command_handler_interface.js');
+    await importModule(
         'UserActionMonitor', '/chromevox/background/user_action_monitor.js');
     await importModule(
         ['PanelCommand', 'PanelCommandType'],

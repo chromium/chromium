@@ -6,6 +6,7 @@
  * @fileoverview Handles auto scrolling on navigation.
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
 
 // setTimeout and its clean-up are referencing each other. So, we need to set
 // "ignoreReadBeforeAssign" in this file. ESLint doesn't support per-line rule
