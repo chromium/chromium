@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,7 +59,7 @@ std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
 
 std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateDefaultProvider(
     proto::SegmentId segment_id) {
-  return nullptr;
+  return GetDefaultModelProvider(segment_id);
 }
 
 }  // namespace segmentation_platform

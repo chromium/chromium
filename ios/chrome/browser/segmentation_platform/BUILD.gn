@@ -10,6 +10,8 @@ source_set("segmentation_platform") {
     "model_provider_factory_impl.mm",
     "otr_web_state_observer.h",
     "otr_web_state_observer.mm",
+    "segmentation_platform_config.h",
+    "segmentation_platform_config.mm",
     "segmentation_platform_service_factory.h",
     "segmentation_platform_service_factory.mm",
   ]
@@ -31,6 +33,7 @@ source_set("segmentation_platform") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/web_state_list",
   ]

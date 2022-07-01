@@ -19,6 +19,10 @@ namespace {
 class CrashesDOMHandler;
 }
 
+namespace segmentation_platform {
+class IOSFieldTrialRegisterImpl;
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -40,8 +44,9 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
   friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
-  friend class OptimizationGuideService;
   friend class IOSChromeMainParts;
+  friend class OptimizationGuideService;
+  friend class segmentation_platform::IOSFieldTrialRegisterImpl;
 
   FRIEND_TEST_ALL_PREFIXES(IOSChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);

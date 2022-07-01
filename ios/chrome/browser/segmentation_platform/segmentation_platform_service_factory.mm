@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
@@ -25,6 +26,7 @@
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #include "ios/chrome/browser/segmentation_platform/model_provider_factory_impl.h"
 #include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
+#include "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -93,9 +95,9 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       optimization_guide, params->task_runner);
   params->ukm_data_manager = GetUkmDataManager();
   params->profile_prefs = chrome_browser_state->GetPrefs();
-  // TODO(crbug.com/1333641): params->configs should be initialized.
-  // TODO(crbug.com/1333641): params->field_trial_register should be
-  // initialized.
+
+  params->configs = GetSegmentationPlatformConfig();
+  params->field_trial_register = std::make_unique<IOSFieldTrialRegisterImpl>();
 
   auto service =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
