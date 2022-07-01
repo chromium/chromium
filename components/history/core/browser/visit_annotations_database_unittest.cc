@@ -246,7 +246,7 @@ TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
             std::vector<int64_t>({3}));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster) {
+TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster_IsVisitClustered) {
   // Add unclustered visits.
   AddVisitWithTime(IntToTime(0));
   AddVisitWithTime(IntToTime(2));
@@ -256,8 +256,18 @@ TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster) {
   AddCluster({AddVisitWithTime(IntToTime(3))});
   AddCluster({AddVisitWithTime(IntToTime(5)), AddVisitWithTime(IntToTime(7))});
 
+  // GetVisitIdsInCluster
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(4));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 6));
+
+  // IsVisitClustered
+  EXPECT_FALSE(IsVisitClustered(1));
+  EXPECT_FALSE(IsVisitClustered(2));
+  EXPECT_FALSE(IsVisitClustered(3));
+  EXPECT_TRUE(IsVisitClustered(4));
+  EXPECT_TRUE(IsVisitClustered(5));
+  EXPECT_TRUE(IsVisitClustered(6));
+  EXPECT_TRUE(IsVisitClustered(7));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {

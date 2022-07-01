@@ -88,6 +88,9 @@ class VisitAnnotationsDatabase {
   // Get `VisitID`s in a cluster.
   std::vector<VisitID> GetVisitIdsInCluster(int64_t cluster_id);
 
+  // Return whether `visit_id` belongs to any cluster.
+  bool IsVisitClustered(VisitID visit_id);
+
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);
 

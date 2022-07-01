@@ -507,6 +507,18 @@ std::vector<VisitID> VisitAnnotationsDatabase::GetVisitIdsInCluster(
   return visit_ids;
 }
 
+bool VisitAnnotationsDatabase::IsVisitClustered(VisitID visit_id) {
+  DCHECK_GT(visit_id, 0);
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT 1 "
+                                 "FROM clusters_and_visits "
+                                 "WHERE visit_id=? "
+                                 "LIMIT 1"));
+  statement.BindInt64(0, visit_id);
+  return statement.Step();
+}
+
 void VisitAnnotationsDatabase::DeleteClusters(
     const std::vector<int64_t>& cluster_ids) {
   if (cluster_ids.empty())
