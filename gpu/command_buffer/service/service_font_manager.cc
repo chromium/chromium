@@ -103,6 +103,11 @@ class ServiceFontManager::SkiaDiscardableManager
     return font_manager_->DeleteHandle(handle_id);
   }
 
+  void assertHandleValid(SkDiscardableHandleId handle_id) override {
+    CHECK(font_manager_);
+    font_manager_->AssertHandle(handle_id);
+  }
+
   void notifyCacheMiss(SkStrikeClient::CacheMissType type,
                        int fontSize) override {
     UMA_HISTOGRAM_ENUMERATION("GPU.OopRaster.GlyphCacheMiss", type,
@@ -253,6 +258,26 @@ bool ServiceFontManager::Unlock(
     it->second.Unlock();
   }
   return true;
+}
+
+void ServiceFontManager::AssertHandle(SkDiscardableHandleId handle_id) {
+  base::AutoLock hold(lock_);
+  auto it = discardable_handle_map_.find(handle_id);
+  CHECK(it != discardable_handle_map_.end());
+
+  static crash_reporter::CrashKeyString<2> crash_key_destroyed(
+      "font_manager::destroyed");
+  crash_reporter::ScopedCrashKeyString auto_clear_destroyed(
+      &crash_key_destroyed, destroyed_ ? "1" : "0");
+  static crash_reporter::CrashKeyString<8> crash_key_ref_count(
+      "font_manager::Handle::ref_count");
+  crash_reporter::ScopedCrashKeyString auto_clear_ref_count(
+      &crash_key_ref_count, base::StringPrintf("%d", it->second.ref_count()));
+  if (destroyed_) {
+    CHECK(it->second.ref_count() > 0);
+  } else {
+    CHECK(it->second.IsLocked());
+  }
 }
 
 bool ServiceFontManager::DeleteHandle(SkDiscardableHandleId handle_id) {
