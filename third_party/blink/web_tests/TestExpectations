@@ -5571,6 +5571,8 @@ http/tests/devtools/console/console-worker-nested-imports-syntax-error.js [ Skip
 http/tests/workers/shared-worker-importScripts.html [ Skip ]
 http/tests/workers/worker-importScripts.html [ Skip ]
 
+crbug.com/1341227 [ Mac ] http/tests/workers/worker-invalid-context.html [ Skip ]
+
 # Temporarily disabled to unblock https://crrev.com/c/2979697
 crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/console/console-format.js [ Failure Pass ]
@@ -5613,7 +5615,9 @@ crbug.com/1180227 [ Mac ] virtual/feature-policy-permissions/external/wpt/mediac
 crbug.com/1180227 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Failure Pass ]
 crbug.com/1180479 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-smooth.html [ Failure Pass Timeout ]
 
-crbug.com/1180274 crbug.com/1046784 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
+crbug.com/1180274 crbug.com/1046784 [ Win ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
+crbug.com/1180274 crbug.com/1046784 [ Linux ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
+crbug.com/1341227 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 
 # Sheriff 2021-02-21
 crbug.com/1180491 [ Linux ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
