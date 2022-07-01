@@ -77,6 +77,12 @@ class ArcMetricsServiceTest : public testing::Test {
       command_line->InitFromArgv({"", "--enable-arcvm"});
     }
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
+    // ArcMetricsService makes one call to RequestLowMemoryKillCounts when it
+    // starts, so make it return 0s.
+    fake_process_instance_.set_request_low_memory_kill_counts_response(
+        mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0));
+    ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
+        &fake_process_instance_);
     context_ = std::make_unique<TestBrowserContext>();
     prefs::RegisterLocalStatePrefs(context_->pref_registry());
     prefs::RegisterProfilePrefs(context_->pref_registry());
@@ -85,9 +91,6 @@ class ArcMetricsServiceTest : public testing::Test {
     service_->set_prefs(context_->prefs());
 
     CreateFakeWindows();
-
-    ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
-        &fake_process_instance_);
   }
 
   ~ArcMetricsServiceTest() override {
@@ -131,10 +134,6 @@ class ArcMetricsServiceTest : public testing::Test {
 
   FakeProcessInstance& process_instance() { return fake_process_instance_; }
 
- protected:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
  private:
   void CreateFakeWindows() {
     fake_arc_window_.reset(aura::test::CreateTestWindowWithId(
@@ -144,6 +143,9 @@ class ArcMetricsServiceTest : public testing::Test {
     fake_non_arc_window_.reset(aura::test::CreateTestWindowWithId(
         /*id=*/1, nullptr));
   }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
@@ -419,16 +421,13 @@ class ArcVmArcMetricsServiceTest
  protected:
   ArcVmArcMetricsServiceTest() : ArcMetricsServiceTest(true) {}
 
-  void RespondToFirstKillCountsRequest(mojom::LowMemoryKillCountsPtr counts) {
-    process_instance().RunRequestLowMemoryKillCountsCallback(std::move(counts));
-  }
-
   void RequestKillCountsAndRespond(mojom::LowMemoryKillCountsPtr counts) {
     ash::FakeConciergeClient::Get()->set_list_vms_response(
         std::move(GetParam()));
+    process_instance().set_request_low_memory_kill_counts_response(
+        std::move(counts));
     service()->RequestKillCountsForTesting();
-    task_environment_.RunUntilIdle();
-    process_instance().RunRequestLowMemoryKillCountsCallback(std::move(counts));
+    base::RunLoop().RunUntilIdle();
   }
 };
 
@@ -585,47 +584,9 @@ static void ExpectOneSampleAppKillCounts(
 
 TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryKills) {
   base::HistogramTester tester;
+  // The test code sets the initial counts to 0.
+  auto c0 = mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0);
   // First sample counts.
-  auto c0 = mojom::LowMemoryKillCounts::New(1,   // oom.
-                                            2,   // lmkd_foreground.
-                                            3,   // lmkd_perceptible.
-                                            4,   // lmkd_cached.
-                                            5,   // pressure_foreground.
-                                            6,   // pressure_perceptible.
-                                            7);  // pressure_cached.
-  // Second sample counts.
-  auto c1 = mojom::LowMemoryKillCounts::New(17,   // oom.
-                                            16,   // lmkd_foreground.
-                                            15,   // lmkd_perceptible.
-                                            14,   // lmkd_cached.
-                                            13,   // pressure_foreground.
-                                            12,   // pressure_perceptible.
-                                            11);  // pressure_cached.
-  // ArcMetricsService requests kill counts on startup, so respond to that
-  // before making a new request.
-  RespondToFirstKillCountsRequest(c0->Clone());
-
-  // The first callback doesn't log to histograms, since it's collecting the
-  // first baseline.
-  ExpectNoAppKillCounts(tester);
-
-  // Send another counter response, which should log the increase to histograms.
-  RequestKillCountsAndRespond(c1->Clone());
-  ExpectOneSampleAppKillCounts(tester, GetParam(), c0, c1);
-}
-
-TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryKillsDecrease) {
-  base::HistogramTester tester;
-  // First sample counts.
-  auto c0 = mojom::LowMemoryKillCounts::New(17,   // oom.
-                                            16,   // lmkd_foreground.
-                                            15,   // lmkd_perceptible.
-                                            14,   // lmkd_cached.
-                                            13,   // pressure_foreground.
-                                            12,   // pressure_perceptible.
-                                            11);  // pressure_cached.
-
-  // Second sample counts.
   auto c1 = mojom::LowMemoryKillCounts::New(1,   // oom.
                                             2,   // lmkd_foreground.
                                             3,   // lmkd_perceptible.
@@ -633,21 +594,41 @@ TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryKillsDecrease) {
                                             5,   // pressure_foreground.
                                             6,   // pressure_perceptible.
                                             7);  // pressure_cached.
+  // Second sample counts.
+  auto c2 = mojom::LowMemoryKillCounts::New(17,   // oom.
+                                            16,   // lmkd_foreground.
+                                            15,   // lmkd_perceptible.
+                                            14,   // lmkd_cached.
+                                            13,   // pressure_foreground.
+                                            12,   // pressure_perceptible.
+                                            11);  // pressure_cached.
+  // Third sample counts all decrease by 1.
+  auto c3 = mojom::LowMemoryKillCounts::New(16,   // oom.
+                                            15,   // lmkd_foreground.
+                                            14,   // lmkd_perceptible.
+                                            13,   // lmkd_cached.
+                                            12,   // pressure_foreground.
+                                            11,   // pressure_perceptible.
+                                            10);  // pressure_cached.
 
-  // ArcMetricsService requests kill counts on startup, so respond to that
-  // before making a new request.
-  RespondToFirstKillCountsRequest(c0->Clone());
+  {
+    base::HistogramTester tester;
+    RequestKillCountsAndRespond(c1->Clone());
+    ExpectOneSampleAppKillCounts(tester, GetParam(), c0, c1);
+  }
 
-  // The first callback doesn't log to histograms, since it's collecting the
-  // first baseline.
-  ExpectNoAppKillCounts(tester);
+  {
+    base::HistogramTester tester;
+    RequestKillCountsAndRespond(c2->Clone());
+    ExpectOneSampleAppKillCounts(tester, GetParam(), c1, c2);
+  }
 
-  // Send another counter response, which should log the increase to histograms.
-  RequestKillCountsAndRespond(c1->Clone());
-
-  // Except that all the counters decreased, so we don't expect anything to be
-  // logged.
-  ExpectNoAppKillCounts(tester);
+  {
+    base::HistogramTester tester;
+    RequestKillCountsAndRespond(c3->Clone());
+    // Counts decreased, so expect no samples.
+    ExpectNoAppKillCounts(tester);
+  }
 }
 
 }  // namespace

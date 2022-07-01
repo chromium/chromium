@@ -32628,7 +32628,7 @@ Called by update_extension_histograms.py.-->
   <int value="21" label="APP_WINDOW_ON_RESTORED"/>
   <int value="22" label="DELETED_AUDIO_MODEM_ON_RECEIVED"/>
   <int value="23" label="DELETED_AUDIO_MODEM_ON_TRANSMIT_FAIL"/>
-  <int value="24" label="AUDIO_ON_DEVICE_CHANGED"/>
+  <int value="24" label="DELETED_AUDIO_ON_DEVICE_CHANGED"/>
   <int value="25" label="AUDIO_ON_DEVICES_CHANGED"/>
   <int value="26" label="AUDIO_ON_LEVEL_CHANGED"/>
   <int value="27" label="AUDIO_ON_MUTE_CHANGED"/>
@@ -33127,7 +33127,7 @@ Called by update_extension_histograms.py.-->
   <int value="492" label="LOGIN_ON_REQUEST_EXTERNAL_LOGOUT"/>
   <int value="493" label="LOGIN_ON_EXTERNAL_LOGOUT_DONE"/>
   <int value="494" label="ACCESSIBILITY_PRIVATE_ON_PUMPKIN_INSTALLED"/>
-  <int value="495" label="REMOTE_APPS_ON_REMOTE_APP_LAUNCHED"/>
+  <int value="495" label="ENTERPRISE_REMOTE_APPS_ON_REMOTE_APP_LAUNCHED"/>
   <int value="496" label="INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED"/>
 </enum>
 
@@ -33609,7 +33609,7 @@ Called by update_extension_histograms.py.-->
   <int value="454" label="DELETED_BLUETOOTH_REMOVEPROFILE"/>
   <int value="455" label="DELETED_BLUETOOTH_GETPROFILES"/>
   <int value="456" label="EXPERIMENTAL_IDENTITY_REMOVECACHEDAUTHTOKEN"/>
-  <int value="457" label="AUDIO_GETINFO"/>
+  <int value="457" label="DELETED_AUDIO_GETINFO"/>
   <int value="458" label="AUDIO_SETACTIVEDEVICES"/>
   <int value="459" label="AUDIO_SETPROPERTIES"/>
   <int value="460" label="USB_RESETDEVICE"/>
@@ -34884,6 +34884,7 @@ Called by update_extension_histograms.py.-->
   <int value="1675" label="DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD"/>
   <int value="1676" label="AUTOTESTPRIVATE_SENDARCOVERLAYCOLOR"/>
   <int value="1677" label="AUTOTESTPRIVATE_ISINPUTMETHODREADYFORTESTING"/>
+  <int value="1678" label="AUTOTESTPRIVATE_GETARCAPPKILLS"/>
 </enum>
 
 <enum name="ExtensionIconState">

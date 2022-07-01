@@ -1273,7 +1273,21 @@ var arcEnabledTests = [
               chrome.test.callbackPass(function() {
           }));
     });
-  },
+  }
+];
+
+var arcProcessTests = [
+  async function requestLowMemoryKillCounts() {
+    const counts = await promisify(chrome.autotestPrivate.getArcAppKills);
+    chrome.test.assertEq(counts.oom, 1);
+    chrome.test.assertEq(counts.lmkdForeground, 2);
+    chrome.test.assertEq(counts.lmkdPerceptible, 3);
+    chrome.test.assertEq(counts.lmkdCached, 4);
+    chrome.test.assertEq(counts.pressureForeground, 5);
+    chrome.test.assertEq(counts.pressurePerceptible, 6);
+    chrome.test.assertEq(counts.pressureCached, 7);
+    chrome.test.succeed();
+  }
 ];
 
 var policyTests = [
@@ -1566,6 +1580,7 @@ var systemWebAppsTests = [
 var test_suites = {
   'default': defaultTests,
   'arcEnabled': arcEnabledTests,
+  'arcProcess': arcProcessTests,
   'enterprisePolicies': policyTests,
   'arcPerformanceTracing': arcPerformanceTracingTests,
   'overviewDefault': overviewTests,

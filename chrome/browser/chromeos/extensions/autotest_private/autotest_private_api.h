@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
@@ -340,6 +341,17 @@ class AutotestPrivateGetArcAppFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateGetArcAppFunction() override;
   ResponseAction Run() override;
+};
+
+class AutotestPrivateGetArcAppKillsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getArcAppKills",
+                             AUTOTESTPRIVATE_GETARCAPPKILLS)
+
+ private:
+  ~AutotestPrivateGetArcAppKillsFunction() override;
+  ResponseAction Run() override;
+  void OnKillCounts(arc::mojom::LowMemoryKillCountsPtr counts);
 };
 
 class AutotestPrivateGetArcPackageFunction : public ExtensionFunction {

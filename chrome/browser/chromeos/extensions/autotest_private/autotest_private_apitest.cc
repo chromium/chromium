@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -153,9 +156,37 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
       true /* sync */));
   app_instance->SendRefreshPackageList(std::move(packages));
 
+  arc::FakeProcessInstance fake_process_instance;
+  arc::ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
+      &fake_process_instance);
+  fake_process_instance.set_request_low_memory_kill_counts_response(
+      arc::mojom::LowMemoryKillCounts::New(1,    // oom.
+                                           2,    // lmkd_foreground.
+                                           3,    // lmkd_perceptible.
+                                           4,    // lmkd_cached.
+                                           5,    // pressure_foreground.
+                                           6,    // pressure_perceptible.
+                                           7));  // pressure_cached.
+
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("arcEnabled")) << message_;
 
   arc::SetArcPlayStoreEnabledForProfile(profile(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcProcess) {
+  arc::FakeProcessInstance fake_process_instance;
+  arc::ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
+      &fake_process_instance);
+  fake_process_instance.set_request_low_memory_kill_counts_response(
+      arc::mojom::LowMemoryKillCounts::New(1,    // oom.
+                                           2,    // lmkd_foreground.
+                                           3,    // lmkd_perceptible.
+                                           4,    // lmkd_cached.
+                                           5,    // pressure_foreground.
+                                           6,    // pressure_perceptible.
+                                           7));  // pressure_cached.
+
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("arcProcess")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ScrollableShelfAPITest) {

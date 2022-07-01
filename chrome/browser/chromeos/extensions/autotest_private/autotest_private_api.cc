@@ -15,6 +15,8 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/system_ui.mojom-shared.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -1958,7 +1960,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateGetArcPackageFunction
+// AutotestPrivateGetArcAppFunction
 ///////////////////////////////////////////////////////////////////////////////
 
 AutotestPrivateGetArcAppFunction::~AutotestPrivateGetArcAppFunction() = default;
@@ -2008,6 +2010,51 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcAppFunction::Run() {
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(app_value))));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetArcAppKillsFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetArcAppKillsFunction::
+    ~AutotestPrivateGetArcAppKillsFunction() = default;
+
+ExtensionFunction::ResponseAction AutotestPrivateGetArcAppKillsFunction::Run() {
+  DVLOG(1) << "AutotestPrivateGetArcAppKillsFunction";
+
+  arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return RespondNow(Error("ARC service manager is not available"));
+
+  arc::ArcBridgeService* arc_bridge_service =
+      arc_service_manager->arc_bridge_service();
+
+  if (!arc_bridge_service)
+    return RespondNow(Error("ARC bridge service is not available"));
+
+  arc::mojom::ProcessInstance* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service->process(), RequestLowMemoryKillCounts);
+
+  if (!process_instance)
+    return RespondNow(Error("ARC process service is not available"));
+
+  process_instance->RequestLowMemoryKillCounts(base::BindOnce(
+      &AutotestPrivateGetArcAppKillsFunction::OnKillCounts, this));
+
+  return RespondLater();
+}
+
+void AutotestPrivateGetArcAppKillsFunction::OnKillCounts(
+    arc::mojom::LowMemoryKillCountsPtr counts) {
+  api::autotest_private::ArcAppKillsDict result;
+  result.oom = counts->guest_oom;
+  result.lmkd_foreground = counts->lmkd_foreground;
+  result.lmkd_perceptible = counts->lmkd_perceptible;
+  result.lmkd_cached = counts->lmkd_cached;
+  result.pressure_foreground = counts->pressure_foreground;
+  result.pressure_perceptible = counts->pressure_perceptible;
+  result.pressure_cached = counts->pressure_cached;
+  Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

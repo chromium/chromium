@@ -291,6 +291,17 @@ namespace autotestPrivate {
   };
   callback GetArcAppCallback = void (ArcAppDict package);
 
+  dictionary ArcAppKillsDict {
+    double oom;
+    double lmkdForeground;
+    double lmkdPerceptible;
+    double lmkdCached;
+    double pressureForeground;
+    double pressurePerceptible;
+    double pressureCached;
+  };
+  callback GetArcAppKillsCallback = void (ArcAppKillsDict counts);
+
   dictionary ArcPackageDict {
     DOMString packageName;
     long packageVersion;
@@ -819,6 +830,10 @@ namespace autotestPrivate {
     // Gets information about the requested ARC app.
     [supportsPromises] static void getArcApp(DOMString appId,
                                              GetArcAppCallback callback);
+
+    // Gets counts of how many ARC apps have been killed, by priority.
+    [supportsPromises] static void getArcAppKills(
+        GetArcAppKillsCallback callback);
 
     // Gets information about requested ARC package.
     [supportsPromises] static void getArcPackage(
