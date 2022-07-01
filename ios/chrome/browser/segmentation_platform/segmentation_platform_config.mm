@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/time/time.h"
-#include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/features.h"
-#include "components/segmentation_platform/public/model_provider.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/time/time.h"
+#import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#import "components/segmentation_platform/public/config.h"
+#import "components/segmentation_platform/public/features.h"
+#import "components/segmentation_platform/public/model_provider.h"
+#import "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,6 +65,10 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
 
 std::unique_ptr<ModelProvider> GetDefaultModelProvider(
     proto::SegmentId target) {
+  if (target == proto::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
+    return std::make_unique<FeedUserSegment>();
+  }
+
   // Add default models here.
   return nullptr;
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/segmentation_platform/default_model/query_tiles_model.h"
+#include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

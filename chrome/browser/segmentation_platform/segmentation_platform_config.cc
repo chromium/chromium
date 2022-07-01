@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/segmentation_platform/default_model/feed_user_segment.h"
-#include "chrome/browser/segmentation_platform/default_model/low_user_engagement_model.h"
-#include "chrome/browser/segmentation_platform/default_model/price_tracking_action_model.h"
+#include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
+#include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -24,9 +24,9 @@
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
-#include "chrome/browser/segmentation_platform/default_model/query_tiles_model.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/query_tiles/switches.h"
+#include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #endif
 
 namespace segmentation_platform {

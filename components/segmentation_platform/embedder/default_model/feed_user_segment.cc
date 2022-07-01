@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/segmentation_platform/default_model/feed_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 
 #include <array>
 

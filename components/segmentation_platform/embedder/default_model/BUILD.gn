@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("default_model") {
+  sources = [
+    "feed_user_segment.cc",
+    "feed_user_segment.h",
+    "low_user_engagement_model.cc",
+    "low_user_engagement_model.h",
+    "price_tracking_action_model.cc",
+    "price_tracking_action_model.h",
+    "query_tiles_model.cc",
+    "query_tiles_model.h",
+  ]
+  deps = [
+    "//base",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/segmentation_platform/components_unittests.filter
+  sources = [
+    "feed_user_segment_unittest.cc",
+    "low_user_engagement_model_unittest.cc",
+    "price_tracking_action_model_unittest.cc",
+    "query_tiles_model_unittest.cc",
+  ]
+
+  deps = [
+    ":default_model",
+    "//base",
+    "//base/test:test_support",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//testing/gtest",
+  ]
+}

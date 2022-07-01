@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/segmentation_platform/default_model/price_tracking_action_model.h"
+#include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
