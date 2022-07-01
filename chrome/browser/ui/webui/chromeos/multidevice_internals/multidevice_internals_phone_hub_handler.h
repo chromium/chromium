@@ -62,21 +62,21 @@ class MultidevicePhoneHubHandler
 
   void EnableRealPhoneHubManager();
   void EnableFakePhoneHubManager();
-  void HandleEnableFakePhoneHubManager(const base::ListValue* args);
-  void HandleSetFeatureStatus(const base::ListValue* args);
-  void HandleSetShowOnboardingFlow(const base::ListValue* args);
-  void HandleSetFakePhoneName(const base::ListValue* args);
-  void HandleSetFakePhoneStatus(const base::ListValue* args);
-  void HandleSetBrowserTabs(const base::ListValue* args);
-  void HandleSetNotification(const base::ListValue* args);
-  void HandleRemoveNotification(const base::ListValue* args);
-  void HandleEnableDnd(const base::ListValue* args);
-  void HandleSetFindMyDeviceStatus(const base::ListValue* args);
-  void HandleSetTetherStatus(const base::ListValue* args);
-  void HandleResetShouldShowOnboardingUi(const base::ListValue* args);
+  void HandleEnableFakePhoneHubManager(const base::Value::List& args);
+  void HandleSetFeatureStatus(const base::Value::List& args);
+  void HandleSetShowOnboardingFlow(const base::Value::List& args);
+  void HandleSetFakePhoneName(const base::Value::List& args);
+  void HandleSetFakePhoneStatus(const base::Value::List& args);
+  void HandleSetBrowserTabs(const base::Value::List& args);
+  void HandleSetNotification(const base::Value::List& args);
+  void HandleRemoveNotification(const base::Value::List& args);
+  void HandleEnableDnd(const base::Value::List& args);
+  void HandleSetFindMyDeviceStatus(const base::Value::List& args);
+  void HandleSetTetherStatus(const base::Value::List& args);
+  void HandleResetShouldShowOnboardingUi(const base::Value::List& args);
   void HandleResetHasMultideviceFeatureSetupUiBeenDismissed(
-      const base::ListValue* args);
-  void HandleSetFakeCameraRoll(const base::ListValue* args);
+      const base::Value::List& args);
+  void HandleSetFakeCameraRoll(const base::Value::List& args);
 
   void AddObservers();
   void RemoveObservers();

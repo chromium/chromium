@@ -43,7 +43,7 @@ MultideviceLogsHandler::MultideviceLogsHandler() {}
 MultideviceLogsHandler::~MultideviceLogsHandler() = default;
 
 void MultideviceLogsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getMultideviceLogMessages",
       base::BindRepeating(&MultideviceLogsHandler::HandleGetLogMessages,
                           base::Unretained(this)));
@@ -57,14 +57,15 @@ void MultideviceLogsHandler::OnJavascriptDisallowed() {
   observation_.Reset();
 }
 
-void MultideviceLogsHandler::HandleGetLogMessages(const base::ListValue* args) {
+void MultideviceLogsHandler::HandleGetLogMessages(
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  base::Value list(base::Value::Type::LIST);
+  const base::Value& callback_id = args[0];
+  base::Value::List list;
   for (const auto& log : *LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
-  ResolveJavascriptCallback(callback_id, list);
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(list)));
 }
 
 void MultideviceLogsHandler::OnLogBufferCleared() {
