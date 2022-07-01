@@ -62,6 +62,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kFencedFrames;
 BLINK_COMMON_EXPORT extern const base::Feature kUserAgentClientHint;
 BLINK_COMMON_EXPORT extern const base::Feature
     kPrefersColorSchemeClientHintHeader;
+BLINK_COMMON_EXPORT extern const base::Feature kVariableCOLRV1;
 BLINK_COMMON_EXPORT extern const base::Feature kViewportHeightClientHintHeader;
 BLINK_COMMON_EXPORT extern const base::Feature kFullUserAgent;
 BLINK_COMMON_EXPORT extern const base::Feature kPath2DPaintCache;

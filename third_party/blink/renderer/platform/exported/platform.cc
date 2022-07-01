@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/partition_alloc_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/simple_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -68,6 +69,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 
@@ -255,6 +257,9 @@ void Platform::InitializeMainThreadCommon(Platform* platform,
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       CanvasMemoryDumpProvider::Instance(), "Canvas",
       base::ThreadTaskRunnerHandle::Get());
+
+  SkGraphics::SetVariableColrV1EnabledFunc(
+      RuntimeEnabledFeatures::VariableCOLRV1Enabled);
 
   // Use a delayed idle task as this is low priority work that should stop when
   // the main thread is not doing any work.

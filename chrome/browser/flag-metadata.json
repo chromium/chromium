@@ -6282,6 +6282,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "variable-colrv1",
+    "owners": [ "drott", "layout-dev@chromium.org" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "verbose-logging-in-nacl",
     "owners": [ "fabiansommer", "native-client-dev@googlegroups.com" ],
     // This flag is useful for debugging NaCl-related issues.

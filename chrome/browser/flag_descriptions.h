@@ -1570,6 +1570,9 @@ extern const char kUseSearchClickForRightClickDescription[];
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
+extern const char kVariableCOLRV1Name[];
+extern const char kVariableCOLRV1Description[];
+
 extern const char kVerticalSnapName[];
 extern const char kVerticalSnapDescription[];
 

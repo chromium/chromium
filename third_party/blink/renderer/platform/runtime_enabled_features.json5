@@ -2485,6 +2485,9 @@
       name: "V8IdleTasks",
     },
     {
+      name: "VariableCOLRV1",
+    },
+    {
       // Whether a video element should automatically play fullscreen unless
       // 'playsinline' is set.
       name: "VideoAutoFullscreen",

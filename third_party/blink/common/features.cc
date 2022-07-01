@@ -166,6 +166,9 @@ const base::Feature kUserAgentClientHint{"UserAgentClientHint",
 const base::Feature kPrefersColorSchemeClientHintHeader{
     "PrefersColorSchemeClientHintHeader", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kVariableCOLRV1{"VariableCOLRV1",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the Viewport Height client hint can be added to request
 // headers.
 const base::Feature kViewportHeightClientHintHeader{

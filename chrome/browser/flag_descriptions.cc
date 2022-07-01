@@ -2813,6 +2813,11 @@ const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "
     "This flag does not enable experimental JavaScript features.";
 
+const char kVariableCOLRV1Name[] = "Variable COLRv1 Fonts";
+const char kVariableCOLRV1Description[] =
+    "Enable rendering of COLRv1 glyphs with font variations applied. When this "
+    "flag is off, variations to COLRv1 tables are ignored.";
+
 const char kVerticalSnapName[] = "Vertical Snap features";
 const char kVerticalSnapDescription[] =
     "This enables Vertical Snap feature in portrait display."

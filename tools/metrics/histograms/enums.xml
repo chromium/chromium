@@ -55206,6 +55206,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:enabled"/>
   <int value="-2033225430" label="NTPMostLikelyFaviconsFromServer:disabled"/>
   <int value="-2033136855" label="MessagesForAndroidPasswords:disabled"/>
+  <int value="-2032940137" label="VariableCOLRV1:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
   <int value="-2030255112" label="Bruschetta:disabled"/>
@@ -57326,6 +57327,7 @@ from previous Chrome versions.
   <int value="-711991950" label="SiteExplorationUi:enabled"/>
   <int value="-711890895" label="enable-website-settings-manager"/>
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
+  <int value="-710519788" label="VariableCOLRV1:disabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
