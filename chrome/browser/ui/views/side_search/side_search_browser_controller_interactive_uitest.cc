@@ -672,8 +672,16 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
       "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch", 2);
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1341272): Test is flaky on Mac.
+#define MAYBE_SwitchingTabsHandlesFocusCorrectly \
+  DISABLED_SwitchingTabsHandlesFocusCorrectly
+#else
+#define MAYBE_SwitchingTabsHandlesFocusCorrectly \
+  SwitchingTabsHandlesFocusCorrectly
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
-                       SwitchingTabsHandlesFocusCorrectly) {
+                       MAYBE_SwitchingTabsHandlesFocusCorrectly) {
   auto* browser_view = BrowserViewFor(browser());
   auto* side_panel = GetSidePanelFor(browser());
   auto* contents_view = browser_view->contents_web_view();
@@ -894,7 +902,14 @@ IN_PROC_BROWSER_TEST_P(SideSearchV2Test, SwitchSidePanelInSingleTab) {
             coordinator->GetCurrentSidePanelEntryForTesting()->id());
 }
 
-IN_PROC_BROWSER_TEST_P(SideSearchV2Test, SwitchTabsWithGlobalSidePanel) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1341272): Test is flaky on Mac.
+#define MAYBE_SwitchTabsWithGlobalSidePanel \
+  DISABLED_SwitchTabsWithGlobalSidePanel
+#else
+#define MAYBE_SwitchTabsWithGlobalSidePanel SwitchTabsWithGlobalSidePanel
+#endif
+IN_PROC_BROWSER_TEST_P(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
   coordinator->SetNoDelaysForTesting();
