@@ -66,10 +66,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   ExtensionAction::ShowAction RunAction(const Extension* extension,
                                         bool grant_tab_permissions);
 
-  // Grants activeTab to |extension| (this should only be done if this is
-  // through a direct user action). If the action needs a page refresh to run,
-  // this will show a dialog instead of immediately granting permissions.
-  void GrantTabPermissions(const Extension* extension);
+  // Grants activeTab to |extensions| (this should only be done if this is
+  // through a direct user action). If any extension needs a page refresh to
+  // run, this will show a dialog instead of immediately granting permissions.
+  void GrantTabPermissions(const std::vector<const Extension*>& extensions);
 
   // Notifies the ExtensionActionRunner that the page access for |extension| has
   // changed.
@@ -182,15 +182,15 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void LogUMA() const;
 
   // Shows the bubble to prompt the user to refresh the page to run or not the
-  // action for the given |extension|. |callback| is invoked when the
+  // action for the given |extension_ids|. |callback| is invoked when the
   // bubble is closed.
-  void ShowReloadPageBubble(const Extension* extension,
+  void ShowReloadPageBubble(const std::vector<ExtensionId>& extension_ids,
                             bool update_permissions,
                             base::OnceClosure callback);
 
   // Called when the reload page bubble is accepted.
   void OnReloadPageBubbleAccepted(
-      const std::string& extension_id,
+      const std::vector<ExtensionId>& extension_ids,
       const GURL& page_url,
       SitePermissionsHelper::SiteAccess current_access,
       SitePermissionsHelper::SiteAccess new_access);

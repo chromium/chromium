@@ -61,6 +61,15 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
       GetActiveWebContents(), this, extensions_requesting_access_);
 }
 
+std::vector<std::string>
+ExtensionsRequestAccessButton::GetExtensionsNamesForTesting() {
+  std::vector<std::string> extension_names;
+  for (auto* extension : extensions_requesting_access_) {
+    extension_names.push_back(base::UTF16ToUTF8(extension->GetActionName()));
+  }
+  return extension_names;
+}
+
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
     const gfx::Point& p) const {
   // Request access button hover cards replace tooltips.
@@ -78,18 +87,18 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   if (!action_runner)
     return;
 
-  // TODO(crbug.com/1319555): Grant tab permissions for all extensions
-  // requesting access. For this we need to add support for handling multiple
-  // extensions in the ExtensionActionRunner and ReloadPageDialog.
   DCHECK_GT(extensions_requesting_access_.size(), 0u);
-  const extensions::Extension* extension =
+  const extensions::ExtensionSet& enabled_extensions =
       extensions::ExtensionRegistry::Get(browser_->profile())
-          ->enabled_extensions()
-          .GetByID(extensions_requesting_access_[0]->GetId());
-  DCHECK(extension);
+          ->enabled_extensions();
+  std::vector<const extensions::Extension*> extensions;
+  for (auto* extension : extensions_requesting_access_) {
+    extensions.push_back(enabled_extensions.GetByID(extension->GetId()));
+  }
+
   base::RecordAction(base::UserMetricsAction(
-      "Extensions.Toolbar.ExtensionActivatedFromRequestAccessButton"));
-  action_runner->GrantTabPermissions(extension);
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
+  action_runner->GrantTabPermissions(extensions);
 }
 
 // Linux enter/leave events are sometimes flaky, so we don't want to "miss"

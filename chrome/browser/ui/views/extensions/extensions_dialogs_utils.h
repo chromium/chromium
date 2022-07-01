@@ -31,11 +31,6 @@ ui::ImageModel GetIcon(ToolbarActionViewController* action,
 // web contents are present.
 std::u16string GetCurrentHost(content::WebContents* web_contents);
 
-// Returns the action view corresponding to `extension_id` in `container`. If it
-// doesn't exist, it defaults to the extensions menu button.
-views::View* GetDialogAnchorView(ExtensionsToolbarContainer* container,
-                                 const extensions::ExtensionId& extension_id);
-
 // Shows the dialog constructed from `dialog_model` anchored to the view
 // corresponding to `extension_id` in the extensions container. If parent does
 // not have an extensions container, it will display a browser-modal dialog
@@ -44,10 +39,10 @@ void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
-// Shows the dialog constructed from `dialog_model` anchored to the view
-// corresponding to `extension_id` in `container`.
+// Shows the dialog constructed from `dialog_model` for `extension_ids` and
+// is anchored to `container`.
 void ShowDialog(ExtensionsToolbarContainer* container,
-                const extensions::ExtensionId& extension_id,
+                const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_

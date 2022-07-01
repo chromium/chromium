@@ -8139,12 +8139,18 @@ should be able to be added at any place in this file.
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
-    The user activated an extension from the Extensions Menu in the toolbar.
-    This is recorded for both keyboard and mouse activation.
+    The user triggered an extension from the Extensions Menu in the toolbar. The
+    action may or may not run, depending on other checks. This is recorded for
+    both keyboard and mouse activation.
   </description>
 </action>
 
 <action name="Extensions.Toolbar.ExtensionActivatedFromRequestAccessButton">
+  <obsolete>
+    This was never fully implemented. Metric changed name to
+    &quot;ExtensionsActivatedFromRequestAccessButton&quot; to better fit
+    description
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
 </action>
@@ -8153,8 +8159,19 @@ should be able to be added at any place in this file.
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
-    The user activated an extension from the toolbar. This is recorded for both
-    keyboard and mouse activation.
+    The user triggered an extension from the toolbar. The action may or may not
+    run, depending on other checks. This is recorded for both keyboard and mouse
+    activation.
+  </description>
+</action>
+
+<action name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>emiliapaz@chromium.org</owner>
+  <description>
+    The user triggered multiple extensions from the request access button. Their
+    actions may or may not run, depending on other checks. This is recorded for
+    both keyboard and mouse activation.
   </description>
 </action>
 

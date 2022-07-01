@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <tuple>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -44,6 +45,20 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
+
+namespace {
+
+std::vector<extensions::ExtensionId> GetExtensionIds(
+    std::vector<const extensions::Extension*> extensions) {
+  std::vector<extensions::ExtensionId> extension_ids;
+  extension_ids.reserve(extensions.size());
+  for (auto* extension : extensions) {
+    extension_ids.push_back(extension->id());
+  }
+  return extension_ids;
+}
+
+}  // namespace
 
 namespace extensions {
 
@@ -87,7 +102,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     bool grant_tab_permissions) {
   if (grant_tab_permissions) {
     int blocked_actions = GetBlockedActions(extension->id());
-    GrantTabPermissions(extension);
+    GrantTabPermissions({extension});
 
     // If the extension had blocked actions before granting tab permissions,
     // granting active tab will have run the extension. Don't execute further
@@ -117,31 +132,43 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
   return ExtensionAction::ACTION_NONE;
 }
 
-void ExtensionActionRunner::GrantTabPermissions(const Extension* extension) {
-  int blocked_actions = GetBlockedActions(extension->id());
-  if ((blocked_actions & kRefreshRequiredActionsMask) == 0) {
-    // No refresh needed; immediately grant permissions.
-    TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter()
-        ->GrantIfRequested(extension);
+void ExtensionActionRunner::GrantTabPermissions(
+    const std::vector<const Extension*>& extensions) {
+  bool refresh_required = std::any_of(
+      extensions.begin(), extensions.end(), [this](const Extension* extension) {
+        return GetBlockedActions(extension->id()) & kRefreshRequiredActionsMask;
+      });
+
+  if (!refresh_required) {
+    // Immediately grant permissions to every extension.
+    for (auto* extension : extensions) {
+      TabHelper::FromWebContents(web_contents())
+          ->active_tab_permission_granter()
+          ->GrantIfRequested(extension);
+    }
     return;
   }
 
+  // Every extension that wants tab permission is currently blocked and must
+  // have "on click" access.
   const GURL& url = web_contents()->GetLastCommittedURL();
-  // An extension that wants to run but it is currently blocked must have
-  // "on click" access.
   constexpr SitePermissionsHelper::SiteAccess kExpectedSiteAccess =
       SitePermissionsHelper::SiteAccess::kOnClick;
-  DCHECK_EQ(SitePermissionsHelper(Profile::FromBrowserContext(browser_context_))
-                .GetSiteAccess(*extension, url),
-            kExpectedSiteAccess);
+  auto permissions =
+      SitePermissionsHelper(Profile::FromBrowserContext(browser_context_));
+  DCHECK(std::all_of(extensions.begin(), extensions.end(),
+                     [url, &permissions](const Extension* extension) {
+                       return permissions.GetSiteAccess(*extension, url) ==
+                              kExpectedSiteAccess;
+                     }));
 
-  // Running the action does not update permissions.
+  // Running the action a single time does not update permissions.
   constexpr bool update_permissions = false;
+  std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
   ShowReloadPageBubble(
-      extension, update_permissions,
+      extension_ids, update_permissions,
       base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
-                     weak_factory_.GetWeakPtr(), extension->id(), url,
+                     weak_factory_.GetWeakPtr(), extension_ids, url,
                      kExpectedSiteAccess, kExpectedSiteAccess));
 }
 
@@ -163,10 +190,11 @@ void ExtensionActionRunner::HandlePageAccessModified(
   // that common and therefore hopefully is not too noisy.
   if (revoking_permissions || blocked_actions & kRefreshRequiredActionsMask) {
     constexpr bool update_permissions = true;
+    std::vector<ExtensionId> extension_ids{extension->id()};
     ShowReloadPageBubble(
-        extension, update_permissions,
+        extension_ids, update_permissions,
         base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
-                       weak_factory_.GetWeakPtr(), extension->id(),
+                       weak_factory_.GetWeakPtr(), extension_ids,
                        web_contents()->GetLastCommittedURL(), current_access,
                        new_access));
     return;
@@ -380,9 +408,10 @@ void ExtensionActionRunner::LogUMA() const {
   }
 }
 
-void ExtensionActionRunner::ShowReloadPageBubble(const Extension* extension,
-                                                 bool update_permissions,
-                                                 base::OnceClosure callback) {
+void ExtensionActionRunner::ShowReloadPageBubble(
+    const std::vector<ExtensionId>& extension_ids,
+    bool update_permissions,
+    base::OnceClosure callback) {
   // For testing, simulate the bubble being accepted by directly invoking the
   // callback, or rejected by skipping the callback.
   if (accept_bubble_for_testing_.has_value()) {
@@ -402,12 +431,16 @@ void ExtensionActionRunner::ShowReloadPageBubble(const Extension* extension,
   if (!extensions_container)
     return;
 
-  ShowReloadPageDialog(browser, extension->id(), update_permissions,
+  ShowReloadPageDialog(browser, extension_ids, update_permissions,
                        std::move(callback));
 }
 
+// TODO(emiliapaz): Changing user site settings should also trigger the reload
+// page. Once it is implemented, the callback needs to grant user site settings
+// access. Consider separating callback for each purpose (e.g -ForTabPermission,
+// -ForSiteAccessChange, - ForUserSiteSettingChange).
 void ExtensionActionRunner::OnReloadPageBubbleAccepted(
-    const std::string& extension_id,
+    const std::vector<ExtensionId>& extension_ids,
     const GURL& page_url,
     SitePermissionsHelper::SiteAccess current_access,
     SitePermissionsHelper::SiteAccess new_access) {
@@ -415,21 +448,35 @@ void ExtensionActionRunner::OnReloadPageBubbleAccepted(
   if (!url::IsSameOriginWith(page_url, web_contents()->GetLastCommittedURL()))
     return;
 
-  const Extension* extension = ExtensionRegistry::Get(browser_context_)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
-  if (!extension)
-    return;
+  auto* registry = ExtensionRegistry::Get(browser_context_);
+  auto get_extension = [registry](ExtensionId extension_id) {
+    return registry->enabled_extensions().GetByID(extension_id);
+  };
 
   if (current_access != new_access) {
+    // Only a single extension can update its site access since multiple
+    // extensions cannot change their site access at the same time.
+    DCHECK_EQ(int(extension_ids.size()), 1);
+    const Extension* extension = get_extension(extension_ids[0]);
+    // Extension could have been removed while the reload page bubble was open.
+    if (!extension)
+      return;
+
     UpdatePageAccessSettings(extension, current_access, new_access);
   } else {
-    // Ignore the active tab permission being granted because we don't want
-    // to run scripts right before we refresh the page.
-    base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_, true);
-    TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter()
-        ->GrantIfRequested(extension);
+    // Multiple extension and a single extension that doesn't change its site
+    // access are granted one time access.
+    for (const auto& extension_id : extension_ids) {
+      const Extension* extension = get_extension(extension_id);
+      if (!extension)
+        continue;
+
+      base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_,
+                                              true);
+      TabHelper::FromWebContents(web_contents())
+          ->active_tab_permission_granter()
+          ->GrantIfRequested(extension);
+    }
   }
 
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);

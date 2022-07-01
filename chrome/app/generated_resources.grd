@@ -4233,14 +4233,14 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON" desc="The text of the button to proceed with the page refresh for running an extension.">
           Reload
         </message>
-        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE" desc="Title of the bubble to tell users that in order to run an extension, they'll need to refresh the page.">
+        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE" desc="Title of the bubble to tell users that in order to run or block an extension, they'll need to refresh the page.">
           Reload the page to use "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"
+        </message>
+        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_MULTIPLE_EXTENSIONS_TITLE" desc="Title of the bubble to tell users that in order to run or block an extension, they'll need to refresh the page.">
+          Reload the page to use these extensions
         </message>
         <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_UPDATE_PERMISSIONS_TITLE" desc="Title of the bubble to tell users that in order to change site permissions, they'll need to refresh the page.">
           Reload the page to apply your changes
-        </message>
-        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_CHECKBOX_LABEL" desc="The label of the checkbox to always allow the extensions to run on the current site.">
-          Always allow on this site
         </message>
       </if>
 

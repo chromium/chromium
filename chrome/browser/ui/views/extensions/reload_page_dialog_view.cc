@@ -23,21 +23,42 @@
 
 namespace extensions {
 
-void ShowReloadPageDialog(Browser* browser,
-                          const ExtensionId& extension_id,
-                          bool is_updating_permissions,
-                          base::OnceClosure callback) {
-  ShowReloadPageDialogView(browser, extension_id, is_updating_permissions,
+void ShowReloadPageDialog(
+    Browser* browser,
+    const std::vector<extensions::ExtensionId>& extension_ids,
+    bool is_updating_permissions,
+    base::OnceClosure callback) {
+  ShowReloadPageDialogView(browser, extension_ids, is_updating_permissions,
                            std::move(callback));
 }
 
 }  // namespace extensions
 
+namespace {
+
+std::u16string GetTitle(const std::vector<ToolbarActionViewController*> actions,
+                        bool is_updating_permissions) {
+  if (is_updating_permissions) {
+    return l10n_util::GetStringUTF16(
+        IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_UPDATE_PERMISSIONS_TITLE);
+  }
+  if (actions.size() == 1) {
+    return l10n_util::GetStringFUTF16(
+        IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE,
+        actions[0]->GetActionName());
+  }
+  return l10n_util::GetStringUTF16(
+      IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_MULTIPLE_EXTENSIONS_TITLE);
+}
+
+}  // namespace
+
 // static
-void ShowReloadPageDialogView(Browser* browser,
-                              const extensions::ExtensionId& extension_id,
-                              bool is_updating_permissions,
-                              base::OnceClosure callback) {
+void ShowReloadPageDialogView(
+    Browser* browser,
+    const std::vector<extensions::ExtensionId>& extension_ids,
+    bool is_updating_permissions,
+    base::OnceClosure callback) {
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser);
   DCHECK(container);
@@ -45,22 +66,28 @@ void ShowReloadPageDialogView(Browser* browser,
   ui::DialogModel::Builder dialog_builder;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    ToolbarActionViewController* extension =
-        container->GetActionForId(extension_id);
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    dialog_builder
-        .SetTitle(
-            is_updating_permissions
-                ? l10n_util::GetStringUTF16(
-                      IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_UPDATE_PERMISSIONS_TITLE)
-                : l10n_util::GetStringFUTF16(
-                      IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE,
-                      extension->GetActionName()))
-        .SetIcon(GetIcon(extension, web_contents))
+    std::vector<ToolbarActionViewController*> actions;
+    for (const auto& extension_id : extension_ids) {
+      actions.push_back(container->GetActionForId(extension_id));
+    }
+
+    dialog_builder.SetTitle(GetTitle(actions, is_updating_permissions))
         .AddOkButton(base::BindOnce(std::move(callback)),
                      l10n_util::GetStringUTF16(
                          IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
+
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (extension_ids.size() == 1) {
+      dialog_builder.SetIcon(GetIcon(actions[0], web_contents));
+    } else {
+      for (auto* action : actions) {
+        dialog_builder.AddMenuItem(
+            GetIcon(action, web_contents), action->GetActionName(),
+            base::DoNothing(),
+            ui::DialogModelMenuItem::Params().set_is_enabled(false));
+      }
+    }
   } else {
     dialog_builder
         .SetTitle(l10n_util::GetStringUTF16(
@@ -70,5 +97,5 @@ void ShowReloadPageDialogView(Browser* browser,
                          IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
   }
 
-  ShowDialog(container, extension_id, dialog_builder.Build());
+  ShowDialog(container, extension_ids, dialog_builder.Build());
 }

@@ -12,7 +12,7 @@ class Browser;
 
 static void ShowReloadPageDialogView(
     Browser* browser,
-    const extensions::ExtensionId& extension_id,
+    const std::vector<extensions::ExtensionId>& extension_ids,
     bool is_updating_permissions,
     base::OnceClosure callback);
 

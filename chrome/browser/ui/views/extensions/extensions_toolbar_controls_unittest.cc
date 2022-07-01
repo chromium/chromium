@@ -386,7 +386,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   LayoutContainerIfNecessary();
 
   constexpr char kActivatedUserAction[] =
-      "Extensions.Toolbar.ExtensionActivatedFromRequestAccessButton";
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton";
   base::UserActionTester user_action_tester;
   extensions::SitePermissionsHelper permissions(browser()->profile());
 

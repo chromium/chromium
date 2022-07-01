@@ -95,23 +95,6 @@ bool ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
   return false;
 }
 
-// static
-bool ExtensionActionViewController::AnyActionRequiresPageRefreshToRun(
-    const std::vector<ToolbarActionViewController*>& actions,
-    content::WebContents* web_contents) {
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-
-  return std::any_of(
-      actions.begin(), actions.end(),
-      [action_runner](ToolbarActionViewController* action) {
-        auto blocked_actions =
-            action_runner->GetBlockedActions(action->GetId());
-        return blocked_actions &
-               ExtensionActionRunner::kRefreshRequiredActionsMask;
-      });
-}
-
 ExtensionActionViewController::ExtensionActionViewController(
     scoped_refptr<const extensions::Extension> extension,
     Browser* browser,

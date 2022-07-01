@@ -31,6 +31,8 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
 
   void MaybeShowHoverCard();
 
+  std::vector<std::string> GetExtensionsNamesForTesting();
+
   // views::View:
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
