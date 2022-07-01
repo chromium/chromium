@@ -39,6 +39,10 @@ void AddTabAt(Browser* browser,
   params.tabstrip_index = idx;
   params.group = group;
   Navigate(&params);
+
+  if (!params.navigated_or_inserted_contents)
+    return;
+
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(params.navigated_or_inserted_contents);
   core_tab_helper->set_new_tab_start_time(new_tab_start_time);
