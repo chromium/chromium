@@ -1132,6 +1132,42 @@ using DisableDanglingPtrDetection = base::RawPtrMayDangle;
 // occurrences are meant to be removed.
 using DanglingUntriaged = DisableDanglingPtrDetection;
 
+// The following template parameters are only meaningful when `raw_ptr`
+// is `MTECheckedPtr` (never the case unless a particular GN arg is set
+// true.) `raw_ptr` users need not worry about this and can refer solely
+// to `DisableDanglingPtrDetection` and `DanglingUntriaged` above.
+//
+// The `raw_ptr` definition allows users to specify an implementation.
+// When `MTECheckedPtr` is in play, we need to augment this
+// implementation setting with another layer that allows the `raw_ptr`
+// to degrade into the no-op version.
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
+// Direct pass-through to no-op implementation.
+using DegradeToNoOpWhenMTE = base::internal::RawPtrNoOpImpl;
+
+// As above, but with the "untriaged dangling" annotation.
+using DanglingUntriagedDegradeToNoOpWhenMTE = base::internal::RawPtrNoOpImpl;
+
+// As above, but with the "explicitly disable protection" annotation.
+using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
+    base::internal::RawPtrNoOpImpl;
+
+#else
+
+// Direct pass-through to default implementation specified by `raw_ptr`
+// template.
+using DegradeToNoOpWhenMTE = base::RawPtrBanDanglingIfSupported;
+
+// Direct pass-through to `DanglingUntriaged`.
+using DanglingUntriagedDegradeToNoOpWhenMTE = DanglingUntriaged;
+
+// Direct pass-through to `DisableDanglingPtrDetection`.
+using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
+    DisableDanglingPtrDetection;
+
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
