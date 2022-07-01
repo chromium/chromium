@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -44,6 +45,9 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -626,6 +630,47 @@ void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
   DCHECK(result.has_value()) << result.error().message;
   DCHECK(result->is_list());
   profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result));
+}
+
+void AddInstallUrlData(PrefService* pref_service,
+                       WebAppSyncBridge* sync_bridge,
+                       const AppId& app_id,
+                       const GURL& url,
+                       const ExternalInstallSource& source) {
+  ScopedRegistryUpdate update(sync_bridge);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  DCHECK(app_to_update);
+
+  // Adding external app data (source and URL) to web_app DB.
+  app_to_update->AddInstallURLToManagementExternalConfigMap(
+      ConvertExternalInstallSourceToSource(source), url);
+
+  // Add to legacy external pref storage.
+  // TODO(crbug.com/1339965): Clean up after external pref migration is
+  // complete.
+  ExternallyInstalledWebAppPrefs(pref_service).Insert(url, app_id, source);
+}
+
+void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
+                                     WebAppSyncBridge* sync_bridge,
+                                     const AppId& app_id,
+                                     const GURL& url,
+                                     const ExternalInstallSource& source,
+                                     bool is_placeholder) {
+  ScopedRegistryUpdate update(sync_bridge);
+  ExternallyInstalledWebAppPrefs prefs(pref_service);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  DCHECK(app_to_update);
+
+  // Adding install_url, source and placeholder information to the web_app DB.
+  app_to_update->AddExternalSourceInformation(
+      ConvertExternalInstallSourceToSource(source), url, is_placeholder);
+
+  // Add to legacy external pref storage.
+  // TODO(crbug.com/1339965): Clean up after external pref migration is
+  // complete.
+  prefs.Insert(url, app_id, source);
+  prefs.SetIsPlaceholder(url, is_placeholder);
 }
 
 }  // namespace test

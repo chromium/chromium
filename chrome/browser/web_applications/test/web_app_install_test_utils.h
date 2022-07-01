@@ -40,7 +40,9 @@ void WaitUntilReady(WebAppProvider* provider);
 
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
-                         const GURL& app_url);
+                         const GURL& app_url,
+                         const webapps::WebappInstallSource install_source =
+                             webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
 // Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
 // used in unit tests and browser tests.

@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -370,11 +370,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyId) {
             app_url.spec());
   EXPECT_TRUE(mock_app_publisher.get_deltas().back()->policy_id->empty());
 
-  // Set policy to pin the web app.
-  web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
-      browser()->profile()->GetPrefs());
-  web_app_prefs.Insert(install_url, app_id,
-                       web_app::ExternalInstallSource::kExternalPolicy);
+  // Writing to the external prefs to set policy to pin the app.
+  web_app::test::AddInstallUrlData(
+      browser()->profile()->GetPrefs(), &provider().sync_bridge(), app_id,
+      install_url, web_app::ExternalInstallSource::kExternalPolicy);
 
   provider().install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 

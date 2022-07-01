@@ -666,14 +666,15 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2_));
   WaitForSystemWebAppInstall(profile2);
+  const AppId& app_id1 = GetAppId(profile1);
+  const AppId& app_id2 = GetAppId(profile2);
 
   g_browser_process->profile_manager()->ScheduleProfileForDeletion(
       profile2->GetPath(), base::DoNothing());
 
   {
     auto launch_params = apps::AppLaunchParams(
-        GetAppId(profile2),
-        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id2, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
@@ -685,8 +686,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
   {
     auto launch_params = apps::AppLaunchParams(
-        GetAppId(profile1),
-        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id1, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =

@@ -287,8 +287,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
               std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),
-          externally_installed_app_prefs_(profile->GetPrefs()),
-          test_install_task_manager_(test_install_task_manager) {}
+          test_install_task_manager_(test_install_task_manager),
+          profile_(profile) {}
 
     TestExternallyManagedAppInstallTask(
         const TestExternallyManagedAppInstallTask&) = delete;
@@ -310,14 +310,10 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
         if (!registrar().IsInstalled(*app_id)) {
           auto web_app =
               test::CreateWebApp(install_url, WebAppManagement::kPolicy);
-          web_app->AddExternalSourceInformation(WebAppManagement::kPolicy,
-                                                install_url,
-                                                result.did_install_placeholder);
           controller().RegisterApp(std::move(web_app));
-          externally_installed_app_prefs_.Insert(install_url, *app_id,
-                                                 install_source);
-          externally_installed_app_prefs_.SetIsPlaceholder(
-              install_url, result.did_install_placeholder);
+          test::AddInstallUrlAndPlaceholderData(
+              profile_->GetPrefs(), &controller().sync_bridge(), *app_id,
+              install_url, install_source, result.did_install_placeholder);
         }
       }
       std::move(callback).Run(
@@ -348,8 +344,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
    private:
     raw_ptr<TestExternallyManagedAppManager>
         externally_managed_app_manager_impl_;
-    ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
     TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
+    raw_ptr<Profile> profile_;
   };
 
   class TestExternallyManagedAppRegistrationTask

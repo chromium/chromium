@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -346,28 +347,33 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<web_app::WebAppCommandManager> command_manager_;
 };
 
-// Test that System Apps do install with the feature enabled.
-TEST_F(SystemWebAppManagerTest, Enabled) {
-  InitEmptyRegistrar();
+class SystemWebAppManagerTest_PrefMigrationEnabled
+    : public SystemWebAppManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SystemWebAppManagerTest_PrefMigrationEnabled() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
+  }
 
-  SystemWebAppDelegateMap system_apps;
-  system_apps.emplace(SystemWebAppType::SETTINGS,
-                      std::make_unique<UnittestingSystemAppDelegate>(
-                          SystemWebAppType::SETTINGS, kSettingsAppInternalName,
-                          AppUrl1(), GetApp1WebAppInfoFactory()));
-  system_apps.emplace(SystemWebAppType::CAMERA,
-                      std::make_unique<UnittestingSystemAppDelegate>(
-                          SystemWebAppType::CAMERA, kCameraAppInternalName,
-                          AppUrl2(), GetApp2WebAppInfoFactory()));
+  bool IsExternalDataReadFromDBEnabled() {
+    return base::FeatureList::IsEnabled(
+        features::kUseWebAppDBInsteadOfExternalPrefs);
+  }
 
-  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
-  StartAndWaitForAppsToSynchronize();
-
-  EXPECT_EQ(2u, externally_managed_app_manager().install_requests().size());
-}
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Test that changing the set of System Apps uninstalls apps.
-TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
+TEST_P(SystemWebAppManagerTest_PrefMigrationEnabled,
+       UninstallAppInstalledInPreviousSession) {
   // Simulate System Apps and a regular app that were installed in the
   // previous session.
   InitRegistrarWithSystemApps(
@@ -409,10 +415,40 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   EXPECT_EQ(externally_managed_app_manager().install_requests(),
             expected_install_options_list);
 
-  // We should try to uninstall the app that is no longer in the System App
-  // list.
-  EXPECT_EQ(std::vector<GURL>({AppUrl2()}),
-            externally_managed_app_manager().uninstall_requests());
+  // If read from DB is enabled, then the 2nd app is already uninstalled after
+  // synchronize, hence the uninstall_request list is empty. but if the data
+  // is read from prefs, the url still persists, so it can be read.
+  if (IsExternalDataReadFromDBEnabled()) {
+    EXPECT_EQ(std::vector<GURL>({}),
+              externally_managed_app_manager().uninstall_requests());
+  } else {
+    EXPECT_EQ(std::vector<GURL>({AppUrl2()}),
+              externally_managed_app_manager().uninstall_requests());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemWebAppManagerTest_PrefMigrationEnabled,
+                         ::testing::Bool());
+
+// Test that System Apps do install with the pref migration enabled.
+TEST_F(SystemWebAppManagerTest, Enabled) {
+  InitEmptyRegistrar();
+
+  SystemWebAppDelegateMap system_apps;
+  system_apps.emplace(SystemWebAppType::SETTINGS,
+                      std::make_unique<UnittestingSystemAppDelegate>(
+                          SystemWebAppType::SETTINGS, kSettingsAppInternalName,
+                          AppUrl1(), GetApp1WebAppInfoFactory()));
+  system_apps.emplace(SystemWebAppType::CAMERA,
+                      std::make_unique<UnittestingSystemAppDelegate>(
+                          SystemWebAppType::CAMERA, kCameraAppInternalName,
+                          AppUrl2(), GetApp2WebAppInfoFactory()));
+
+  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+  StartAndWaitForAppsToSynchronize();
+
+  EXPECT_EQ(2u, externally_managed_app_manager().install_requests().size());
 }
 
 TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {

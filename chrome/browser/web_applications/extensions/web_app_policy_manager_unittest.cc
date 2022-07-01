@@ -325,8 +325,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
     fake_registry_controller_ =
         std::make_unique<FakeWebAppRegistryController>();
-    externally_installed_app_prefs_ =
-        std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     fake_externally_managed_app_manager_ =
         std::make_unique<FakeExternallyManagedAppManager>(profile());
     test_system_app_manager_ =
@@ -354,13 +352,10 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                     ConvertExternalInstallSourceToSource(install_source));
                 if (install_options.override_name)
                   web_app->SetName(install_options.override_name.value());
-                web_app->AddInstallURLToManagementExternalConfigMap(
-                    ConvertExternalInstallSourceToSource(install_source),
-                    install_url);
                 RegisterApp(std::move(web_app));
-
-                externally_installed_app_prefs().Insert(install_url, app_id,
-                                                        install_source);
+                test::AddInstallUrlData(profile()->GetPrefs(),
+                                        &controller().sync_bridge(), app_id,
+                                        install_url, install_source);
               }
               return ExternallyManagedAppManager::InstallResult(
                   install_result_code_);
@@ -390,7 +385,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     web_app_policy_manager_.reset();
     test_system_app_manager_.reset();
     fake_externally_managed_app_manager_.reset();
-    externally_installed_app_prefs_.reset();
     fake_registry_controller_.reset();
 
     ChromeRenderViewHostTestHarness::TearDown();
@@ -400,12 +394,10 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                                       ExternalInstallSource install_source) {
     auto web_app = test::CreateWebApp(
         url, ConvertExternalInstallSourceToSource(install_source));
-    web_app->AddInstallURLToManagementExternalConfigMap(
-        ConvertExternalInstallSourceToSource(install_source), url);
     RegisterApp(std::move(web_app));
-
-    externally_installed_app_prefs().Insert(
-        url, GenerateAppId(/*manifest_id=*/absl::nullopt, url), install_source);
+    test::AddInstallUrlData(profile()->GetPrefs(), &controller().sync_bridge(),
+                            GenerateAppId(/*manifest_id=*/absl::nullopt, url),
+                            url, install_source);
   }
 
   void AwaitPolicyManagerAppsSynchronized() {
@@ -464,10 +456,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   WebAppPolicyManager& policy_manager() { return *web_app_policy_manager_; }
   ScopedTestingLocalState testing_local_state_;
 
-  ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
-    return *externally_installed_app_prefs_;
-  }
-
   FakeWebAppRegistryController& controller() {
     return *fake_registry_controller_;
   }
@@ -512,8 +500,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
       webapps::InstallResultCode::kSuccessNewInstall;
 
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
-  std::unique_ptr<ExternallyInstalledWebAppPrefs>
-      externally_installed_app_prefs_;
   std::unique_ptr<FakeExternallyManagedAppManager>
       fake_externally_managed_app_manager_;
   std::unique_ptr<ash::TestSystemWebAppManager> test_system_app_manager_;

@@ -220,7 +220,7 @@ WebAppRegistrar::GetExternallyInstalledApps(
     const WebApp::ExternalConfigMap& config_map =
         web_app.management_to_external_config_map();
     auto it = config_map.find(management_source);
-    if (it != config_map.end())
+    if (it != config_map.end() && !it->second.install_urls.empty())
       installed_apps[web_app.app_id()] = it->second.install_urls;
   }
   return installed_apps;

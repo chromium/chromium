@@ -338,6 +338,7 @@ std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoForTestApp() {
   info->theme_color = 0xFF00FF00;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->install_url = GURL("chrome://test-system-app/pwa.html");
   return info;
 }
 
@@ -510,6 +511,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             info->theme_color = 0xFF00FF00;
             info->display_mode = blink::mojom::DisplayMode::kStandalone;
             info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+            info->install_url = GURL("chrome://initiating-app/pwa.html");
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(

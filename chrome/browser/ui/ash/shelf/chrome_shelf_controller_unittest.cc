@@ -4948,6 +4948,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   web_app::AppId InstallExternalWebApp(std::string start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
+    web_app_info->install_url = GURL(start_url);
     const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
         /*manifest_id=*/absl::nullopt, web_app_info->start_url);
     PrefService* prefs = browser()->profile()->GetPrefs();
@@ -4958,8 +4959,10 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
     base::RunLoop run_loop;
     prefs->CommitPendingWrite(run_loop.QuitClosure());
     run_loop.Run();
-    web_app::AppId web_app_id =
-        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    web_app::AppId web_app_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields =*/false,
+        webapps::WebappInstallSource::EXTERNAL_POLICY);
     DCHECK_EQ(expected_web_app_id, web_app_id);
     return web_app_id;
   }
