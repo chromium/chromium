@@ -449,6 +449,9 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   // Add hugepages.
   request.set_use_hugepages(IsArcVmUseHugePages());
 
+  // Request guest memory locking, if configured.
+  request.set_lock_guest_memory(base::FeatureList::IsEnabled(kLockGuestMemory));
+
   // Specify VM Memory.
   if (base::FeatureList::IsEnabled(kVmMemorySize)) {
     base::SystemMemoryInfoKB info;

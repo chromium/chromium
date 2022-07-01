@@ -88,6 +88,11 @@ const base::Feature kGuestZram{"ArcGuestZram",
 // Controls the size of the guest zram.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 
+// Enables/disables mlock() of guest memory for ARCVM.
+// Often used in combination with kGuestZram.
+const base::Feature kLockGuestMemory{"ArcLockGuestMemory",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Control properties of Logd at boot time. This is only for ARCVM.
 const base::Feature kLogdConfig{"ArcGuestLogdConfig",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
