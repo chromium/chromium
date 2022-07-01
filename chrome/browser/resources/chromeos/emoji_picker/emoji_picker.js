@@ -59,10 +59,13 @@ export class EmojiPicker extends PolymerElement {
       /** @private {?EmojiGroupData} */
       emojiData: {
         type: Array,
+        value: () => ([]),
         observer: 'onEmojiDataChanged',
       },
+      /** @private {EmojiGroupData} */
+      categoriesData: {type: Array, value: () => ([])},
       /** @type {?EmojiGroupData} */
-      emoticonData: {type: Array, value: []},
+      emoticonData: {type: Array, value: () => ([])},
       /** @private {Object<string,string>} */
       preferenceMapping: {type: Object},
       /** @private {!EmojiGroup} */
@@ -73,6 +76,8 @@ export class EmojiPicker extends PolymerElement {
       pagination: {type: Number, value: 1, observer: 'onPaginationChanged'},
       /** @private {string} */
       search: {type: String, value: '', observer: 'onSearchChanged'},
+      /** @private {boolean} */
+      searchLazyIndexing: {type: Boolean, value: true},
       /** @private {boolean} */
       textSubcategoryBarEnabled: {
         type: Boolean,
@@ -101,8 +106,11 @@ export class EmojiPicker extends PolymerElement {
     this.emojiData = [];
 
     // TODO(b/216475720): rename the data structure below for a generic naming.
-    this.emojiHistory = {'group': 'Recently used', 'emoji': []};
-    this.emoticonHistory = {'group': 'Recently used', 'emoji': []};
+    this.emojiHistory = {
+      'group': 'Recently used', 'emoji': [], 'category': CategoryEnum.EMOJI};
+    this.emoticonHistory = {
+      'group': 'Recently used', 'emoji': [],
+      'category': CategoryEnum.EMOTICON};
 
     this.preferenceMapping = {};
 
@@ -199,7 +207,7 @@ export class EmojiPicker extends PolymerElement {
             ev => this.onCategoryButtonClick(ev.detail.categoryName));
         this.addEventListener(events.EMOJI_REMAINING_DATA_LOADED, () => {
           this.fetchOrderingData(this.emoticonDataUrl).then((data) => {
-            this.emoticonData = data;
+            this.updateCategoryData(data, CategoryEnum.EMOTICON, true);
             this.dispatchEvent(events.createCustomEvent(
               events.V2_CONTENT_LOADED));
           });
@@ -248,6 +256,44 @@ export class EmojiPicker extends PolymerElement {
       xhr.open('GET', url);
       xhr.send();
     });
+  }
+
+  /**
+   * Processes a new category data and updates any needed variables and UIs
+   * accordingly.
+   *
+   * @param {!EmojiGroupData} data The category data to be processes.
+   *    Note: category field will be added to the each EmojiGroup in data.
+   * @param {!CategoryEnum} category Category of the data.
+   * @param {boolean} lastPartition True if no future data updates are
+   *      expected.
+   */
+  updateCategoryData(data, category, lastPartition=false) {
+    // TODO(b/233270589): Add category to the underlying data.
+    // Add category field to the data.
+    data.forEach((emojiGroup) => {
+      emojiGroup.category = category;
+    });
+
+    // TODO(b/235418846): Remove the following.
+    // Update the data variable of the category.
+    switch (category) {
+      case CategoryEnum.EMOJI:
+        this.push('emojiData', ...data);
+        break;
+      case CategoryEnum.EMOTICON:
+        this.push('emoticonData', ...data);
+        break;
+      default:
+        throw new Error(`Unknown category ${category}.`);
+    }
+
+    this.push('categoriesData', ...data);
+
+    // If all data is fetched, trigger search index.
+    if (lastPartition) {
+      this.searchLazyIndexing = false;
+    }
   }
 
   onSearchChanged(newValue) {
@@ -768,7 +814,7 @@ export class EmojiPicker extends PolymerElement {
     // There is quite a lot of emoji data to load which causes slow rendering.
     // Just load the first emoji category immediately, and defer loading of the
     // other categories (which will be off screen).
-    this.emojiData = [data[0]];
+    this.updateCategoryData([data[0]], CategoryEnum.EMOJI);
     afterNextRender(
         this,
         () => this.fetchOrderingData(`${this.emojiDataUrl}_remaining.json`)
@@ -776,7 +822,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onEmojiDataLoadedRemaining(data) {
-    this.push('emojiData', ...data);
+    this.updateCategoryData(data, CategoryEnum.EMOJI, !this.v2Enabled);
     this.dispatchEvent(events.createCustomEvent(
       events.EMOJI_REMAINING_DATA_LOADED));
     afterNextRender(this, () => {
