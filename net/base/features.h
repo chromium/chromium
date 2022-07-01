@@ -432,6 +432,17 @@ NET_EXPORT extern const base::Feature kStaticKeyPinningEnforcement;
 // When enabled, cookies with a non-ASCII domain attribute will be rejected.
 NET_EXPORT extern const base::Feature kCookieDomainRejectNonASCII;
 
+NET_EXPORT extern const base::Feature kOptimizeNetworkBuffers;
+
+NET_EXPORT
+extern const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
+
 }  // namespace features
 }  // namespace net
 

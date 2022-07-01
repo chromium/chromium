@@ -4,8 +4,8 @@
 
 #include "services/network/public/cpp/net_adapters.h"
 
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -33,8 +33,8 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
       (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
     uint32_t max_bytes = kMaxBufSize;
-    if (base::FeatureList::IsEnabled(features::kOptimizeNetworkBuffers)) {
-      max_bytes = features::kOptimizeNetworkBuffersBytesReadLimit.Get();
+    if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers)) {
+      max_bytes = net::features::kOptimizeNetworkBuffersBytesReadLimit.Get();
     }
 
     if (*num_bytes > max_bytes)
