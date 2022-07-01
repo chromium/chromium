@@ -1804,6 +1804,7 @@ crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-tailed.h
 
 crbug.com/753671 [ Linux ] external/wpt/css/css-content/quotes-001.html [ Failure ]
 crbug.com/753671 [ Mac ] external/wpt/css/css-content/quotes-006.html [ Failure ]
+crbug.com/1341208 [ Mac ] external/wpt/css/css-content/quotes-007.html [ Skip ]
 crbug.com/753671 [ Mac ] external/wpt/css/css-content/quotes-009.html [ Failure ]
 crbug.com/753671 [ Mac10.13 ] external/wpt/css/css-content/quotes-012.html [ Failure ]
 crbug.com/753671 [ Mac10.14 ] external/wpt/css/css-content/quotes-012.html [ Failure ]
