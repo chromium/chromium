@@ -233,7 +233,9 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
     // supported in vertical flow and text-combine is only for vertical flow.
     const LayoutRect decoration_rect =
         NGInkOverflow::ComputeTextDecorationOverflow(
-            style, style.GetFont(), ink_overflow, /* inline_context */ nullptr);
+            style, style.GetFont(),
+            /* offset_in_container */ PhysicalOffset(), ink_overflow,
+            /* inline_context */ nullptr);
     ink_overflow.Unite(decoration_rect);
   }
 

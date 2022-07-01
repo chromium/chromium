@@ -6,9 +6,18 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
+
+namespace {
+
+String StringFromTextItem(const NGInlineCursor& cursor) {
+  return cursor.Current().Text(cursor).ToString().StripWhiteSpace();
+}
+
+}  // namespace
 
 class NGInlinePaintContextTest : public RenderingTest,
                                  private ScopedLayoutNGForTest,
@@ -25,6 +34,70 @@ class NGInlinePaintContextTest : public RenderingTest,
     return font_sizes;
   }
 };
+
+TEST_F(NGInlinePaintContextTest, MultiLine) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container {
+      font-family: Ahem;
+      font-size: 10px;
+      line-height: 1;
+      margin: 0;
+      width: 800px;
+    }
+    .ul {
+      text-decoration-line: underline;
+    }
+    .no-cull {
+      background: yellow;
+    }
+    </style>
+    <div id="container" class="ul">
+      <br><br>
+      <span id="span" class="no-cull">
+        0<br>1
+      </span>
+    </div>
+  )HTML");
+  // Test the `#span` fragment in the first line.
+  const LayoutObject* span = GetLayoutObjectByElementId("span");
+  NGInlineCursor cursor;
+  cursor.MoveTo(*span);
+  ASSERT_TRUE(cursor.Current());
+  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
+  const NGFragmentItem& span0_item = *cursor.Current();
+  EXPECT_EQ(span0_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+
+  // Test the text "0".
+  cursor.MoveToNext();
+  EXPECT_EQ(StringFromTextItem(cursor), "0");
+  const NGFragmentItem& text0_item = *cursor.Current();
+  EXPECT_EQ(text0_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+
+  cursor.MoveToNext();
+  EXPECT_TRUE(cursor.Current().IsLineBreak());
+  const NGFragmentItem& br_item = *cursor.Current();
+  EXPECT_EQ(br_item.InkOverflow(), PhysicalRect(0, 0, 0, 10));
+
+  // Test the `#span` fragment in the second line.
+  cursor.MoveToNext();
+  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kLine);
+  cursor.MoveToNext();
+  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
+  const NGFragmentItem& span1_item = *cursor.Current();
+  EXPECT_EQ(span1_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+
+  // Test the text "1".
+  cursor.MoveToNext();
+  EXPECT_EQ(StringFromTextItem(cursor), "1");
+  const NGFragmentItem& text1_item = *cursor.Current();
+  EXPECT_EQ(text1_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+
+  // Test the containing block.
+  const NGPhysicalBoxFragment& container_fragment = cursor.ContainerFragment();
+  EXPECT_EQ(container_fragment.InkOverflow(), PhysicalRect(0, 0, 800, 40));
+}
 
 TEST_F(NGInlinePaintContextTest, VerticalAlign) {
   LoadAhem();
@@ -54,10 +127,6 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
     </div>
   )HTML");
 
-  const auto StringFromTextItem = [](const NGInlineCursor& cursor) {
-    return cursor.Current().Text(cursor).ToString().StripWhiteSpace();
-  };
-
   NGInlineCursor cursor;
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   cursor.MoveToIncludingCulledInline(*span1);
@@ -76,10 +145,14 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
 
   // The bottom of ink overflows of `span1`, `span2`, and `span3` should match,
   // because underlines are drawn at the decorating box; i.e., `span1`.
-  EXPECT_EQ(span1_item.InkOverflow().Bottom(),
-            span2_item.InkOverflow().Bottom());
-  EXPECT_EQ(span1_item.InkOverflow().Bottom(),
-            span3_item.InkOverflow().Bottom());
+  EXPECT_EQ(span1_item.InkOverflow().Bottom() +
+                span1_item.OffsetInContainerFragment().top,
+            span2_item.InkOverflow().Bottom() +
+                span2_item.OffsetInContainerFragment().top);
+  EXPECT_EQ(span1_item.InkOverflow().Bottom() +
+                span1_item.OffsetInContainerFragment().top,
+            span3_item.InkOverflow().Bottom() +
+                span3_item.OffsetInContainerFragment().top);
 }
 
 TEST_F(NGInlinePaintContextTest, NestedBlocks) {

@@ -343,20 +343,20 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     Type type,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
-    const PhysicalSize& size,
+    const PhysicalRect& rect_in_container,
     const NGInlinePaintContext* inline_context,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == kNotSet || type == kInvalidated);
   absl::optional<PhysicalRect> ink_overflow = ComputeTextInkOverflow(
-      text_info, style, style.GetFont(), size, inline_context);
+      text_info, style, style.GetFont(), rect_in_container, inline_context);
   if (!ink_overflow) {
-    *ink_overflow_out = {PhysicalOffset(), size};
+    *ink_overflow_out = {PhysicalOffset(), rect_in_container.size};
     return Reset(type);
   }
   ink_overflow->ExpandEdgesToPixelBoundaries();
   *ink_overflow_out = *ink_overflow;
-  return SetSelf(type, *ink_overflow, size);
+  return SetSelf(type, *ink_overflow, rect_in_container.size);
 }
 
 NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
@@ -381,7 +381,8 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
                          LayoutUnit(rect.height() / length_adjust_scale));
   // No |inline_context| because the decoration box is not supported for SVG.
   absl::optional<PhysicalRect> ink_overflow = ComputeTextInkOverflow(
-      text_info, style, scaled_font, item_size, /* inline_context */ nullptr);
+      text_info, style, scaled_font, PhysicalRect(PhysicalOffset(), item_size),
+      /* inline_context */ nullptr);
   const bool needs_transform =
       scaling_factor != 1.0f || !transform.IsIdentity();
   PhysicalSize unscaled_size = PhysicalSize::FromSizeFRound(rect.size());
@@ -429,7 +430,7 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
-    const PhysicalSize& size,
+    const PhysicalRect& rect_in_container,
     const NGInlinePaintContext* inline_context) {
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
   const gfx::RectF text_ink_bounds = scaled_font.TextInkBounds(text_info);
@@ -450,12 +451,15 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   // so compute text decoration overflow first.
   if (!style.AppliedTextDecorations().IsEmpty() && scaled_font.PrimaryFont()) {
     LayoutRect decoration_rect = ComputeTextDecorationOverflow(
-        style, scaled_font, ink_overflow, inline_context);
+        style, scaled_font, rect_in_container.offset, ink_overflow,
+        inline_context);
     ink_overflow.Unite(decoration_rect);
   }
 
-  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone)
-    ink_overflow = ComputeEmphasisMarkOverflow(style, size, ink_overflow);
+  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
+    ink_overflow = ComputeEmphasisMarkOverflow(style, rect_in_container.size,
+                                               ink_overflow);
+  }
 
   const WritingMode writing_mode = style.GetWritingMode();
   if (ShadowList* text_shadow = style.TextShadow()) {
@@ -469,15 +473,16 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   }
 
   PhysicalRect local_ink_overflow =
-      WritingModeConverter({writing_mode, TextDirection::kLtr}, size)
+      WritingModeConverter({writing_mode, TextDirection::kLtr},
+                           rect_in_container.size)
           .ToPhysical(LogicalRect(ink_overflow));
 
   // Uniting the frame rect ensures that non-ink spaces such side bearings, or
   // even space characters, are included in the visual rect for decorations.
-  if (!HasOverflow(local_ink_overflow, size))
+  if (!HasOverflow(local_ink_overflow, rect_in_container.size))
     return absl::nullopt;
 
-  local_ink_overflow.Unite({{}, size});
+  local_ink_overflow.Unite({{}, rect_in_container.size});
   return local_ink_overflow;
 }
 
@@ -509,12 +514,10 @@ LayoutRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const ComputedStyle& style,
     const Font& scaled_font,
+    const PhysicalOffset& offset_in_container,
     const LayoutRect& ink_overflow,
     const NGInlinePaintContext* inline_context) {
   DCHECK(!style.AppliedTextDecorations().IsEmpty());
-  // Use a zero offset because all offsets
-  // are applied to the ink overflow after it has been computed.
-  PhysicalOffset offset;
   // Ideally we should pass MinimumThickness1(false) if this function is
   // called for NGFragmentItem::kSvgText. However it requires to add arguments
   // to some functions.
@@ -522,7 +525,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   // because it just makes the resultant ink overflow slightly larger.
   const MinimumThickness1 kMinimumThicknessIsOne(true);
   TextDecorationInfo decoration_info(
-      offset, ink_overflow.Width(), style, inline_context,
+      offset_in_container, ink_overflow.Width(), style, inline_context,
       /* selection_text_decoration */ absl::nullopt, &scaled_font,
       kMinimumThicknessIsOne);
   NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),
@@ -548,6 +551,8 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
       accumulated_bound.Union(decoration_info.Bounds());
     }
   }
+  // Adjust the container coordinate system to the local coordinate system.
+  accumulated_bound -= gfx::Vector2dF(offset_in_container);
   return EnclosingLayoutRect(accumulated_bound);
 }
 

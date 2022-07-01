@@ -117,7 +117,7 @@ class CORE_EXPORT NGInkOverflow {
   Type SetTextInkOverflow(Type type,
                           const NGTextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
-                          const PhysicalSize& size,
+                          const PhysicalRect& rect_in_container,
                           const NGInlinePaintContext* inline_context,
                           PhysicalRect* ink_overflow_out);
 
@@ -138,7 +138,7 @@ class CORE_EXPORT NGInkOverflow {
       const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const Font& scaled_font,
-      const PhysicalSize& size,
+      const PhysicalRect& rect_in_container,
       const NGInlinePaintContext* inline_context);
 
   // Returns ink-overflow with emphasis mark overflow in logical direction.
@@ -155,6 +155,7 @@ class CORE_EXPORT NGInkOverflow {
   static LayoutRect ComputeTextDecorationOverflow(
       const ComputedStyle& style,
       const Font& scaled_font,
+      const PhysicalOffset& offset_in_container,
       const LayoutRect& ink_overflow,
       const NGInlinePaintContext* inline_context);
 
