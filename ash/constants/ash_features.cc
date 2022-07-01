@@ -693,6 +693,12 @@ const base::Feature kFastPairSubsequentPairingUX{
 const base::Feature kFastPairSavedDevices{"FastPairSavedDevices",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the "Saved Devices" Fast Pair strict interpretation of opt-in status,
+// meaning that a user's preferences determine if retroactive pairing and
+// subsequent pairing scenarios are enabled.
+const base::Feature kFastPairSavedDevicesStrictOptIn{
+    "FastPairSavedDevicesStrictOptIn", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables experimental UI features in Files app.
 const base::Feature kFilesAppExperimental{"FilesAppExperimental",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1855,6 +1861,10 @@ bool IsFastPairSubsequentPairingUXEnabled() {
 
 bool IsFastPairSavedDevicesEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevices);
+}
+
+bool IsFastPairSavedDevicesStrictOptInEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
 }
 
 bool IsFileManagerFuseBoxEnabled() {
