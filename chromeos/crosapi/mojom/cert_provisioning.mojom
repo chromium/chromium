@@ -61,6 +61,9 @@ struct CertProvisioningProcessStatus {
   // RequiredClientCertificateForDevice policy, contains “false” if by
   // RequiredClientCertificateForUser.
   bool is_device_wide@7 = false;
+  // Describes the reason for failure in case a worker enters the failed state.
+  [MinVersion=1]
+  string? failure_message@8;
 };
 
 // This interface is implemented by classes that want to register themself as

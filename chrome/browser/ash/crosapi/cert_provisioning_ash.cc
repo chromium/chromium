@@ -177,6 +177,7 @@ void CertProvisioningAsh::AppendWorkerStatuses(
     status->state = AshToMojoState(worker.state_before_failure);
     status->did_fail = true;
     status->is_device_wide = is_device_wide;
+    status->failure_message = worker.failure_message;
   }
 }
 

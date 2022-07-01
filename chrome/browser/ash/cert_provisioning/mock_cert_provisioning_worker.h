@@ -82,15 +82,18 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
               (),
               (const override));
   MOCK_METHOD(base::Time, GetLastUpdateTime, (), (const override));
+  MOCK_METHOD(const std::string&, GetFailureMessage, (), (const override));
 
   void SetExpectations(testing::Cardinality do_step_times,
                        bool is_waiting,
-                       const CertProfile& cert_profile);
+                       const CertProfile& cert_profile,
+                       std::string failure_message);
 
-  // Stores |cert_profile| for SetExpectations function. It is returned by
-  // reference and without copying it there is a risk that the original
-  // CertProfile can be deleted before clearing the expectation.
+  // Storage fields for SetExpectations function. They are returned by
+  // reference and without copying them there is a risk that the original
+  // objects can be deleted before clearing the expectation.
   CertProfile cert_profile_;
+  std::string failure_message_;
 };
 
 }  // namespace cert_provisioning

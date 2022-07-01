@@ -231,7 +231,8 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1),
-                          /*is_waiting=*/false, cert_profile);
+                          /*is_waiting=*/false, cert_profile,
+                          /*failure_message=*/"");
 
   // Add 1 certificate profile to the policy (the values are the same as
   // in |cert_profile|).
@@ -285,7 +286,8 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1),
-                          /*is_waiting=*/false, cert_profile);
+                          /*is_waiting=*/false, cert_profile,
+                          /*failure_message=*/"reason for failure");
 
   // Add 1 certificate profile to the policy (the values are the same as
   // in |cert_profile|).
@@ -302,6 +304,13 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
   // Emulate callback from the worker.
   scheduler.OnProfileFinished(cert_profile,
                               CertProvisioningWorkerState::kFailed);
+
+  // The failure message in the FailedWorkerInfo object should match the
+  // failure message passed to the mock worker
+  EXPECT_EQ(scheduler.GetFailedCertProfileIds().size(), 1U);
+  EXPECT_EQ(
+      scheduler.GetFailedCertProfileIds().at(kCertProfileId).failure_message,
+      "reason for failure");
 
   // Failed worker should be deleted, failed profile ID is saved, no new
   // workers should be created.
@@ -342,7 +351,7 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile);
+                          cert_profile, /*failure_message=*/"");
   FastForwardBy(base::Seconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
@@ -366,7 +375,7 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
   MockCertProvisioningWorker* worker2 =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker2->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                           cert_profile);
+                           cert_profile, /*failure_message=*/"");
   FastForwardBy(base::Hours(5));
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
@@ -416,15 +425,15 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
   MockCertProvisioningWorker* worker0 =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile0);
   worker0->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                           cert_profile0);
+                           cert_profile0, /*failure_message=*/"");
   MockCertProvisioningWorker* worker1 =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile1);
   worker1->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                           cert_profile1);
+                           cert_profile1, /*failure_message=*/"");
   MockCertProvisioningWorker* worker2 =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile2);
   worker2->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                           cert_profile2);
+                           cert_profile2, /*failure_message=*/"");
 
   // Add 3 certificate profiles to the policy (the values are the same as
   // in |cert_profile|-s)
@@ -458,7 +467,7 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
 
   // worker1 is waiting. Should be continued.
   worker1->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/true,
-                           cert_profile1);
+                           cert_profile1, /*failure_message=*/"");
 
   // worker2 failed. Should be deleted and the profile id should be saved.
   scheduler.OnProfileFinished(cert_profile2,
@@ -541,7 +550,8 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
   // is_waiting==true should be set by Serializer so Scheduler knows that the
   // worker has to be continued manually.
   worker->SetExpectations(/*do_step_times=*/AtLeast(1),
-                          /*is_waiting=*/true, cert_profile);
+                          /*is_waiting=*/true, cert_profile,
+                          /*failure_message=*/"");
 
   CertProvisioningSchedulerImpl scheduler(
       kCertScope, GetProfile(), &pref_service_, &cloud_policy_client_,
@@ -580,7 +590,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile_v1);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile_v1);
+                          cert_profile_v1, /*failure_message=*/"");
 
   // Add 1 certificate profile to the policy (the values are the same as
   // in |cert_profile_v1|).
@@ -606,7 +616,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
   // Add a new worker to the factory.
   worker = mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile_v1);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile_v1);
+                          cert_profile_v1, /*failure_message=*/"");
 
   // After some delay a new worker should be created to try again.
   FastForwardBy(base::Seconds(31));
@@ -627,7 +637,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
   worker = mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile_v2);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile_v2);
+                          cert_profile_v2, /*failure_message=*/"");
 
   // On policy update a new worker should be created to try again.
   config = ParseJson(
@@ -697,7 +707,7 @@ TEST_F(CertProvisioningSchedulerTest, RetryAfterNoInternetConnection) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile);
+                          cert_profile, /*failure_message=*/"");
 
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -728,7 +738,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteWorkerWithoutPolicy) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile);
+                          cert_profile, /*failure_message=*/"");
 
   // Prefs update will be ignored because initialization task has not finished
   // yet.
@@ -803,7 +813,8 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
     // This worker should be deleted approximately right after creation, hence
     // no calls for DoStep.
     worker->SetExpectations(/*do_step_times=*/Exactly(0),
-                            /*is_waiting=*/true, cert_profile);
+                            /*is_waiting=*/true, cert_profile,
+                            /*failure_message=*/"");
 
     CertProvisioningSchedulerImpl scheduler(
         kCertScope, GetProfile(), &pref_service_, &cloud_policy_client_,
@@ -843,7 +854,8 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneWorker) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/Exactly(1),
-                          /*is_waiting=*/false, cert_profile);
+                          /*is_waiting=*/false, cert_profile,
+                          /*failure_message=*/"");
 
   // Add 1 certificate profile to the policy (the values are the same as
   // in |cert_profile|).
@@ -858,7 +870,8 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneWorker) {
   // If worker is waiting, it should be continued.
   {
     worker->SetExpectations(/*do_step_times=*/Exactly(1),
-                            /*is_waiting=*/true, cert_profile);
+                            /*is_waiting=*/true, cert_profile,
+                            /*failure_message=*/"");
 
     scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
@@ -868,7 +881,8 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneWorker) {
   // If worker is not waiting, it should not be continued.
   {
     worker->SetExpectations(/*do_step_times=*/Exactly(0),
-                            /*is_waiting=*/false, cert_profile);
+                            /*is_waiting=*/false, cert_profile,
+                            /*failure_message=*/"");
 
     scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
@@ -881,14 +895,16 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneWorker) {
     SetWifiNetworkState(shill::kStateIdle);
 
     worker->SetExpectations(/*do_step_times=*/Exactly(0),
-                            /*is_waiting=*/true, cert_profile);
+                            /*is_waiting=*/true, cert_profile,
+                            /*failure_message=*/"");
 
     scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
     worker->SetExpectations(/*do_step_times=*/Exactly(1),
-                            /*is_waiting=*/true, cert_profile);
+                            /*is_waiting=*/true, cert_profile,
+                            /*failure_message=*/"");
 
     SetWifiNetworkState(shill::kStateOnline);
   }
@@ -955,7 +971,8 @@ TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1),
-                          /*is_waiting=*/false, cert_profile);
+                          /*is_waiting=*/false, cert_profile,
+                          /*failure_message=*/"");
 
   // One day (according to the policy) before the certificate expires, scheduler
   // should create a new worker to provision a replacement.
@@ -995,7 +1012,7 @@ TEST_F(CertProvisioningSchedulerTest, PlatformKeysServiceShutDown) {
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                          cert_profile);
+                          cert_profile, /*failure_message=*/"");
   scheduler.UpdateAllWorkers();
 
   // Now 1 worker should be created.
@@ -1051,11 +1068,11 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
   MockCertProvisioningWorker* worker0 =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile0);
   worker0->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                           cert_profile0);
+                           cert_profile0, /*failure_message=*/"");
   MockCertProvisioningWorker* worker1 =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile1);
   worker1->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
-                           cert_profile1);
+                           cert_profile1, /*failure_message=*/"");
 
   // Add 2 certificate profiles to the policy (the values are the same as
   // in |cert_profile|-s)

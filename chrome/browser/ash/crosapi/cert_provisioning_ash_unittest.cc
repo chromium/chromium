@@ -26,6 +26,10 @@ using ::testing::SaveArg;
 namespace crosapi {
 namespace {
 
+// Fake failure message used for tests. The exact content of the message can be
+// chosen arbitrarily.
+const char kFakeFailureMessage[] = "Failure Message";
+
 // Extracted from a X.509 certificate using the command:
 // openssl x509 -pubkey -noout -in cert.pem
 // and reformatted as a single line.
@@ -276,6 +280,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
       mojom::CertProvisioningProcessState::kKeypairGenerated;
   expected_user_status->did_fail = false;
   expected_user_status->is_device_wide = false;
+  expected_user_status->failure_message = absl::nullopt;
 
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
@@ -316,6 +321,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveDeviceWorker) {
       mojom::CertProvisioningProcessState::kSignCsrFinished;
   expected_device_status->did_fail = false;
   expected_device_status->is_device_wide = true;
+  expected_device_status->failure_message = absl::nullopt;
 
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
@@ -336,6 +342,7 @@ TEST_F(CertProvisioningAshTest, GetStatusFailedUserWorker) {
   info.public_key = der_encoded_spki_str_;
   info.cert_profile_name = kFailedUserCertProfileName;
   info.last_update_time = last_update_time;
+  info.failure_message = kFakeFailureMessage;
 
   auto expected_user_status = mojom::CertProvisioningProcessStatus::New();
   expected_user_status->cert_profile_id = kFailedUserCertProfileId;
@@ -346,6 +353,7 @@ TEST_F(CertProvisioningAshTest, GetStatusFailedUserWorker) {
       mojom::CertProvisioningProcessState::kVaChallengeFinished;
   expected_user_status->did_fail = true;
   expected_user_status->is_device_wide = false;
+  expected_user_status->failure_message = kFakeFailureMessage;
 
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
@@ -366,6 +374,7 @@ TEST_F(CertProvisioningAshTest, GetStatusFailedDeviceWorker) {
   info.public_key = der_encoded_spki_str_;
   info.cert_profile_name = kFailedDeviceCertProfileName;
   info.last_update_time = last_update_time;
+  info.failure_message = kFakeFailureMessage;
 
   auto expected_device_status = mojom::CertProvisioningProcessStatus::New();
   expected_device_status->cert_profile_id = kFailedDeviceCertProfileId;
@@ -376,6 +385,7 @@ TEST_F(CertProvisioningAshTest, GetStatusFailedDeviceWorker) {
       mojom::CertProvisioningProcessState::kFinishCsrResponseReceived;
   expected_device_status->did_fail = true;
   expected_device_status->is_device_wide = true;
+  expected_device_status->failure_message = kFakeFailureMessage;
 
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());

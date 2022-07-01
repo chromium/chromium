@@ -100,6 +100,24 @@ std::u16string StateToText(CertProvisioningProcessState state) {
   NOTREACHED();
 }
 
+// Returns the status message of the process.
+// The status message is expanded by the failure message if the process failed
+// and the error message is non-empty.
+std::u16string MakeStatusMessage(
+    bool did_fail,
+    CertProvisioningProcessState state,
+    const absl::optional<std::string>& failure_message) {
+  if (!did_fail) {
+    return StateToText(state);
+  }
+  std::u16string status_message =
+      StateToText(CertProvisioningProcessState::kFailed);
+  if (failure_message.has_value()) {
+    status_message += base::UTF8ToUTF16(": " + failure_message.value());
+  }
+  return status_message;
+}
+
 // Returns a localized representation of the last update time as a delay (e.g.
 // "5 minutes ago".
 std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
@@ -229,16 +247,9 @@ void CertificateProvisioningUiHandler::GotStatus(
         "lastUnsuccessfulMessage",
         GetMessageFromBackendError(process->last_backend_server_error));
     entry.SetIntKey("stateId", static_cast<int>(process->state));
-
-    if (process->did_fail) {
-      // For failed processes `state` contains the last good state. Show an
-      // error as a text and keep the detailed information in the stateId.
-      entry.SetStringKey("status",
-                         StateToText(CertProvisioningProcessState::kFailed));
-    } else {
-      entry.SetStringKey("status", StateToText(process->state));
-    }
-
+    entry.SetStringKey("status",
+                       MakeStatusMessage(process->did_fail, process->state,
+                                         process->failure_message));
     entry.SetStringKey("publicKey",
                        x509_certificate_model::ProcessRawSubjectPublicKeyInfo(
                            process->public_key));

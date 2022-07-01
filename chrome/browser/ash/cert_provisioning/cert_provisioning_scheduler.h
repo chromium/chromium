@@ -46,6 +46,10 @@ using CertProfileSet = base::flat_set<CertProfile, CertProfileComparator>;
 // Holds information about a worker which failed that is still useful (e.g. for
 // UI) after the worker has been destroyed.
 struct FailedWorkerInfo {
+  FailedWorkerInfo();
+  ~FailedWorkerInfo();
+  FailedWorkerInfo(const FailedWorkerInfo&);
+  FailedWorkerInfo& operator=(const FailedWorkerInfo&);
   // The state the worker had prior to switching to the failed state
   // (CertProvisioningWorkerState::kFailed).
   CertProvisioningWorkerState state_before_failure =
@@ -57,6 +61,8 @@ struct FailedWorkerInfo {
   // The time the worker was last updated, i.e. when it transferred to the
   // failed state.
   base::Time last_update_time;
+  // Holds a message describing the reason for the failure.
+  std::string failure_message;
 };
 
 // Interface for the scheduler for client certificate provisioning using device

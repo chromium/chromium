@@ -76,6 +76,12 @@ NetworkStateHandler* GetNetworkStateHandler() {
 
 }  // namespace
 
+FailedWorkerInfo::FailedWorkerInfo() = default;
+FailedWorkerInfo::~FailedWorkerInfo() = default;
+FailedWorkerInfo::FailedWorkerInfo(const FailedWorkerInfo&) = default;
+FailedWorkerInfo& FailedWorkerInfo::operator=(const FailedWorkerInfo&) =
+    default;
+
 // static
 std::unique_ptr<CertProvisioningScheduler>
 CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
@@ -679,6 +685,7 @@ void CertProvisioningSchedulerImpl::UpdateFailedCertProfiles(
   info.cert_profile_name = worker.GetCertProfile().name;
   info.public_key = worker.GetPublicKey();
   info.last_update_time = worker.GetLastUpdateTime();
+  info.failure_message = worker.GetFailureMessage();
 
   failed_cert_profiles_[worker.GetCertProfile().profile_id] = std::move(info);
 }
