@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -112,7 +113,8 @@ void GPUAdapter::AddConsoleWarning(ExecutionContext* execution_context,
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
 
     allowed_console_warnings_remaining_--;
@@ -166,7 +168,8 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
     case WGPURequestDeviceStatus_Unknown:
       DCHECK_EQ(dawn_device, nullptr);
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, error_message));
+          DOMExceptionCode::kOperationError,
+          StringFromASCIIAndUTF8(error_message)));
       break;
     default:
       NOTREACHED();

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compilation_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_compilation_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
@@ -94,8 +95,8 @@ void GPUShaderModule::OnCompilationInfoCallback(
   for (uint32_t i = 0; i < info->messageCount; ++i) {
     const WGPUCompilationMessage* message = &info->messages[i];
     result->AppendMessage(MakeGarbageCollected<GPUCompilationMessage>(
-        message->message, message->type, message->lineNum, message->linePos,
-        message->offset, message->length));
+        StringFromASCIIAndUTF8(message->message), message->type,
+        message->lineNum, message->linePos, message->offset, message->length));
   }
 
   resolver->Resolve(result);

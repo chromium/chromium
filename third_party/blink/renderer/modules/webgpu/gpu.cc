@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -109,7 +110,8 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
   }
 }
@@ -218,7 +220,8 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, error_message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(error_message));
     execution_context->AddConsoleMessage(console_message);
   }
   RecordAdapterForIdentifiability(script_state, options, gpu_adapter);

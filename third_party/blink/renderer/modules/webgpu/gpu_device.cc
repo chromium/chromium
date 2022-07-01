@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
@@ -123,7 +124,8 @@ void GPUDevice::AddConsoleWarning(const char* message) {
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
 
     allowed_console_warnings_remaining_--;
@@ -245,9 +247,11 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == WGPUErrorType_Validation) {
-    init->setError(MakeGarbageCollected<GPUValidationError>(message));
+    init->setError(MakeGarbageCollected<GPUValidationError>(
+        StringFromASCIIAndUTF8(message)));
   } else if (errorType == WGPUErrorType_OutOfMemory) {
-    init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(message));
+    init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(
+        StringFromASCIIAndUTF8(message)));
   } else {
     return;
   }
@@ -283,7 +287,8 @@ void GPUDevice::OnLogging(WGPULoggingType loggingType, const char* message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering, level, message);
+        mojom::blink::ConsoleMessageSource::kRendering, level,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
   }
 }
@@ -295,8 +300,8 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
   AddConsoleWarning(message);
 
   if (lost_property_->GetState() == LostProperty::kPending) {
-    auto* device_lost_info =
-        MakeGarbageCollected<GPUDeviceLostInfo>(reason, message);
+    auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
+        reason, StringFromASCIIAndUTF8(message));
     lost_property_->Resolve(device_lost_info);
   }
 }
@@ -318,7 +323,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, message));
+          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
       break;
     }
 
@@ -345,7 +350,7 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, message));
+          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
       break;
     }
 
@@ -545,10 +550,12 @@ void GPUDevice::OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
       resolver->Resolve(v8::Null(isolate));
       break;
     case WGPUErrorType_OutOfMemory:
-      resolver->Resolve(MakeGarbageCollected<GPUOutOfMemoryError>(message));
+      resolver->Resolve(MakeGarbageCollected<GPUOutOfMemoryError>(
+          StringFromASCIIAndUTF8(message)));
       break;
     case WGPUErrorType_Validation:
-      resolver->Resolve(MakeGarbageCollected<GPUValidationError>(message));
+      resolver->Resolve(MakeGarbageCollected<GPUValidationError>(
+          StringFromASCIIAndUTF8(message)));
       break;
     case WGPUErrorType_Unknown:
     case WGPUErrorType_DeviceLost:
