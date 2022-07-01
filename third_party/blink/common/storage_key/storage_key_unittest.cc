@@ -622,8 +622,8 @@ TEST(StorageKeyTest, ToNetSiteForCookies) {
     const bool has_nonce = false;
   } test_cases[] = {
       {kOrigin, kOrigin, net::SchemefulSite(kOrigin)},
-      {kOrigin, kInsecureOrigin, net::SchemefulSite(kInsecureOrigin)},
-      {kInsecureOrigin, kOrigin, net::SchemefulSite(kOrigin)},
+      {kOrigin, kInsecureOrigin, net::SchemefulSite(), true},
+      {kInsecureOrigin, kOrigin, net::SchemefulSite(), true},
       {kOrigin, kSubdomainOrigin, net::SchemefulSite(kOrigin)},
       {kSubdomainOrigin, kOrigin, net::SchemefulSite(kOrigin)},
       {kOrigin, kDifferentSite, net::SchemefulSite(), true},
@@ -637,9 +637,19 @@ TEST(StorageKeyTest, ToNetSiteForCookies) {
                      .ToNetSiteForCookies()
                      .site();
     } else {
-      got_site = StorageKey(test_case.origin, test_case.top_level_origin)
-                     .ToNetSiteForCookies()
-                     .site();
+      net::SchemefulSite top_level_site =
+          net::SchemefulSite(test_case.top_level_origin);
+
+      blink::mojom::AncestorChainBit ancestor_chain_bit =
+          top_level_site == net::SchemefulSite(test_case.origin)
+              ? blink::mojom::AncestorChainBit::kSameSite
+              : blink::mojom::AncestorChainBit::kCrossSite;
+
+      got_site =
+          StorageKey::CreateWithOptionalNonce(test_case.origin, top_level_site,
+                                              nullptr, ancestor_chain_bit)
+              .ToNetSiteForCookies()
+              .site();
     }
     if (test_case.expected_opaque) {
       EXPECT_TRUE(got_site.opaque());

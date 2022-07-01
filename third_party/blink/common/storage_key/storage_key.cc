@@ -343,14 +343,18 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
 }
 
 const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
-  if (!nonce_ &&
-      ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite &&
-      net::registry_controlled_domains::SameDomainOrHost(
-          origin_, url::Origin::Create(top_level_site_.GetURL()),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    return net::SiteForCookies::FromUrl(top_level_site_.GetURL());
+  if (nonce_ ||
+      ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite) {
+    // If any of the ancestor frames are cross-site to `origin_` then the
+    // SiteForCookies should be null. The existence of `nonce_` means the same
+    // thing.
+    return net::SiteForCookies();
   }
-  return net::SiteForCookies();
+
+  // The `ancestor_chain_bit_` being kSameSite should already indicate that the
+  // `top_level_site_` and `origin_` are same-site.
+  DCHECK(top_level_site_ == net::SchemefulSite(origin_));
+  return net::SiteForCookies(top_level_site_);
 }
 
 // static

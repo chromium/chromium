@@ -144,10 +144,16 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Return the "site for cookies" for the StorageKey's frame (or worker).
   //
-  // Right now this "site for cookies" is not entirely accurate. For example
-  // consider if A.com embeds B.com which embeds A.com in a child frame. The
-  // site for cookies according to this method will be A.com, but according to
-  // the spec it should be an opaque origin.
+  // While the SiteForCookie object returned matches the current default
+  // behavior it's important to note that it may not exactly match a
+  // SiteForCookies created for the same frame context and could cause
+  // behavioral difference for users using the
+  // LegacySameSiteCookieBehaviorEnabledForDomainList enterprise policy. The
+  // impact is expected to be minimal however.
+  //
+  // (The difference is due to StorageKey not tracking the same state as
+  // SiteForCookies, see see net::SiteForCookies::schemefully_same_ for more
+  // info.)
   const net::SiteForCookies ToNetSiteForCookies() const;
 
   // Returns true if the registration key string is partitioned by top-level
