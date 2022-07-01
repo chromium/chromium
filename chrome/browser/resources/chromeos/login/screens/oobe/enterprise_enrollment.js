@@ -285,6 +285,10 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     if (data.gaia_buttons_type) {
       this.gaiaDialogButtonsType_ = data.gaia_buttons_type;
     }
+    if (this.gaiaDialogButtonsType_ ==
+        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
+      this.licenseType_ = OobeTypes.LicenseType.KIOSK;
+    }
     this.isManualEnrollment_ = 'enrollment_mode' in data ?
         data.enrollment_mode === 'manual' :
         undefined;
