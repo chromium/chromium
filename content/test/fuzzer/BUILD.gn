@@ -375,6 +375,21 @@ if (is_linux || is_chromeos_lacros) {
   }
 }
 
+mojolpm_fuzzer_test("image_capture_mojolpm_fuzzer") {
+  sources = [ "image_capture_mojolpm_fuzzer.cc" ]
+
+  proto_source = "image_capture_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//media/capture:capture_lib",
+  ]
+
+  proto_deps = [ "//media/capture/mojom:image_capture_mojolpm" ]
+}
+
 mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
   sources = [ "presentation_service_mojolpm_fuzzer.cc" ]
 
