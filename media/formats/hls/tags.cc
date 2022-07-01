@@ -342,7 +342,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
     }
 
     auto value = types::ParseQuotedStringWithoutSubstitution(
-        map.GetValue(XDefineTagAttribute::kValue));
+        map.GetValue(XDefineTagAttribute::kValue), /*allow_empty*/ true);
     if (value.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag);
     }

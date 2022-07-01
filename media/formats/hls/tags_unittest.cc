@@ -349,6 +349,9 @@ TEST(HlsTagsTest, ParseXDefineTag) {
   ErrorTest<XDefineTag>(R"(NAME="",VALUE="Foo")",
                         ParseStatusCode::kMalformedTag);
 
+  // Empty IMPORT is not allowed
+  ErrorTest<XDefineTag>(R"(IMPORT="")", ParseStatusCode::kMalformedTag);
+
   // Non-valid NAME is not allowed
   ErrorTest<XDefineTag>(R"(NAME=".FOO",VALUE="Foo")",
                         ParseStatusCode::kMalformedTag);
@@ -458,6 +461,8 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS=abc)", variable_dict,
                            sub_buffer, ParseStatusCode::kMalformedTag);
   ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS=123)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS="")", variable_dict,
                            sub_buffer, ParseStatusCode::kMalformedTag);
 
   // "CODECS" is subject to variable substitution

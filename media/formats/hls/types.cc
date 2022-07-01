@@ -275,15 +275,25 @@ absl::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
 ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer) {
-  return ParseQuotedStringWithoutSubstitution(source_str)
+    VariableDictionary::SubstitutionBuffer& sub_buffer,
+    bool allow_empty) {
+  return ParseQuotedStringWithoutSubstitution(source_str, allow_empty)
       .MapValue([&variable_dict, &sub_buffer](auto str) {
         return variable_dict.Resolve(str, sub_buffer);
-      });
+      })
+      .MapValue(
+          [allow_empty](auto str) -> ParseStatus::Or<ResolvedSourceString> {
+            if (!allow_empty && str.Empty()) {
+              return ParseStatusCode::kFailedToParseQuotedString;
+            } else {
+              return str;
+            }
+          });
 }
 
 ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
-    SourceString source_str) {
+    SourceString source_str,
+    bool allow_empty) {
   if (source_str.Size() < 2) {
     return ParseStatusCode::kFailedToParseQuotedString;
   }
@@ -294,7 +304,12 @@ ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
     return ParseStatusCode::kFailedToParseQuotedString;
   }
 
-  return source_str.Substr(1, source_str.Size() - 2);
+  auto str = source_str.Substr(1, source_str.Size() - 2);
+  if (!allow_empty && str.Empty()) {
+    return ParseStatusCode::kFailedToParseQuotedString;
+  }
+
+  return str;
 }
 
 AttributeListIterator::AttributeListIterator(SourceString content)

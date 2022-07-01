@@ -90,16 +90,22 @@ class MEDIA_EXPORT ByteRange {
 // Parses a string surrounded by double-quotes ("), returning the inner string.
 // These appear in the context of attribute-lists, and are subject to variable
 // substitution. `sub_buffer` must outlive the returned string.
+// `allow_empty` determines whether an empty quoted string is accepted, (after
+// variable substitution) which isn't the case for most attributes.
 MEDIA_EXPORT ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer);
+    VariableDictionary::SubstitutionBuffer& sub_buffer,
+    bool allow_empty = false);
 
 // Parses a string surrounded by double-quotes ("), returning the interior
 // string. These appear in the context of attribute-lists, however certain tags
 // disallow variable substitution so this function exists to serve those.
+// `allow_empty` determines whether an empty quoted string is accepted, which
+// isn't the case for most attributes.
 MEDIA_EXPORT ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
-    SourceString source_str);
+    SourceString source_str,
+    bool allow_empty = false);
 
 // Provides an iterator-style interface over attribute-lists.
 // Since the number of attributes expected in an attribute-list for a tag varies

@@ -458,20 +458,21 @@ TEST(HlsTypesTest, ParseVariableName) {
 }
 
 TEST(HlsTypesTest, ParseQuotedStringWithoutSubstitution) {
-  const auto ok_test = [](base::StringPiece in, base::StringPiece expected_out,
+  const auto ok_test = [](base::StringPiece in, bool allow_empty,
+                          base::StringPiece expected_out,
                           const base::Location& from =
                               base::Location::Current()) {
     auto in_str = SourceString::CreateForTesting(in);
-    auto out = types::ParseQuotedStringWithoutSubstitution(in_str);
+    auto out = types::ParseQuotedStringWithoutSubstitution(in_str, allow_empty);
     ASSERT_TRUE(out.has_value()) << from.ToString();
     EXPECT_EQ(std::move(out).value().Str(), expected_out) << from.ToString();
   };
 
-  const auto error_test = [](base::StringPiece in,
+  const auto error_test = [](base::StringPiece in, bool allow_empty,
                              const base::Location& from =
                                  base::Location::Current()) {
     auto in_str = SourceString::CreateForTesting(in);
-    auto out = types::ParseQuotedStringWithoutSubstitution(in_str);
+    auto out = types::ParseQuotedStringWithoutSubstitution(in_str, allow_empty);
     ASSERT_TRUE(out.has_error()) << from.ToString();
     EXPECT_EQ(std::move(out).error().code(),
               ParseStatusCode::kFailedToParseQuotedString)
@@ -479,86 +480,102 @@ TEST(HlsTypesTest, ParseQuotedStringWithoutSubstitution) {
   };
 
   // Test some basic examples
-  ok_test("\"\"", "");
-  ok_test("\" \"", " ");
-  ok_test("\"Hello, world!\"", "Hello, world!");
+  ok_test("\"a\"", false, "a");
+  ok_test("\" \"", false, " ");
+  ok_test("\"Hello, world!\"", false, "Hello, world!");
+
+  // Empty output string is not allowed by default
+  error_test("\"\"", false);
+  ok_test("\"\"", true, "");
 
   // Interior quotes are not checked by this function
-  ok_test("\"Hello, \"World!\"\"", "Hello, \"World!\"");
+  ok_test("\"Hello, \"World!\"\"", false, "Hello, \"World!\"");
 
   // Variables are not substituted by this function, and do not trigger an error
-  ok_test("\"Hello, {$WORLD}\"", "Hello, {$WORLD}");
+  ok_test("\"Hello, {$WORLD}\"", false, "Hello, {$WORLD}");
 
   // Single-quoted string is not allowed
-  error_test("''");
-  error_test("' '");
-  error_test("'Hello, world!'");
+  error_test("''", false);
+  error_test("' '", false);
+  error_test("'Hello, world!'", false);
 
   // Missing leading/trailing quote is not allowed
-  error_test("\"");
-  error_test("\" ");
-  error_test(" \"");
-  error_test("\"Hello, world!");
-  error_test("Hello, world!\"");
+  error_test("\"", false);
+  error_test("\" ", false);
+  error_test(" \"", false);
+  error_test("\"Hello, world!", false);
+  error_test("Hello, world!\"", false);
 
-  // Empty string is not allowed
-  error_test("");
+  // Empty input string is not allowed
+  error_test("", false);
 }
 
 TEST(HlsTypesTest, ParseQuotedString) {
   VariableDictionary dict;
   EXPECT_TRUE(dict.Insert(CreateVarName("FOO"), "bar"));
-  EXPECT_TRUE(dict.Insert(CreateVarName("BAZ"), "\"foo\""));
+  EXPECT_TRUE(dict.Insert(CreateVarName("BAZ"), "foo"));
+  EXPECT_TRUE(dict.Insert(CreateVarName("EMPTY"), ""));
 
-  const auto ok_test =
-      [&dict](base::StringPiece in, base::StringPiece expected_out,
-              const base::Location& from = base::Location::Current()) {
-        auto in_str = SourceString::CreateForTesting(in);
-        VariableDictionary::SubstitutionBuffer sub_buffer;
-        auto out = types::ParseQuotedString(in_str, dict, sub_buffer);
-        ASSERT_TRUE(out.has_value()) << from.ToString();
-        EXPECT_EQ(std::move(out).value().Str(), expected_out)
-            << from.ToString();
-      };
+  const auto ok_test = [&dict](base::StringPiece in, bool allow_empty,
+                               base::StringPiece expected_out,
+                               const base::Location& from =
+                                   base::Location::Current()) {
+    auto in_str = SourceString::CreateForTesting(in);
+    VariableDictionary::SubstitutionBuffer sub_buffer;
+    auto out = types::ParseQuotedString(in_str, dict, sub_buffer, allow_empty);
+    ASSERT_TRUE(out.has_value()) << from.ToString();
+    EXPECT_EQ(std::move(out).value().Str(), expected_out) << from.ToString();
+  };
 
-  const auto error_test = [&dict](base::StringPiece in,
+  const auto error_test = [&dict](base::StringPiece in, bool allow_empty,
                                   ParseStatusCode expected_error,
                                   const base::Location& from =
                                       base::Location::Current()) {
     auto in_str = SourceString::CreateForTesting(in);
     VariableDictionary::SubstitutionBuffer sub_buffer;
-    auto out = types::ParseQuotedString(in_str, dict, sub_buffer);
+    auto out = types::ParseQuotedString(in_str, dict, sub_buffer, allow_empty);
     ASSERT_TRUE(out.has_error()) << from.ToString();
     EXPECT_EQ(std::move(out).error().code(), expected_error) << from.ToString();
   };
 
   // Test some basic examples
-  ok_test("\"\"", "");
-  ok_test("\" \"", " ");
-  ok_test("\"Hello, world!\"", "Hello, world!");
+  ok_test("\"a\"", false, "a");
+  ok_test("\" \"", false, " ");
+  ok_test("\"Hello, world!\"", false, "Hello, world!");
+
+  // Empty output string is not allowed by default (before or after
+  // variable substitution)
+  error_test("\"\"", false, ParseStatusCode::kFailedToParseQuotedString);
+  ok_test("\"\"", true, "");
+  error_test("\"{$EMPTY}\"", false,
+             ParseStatusCode::kFailedToParseQuotedString);
+  ok_test("\"{$EMPTY}\"", true, "");
 
   // Interior quotes are not checked by this function
-  ok_test("\"Hello, \"World!\"\"", "Hello, \"World!\"");
+  ok_test("\"Hello, \"World!\"\"", false, "Hello, \"World!\"");
 
-  // Variables ARE substituted by this function
-  ok_test("\"Hello, {$FOO}\"", "Hello, bar");
-  ok_test("\"Hello, {$BAZ}\"", "Hello, \"foo\"");
-  error_test("\"Hello, {$foo}\"", ParseStatusCode::kVariableUndefined);
+  // Variables are substituted by this function
+  ok_test("\"Hello, {$FOO}\"", false, "Hello, bar");
+  ok_test("\"Hello, {$BAZ}\"", false, "Hello, foo");
+  error_test("\"Hello, {$foo}\"", false, ParseStatusCode::kVariableUndefined);
 
   // Single-quoted string is not allowed
-  error_test("''", ParseStatusCode::kFailedToParseQuotedString);
-  error_test("' '", ParseStatusCode::kFailedToParseQuotedString);
-  error_test("'Hello, world!'", ParseStatusCode::kFailedToParseQuotedString);
+  error_test("''", false, ParseStatusCode::kFailedToParseQuotedString);
+  error_test("' '", false, ParseStatusCode::kFailedToParseQuotedString);
+  error_test("'Hello, world!'", false,
+             ParseStatusCode::kFailedToParseQuotedString);
 
   // Missing leading/trailing quote is not allowed
-  error_test("\"", ParseStatusCode::kFailedToParseQuotedString);
-  error_test("\" ", ParseStatusCode::kFailedToParseQuotedString);
-  error_test(" \"", ParseStatusCode::kFailedToParseQuotedString);
-  error_test("\"Hello, world!", ParseStatusCode::kFailedToParseQuotedString);
-  error_test("Hello, world!\"", ParseStatusCode::kFailedToParseQuotedString);
+  error_test("\"", false, ParseStatusCode::kFailedToParseQuotedString);
+  error_test("\" ", false, ParseStatusCode::kFailedToParseQuotedString);
+  error_test(" \"", false, ParseStatusCode::kFailedToParseQuotedString);
+  error_test("\"Hello, world!", false,
+             ParseStatusCode::kFailedToParseQuotedString);
+  error_test("Hello, world!\"", false,
+             ParseStatusCode::kFailedToParseQuotedString);
 
-  // Empty string is not allowed
-  error_test("", ParseStatusCode::kFailedToParseQuotedString);
+  // Empty input string is not allowed
+  error_test("", false, ParseStatusCode::kFailedToParseQuotedString);
 }
 
 TEST(HlsTypesTest, ParseDecimalResolution) {
