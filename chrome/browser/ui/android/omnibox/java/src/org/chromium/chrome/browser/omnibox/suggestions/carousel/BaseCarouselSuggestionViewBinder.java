@@ -62,13 +62,15 @@ public final class BaseCarouselSuggestionViewBinder {
      * @return The requested item spacing, expressed in Pixels.
      */
     static int getItemSpacingPx(@FormFactor int formFactor, @NonNull Resources resources) {
+        int maxTileSpacing = resources.getDimensionPixelOffset(
+                R.dimen.omnibox_suggestion_carousel_spacing_maximum);
         int tileViewPortraitEdgePadding =
                 resources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
         switch (formFactor) {
             case FormFactor.PHONE:
                 int screenWidth = resources.getDisplayMetrics().widthPixels;
                 int tileViewWidth = resources.getDimensionPixelOffset(R.dimen.tile_view_width);
-                return Integer.max(-resources.getDimensionPixelOffset(R.dimen.tile_view_padding),
+                return Integer.min(maxTileSpacing,
                         (int) ((screenWidth - tileViewPortraitEdgePadding - tileViewWidth * 4.7)
                                 / 4));
             case FormFactor.TABLET:

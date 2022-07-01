@@ -154,16 +154,18 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
      */
     @Test
     public void formFactor_itemSpacingPhone_computed() {
-        int displayWidth = 1000;
-        int tileViewPaddingEdgePortrait = 300;
-        int tileViewwidth = 100;
-        int tileViewPadding = 15;
+        int tileSpacingMaximum = 28;
+        int displayWidth = 1440;
+        int tileViewPaddingEdgePortrait = 12;
+        int tileViewwidth = 280;
+
+        when(mResources.getDimensionPixelOffset(
+                     eq(R.dimen.omnibox_suggestion_carousel_spacing_maximum)))
+                .thenReturn(tileSpacingMaximum);
         when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
                 .thenReturn(tileViewPaddingEdgePortrait);
         when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_width)))
                 .thenReturn(tileViewwidth);
-        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_padding)))
-                .thenReturn(tileViewPadding);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         displayMetrics.widthPixels = displayWidth;
@@ -181,23 +183,24 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
      */
     @Test
     public void formFactor_itemSpacingPhone_fixed() {
-        int displayWidth = 0;
-        int tileViewPaddingEdgePortrait = 0;
-        int tileViewwidth = 0;
-        int tileViewPadding = -15;
+        int tileSpacingMaximum = 28;
+        int displayWidth = 2990;
+        int tileViewPaddingEdgePortrait = 12;
+        int tileViewwidth = 280;
+
+        when(mResources.getDimensionPixelOffset(
+                     eq(R.dimen.omnibox_suggestion_carousel_spacing_maximum)))
+                .thenReturn(tileSpacingMaximum);
         when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
                 .thenReturn(tileViewPaddingEdgePortrait);
         when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_width)))
                 .thenReturn(tileViewwidth);
-        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_padding)))
-                .thenReturn(tileViewPadding);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         displayMetrics.widthPixels = displayWidth;
         when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
 
-        final int expectedSpacingPx = -tileViewPadding;
-        Assert.assertEquals(expectedSpacingPx,
+        Assert.assertEquals(tileSpacingMaximum,
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
     }
 
