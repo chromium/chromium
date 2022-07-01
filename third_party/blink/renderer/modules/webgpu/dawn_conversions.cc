@@ -196,8 +196,10 @@ OwnedProgrammableStageDescriptor AsDawnType(
     const GPUProgrammableStage* webgpu_stage) {
   DCHECK(webgpu_stage);
 
-  std::string entry_point = webgpu_stage->entryPoint().Ascii();
-  // length() is in bytes (not utf-8 characters or something), so this is ok.
+  std::string entry_point = webgpu_stage->entryPoint().Utf8();
+  // Compute the byte size of C-style null-terminated string for entry point
+  // name. length() is in bytes, and Non-ASCII codepoints are also considered as
+  // they are encoded as multiple bytes in UTF-8.
   size_t byte_size = entry_point.length() + 1;
 
   std::unique_ptr<char[]> entry_point_keepalive =

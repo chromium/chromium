@@ -222,7 +222,7 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
   dawn_fragment->dawn_desc.nextInChain = nullptr;
   dawn_fragment->dawn_desc.module = descriptor->module()->GetHandle();
 
-  dawn_fragment->entry_point = descriptor->entryPoint().Ascii();
+  dawn_fragment->entry_point = descriptor->entryPoint().Utf8();
   dawn_fragment->dawn_desc.entryPoint = dawn_fragment->entry_point.c_str();
 
   // TODO(crbug.com/dawn/1041): implement pipeline overridable constants when
@@ -295,7 +295,7 @@ void ConvertToDawnType(v8::Isolate* isolate,
 
   dawn_vertex->module = vertex->module()->GetHandle();
 
-  dawn_desc_info->vertex_entry_point = vertex->entryPoint().Ascii();
+  dawn_desc_info->vertex_entry_point = vertex->entryPoint().Utf8();
   dawn_vertex->entryPoint = dawn_desc_info->vertex_entry_point.c_str();
 
   // TODO(crbug.com/dawn/1041): implement pipeline overridable constants when
