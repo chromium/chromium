@@ -62,12 +62,18 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshSystemUIBorderColor2] = {
       ash_color_provider->GetControlsLayerColor(
           ash::AshColorProvider::ControlsLayerType::kBorderColor2)};
+  mixer[ui::kColorAshSystemUIBorderColor3] = {
+      ash_color_provider->GetControlsLayerColor(
+          ash::AshColorProvider::ControlsLayerType::kBorderColor3)};
   mixer[ui::kColorAshSystemUIHighlightColor1] = {
       ash_color_provider->GetControlsLayerColor(
           ash::AshColorProvider::ControlsLayerType::kHighlightColor1)};
   mixer[ui::kColorAshSystemUIHighlightColor2] = {
       ash_color_provider->GetControlsLayerColor(
           ash::AshColorProvider::ControlsLayerType::kHighlightColor2)};
+  mixer[ui::kColorAshSystemUIHighlightColor3] = {
+      ash_color_provider->GetControlsLayerColor(
+          ash::AshColorProvider::ControlsLayerType::kHighlightColor3)};
 
   if (!features::IsDarkLightModeEnabled()) {
     ash::ScopedLightModeAsDefault scoped_light_mode_as_default;

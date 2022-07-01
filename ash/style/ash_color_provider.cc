@@ -245,6 +245,7 @@ SkColor AshColorProvider::GetControlsLayerColorImpl(ControlsLayerType type,
     case ControlsLayerType::kFocusRingColor:
       return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ControlsLayerType::kHighlightColor1:
+    case ControlsLayerType::kHighlightColor3:
       return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x14)
                             : SkColorSetA(SK_ColorWHITE, 0x4C);
     case ControlsLayerType::kBorderColor1:
@@ -256,6 +257,8 @@ SkColor AshColorProvider::GetControlsLayerColorImpl(ControlsLayerType type,
     case ControlsLayerType::kBorderColor2:
       return use_dark_color ? GetBaseLayerColor(BaseLayerType::kTransparent60)
                             : SkColorSetA(SK_ColorBLACK, 0x0F);
+    case ControlsLayerType::kBorderColor3:
+      return SkColorSetA(SK_ColorBLACK, 0x0F);
   }
 }
 

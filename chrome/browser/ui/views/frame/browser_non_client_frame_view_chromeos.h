@@ -26,6 +26,7 @@ namespace {
 class WebAppNonClientFrameViewAshTest;
 }
 
+class HighlightBorderOverlay;
 class ProfileIndicatorIcon;
 class TabIconView;
 
@@ -127,6 +128,7 @@ class BrowserNonClientFrameViewChromeOS
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+  void AddedToWidget() override;
 
  private:
   // TODO(pkasting): Test the public API or create a test helper class, don't
@@ -229,9 +231,6 @@ class BrowserNonClientFrameViewChromeOS
   // Called any time the frame color may have changed.
   void OnUpdateFrameColor();
 
-  // Update background color when the frame color changes.
-  void UpdateBackgroundColor();
-
   // Called any time the theme has changed and may need to be animated.
   void MaybeAnimateThemeChanged();
 
@@ -244,6 +243,9 @@ class BrowserNonClientFrameViewChromeOS
   // Returns the top level aura::Window for this browser window.
   const aura::Window* GetFrameWindow() const;
   aura::Window* GetFrameWindow();
+
+  // Generates a nine patch layer painted with a highlight border.
+  std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
 
   // View which contains the window controls.
   raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =

@@ -29,6 +29,12 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
     // A less contrast highlight border for components that float above a
     // shield.
     kHighlightBorder2,
+    // Has same inner border color as `kHighlightBorder1`. The outer color is
+    // same in dark and light mode with low opacity. This type is mainly used
+    // with `HighlightBorderLayerOverlay` whose outer border is outside the
+    // window contents. For more information, refer to the comment of
+    // `HighlightBorderOverlay`.
+    kHighlightBorder3,
   };
 
   // The type of insets created by this highlight border. The insets shrink the

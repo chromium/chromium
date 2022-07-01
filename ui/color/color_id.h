@@ -210,8 +210,10 @@
   \
   E_CPONLY(kColorAshSystemUIBorderColor1) \
   E_CPONLY(kColorAshSystemUIBorderColor2) \
+  E_CPONLY(kColorAshSystemUIBorderColor3) \
   E_CPONLY(kColorAshSystemUIHighlightColor1) \
   E_CPONLY(kColorAshSystemUIHighlightColor2) \
+  E_CPONLY(kColorAshSystemUIHighlightColor3) \
   \
   /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
   E_CPONLY(kColorAshSystemUILightBorderColor1) \

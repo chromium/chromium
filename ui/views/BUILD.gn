@@ -555,12 +555,16 @@ component("views") {
   ]
 
   if (is_chromeos_ash) {
-    public += [ "highlight_border.h" ]
-    sources += [ "highlight_border.cc" ]
     deps += [
       "//ash/constants",
       "//ui/base/ime/ash",
     ]
+  }
+
+  if (is_chromeos) {
+    public += [ "highlight_border.h" ]
+    sources += [ "highlight_border.cc" ]
+    deps += [ "//chromeos/constants" ]
   }
 
   if (is_linux || is_chromeos || is_fuchsia) {
