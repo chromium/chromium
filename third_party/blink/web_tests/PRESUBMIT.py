@@ -13,6 +13,8 @@ import inspect
 import os
 import sys
 import tempfile
+import re
+from html.parser import HTMLParser
 
 USE_PYTHON3 = True
 
@@ -299,6 +301,53 @@ def _CheckWebViewExpectations(input_api, output_api):
     return CheckNotWebViewExposedInterfaces(input_api, output_api)
 
 
+class _DoctypeParser(HTMLParser):
+    """Parses HTML to check if there exists a DOCTYPE declaration before all other tags.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.encountered_tag = False
+        self.doctype = ""
+
+    def handle_starttag(self, *_):
+        self.encountered_tag = True
+
+    def handle_startendtag(self, *_):
+        self.encountered_tag = True
+
+    def handle_decl(self, decl):
+        if not self.encountered_tag:
+            self.doctype = decl
+            self.encountered_tag = True
+
+
+def _CheckForDoctypeHTML(input_api, output_api):
+    """Checks that all changed HTML files start with the correct <!DOCTYPE html> tag.
+    """
+    results = []
+    doctype_pattern = re.compile("DOCTYPE\s*html\s*$", re.IGNORECASE)
+
+    for f in input_api.AffectedFiles(include_deletes=False):
+        path = f.LocalPath()
+        fname = os.path.basename(path)
+
+        if not fname.endswith(".html") or "quirk" in fname:
+            continue
+
+        parser = _DoctypeParser()
+        parser.feed(input_api.ReadFile(f))
+
+        if not doctype_pattern.match(parser.doctype):
+            results.append(
+                output_api.PresubmitError(
+                    "HTML file \"%s\" does not start with <!DOCTYPE html>. "
+                    "If you really intend to test in quirks mode, add \"quirk\" "
+                    "to the name of your test." % path))
+
+    return results
+
+
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckTestharnessResults(input_api, output_api))
@@ -310,6 +359,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
+    results.extend(_CheckForDoctypeHTML(input_api, output_api))
     return results
 
 
@@ -321,4 +371,5 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
+    results.extend(_CheckForDoctypeHTML(input_api, output_api))
     return results
