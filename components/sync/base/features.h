@@ -24,7 +24,7 @@ inline constexpr base::Feature kCacheBaseEntitySpecificsInMetadata{
     "CacheBaseEntitySpecificsInMetadata", base::FEATURE_DISABLED_BY_DEFAULT};
 
 inline constexpr base::Feature kEnableSyncImmediatelyInFRE{
-    "EnableSyncImmediatelyInFRE", base::FEATURE_ENABLED_BY_DEFAULT};
+    "EnableSyncImmediatelyInFRE", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Causes Sync to ignore updates encrypted with keys that have been missing for
 // too long from this client; Sync will proceed normally as if those updates
