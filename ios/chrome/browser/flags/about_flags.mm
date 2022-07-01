@@ -69,6 +69,7 @@
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 #include "ios/chrome/browser/system_flags.h"
+#include "ios/chrome/browser/ui/autofill/features.h"
 #include "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -982,6 +983,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillParseIbanFieldsName,
      flag_descriptions::kAutofillParseIbanFieldsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillParseIbanFields)},
+    {"autofill-enable-new-card-unmask-prompt-view",
+     flag_descriptions::kAutofillEnableNewCardUnmaskPromptViewName,
+     flag_descriptions::kAutofillEnableNewCardUnmaskPromptViewDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAutofillEnableNewCardUnmaskPromptView)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

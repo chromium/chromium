@@ -425,6 +425,11 @@
     "expiry_milestone": 106
   },
   {
+      "name": "autofill-enable-new-card-unmask-prompt-view",
+      "owners": [ "eic", "bling-flags@google.com" ],
+      "expiry_milestone": 109
+  },
+  {
     "name": "autofill-enable-offer-notification-for-promo-codes",
     "owners": [ "jsaul@google.com", "siyua" ],
     "expiry_milestone": 105
