@@ -10,8 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/cart/cart_db.h"
-#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
+#include "components/commerce/core/proto/coupon_db_content.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 
 namespace network {
