@@ -167,6 +167,11 @@ const base::Feature kBlockInsecurePrivateNetworkRequestsForNavigations{
     base::FEATURE_DISABLED_BY_DEFAULT,
 };
 
+// When kPrivateNetworkAccessPermissionPrompt is enabled, public secure websites
+// are allowed to access private insecure subresources with user's permission.
+const base::Feature kPrivateNetworkAccessPermissionPrompt{
+    "PrivateNetworkRequestPermissionPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Broker file operations on disk cache in the Network Service.
 // This is no-op if the network service is hosted in the browser process.
 const base::Feature kBrokerFileOperationsOnDiskCacheInNetworkService{

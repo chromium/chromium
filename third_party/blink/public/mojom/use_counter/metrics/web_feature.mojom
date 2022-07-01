@@ -3611,6 +3611,7 @@ enum WebFeature {
   kDeviceOrientationUsedWithoutPermissionRequest = 4290,
   kDeviceMotionPermissionRequested = 4291,
   kDeviceMotionUsedWithoutPermissionRequest = 4292,
+  kPrivateNetworkAccessPermissionPrompt = 4293,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

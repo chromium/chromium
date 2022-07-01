@@ -185,6 +185,7 @@ CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessForWorkers;
 CONTENT_EXPORT extern const base::Feature
     kPrivateNetworkAccessRespectPreflightResults;
 CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessSendPreflights;
+CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessPermissionPrompt;
 CONTENT_EXPORT extern const base::Feature kProactivelySwapBrowsingInstance;
 CONTENT_EXPORT extern const base::Feature
     kProcessSharingWithDefaultSiteInstances;
