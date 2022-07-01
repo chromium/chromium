@@ -202,7 +202,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
-    auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+    auto event_flags = apps::GetEventFlags(params.disposition,
                                            /*prefer_container=*/false);
     auto window_info = apps::MakeWindowInfo(params.display_id);
     LaunchExtension(

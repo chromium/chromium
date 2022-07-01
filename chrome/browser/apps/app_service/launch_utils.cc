@@ -310,9 +310,7 @@ extensions::AppLaunchSource GetAppLaunchSource(
   }
 }
 
-int GetEventFlags(apps::mojom::LaunchContainer container,
-                  WindowOpenDisposition disposition,
-                  bool prefer_container) {
+int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
   if (prefer_container) {
     return ui::EF_NONE;
   }

@@ -704,7 +704,7 @@ void ArcApps::LoadIcon(const std::string& app_id,
 
 void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
                                   LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+  auto event_flags = apps::GetEventFlags(params.disposition,
                                          /*prefer_container=*/false);
   auto window_info = apps::MakeWindowInfo(params.display_id);
   if (params.intent) {

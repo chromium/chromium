@@ -118,10 +118,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
         content::NotificationService::AllSources());
     apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
         extension_app->id(),
-        apps::GetEventFlags(
-            apps::mojom::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW,
-            false /* preferred_containner */),
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            false /* preferred_containner */),
         apps::mojom::LaunchSource::kFromTest,
         apps::MakeWindowInfo(
             display::Screen::GetScreen()->GetPrimaryDisplay().id()));

@@ -157,9 +157,8 @@ void LaunchSystemWebAppAsync(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
   DCHECK(app_service);
 
-  auto event_flags = apps::GetEventFlags(
-      apps::mojom::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, /* prefer_container */ false);
+  auto event_flags = apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                         /* prefer_container */ false);
 
   if (!params.launch_paths.empty()) {
     DCHECK(!params.url.has_value())

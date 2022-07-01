@@ -392,8 +392,7 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
   auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
   app_service_proxy_->LaunchAppWithIntent(
       base::UTF16ToUTF8(target_name),
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
+      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true),
       std::move(intent), launch_source,
       apps::MakeWindowInfo(display::kDefaultDisplayId));

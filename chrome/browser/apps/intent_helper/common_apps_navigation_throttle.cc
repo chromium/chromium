@@ -248,13 +248,11 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
                            : apps::mojom::LaunchSource::kFromOmnibox;
   GURL redirected_url =
       RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
-  proxy->LaunchAppWithUrl(
-      preferred_app_id.value(),
-      GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                    WindowOpenDisposition::NEW_WINDOW,
-                    /*prefer_container=*/true),
-      redirected_url, launch_source,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+  proxy->LaunchAppWithUrl(preferred_app_id.value(),
+                          GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                        /*prefer_container=*/true),
+                          redirected_url, launch_source,
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||

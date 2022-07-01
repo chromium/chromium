@@ -223,12 +223,11 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
   } else {
     // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
     mojom::LaunchSource launch_source = mojom::LaunchSource::kFromLink;
-    proxy->LaunchAppWithUrl(
-        launch_name,
-        GetEventFlags(mojom::LaunchContainer::kLaunchContainerWindow,
-                      WindowOpenDisposition::NEW_WINDOW,
-                      /*prefer_container=*/true),
-        url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
+    proxy->LaunchAppWithUrl(launch_name,
+                            GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                          /*prefer_container=*/true),
+                            url, launch_source,
+                            apps::MakeWindowInfo(display::kDefaultDisplayId));
     CloseOrGoBack(web_contents);
   }
 }

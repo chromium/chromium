@@ -28,8 +28,7 @@ class LaunchUtilsTest : public testing::Test {
       apps::mojom::LaunchContainer fallback_container =
           apps::mojom::LaunchContainer::kLaunchContainerNone) {
     return apps::CreateAppIdLaunchParamsWithEventFlags(
-        app_id,
-        apps::GetEventFlags(container, disposition, preferred_container),
+        app_id, apps::GetEventFlags(disposition, preferred_container),
         apps::mojom::LaunchSource::kFromChromeInternal, display_id,
         fallback_container);
   }
@@ -93,14 +92,13 @@ TEST_F(LaunchUtilsTest, PreferContainerWithWindow) {
 }
 
 TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
-  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
 
   const GURL url = GURL("https://example.com/?query=1#frag");
   auto intent = apps_util::CreateIntentFromUrl(url);
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, apps::GetEventFlags(container, disposition, true),
+      app_id, apps::GetEventFlags(disposition, true),
       apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
@@ -110,7 +108,6 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 }
 
 TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
-  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
 
   std::vector<apps::mojom::IntentFilePtr> files;
@@ -123,7 +120,7 @@ TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
   auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, apps::GetEventFlags(container, disposition, true),
+      app_id, apps::GetEventFlags(disposition, true),
       apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),

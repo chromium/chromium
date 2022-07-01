@@ -248,10 +248,8 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->LaunchAppWithFiles(
             extension->id(),
-            apps::GetEventFlags(
-                apps::mojom::LaunchContainer::kLaunchContainerNone,
-                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                true /* preferred_container */),
+            apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                true /* preferred_container */),
             apps::mojom::LaunchSource::kFromTest, std::move(launch_files));
     ASSERT_TRUE(catcher.GetNextResult());
   }
@@ -1331,10 +1329,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
   registry->AddObserver(this);
   apps::AppServiceProxyFactory::GetForProfile(incognito_profile)
       ->Launch(file_manager->id(),
-               apps::GetEventFlags(
-                   apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                   WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                   true /* prefer_container */),
+               apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                   true /* prefer_container */),
                apps::mojom::LaunchSource::kFromTest);
 
   while (!base::Contains(opener_app_ids_, file_manager->id())) {
