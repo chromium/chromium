@@ -139,7 +139,8 @@ class BASE_EXPORT MemoryMappedFile {
   void CloseHandles();
 
   File file_;
-  raw_ptr<uint8_t> data_;
+  // TODO(crbug.com/1298696): Breaks one of the test suites.
+  raw_ptr<uint8_t, DegradeToNoOpWhenMTE> data_;
   size_t length_;
 
 #if BUILDFLAG(IS_WIN)
