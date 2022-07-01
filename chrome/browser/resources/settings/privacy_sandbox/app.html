@@ -519,14 +519,16 @@
         <div class="label-wrapper">
           <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
           <div id="flocStatus" class="cr-secondary-text">
-            [[flocId_.trialStatus]]
+            $i18n{privacySandboxPageFlocStatusNotActive}
           </div>
         </div>
       </div>
       <div class="cr-row continuation">
         <div class="label-wrapper">
           <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
-          <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
+          <div id="flocId" class="cr-secondary-text">
+            $i18n{privacySandboxFlocInvalid}
+          </div>
         </div>
       </div>
       <div class="cr-row continuation">
@@ -535,7 +537,7 @@
             $i18n{privacySandboxPageFlocCohortNextUpdate}
           </div>
           <div id="flocUpdatedOn" class="cr-secondary-text">
-            [[flocId_.nextUpdate]]
+            $i18n{privacySandboxPageFlocTimeToNextComputeInvalid}
           </div>
         </div>
       </div>
@@ -546,7 +548,7 @@
       </div>
       <div class="cr-row continuation box-last">
         <cr-button id="resetFlocIdButton" class="cr-button" role="button"
-            disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
+            disabled>
           $i18n{privacySandboxPageFlocResetCohort}
         </cr-button>
       </div>

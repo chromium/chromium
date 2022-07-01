@@ -12,12 +12,6 @@ namespace settings {
 
 namespace {
 
-// Keys of the dictionary returned by GetFlocIdInformation.
-constexpr char kTrialStatus[] = "trialStatus";
-constexpr char kCohort[] = "cohort";
-constexpr char kNextUpdate[] = "nextUpdate";
-constexpr char kCanReset[] = "canReset";
-
 // Keys of the dictionary returned by getFledgeState.
 constexpr char kJoiningSites[] = "joiningSites";
 constexpr char kBlockedSites[] = "blockedSites";
@@ -30,27 +24,6 @@ constexpr char kDisplayString[] = "displayString";
 // Keys of the dictionary returned by getTopicsState.
 constexpr char kTopTopics[] = "topTopics";
 constexpr char kBlockedTopics[] = "blockedTopics";
-
-base::Value GetFlocIdInformation(Profile* profile) {
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(profile);
-  DCHECK(privacy_sandbox_service);
-
-  base::DictionaryValue floc_id_information;
-  floc_id_information.SetKey(
-      kTrialStatus,
-      base::Value(privacy_sandbox_service->GetFlocStatusForDisplay()));
-  floc_id_information.SetKey(
-      kCohort, base::Value(privacy_sandbox_service->GetFlocIdForDisplay()));
-  floc_id_information.SetKey(
-      kNextUpdate,
-      base::Value(privacy_sandbox_service->GetFlocIdNextUpdateForDisplay(
-          base::Time::Now())));
-  floc_id_information.SetKey(
-      kCanReset, base::Value(privacy_sandbox_service->IsFlocIdResettable()));
-
-  return std::move(floc_id_information);
-}
 
 base::Value ConvertTopicToValue(const privacy_sandbox::CanonicalTopic& topic) {
   base::Value topic_value(base::Value::Type::DICTIONARY);
@@ -67,13 +40,6 @@ PrivacySandboxHandler::PrivacySandboxHandler() = default;
 PrivacySandboxHandler::~PrivacySandboxHandler() = default;
 
 void PrivacySandboxHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
-                                       base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "resetFlocId",
-      base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
-                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setFledgeJoiningAllowed",
       base::BindRepeating(&PrivacySandboxHandler::HandleSetFledgeJoiningAllowed,
@@ -92,35 +58,6 @@ void PrivacySandboxHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void PrivacySandboxHandler::HandleGetFlocId(const base::Value::List& args) {
-  AllowJavascript();
-
-  CHECK_EQ(1U, args.size());
-  const base::Value& callback_id = args[0];
-
-  ResolveJavascriptCallback(callback_id,
-                            GetFlocIdInformation(Profile::FromWebUI(web_ui())));
-}
-
-void PrivacySandboxHandler::HandleResetFlocId(const base::Value::List& args) {
-  CHECK_EQ(0U, args.size());
-  AllowJavascript();
-
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()));
-  DCHECK(privacy_sandbox_service);
-
-  privacy_sandbox_service->ResetFlocId(/*user_initiated=*/true);
-
-  // The identifier will have been immediately invalidated in response to
-  // the clearing action, so synchronously retrieving the FLoC ID will retrieve
-  // the appropriate invalid ID string.
-  // TODO(crbug.com/1207891): Have this handler listen to an event directly
-  // from the FLoC provider, rather than inferring behavior.
-  FireWebUIListener("floc-id-changed",
-                    GetFlocIdInformation(Profile::FromWebUI(web_ui())));
-}
-
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
     const base::Value::List& args) {
   const std::string& site = args[0].GetString();
@@ -130,6 +67,7 @@ void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
 
 void PrivacySandboxHandler::HandleGetFledgeState(
     const base::Value::List& args) {
+  AllowJavascript();
   const std::string& callback_id = args[0].GetString();
   GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
       base::BindOnce(&PrivacySandboxHandler::OnFledgeJoiningSitesRecieved,
@@ -149,6 +87,7 @@ void PrivacySandboxHandler::HandleSetTopicAllowed(
 
 void PrivacySandboxHandler::HandleGetTopicsState(
     const base::Value::List& args) {
+  AllowJavascript();
   base::Value top_topics_list(base::Value::Type::LIST);
   for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics())
     top_topics_list.Append(ConvertTopicToValue(topic));

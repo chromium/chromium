@@ -59,26 +59,6 @@ std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(
   return std::make_unique<::testing::StrictMock<MockPrivacySandboxService>>();
 }
 
-// Confirms that the |floc_id| dictionary provided matches the current FLoC
-// information for |profile|.
-void ValidateFlocId(const base::Value* floc_id, Profile* profile) {
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(profile);
-
-  ASSERT_TRUE(floc_id->is_dict());
-  EXPECT_EQ(
-      base::UTF16ToUTF8(privacy_sandbox_service->GetFlocStatusForDisplay()),
-      *floc_id->FindStringPath("trialStatus"));
-  EXPECT_EQ(base::UTF16ToUTF8(privacy_sandbox_service->GetFlocIdForDisplay()),
-            *floc_id->FindStringPath("cohort"));
-  EXPECT_EQ(
-      base::UTF16ToUTF8(privacy_sandbox_service->GetFlocIdNextUpdateForDisplay(
-          base::Time::Now())),
-      *floc_id->FindStringPath("nextUpdate"));
-  EXPECT_EQ(privacy_sandbox_service->IsFlocIdResettable(),
-            floc_id->FindBoolPath("canReset"));
-}
-
 void ValidateFledgeInfo(content::TestWebUI* web_ui,
                         std::string expected_callback_id,
                         std::vector<std::string> expected_joining_sites,
@@ -166,29 +146,6 @@ class PrivacySandboxHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<PrivacySandboxHandler> handler_;
 };
-
-TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
-  base::Value args(base::Value::Type::LIST);
-  args.Append(kCallbackId1);
-  handler()->HandleGetFlocId(args.GetList());
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ(kCallbackId1, data.arg1()->GetString());
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  ASSERT_TRUE(data.arg2()->GetBool());
-  ValidateFlocId(data.arg3(), profile());
-}
-
-TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
-  base::Value args(base::Value::Type::LIST);
-  handler()->HandleResetFlocId(args.GetList());
-
-  // Resetting the FLoC ID should fire the appropriate WebUI listener.
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-  EXPECT_EQ("floc-id-changed", data.arg1()->GetString());
-  ValidateFlocId(data.arg2(), profile());
-}
 
 class PrivacySandboxHandlerTestMockService : public PrivacySandboxHandlerTest {
  public:

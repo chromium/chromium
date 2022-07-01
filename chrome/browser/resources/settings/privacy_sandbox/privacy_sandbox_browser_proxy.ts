@@ -7,16 +7,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
- * Information about the user's current FLoC cohort identifier.
- */
-export type FlocIdentifier = {
-  trialStatus: string,
-  cohort: string,
-  nextUpdate: string,
-  canReset: boolean,
-};
-
-/**
  * A user interest to display. There must only be one of |topic| or |site| set.
  */
 export type PrivacySandboxInterest = {
@@ -46,14 +36,6 @@ export type TopicsState = {
 };
 
 export interface PrivacySandboxBrowserProxy {
-  /**
-   * Gets the user's current FLoC cohort identifier information.
-   */
-  getFlocId(): Promise<FlocIdentifier>;
-
-  /** Resets the user's FLoC cohort identifier. */
-  resetFlocId(): void;
-
   /** Retrieves the user's current FLEDGE state. */
   getFledgeState(): Promise<FledgeState>;
 
@@ -69,14 +51,6 @@ export interface PrivacySandboxBrowserProxy {
 
 export class PrivacySandboxBrowserProxyImpl implements
     PrivacySandboxBrowserProxy {
-  getFlocId() {
-    return sendWithPromise('getFlocId');
-  }
-
-  resetFlocId() {
-    chrome.send('resetFlocId');
-  }
-
   getFledgeState() {
     return sendWithPromise('getFledgeState');
   }

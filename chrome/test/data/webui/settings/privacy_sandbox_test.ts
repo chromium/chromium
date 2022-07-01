@@ -4,13 +4,11 @@
 
 import 'chrome://settings/privacy_sandbox/app.js';
 
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import {PrivacySandboxAppElement, PrivacySandboxSettingsView} from 'chrome://settings/privacy_sandbox/app.js';
 import {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
-import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
-
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -22,27 +20,11 @@ class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxBrowserProxy {
   constructor() {
     super([
-      'getFlocId',
-      'resetFlocId',
       'getFledgeState',
       'setFledgeJoiningAllowed',
       'getTopicsState',
       'setTopicAllowed',
     ]);
-  }
-
-  getFlocId() {
-    this.methodCalled('getFlocId');
-    return Promise.resolve({
-      trialStatus: 'test-trial-status',
-      cohort: 'test-id',
-      nextUpdate: 'test-time',
-      canReset: true,
-    });
-  }
-
-  resetFlocId() {
-    this.methodCalled('resetFlocId');
   }
 
   getFledgeState() {
@@ -150,57 +132,6 @@ suite('PrivacySandbox', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX, interaction);
-  });
-
-  test('flocId', async function() {
-    // The page should automatically retrieve the FLoC state when it is attached
-    // to the document.
-    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    assertEquals(
-        'test-trial-status',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocStatus')!.textContent!.trim());
-    assertEquals(
-        'test-id',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocId')!.textContent!.trim());
-    assertEquals(
-        'test-time',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocUpdatedOn')!.textContent!.trim());
-    assertFalse(
-        page.shadowRoot!.querySelector<CrButtonElement>(
-                            '#resetFlocIdButton')!.disabled);
-
-    // The page should listen for changes via a WebUI listener.
-    webUIListenerCallback('floc-id-changed', {
-      trialStatus: 'new-test-trial-status',
-      cohort: 'new-test-id',
-      nextUpdate: 'new-test-time',
-      canReset: false,
-    });
-
-    await flushTasks();
-    assertEquals(
-        'new-test-trial-status',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocStatus')!.textContent!.trim());
-    assertEquals(
-        'new-test-id',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocId')!.textContent!.trim());
-    assertEquals(
-        'new-test-time',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocUpdatedOn')!.textContent!.trim());
-    assertTrue(
-        page.shadowRoot!.querySelector<CrButtonElement>(
-                            '#resetFlocIdButton')!.disabled);
-  });
-
-  test('resetFlocId', function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#resetFlocIdButton')!.click();
-    return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
   });
 });
 

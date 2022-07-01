@@ -9,7 +9,6 @@ import './interest_item.js';
 import '../settings.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,7 +18,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {getTemplate} from './app.html.js';
-import {FledgeState, FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
+import {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 
 /** Views of the PrivacySandboxSettings page. */
 export enum PrivacySandboxSettingsView {
@@ -44,8 +43,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
   static get properties() {
     return {
-      flocId_: Object,
-
       /**
        * Mock preference for FLoC toggle to always display as off and disabled
        * as the feature has been removed from the codebase.
@@ -114,7 +111,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     };
   }
 
-  private flocId_: FlocIdentifier;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private prefFlocToggle_: chrome.settingsPrivate.PrefObject;
@@ -133,10 +129,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
     chrome.metricsPrivate.recordSparseHashable(
         'WebUI.Settings.PathVisited', '/privacySandbox');
-
-    this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-    addWebUIListener(
-        'floc-id-changed', (id: FlocIdentifier) => this.flocId_ = id);
 
     this.privacySandboxBrowserProxy_.getTopicsState().then(
         state => this.onTopicsStateChanged_(state));
@@ -175,10 +167,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
-  }
-
-  private onResetFlocClick_() {
-    this.privacySandboxBrowserProxy_.resetFlocId();
   }
 
   private onApiToggleButtonChange_(event: Event) {
