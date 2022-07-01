@@ -42,6 +42,8 @@ class ProtocolUtilsTest : public testing::Test {
         ClientContextProto::UNKNOWN);
     client_context_proto_.set_country("US");
     client_context_proto_.set_locale("en-US");
+    client_context_proto_.set_platform_type(
+        ClientContextProto::PLATFORM_TYPE_ANDROID);
   }
   ~ProtocolUtilsTest() override {}
 
@@ -174,6 +176,7 @@ TEST_F(ProtocolUtilsTest, CreateCapabilitiesByHashRequest) {
   client_context.set_country(client_context_proto_.country());
   client_context.mutable_chrome()->set_chrome_version(
       client_context_proto_.chrome().chrome_version());
+  client_context.set_platform_type(ClientContextProto::PLATFORM_TYPE_ANDROID);
   EXPECT_EQ(client_context, request.client_context());
 
   EXPECT_EQ(request.hash_prefix_length(), 16U);

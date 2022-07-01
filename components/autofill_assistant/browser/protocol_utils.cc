@@ -125,6 +125,9 @@ std::string ProtocolUtils::CreateCapabilitiesByHashRequest(
     non_sensitive_context.mutable_chrome()->set_chrome_version(
         client_context.chrome().chrome_version());
   }
+  if (client_context.has_platform_type()) {
+    non_sensitive_context.set_platform_type(client_context.platform_type());
+  }
   *request.mutable_client_context() = non_sensitive_context;
 
   std::string serialized_request;
