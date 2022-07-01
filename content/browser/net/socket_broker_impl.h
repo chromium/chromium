@@ -14,6 +14,9 @@ namespace content {
 
 // Implementation of SocketBroker interface. Creates new sockets and sends them
 // to the network sandbox via mojo.
+// TODO(liza): IPCs are currently handled in the UI thread since NetworkContext
+// is created in that thread. The IPCs should be dispatched to a different
+// sequence.
 class CONTENT_EXPORT SocketBrokerImpl : public network::mojom::SocketBroker {
  public:
   explicit SocketBrokerImpl();
@@ -25,6 +28,10 @@ class CONTENT_EXPORT SocketBrokerImpl : public network::mojom::SocketBroker {
   // mojom::SocketBroker implementation.
   void CreateTcpSocket(net::AddressFamily address_family,
                        CreateTcpSocketCallback callback) override;
+
+  // Returns a mojo::PendingRemote to this instance. Adds a receiver to
+  // `receivers_`.
+  mojo::PendingRemote<network::mojom::SocketBroker> BindNewRemote();
 
  private:
   mojo::ReceiverSet<network::mojom::SocketBroker> receivers_;

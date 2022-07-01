@@ -31,4 +31,11 @@ void SocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
 #endif
 }
 
+mojo::PendingRemote<network::mojom::SocketBroker>
+SocketBrokerImpl::BindNewRemote() {
+  mojo::PendingRemote<network::mojom::SocketBroker> pending_remote;
+  receivers_.Add(this, pending_remote.InitWithNewPipeAndPassReceiver());
+  return pending_remote;
+}
+
 }  // namespace content

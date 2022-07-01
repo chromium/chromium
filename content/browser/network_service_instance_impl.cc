@@ -34,6 +34,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/net/http_cache_backend_file_operations_factory.h"
+#include "content/browser/net/socket_broker_impl.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/browser/network_service_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -49,6 +50,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "net/log/net_log_util.h"
+#include "sandbox/policy/features.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
@@ -59,6 +61,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "services/network/public/mojom/socket_broker.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/network_sandbox.h"
@@ -832,6 +835,11 @@ void CreateNetworkContextInNetworkService(
   }
 
 #if BUILDFLAG(IS_ANDROID)
+
+  if (sandbox::policy::features::IsNetworkSandboxEnabled() &&
+      !params->socket_broker) {
+    params->socket_broker = g_client->BindSocketBroker();
+  }
   // On Android, if a cookie_manager pending receiver was passed then migration
   // should not be attempted as the cookie file is already being accessed by the
   // browser instance.

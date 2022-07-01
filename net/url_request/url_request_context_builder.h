@@ -40,6 +40,7 @@
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -343,6 +344,14 @@ class NET_EXPORT URLRequestContextBuilder {
     set_client_socket_factory(client_socket_factory_for_testing);
   }
 
+  // Sets a ClientSocketFactory when the network service sandbox is enabled. The
+  // unique_ptr is moved to a URLRequestContextStorage once Build() is called.
+  void set_client_socket_factory(
+      std::unique_ptr<ClientSocketFactory> client_socket_factory) {
+    set_client_socket_factory(client_socket_factory.get());
+    client_socket_factory_ = std::move(client_socket_factory);
+  }
+
   // Binds the context to `network`. All requests scheduled through the context
   // built by this builder will be sent using `network`. Requests will fail if
   // `network` disconnects.
@@ -389,7 +398,7 @@ class NET_EXPORT URLRequestContextBuilder {
   // URLRequestContext that will be built.
   // `client_socket_factory` must outlive the context.
   void set_client_socket_factory(ClientSocketFactory* client_socket_factory) {
-    client_socket_factory_ = client_socket_factory;
+    client_socket_factory_raw_ = client_socket_factory;
   }
 
   bool enable_brotli_ = false;
@@ -433,6 +442,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
+  std::unique_ptr<ClientSocketFactory> client_socket_factory_ = nullptr;
 #if BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<ReportingPolicy> reporting_policy_;
@@ -445,7 +455,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 
-  raw_ptr<ClientSocketFactory> client_socket_factory_ = nullptr;
+  raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;
 };
 
 }  // namespace net

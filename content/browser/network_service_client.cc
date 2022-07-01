@@ -142,6 +142,12 @@ void NetworkServiceClient::OnDNSChanged() {
       network::mojom::ConnectionSubtype(
           net::NetworkChangeNotifier::GetConnectionSubtype()));
 }
+
+mojo::PendingRemote<network::mojom::SocketBroker>
+NetworkServiceClient::BindSocketBroker() {
+  return socket_broker_.BindNewRemote();
+}
+
 #endif
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>

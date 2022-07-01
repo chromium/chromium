@@ -62,14 +62,12 @@ TCPClientSocket::TCPClientSocket(
     std::unique_ptr<TCPSocket> unconnected_socket,
     const AddressList& addresses,
     NetworkQualityEstimator* network_quality_estimator)
-    : TCPClientSocket(
-          std::move(unconnected_socket),
-          addresses,
-          -1 /* current_address_index */,
-          nullptr /* bind_address */,
-          network_quality_estimator,
-          // TODO(https://crbug.com/1295460): Pass through network handle
-          NetworkChangeNotifier::kInvalidNetworkHandle) {}
+    : TCPClientSocket(std::move(unconnected_socket),
+                      addresses,
+                      -1 /* current_address_index */,
+                      nullptr /* bind_address */,
+                      network_quality_estimator,
+                      NetworkChangeNotifier::kInvalidNetworkHandle) {}
 
 TCPClientSocket::~TCPClientSocket() {
   Disconnect();

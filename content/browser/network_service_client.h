@@ -12,6 +12,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "content/browser/net/socket_broker_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -80,6 +81,9 @@ class NetworkServiceClient
 
   // net::NetworkChangeNotifier::DNSObserver implementation:
   void OnDNSChanged() override;
+
+  // Called when the network service sandbox is enabled.
+  mojo::PendingRemote<network::mojom::SocketBroker> BindSocketBroker();
 #endif
 
  private:
@@ -126,6 +130,7 @@ class NetworkServiceClient
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
+  SocketBrokerImpl socket_broker_;
 #endif
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver>

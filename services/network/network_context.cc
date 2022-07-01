@@ -81,6 +81,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "services/network/brokered_client_socket_factory.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
@@ -2569,6 +2570,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   builder.set_first_party_sets_enabled(
       first_party_sets_access_delegate_.is_enabled());
+
+  if (params_->socket_broker) {
+    builder.set_client_socket_factory(
+        std::make_unique<BrokeredClientSocketFactory>(
+            std::move(params_->socket_broker)));
+  }
 
   // If `require_network_isolation_key_` is true, but the features that can
   // trigger another URLRequest are not set to respect NetworkIsolationKeys,

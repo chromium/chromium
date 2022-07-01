@@ -357,7 +357,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   if (bound_network_ != NetworkChangeNotifier::kInvalidNetworkHandle) {
-    DCHECK(!client_socket_factory_);
+    DCHECK(!client_socket_factory_raw_);
     DCHECK(!host_resolver_);
     DCHECK(!host_resolver_manager_);
     DCHECK(!host_resolver_factory_);
@@ -392,6 +392,10 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     // Objects used by network sessions for this context shouldn't listen to
     // network changes.
     http_network_session_params_.ignore_ip_address_changes = true;
+  }
+
+  if (client_socket_factory_) {
+    storage->set_client_socket_factory(std::move(client_socket_factory_));
   }
 
   if (host_resolver_) {
@@ -567,7 +571,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   SetHttpNetworkSessionComponents(
       context.get(), &network_session_context,
       suppress_setting_socket_performance_watcher_factory_for_testing_,
-      client_socket_factory_);
+      client_socket_factory_raw_);
 
   storage->set_http_network_session(std::make_unique<HttpNetworkSession>(
       http_network_session_params_, network_session_context));

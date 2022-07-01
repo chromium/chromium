@@ -42,6 +42,7 @@ import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/socket_broker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/transferable_directory.mojom";
@@ -404,6 +405,10 @@ struct NetworkContextParams {
   // Optional client that will be notified of errors related to the proxy
   // settings.
   pending_remote<ProxyErrorClient>? proxy_error_client;
+
+  // Broker used by the network service sandbox to create sockets in
+  // the browser. Set when the sandbox is enabled.
+  pending_remote<SocketBroker>? socket_broker;
 
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
