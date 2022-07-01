@@ -471,6 +471,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
   bool is_custom_system_theme() const { return is_custom_system_theme_; }
 
+  // Set the user_color for ColorProviderManager::Key.
+  void set_user_color(absl::optional<SkColor> user_color) {
+    user_color_ = user_color;
+  }
+
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
   // the state of NativeTheme was untouched.
@@ -551,6 +556,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
  private:
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
+
+  // User's primary color. Included in the ColorProvider Key.
+  absl::optional<SkColor> user_color_;
 
   bool should_use_dark_colors_ = false;
   const bool is_custom_system_theme_;

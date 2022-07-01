@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
 
@@ -110,7 +111,8 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
         ContrastMode contrast_mode,
         SystemTheme system_theme,
         FrameType frame_type,
-        scoped_refptr<ThemeInitializerSupplier> custom_theme);
+        absl::optional<SkColor> user_color = absl::nullopt,
+        scoped_refptr<ThemeInitializerSupplier> custom_theme = nullptr);
     Key(const Key&);
     Key& operator=(const Key&);
     ~Key();
@@ -119,6 +121,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     ElevationMode elevation_mode;
     SystemTheme system_theme;
     FrameType frame_type;
+    absl::optional<SkColor> user_color;
     scoped_refptr<ThemeInitializerSupplier> custom_theme;
     base::WeakPtr<InitializerSupplier> app_controller;
 
@@ -126,10 +129,12 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
       auto* lhs_app_controller = app_controller.get();
       auto* rhs_app_controller = other.app_controller.get();
       return std::tie(color_mode, contrast_mode, elevation_mode, system_theme,
-                      frame_type, custom_theme, lhs_app_controller) <
+                      frame_type, user_color, custom_theme,
+                      lhs_app_controller) <
              std::tie(other.color_mode, other.contrast_mode,
                       other.elevation_mode, other.system_theme,
-                      other.frame_type, other.custom_theme, rhs_app_controller);
+                      other.frame_type, other.user_color, other.custom_theme,
+                      rhs_app_controller);
     }
   };
 

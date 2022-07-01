@@ -121,7 +121,7 @@ const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
       {ui::ColorProviderManager::ColorMode::kLight,
        ui::ColorProviderManager::ContrastMode::kNormal,
        ui::ColorProviderManager::SystemTheme::kDefault,
-       ui::ColorProviderManager::FrameType::kChromium, nullptr});
+       ui::ColorProviderManager::FrameType::kChromium});
 }
 
 ui::ElementContext TestBrowserWindow::GetElementContext() {
