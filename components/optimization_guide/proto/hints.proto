@@ -40,6 +40,8 @@ message UrlInfo {
 // Request to return a set of hints that guide what optimizations to perform
 // on those hosts.
 message GetHintsRequest {
+  reserved 6;
+
   // Information about the set of hosts to retrieve hints for.
   repeated HostInfo hosts = 1;
 
@@ -62,9 +64,6 @@ message GetHintsRequest {
 
   // Context in which this request is made.
   optional RequestContext context = 3;
-
-  // The field trials that are currently active when this request is made.
-  repeated FieldTrial active_field_trials = 6;
 
   // The locale to associate with this request.
   //

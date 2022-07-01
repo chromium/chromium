@@ -437,12 +437,6 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       hosts_and_urls_requested.erase(host_or_url);
     }
     EXPECT_EQ(0u, hosts_and_urls_requested.size());
-
-    // We only expect 1 field trial to be allowed and sent up.
-    EXPECT_EQ(1, hints_request.active_field_trials_size());
-    EXPECT_EQ(variations::HashName(
-                  "scoped_feature_list_trial_for_OptimizationHintsFetching"),
-              hints_request.active_field_trials(0).name_hash());
   }
 
   void TearDownOnMainThread() override {
@@ -507,9 +501,6 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
             {optimization_guide::features::kOptimizationHints, {}},
             {optimization_guide::features::kRemoteOptimizationGuideFetching,
              {{"max_concurrent_page_navigation_fetches", "2"}}},
-            {optimization_guide::features::kOptimizationHintsFieldTrials,
-             {{"allowed_field_trial_names",
-               "scoped_feature_list_trial_for_OptimizationHintsFetching"}}},
         },
         {});
     // Call to inherited class to match same set up with feature flags added.

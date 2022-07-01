@@ -205,11 +205,6 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     return optimization_guide_keyed_service->GetPredictionManager();
   }
 
-  void SetExpectedFieldTrialNames(
-      const base::flat_set<uint32_t>& expected_field_trial_name_hashes) {
-    expected_field_trial_name_hashes_ = expected_field_trial_name_hashes;
-  }
-
   GURL https_url_with_content() { return https_url_with_content_; }
   GURL https_url_without_content() { return https_url_without_content_; }
 
@@ -240,18 +235,6 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
     optimization_guide::proto::GetModelsRequest models_request;
     EXPECT_TRUE(models_request.ParseFromString(request.content));
-    // Make sure we actually filter field trials appropriately.
-    EXPECT_EQ(expected_field_trial_name_hashes_.size(),
-              static_cast<size_t>(models_request.active_field_trials_size()));
-    base::flat_set<uint32_t> seen_field_trial_name_hashes;
-    for (const auto& field_trial : models_request.active_field_trials()) {
-      EXPECT_TRUE(
-          expected_field_trial_name_hashes_.find(field_trial.name_hash()) !=
-          expected_field_trial_name_hashes_.end());
-      seen_field_trial_name_hashes.insert(field_trial.name_hash());
-    }
-    EXPECT_EQ(seen_field_trial_name_hashes.size(),
-              expected_field_trial_name_hashes_.size());
 
     response->set_code(net::HTTP_OK);
     std::unique_ptr<optimization_guide::proto::GetModelsResponse>
@@ -293,7 +276,6 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
   PredictionModelsFetcherRemoteResponseType response_type_ =
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile;
-  base::flat_set<uint32_t> expected_field_trial_name_hashes_;
 };
 
 class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
@@ -396,58 +378,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-class PredictionManagerNoUserPermissionsTest
-    : public PredictionManagerBrowserTest {
- public:
-  PredictionManagerNoUserPermissionsTest() {
-    // Field trials should not be sent.
-    SetExpectedFieldTrialNames({});
-  }
-
-  ~PredictionManagerNoUserPermissionsTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    PredictionManagerBrowserTest::SetUpCommandLine(cmd);
-
-    // Remove switches that enable user permissions.
-    cmd->RemoveSwitch(switches::kDisableCheckingUserPermissionsForTesting);
-  }
-
- private:
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kOptimizationHints, {}},
-            {features::kRemoteOptimizationGuideFetching, {}},
-            {features::kOptimizationTargetPrediction,
-             {{"fetch_startup_delay_ms", "2000"}}},
-            {features::kOptimizationHintsFieldTrials,
-             {{"allowed_field_trial_names",
-               "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
-               "list_trial_for_OptimizationHintsFetching"}}},
-        },
-        {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
-                       FieldTrialsNotPassedWhenNoUserPermissions) {
-  ModelFileObserver model_file_observer;
-  base::HistogramTester histogram_tester;
-
-  SetResponseType(
-      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
-  RegisterWithKeyedService(&model_file_observer);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
-}
-
 class PredictionManagerModelDownloadingBrowserTest
     : public PredictionManagerBrowserTest {
  public:
@@ -493,17 +423,8 @@ class PredictionManagerModelDownloadingBrowserTest
             {features::kOptimizationTargetPrediction, {}},
             {features::kOptimizationGuideModelDownloading,
              {{"unrestricted_model_downloading", "true"}}},
-            {features::kOptimizationHintsFieldTrials,
-             {{"allowed_field_trial_names",
-               "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
-               "list_trial_for_OptimizationHintsFetching"}}},
         },
         {});
-    SetExpectedFieldTrialNames(base::flat_set<uint32_t>(
-        {variations::HashName(
-             "scoped_feature_list_trial_for_OptimizationHints"),
-         variations::HashName(
-             "scoped_feature_list_trial_for_OptimizationHintsFetching")}));
   }
 
   std::unique_ptr<ModelFileObserver> model_file_observer_;

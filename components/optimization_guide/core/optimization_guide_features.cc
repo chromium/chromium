@@ -80,11 +80,6 @@ bool IsSupportedLocaleForFeature(const std::string locale,
 const base::Feature kOptimizationHints{"OptimizationHints",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature flag that contains a feature param that specifies the field trials
-// that are allowed to be sent up to the Optimization Guide Server.
-const base::Feature kOptimizationHintsFieldTrials{
-    "OptimizationHintsFieldTrials", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables fetching from a remote Optimization Guide Service.
 const base::Feature kRemoteOptimizationGuideFetching{
     "OptimizationHintsFetching", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -446,22 +441,6 @@ base::TimeDelta ModelExecutionWatchdogDefaultTimeout() {
       2000
 #endif
       ));
-}
-
-base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch() {
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      kOptimizationHintsFieldTrials, "allowed_field_trial_names");
-  if (value.empty())
-    return {};
-
-  std::vector<std::string> allowed_field_trial_names = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::flat_set<uint32_t> allowed_field_trial_name_hashes;
-  for (const auto& allowed_field_trial_name : allowed_field_trial_names) {
-    allowed_field_trial_name_hashes.insert(
-        variations::HashName(allowed_field_trial_name));
-  }
-  return allowed_field_trial_name_hashes;
 }
 
 bool IsModelDownloadingEnabled() {

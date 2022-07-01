@@ -145,7 +145,7 @@ message DoubleValue {
 
 // Requests prediction models to be used for a set of optimization targets.
 message GetModelsRequest {
-  reserved 2;
+  reserved 2, 4;
 
   // Information about the requested models.
   repeated ModelInfo requested_models = 1;
@@ -155,8 +155,6 @@ message GetModelsRequest {
   // CONTEXT_PAGE_NAVIGATION), then no model updates will be returned for the
   // requested models.
   optional RequestContext request_context = 3;
-  // The field trials that are currently active when this request is made.
-  repeated FieldTrial active_field_trials = 4;
   // The locale to associate with this request.
   //
   // It is the IETF language tag, defined in BCP 47. The region subtag is not

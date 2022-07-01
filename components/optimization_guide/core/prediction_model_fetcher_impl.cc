@@ -47,7 +47,6 @@ PredictionModelFetcherImpl::~PredictionModelFetcherImpl() = default;
 
 bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
     const std::vector<proto::ModelInfo>& models_request_info,
-    const std::vector<proto::FieldTrial>& active_field_trials,
     proto::RequestContext request_context,
     const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
@@ -67,9 +66,6 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
 
   pending_models_request_->set_request_context(request_context);
   pending_models_request_->set_locale(locale);
-
-  *pending_models_request_->mutable_active_field_trials() = {
-      active_field_trials.begin(), active_field_trials.end()};
 
   for (const auto& model_request_info : models_request_info)
     *pending_models_request_->add_requested_models() = model_request_info;

@@ -33,11 +33,6 @@ enum class OptimizationGuideDecision;
 // host that is not supported by the remote optimization guide.
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 
-// Returns the set of active field trials that are allowed to be sent to the
-// remote Optimization Guide Service.
-google::protobuf::RepeatedPtrField<proto::FieldTrial>
-GetActiveFieldTrialsAllowedForFetch();
-
 // Validates that the metadata stored in |any_metadata_| is of the same type
 // and is parseable as |T|. Will return metadata if all checks pass.
 template <class T,

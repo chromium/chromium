@@ -23,7 +23,6 @@ namespace optimization_guide {
 namespace features {
 
 extern const base::Feature kOptimizationHints;
-extern const base::Feature kOptimizationHintsFieldTrials;
 extern const base::Feature kRemoteOptimizationGuideFetching;
 extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
 extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
@@ -211,11 +210,6 @@ bool IsModelExecutionWatchdogEnabled();
 
 // The default timeout for the watchdog to use if none is given by the caller.
 base::TimeDelta ModelExecutionWatchdogDefaultTimeout();
-
-// Returns a set of field trial name hashes that can be sent in the request to
-// the remote Optimization Guide Service if the client is in one of the
-// specified field trials.
-base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch();
 
 // Whether the ability to download models is enabled.
 bool IsModelDownloadingEnabled();

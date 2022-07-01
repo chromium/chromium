@@ -227,9 +227,6 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   get_hints_request.set_context(request_context_);
 
-  *get_hints_request.mutable_active_field_trials() =
-      GetActiveFieldTrialsAllowedForFetch();
-
   get_hints_request.set_locale(locale);
 
   for (const auto& url : valid_urls)
