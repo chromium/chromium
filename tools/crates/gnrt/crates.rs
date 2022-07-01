@@ -181,10 +181,11 @@ impl fmt::Display for ThirdPartyCrate {
 }
 
 /// Traverse vendored third-party crates and collect the set of names and
-/// epochs. The returned list is in unspecified order.
+/// epochs. Each `ThirdPartyCrate` entry is paired with the package metadata
+/// from its manifest. The returned list is in unspecified order.
 pub fn collect_third_party_crates<P: AsRef<Path>>(
     crates_path: P,
-) -> io::Result<Vec<ThirdPartyCrate>> {
+) -> io::Result<Vec<(ThirdPartyCrate, manifest::CargoPackage)>> {
     let mut crates = Vec::new();
 
     for crate_dir in fs::read_dir(crates_path)? {
@@ -238,9 +239,9 @@ pub fn collect_third_party_crates<P: AsRef<Path>>(
                 },
             };
             let manifest: manifest::CargoManifest = toml::de::from_str(&manifest_contents).unwrap();
-            let package_name = manifest.package.name;
+            let package_name = manifest.package.name.clone();
 
-            crates.push(ThirdPartyCrate { name: package_name, epoch });
+            crates.push((ThirdPartyCrate { name: package_name, epoch }, manifest.package));
         }
     }
 

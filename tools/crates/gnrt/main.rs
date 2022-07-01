@@ -32,12 +32,12 @@ fn main() {
     // `cargo metadata`'s dependency resolution to ensure we have all the crates
     // we need. We sort `crates` for a stable ordering of [patch] sections.
     let mut crates = crates::collect_third_party_crates(paths.third_party.clone()).unwrap();
-    crates.sort();
+    crates.sort_unstable_by(|a, b| a.0.cmp(&b.0));
 
     // Generate a fake Cargo.toml for dependency resolution.
     let cargo_manifest = generate_fake_cargo_toml(
         third_party_manifest,
-        crates.iter().map(|c| {
+        crates.iter().map(|(c, _)| {
             let crate_path = paths.third_party.join(c.crate_path()).canonicalize().unwrap();
             manifest::PatchSpecification {
                 package_name: c.name.clone(),
@@ -76,7 +76,7 @@ fn main() {
     let dependencies = deps::collect_dependencies(&command.exec().unwrap());
 
     // Compare cargo's dependency resolution with the crates we have on disk.
-    let present_crates: HashSet<&ThirdPartyCrate> = crates.iter().collect();
+    let present_crates: HashSet<&ThirdPartyCrate> = crates.iter().map(|(c, _)| c).collect();
     let mut unused_crates: HashSet<&ThirdPartyCrate> = present_crates.clone();
     let mut missing_deps: Vec<&deps::ThirdPartyDep> = Vec::new();
     for dep in dependencies.iter() {

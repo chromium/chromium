@@ -101,7 +101,9 @@ fn test() {
         package: CargoPackage {
             name: "chromium".to_string(),
             version: Version::new(0, 1, 0),
+            authors: Vec::new(),
             edition: Default::default(),
+            description: None,
         },
         workspace: None,
         dependency_spec: DependencySpec {
@@ -135,5 +137,30 @@ edition = \"2021\"
 path = \"third_party/rust/foo/v1/crate\"
 package = \"foo\"
 "
+    )
+}
+
+#[gtest(ManifestTest, PackageManifest)]
+fn test() {
+    let manifest: CargoManifest = toml::de::from_str(concat!(
+        "[package]
+name = \"foo\"
+version = \"1.2.3\"
+authors = [\"alice@foo.com\", \"bob@foo.com\"]
+edition = \"2021\"
+description = \"A library to foo the bars\"
+"
+    ))
+    .unwrap();
+
+    expect_eq!(
+        manifest.package,
+        CargoPackage {
+            name: "foo".to_string(),
+            version: Version::new(1, 2, 3),
+            authors: vec!["alice@foo.com".to_string(), "bob@foo.com".to_string()],
+            edition: Edition("2021".to_string()),
+            description: Some("A library to foo the bars".to_string()),
+        }
     )
 }

@@ -115,16 +115,20 @@ pub struct CargoManifest {
     pub patches: BTreeMap<String, CargoPatchSet>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct CargoPackage {
     pub name: String,
     pub version: Version,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub authors: Vec<String>,
     #[serde(default)]
     pub edition: Edition,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(transparent)]
 pub struct Edition(pub String);
 
@@ -190,7 +194,9 @@ pub fn generate_fake_cargo_toml<Iter: IntoIterator<Item = PatchSpecification>>(
     let package = CargoPackage {
         name: "chromium".to_string(),
         version: Version::new(0, 1, 0),
+        authors: Vec::new(),
         edition: Default::default(),
+        description: None,
     };
 
     CargoManifest {
