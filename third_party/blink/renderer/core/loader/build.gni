@@ -11,6 +11,8 @@ blink_core_sources_loader = [
   "back_forward_cache_loader_helper_impl.h",
   "base_fetch_context.cc",
   "base_fetch_context.h",
+  "beacon_data.cc",
+  "beacon_data.h",
   "cookie_jar.cc",
   "cookie_jar.h",
   "cross_thread_resource_timing_info_copier.cc",
