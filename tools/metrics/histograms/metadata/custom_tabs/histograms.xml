@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId.Incognito" enum="ClientAppId"
-    expires_after="2022-09-03">
+    expires_after="M110">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
-    expires_after="2022-08-07">
+    expires_after="M110">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
