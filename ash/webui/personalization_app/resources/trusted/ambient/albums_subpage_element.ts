@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './album_list_element.js';
 import './art_album_dialog_element.js';
-import '../../common/common_style.css.js';
+import '../../css/common.css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 

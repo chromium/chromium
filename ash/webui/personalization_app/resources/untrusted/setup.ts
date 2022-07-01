@@ -12,5 +12,5 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../common/icons.html.js';
-import '../common/common_style.css.js';
+import '../css/common.css.js';
 import '/strings.m.js';

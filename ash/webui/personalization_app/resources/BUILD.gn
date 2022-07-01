@@ -134,8 +134,7 @@ ts_files = web_component_files + non_web_component_files
 
 # Files that are passed as input to css_to_wrapper().
 css_files = [
-  "common/common_style.css",
-
+  "css/common.css",
   "css/cros_button_style.css",
   "css/wallpaper.css",
 ]

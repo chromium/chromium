@@ -13,7 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../css/wallpaper.css.js';
 import '../../common/icons.html.js';
-import '../../common/common_style.css.js';
+import '../../css/common.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';

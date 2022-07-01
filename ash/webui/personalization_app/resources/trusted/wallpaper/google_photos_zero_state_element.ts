@@ -7,7 +7,7 @@
  */
 
 import '../../css/wallpaper.css.js';
-import '../../common/common_style.css.js';
+import '../../css/common.css.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 

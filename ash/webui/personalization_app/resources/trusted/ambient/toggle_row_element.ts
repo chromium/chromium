@@ -6,7 +6,7 @@
  * @fileoverview This component displays a description text and a toggle button.
  */
 
-import '../../common/common_style.css.js';
+import '../../css/common.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
