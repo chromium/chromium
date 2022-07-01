@@ -102,6 +102,14 @@ bool IsESimSupported() {
   return false;
 }
 
+bool IsCellularSimLocked() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+  return cellular_device &&
+         !cellular_device->sim_lock_status->lock_type.empty();
+}
+
 }  // namespace
 
 NetworkListViewControllerImpl::NetworkListViewControllerImpl(
@@ -426,10 +434,22 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
       return;
     }
 
-    const bool toggle_enabled =
-        !is_secondary_user && (cellular_state == DeviceStateType::kEnabled ||
-                               cellular_state == DeviceStateType::kDisabled);
     const bool cellular_enabled = cellular_state == DeviceStateType::kEnabled;
+
+    // The toggle will never be enabled for secondary users.
+    bool toggle_enabled = !is_secondary_user;
+
+    // The toggle will never be enabled during cellular state transitions.
+    toggle_enabled &=
+        cellular_enabled || cellular_state == DeviceStateType::kDisabled;
+
+    // The toggle will never be enabled if the device is SIM locked and we
+    // cannot open the Settings UI.
+    toggle_enabled &=
+        cellular_enabled ||
+        Shell::Get()->session_controller()->ShouldEnableSettings() ||
+        !IsCellularSimLocked();
+
     mobile_header_view_->SetToggleVisibility(/*visibility=*/true);
     mobile_header_view_->SetToggleState(/*enabled=*/toggle_enabled,
                                         /*is_on=*/cellular_enabled);

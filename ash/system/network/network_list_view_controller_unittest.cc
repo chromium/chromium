@@ -367,6 +367,20 @@ class NetworkListViewControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetCellularSimLockStatus(const std::string& lock_type, bool sim_locked) {
+    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
+    sim_lock_status.SetKey(shill::kSIMLockEnabledProperty,
+                           base::Value(sim_locked));
+    sim_lock_status.SetKey(shill::kSIMLockTypeProperty, base::Value(lock_type));
+    sim_lock_status.SetKey(shill::kSIMLockRetriesLeftProperty, base::Value(3));
+    network_state_helper()->device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kSIMLockStatusProperty,
+        std::move(sim_lock_status),
+        /*notify_changed=*/true);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Adds a Tether network state, adds a Wifi network to be used as the Wifi
   // hotspot, and associates the two networks.
   void AddTetherNetworkState() {
@@ -853,6 +867,16 @@ TEST_F(NetworkListViewControllerTest,
   EXPECT_TRUE(GetMobileSubHeader()->is_toggle_enabled());
   EXPECT_FALSE(GetMobileSubHeader()->is_toggle_on());
   EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+
+  // The toggle is not enabled, the cellular device SIM is locked, and user
+  // cannot open the settings page.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_SECONDARY);
+  SetCellularSimLockStatus(shill::kSIMLockPin, /*sim_locked=*/true);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetMobileSubHeader()->is_toggle_enabled());
 }
 
 TEST_F(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
