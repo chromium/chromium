@@ -46,6 +46,9 @@ void PrintViewHierarchy(std::ostringstream* out) {
   views::Widget* widget = views::Widget::GetWidgetForNativeView(active_window);
   if (!widget)
     return;
+
+  *out << "Host widget:\n";
+  views::PrintWidgetInformation(*widget, /*detailed*/ true, out);
   views::PrintViewHierarchy(widget->GetRootView(), out);
 }
 
@@ -64,7 +67,8 @@ void PrintWindowHierarchy(const aura::Window* active_window,
   const gfx::Vector2dF& subpixel_position_offset =
       window->layer()->GetSubpixelOffset();
   *out << indent_str;
-  *out << name << " (" << window << ")"
+  *out << " [window]";
+  *out << " " << name << " (" << window << ")"
        << " type=" << window->GetType();
   int window_id = window->GetId();
   if (window_id != aura::Window::kInitialId)
@@ -102,6 +106,13 @@ void PrintWindowHierarchy(const aura::Window* active_window,
   if (pkg_name)
     *out << " pkg_name=" << *pkg_name;
   *out << '\n';
+
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+  if (widget) {
+    *out << std::string(indent + 3, ' ');
+    *out << " [widget]";
+    views::PrintWidgetInformation(*widget, /*detailed*/ false, out);
+  }
 
   for (aura::Window* child : window->children()) {
     PrintWindowHierarchy(active_window, focused_window, capture_window, child,
