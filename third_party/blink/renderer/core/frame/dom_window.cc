@@ -581,18 +581,15 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   // Iframes are allowed to trigger reports, only when they are same-origin with
   // their top-level document.
-  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
-  // so we should use IsCrossOriginToOutermostMainFrame when we intend to check
-  // if any embedded frame (eg, iframe or fenced frame) is cross-origin with
-  // respect to the outermost main frame. Follow up to confirm correctness.
   if (accessing_frame->IsCrossOriginToOutermostMainFrame())
     return;
 
-  // See https://crbug.com/1183571
-  // We assumed accessing_frame->IsCrossOriginToNearestMainFrame() implies
-  // accessing_frame->Tree().Top() to be a LocalFrame. This might not be the
-  // case after all, some crashes are reported. This block speculatively returns
-  // early to avoid crashing.
+  // We returned early if accessing_frame->IsCrossOriginToOutermostMainFrame()
+  // was true. This means we are not in a fenced frame and that the nearest main
+  // frame is same-origin. This generally implies accessing_frame->Tree().Top()
+  // to be a LocalFrame. On rare occasions same-origin frames in a page might
+  // not share a process. This block speculatively returns early to avoid
+  // crashing.
   // TODO(https://crbug.com/1183571): Check if crashes are still happening and
   // remove this block.
   if (!accessing_frame->Tree().Top().IsLocalFrame()) {
