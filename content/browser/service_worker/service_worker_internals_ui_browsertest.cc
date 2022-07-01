@@ -20,11 +20,13 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -204,16 +206,20 @@ class SWOnRegistrationDeletedObserver
 
 class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
  public:
-  ServiceWorkerInternalsUIBrowserTest() = default;
+  ServiceWorkerInternalsUIBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
  protected:
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    ContentBrowserTest::SetUp();
-  }
+  // void SetUp() override {
+  //   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+  //   ContentBrowserTest::SetUp();
+  // }
 
   void SetUpOnMainThread() override {
-    StartServer();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+    // StartServer();
     StoragePartition* partition = shell()
                                       ->web_contents()
                                       ->GetBrowserContext()
@@ -233,13 +239,14 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
     wrapper_ = nullptr;
   }
 
-  void StartServer() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    embedded_test_server()->StartAcceptingConnections();
-  }
+  // void StartServer() {
+  //   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  //   embedded_test_server()->StartAcceptingConnections();
+  // }
 
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
   ServiceWorkerContext* public_context() { return wrapper(); }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   blink::ServiceWorkerStatusCode FindRegistration() {
     const GURL& document_url =
@@ -521,6 +528,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
   raw_ptr<Shell, DanglingUntriaged> active_shell_ = shell();
+  net::EmbeddedTestServer https_server_;
 };
 
 // Tests
@@ -693,4 +701,79 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest, InternalUIOptions) {
   TearDownWindow(sw_registration_window);
   TearDownWindow(sw_internal_ui_window);
 }
+
+class ServiceWorkerInternalsUIBrowserTestWithStoragePartitioning
+    : public ServiceWorkerInternalsUIBrowserTest {
+ public:
+  ServiceWorkerInternalsUIBrowserTestWithStoragePartitioning() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kThirdPartyStoragePartitioning);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerInternalsUIBrowserTestWithStoragePartitioning,
+    RegisteredSWReflectedOnInternalUI) {
+  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(https_server()->Start());
+
+  Shell* sw_internal_ui_window = CreateNewWindow();
+  NavigateToServiceWorkerInternalUI();
+
+  // Register and wait for the service worker to populate on the internal UI.
+  const std::u16string kTitle = u"SW populated";
+  TitleWatcher title_watcher(web_contents(), kTitle);
+  SetMutationObserver("status", "ACTIVATED", kTitle);
+
+  auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
+      wrapper(), ServiceWorkerVersion::ACTIVATED);
+  sw_state_observer->Init();
+
+  GURL top_level_page(
+      https_server()->GetURL("a.test", kServiceWorkerSetupPage));
+  GURL scope(https_server()->GetURL("b.test", kServiceWorkerScope));
+  {
+    base::RunLoop run_loop;
+    blink::mojom::ServiceWorkerRegistrationOptions options(
+        scope, blink::mojom::ScriptType::kClassic,
+        blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+    // Set up the storage key for the service worker
+    blink::StorageKey key = blink::StorageKey::CreateWithOptionalNonce(
+        url::Origin::Create(options.scope),
+        net::SchemefulSite(url::Origin::Create(top_level_page)), nullptr,
+        blink::mojom::AncestorChainBit::kCrossSite);
+    // Register returns when the promise is resolved.
+    public_context()->RegisterServiceWorker(
+        https_server()->GetURL("b.test", kServiceWorkerUrl), key, options,
+        base::BindOnce(&ExpectRegisterResultAndRun,
+                       blink::ServiceWorkerStatusCode::kOk,
+                       run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  sw_state_observer->Wait();
+  int64_t registration_id = sw_state_observer->RegistrationID();
+
+  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+
+  // Assert populated service worker info.
+  SetActiveWindow(sw_internal_ui_window);
+  ASSERT_EQ(scope.spec(),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "scope"));
+
+  ASSERT_EQ(url::Origin::Create(scope).GetDebugString(),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "origin"));
+  ASSERT_EQ(
+      net::SchemefulSite(url::Origin::Create(top_level_page)).Serialize(),
+      GetServiceWorkerInfoFromInternalUI(registration_id, "top_level_site"));
+  ASSERT_EQ("CrossSite", GetServiceWorkerInfoFromInternalUI(
+                             registration_id, "ancestor_chain_bit"));
+  ASSERT_EQ("<null>",
+            GetServiceWorkerInfoFromInternalUI(registration_id, "nonce"));
+}
+
 }  // namespace content
