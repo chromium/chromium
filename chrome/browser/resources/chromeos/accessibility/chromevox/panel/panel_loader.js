@@ -24,7 +24,6 @@ goog.require('OutputEventType');
 goog.require('OutputFormatTree');
 goog.require('OutputNodeSpan');
 goog.require('OutputRoleInfo');
-goog.require('OutputRulesStr');
 goog.require('OutputSelectionSpan');
 goog.require('OutputSpeechProperties');
 goog.require('PanelNodeMenuData');
