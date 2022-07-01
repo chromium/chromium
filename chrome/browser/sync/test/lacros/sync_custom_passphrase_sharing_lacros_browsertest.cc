@@ -4,6 +4,8 @@
 
 #include <utility>
 
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -12,6 +14,7 @@
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
@@ -26,10 +29,24 @@ namespace {
 
 using testing::_;
 
+std::string ComputeKeyName(const syncer::Nigori& nigori) {
+  std::string key_name;
+  nigori.Permute(syncer::Nigori::Password, syncer::kNigoriKeyName, &key_name);
+  return key_name;
+}
+
 MATCHER_P(AccountKeyEq, expected_account_key, "") {
   const crosapi::mojom::AccountKeyPtr& given_account_key = arg;
   return given_account_key->id == expected_account_key.id &&
          given_account_key->account_type == expected_account_key.account_type;
+}
+
+MATCHER_P(MojoNigoriCanDecryptServerNigori, fake_server, "") {
+  const crosapi::mojom::NigoriKeyPtr& mojo_nigori = arg;
+  sync_pb::NigoriSpecifics server_specifics;
+  fake_server::GetServerNigori(fake_server, &server_specifics);
+  return mojo_nigori && ComputeKeyName(*syncer::NigoriFromMojo(*mojo_nigori)) ==
+                            server_specifics.encryption_keybag().key_name();
 }
 
 class MockSyncExplicitPassphraseClientAsh
@@ -207,6 +224,73 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
       PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
           .Wait());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
+                       ShouldExposeEncryptionKeyWhenSetDecryptionPassphrase) {
+  if (!IsServiceAvailable()) {
+    GTEST_SKIP() << "Unsupported Ash version.";
+  }
+
+  ASSERT_TRUE(SetupSync());
+
+  // Mimic custom passphrase being set by other client.
+  const syncer::KeyParamsForTesting kKeyParams =
+      syncer::ScryptPassphraseKeyParamsForTesting("hunter2");
+  fake_server::SetNigoriInFakeServer(
+      syncer::BuildCustomPassphraseNigoriSpecifics(kKeyParams),
+      GetFakeServer());
+
+  // Mimic Ash received the remote update and indicates that passphrase is
+  // required.
+  client_observer()->OnPassphraseRequired();
+
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
+          .Wait());
+
+  // Mimic that user enters the passphrase, key should be exposed to Ash.
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      *client_ash(),
+      SetDecryptionNigoriKey(AccountKeyEq(GetSyncingUserAccountKey()),
+                             MojoNigoriCanDecryptServerNigori(GetFakeServer())))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
+          .Wait());
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
+                       ShouldExposeEncryptionKeyWhenSetEncryptionPassphrase) {
+  if (!IsServiceAvailable()) {
+    GTEST_SKIP() << "Unsupported Ash version.";
+  }
+
+  ASSERT_TRUE(SetupSync());
+
+  const std::string kPassphrase = "hunter2";
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase(kPassphrase);
+  ASSERT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
+          .Wait());
+
+  // Mimic Ash received the remote update and indicates that passphrase is
+  // required, key should be exposed to Ash.
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      *client_ash(),
+      SetDecryptionNigoriKey(AccountKeyEq(GetSyncingUserAccountKey()),
+                             MojoNigoriCanDecryptServerNigori(GetFakeServer())))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  client_observer()->OnPassphraseRequired();
+  run_loop.Run();
 }
 
 }  // namespace
