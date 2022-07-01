@@ -959,7 +959,12 @@ void NetworkContext::ClearNetworkingHistoryBetween(
     base::Time start_time,
     base::Time end_time,
     base::OnceClosure completion_callback) {
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  auto barrier = base::BarrierClosure(3, std::move(completion_callback));
+  sct_auditing_handler()->ClearPendingReports(barrier);
+#else
   auto barrier = base::BarrierClosure(2, std::move(completion_callback));
+#endif  // BUIDLFLAG(IS_CT_SUPPORTED)
 
   url_request_context_->transport_security_state()->DeleteAllDynamicDataBetween(
       start_time, end_time, barrier);

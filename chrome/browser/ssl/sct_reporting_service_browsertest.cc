@@ -7,6 +7,8 @@
 
 #include "base/base64.h"
 #include "base/callback.h"
+#include "base/files/file_path_watcher.h"
+#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -23,17 +25,20 @@
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -948,4 +953,170 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, HashdanceReportLimitReached) {
   EXPECT_EQ(0u, requests_seen());
   SetSafeBrowsingEnabled(false);  // Clears the deduplication cache.
   EXPECT_TRUE(FlushAndCheckZeroReports());
+}
+
+// Wrapper around FilePathWatcher to help tests wait for an auditing report to
+// be persisted to disk. This is also robust to the persistence file being
+// written to before the test initiates the wait, helping avoid race conditions
+// that can cause hard-to-debug flakes.
+//
+// This currently monitors *two* file paths, because depending on the platform
+// (and the state of the network service sandbox rollout) the persisted data
+// file path may have an extra "Network/" subdirectory component, but it is
+// difficult to determine this from test data. WaitUntilPersisted() will wait
+// until *either* of the two paths have been written to.
+//
+// ReportPersistenceWaiter also takes a `filesize_threshold` as the "empty"
+// persistence file still has some structure/data in it. For the current
+// persistence format (list of JSON dicts), the "empty" persistence file is 2
+// bytes (the empty list `[]`).
+class ReportPersistenceWaiter {
+ public:
+  ReportPersistenceWaiter(const base::FilePath& watched_file_path,
+                          const base::FilePath& alternative_file_path,
+                          int64_t filesize_threshold)
+      : watched_file_path1_(watched_file_path),
+        watched_file_path2_(alternative_file_path),
+        filesize_threshold_(filesize_threshold) {}
+  ReportPersistenceWaiter(const ReportPersistenceWaiter&) = delete;
+  ReportPersistenceWaiter& operator=(const ReportPersistenceWaiter&) = delete;
+
+  void WaitUntilPersisted() {
+    DCHECK(!watcher1_);
+    DCHECK(!watcher2_);
+    {
+      // Check if either file was already written and if so return early.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      int64_t file_size;
+      // GetFileSize() will return `false` if the file does not yet exist.
+      if (base::GetFileSize(watched_file_path1_, &file_size) &&
+          file_size > filesize_threshold_) {
+        return;
+      }
+      if (base::GetFileSize(watched_file_path2_, &file_size) &&
+          file_size > filesize_threshold_) {
+        return;
+      }
+    }
+    watcher1_ = std::make_unique<base::FilePathWatcher>();
+    watcher2_ = std::make_unique<base::FilePathWatcher>();
+    EXPECT_TRUE(watcher1_->Watch(
+        watched_file_path1_, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindRepeating(&ReportPersistenceWaiter::OnPathChanged,
+                            base::Unretained(this))));
+    EXPECT_TRUE(watcher2_->Watch(
+        watched_file_path2_, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindRepeating(&ReportPersistenceWaiter::OnPathChanged,
+                            base::Unretained(this))));
+    run_loop_.Run();
+    // The watchers should be destroyed before quitting the run loop.
+    DCHECK(!watcher1_);
+    DCHECK(!watcher2_);
+  }
+
+ private:
+  void OnPathChanged(const base::FilePath& path, bool error) {
+    EXPECT_TRUE(path == watched_file_path1_ || path == watched_file_path2_);
+    EXPECT_FALSE(error);
+    watcher1_.reset();
+    watcher2_.reset();
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  const base::FilePath watched_file_path1_;
+  const base::FilePath watched_file_path2_;
+  const int64_t filesize_threshold_;
+  std::unique_ptr<base::FilePathWatcher> watcher1_;
+  std::unique_ptr<base::FilePathWatcher> watcher2_;
+};
+
+// Subclass to force-enable kSCTAuditingPersistReports. Parent class will handle
+// enabling the other required features and setup.
+class SCTReportingServiceWithPersistenceBrowserTest
+    : public SCTReportingServiceBrowserTest {
+ public:
+  SCTReportingServiceWithPersistenceBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        network::features::kSCTAuditingPersistReports);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithPersistenceBrowserTest,
+                       PersistedReportClearedOnClearBrowsingHistory) {
+  // Set a long retry delay so that retries don't occur immediately.
+  {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test()->SetSCTAuditingRetryDelay(base::Minutes(1));
+  }
+  // Don't immediately succeed, so report stays persisted to disk.
+  set_error_count(10);
+
+  SetExtendedReportingEnabled(true);
+
+  // The empty/cleared persistence file will be 2 bytes (the empty JSON list).
+  constexpr int64_t kEmptyPersistenceFileSize = 2;
+
+  base::FilePath persistence_path1 = browser()->profile()->GetPath();
+  // If the network service sandbox is enabled, then the network service data
+  // dir path has an additional "Network" subdirectory in it. This means that
+  // different platforms will have different persistence paths depending on the
+  // current state of the network service sandbox rollout.
+  // TODO(crbug.com/715679): Simplify this once the paths are consistent (i.e.,
+  // after the network service sandbox is fully rolled out.)
+  base::FilePath persistence_path2 =
+      persistence_path1.Append(chrome::kNetworkDataDirname);
+  persistence_path1 =
+      persistence_path1.Append(chrome::kSCTAuditingPendingReportsFileName);
+  persistence_path2 =
+      persistence_path2.Append(chrome::kSCTAuditingPendingReportsFileName);
+
+  // Visit an HTTPS page to generate an SCT auditing report. Sending the report
+  // will result in an error, so the pending report will remain.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
+
+  // Check that the report got persisted to disk.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ReportPersistenceWaiter waiter(persistence_path1, persistence_path2,
+                                   kEmptyPersistenceFileSize);
+    waiter.WaitUntilPersisted();
+    int64_t file_size1;
+    int64_t file_size2;
+    bool one_file_is_written =
+        base::GetFileSize(persistence_path1, &file_size1) ||
+        base::GetFileSize(persistence_path2, &file_size2);
+    EXPECT_TRUE(one_file_is_written);
+    EXPECT_TRUE(file_size1 > kEmptyPersistenceFileSize ||
+                file_size2 > kEmptyPersistenceFileSize);
+  }
+
+  // Trigger removal and wait for completion.
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::BrowsingDataRemover* remover =
+      contents->GetBrowserContext()->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+  remover->RemoveAndReply(
+      base::Time(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_CACHE,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      &completion_observer);
+  completion_observer.BlockUntilCompletion();
+
+  // Check that the persistence file is cleared.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    int64_t file_size;
+    if (base::GetFileSize(persistence_path1, &file_size)) {
+      EXPECT_EQ(file_size, kEmptyPersistenceFileSize);
+    } else if (base::GetFileSize(persistence_path2, &file_size)) {
+      EXPECT_EQ(file_size, kEmptyPersistenceFileSize);
+    } else {
+      FAIL() << "Neither persistence file was ever written";
+    }
+  }
 }

@@ -369,8 +369,12 @@ TEST_F(SCTAuditingHandlerTest, PopulateSCTMetadataOnHashdanceMode) {
     histograms.ExpectUniqueSample(
         "Security.SCTAuditing.OptOut.PopularSCTSkipped", false,
         mode == mojom::SCTAuditingMode::kHashdance ? 1 : 0);
-    handler_->ClearPendingReports();
+
+    // Reset by clearing all pending reports and cache entries.
+    base::RunLoop run_loop;
+    handler_->ClearPendingReports(run_loop.QuitClosure());
     network_service_->sct_auditing_cache()->ClearCache();
+    run_loop.Run();
   }
 }
 
@@ -415,8 +419,11 @@ TEST_F(SCTAuditingHandlerTest, DoNotReportPopularSCT) {
         "Security.SCTAuditing.OptOut.PopularSCTSkipped", true,
         mode == mojom::SCTAuditingMode::kHashdance ? 1 : 0);
 
-    handler_->ClearPendingReports();
+    // Reset by clearing all pending reports and cache entries.
+    base::RunLoop run_loop;
+    handler_->ClearPendingReports(run_loop.QuitClosure());
     network_service_->sct_auditing_cache()->ClearCache();
+    run_loop.Run();
   }
 }
 

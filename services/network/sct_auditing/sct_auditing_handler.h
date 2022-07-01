@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   void OnReportsLoadedFromDisk(const std::string& serialized);
 
   // Clears the set of pending reporters for this SCTAuditingHandler.
-  void ClearPendingReports();
+  void ClearPendingReports(base::OnceClosure callback);
 
   base::LRUCache<net::HashValue, std::unique_ptr<SCTAuditingReporter>>*
   GetPendingReportersForTesting() {
@@ -136,7 +136,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
  private:
   void OnReporterStateUpdated();
   void OnReporterFinished(net::HashValue reporter_key);
+
+  // Wrapper to pass the callback back to the foreground runner, as the
+  // underlying ImportantFileWriter runs its callback on the background runner.
+  // ImportantFileWriter requires a `OnceCallback<void(bool success)>` for the
+  // write completion callback, but the boolean is currently unused here.
+  void OnWriteFinished(base::OnceClosure callback, bool /*unused*/);
+
   void ReportHWMMetrics();
+
   mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // The NetworkContext which owns this SCTAuditingHandler.

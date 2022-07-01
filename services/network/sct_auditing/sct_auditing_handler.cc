@@ -331,11 +331,14 @@ void SCTAuditingHandler::OnReportsLoadedFromDisk(
   DeserializeData(serialized);
 }
 
-// TODO(crbug.com/1144205): This method should take a completion callback (for
-// callers like NetworkContext::ClearNetworkingHistoryBetween() that want to be
-// able to wait for the write completing), and pass it through to the `writer_`,
-// like TransportSecurityState does.
-void SCTAuditingHandler::ClearPendingReports() {
+void SCTAuditingHandler::OnWriteFinished(base::OnceClosure callback,
+                                         bool /*unused*/) {
+  DCHECK(background_runner_->RunsTasksInCurrentSequence());
+  foreground_runner_->PostTask(FROM_HERE, std::move(callback));
+}
+
+void SCTAuditingHandler::ClearPendingReports(base::OnceClosure callback) {
+  DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
   // Delete any outstanding Reporters. This will delete any extant URLLoader
   // instances owned by the Reporters, which will cancel any outstanding
   // requests/connections. Pending (delayed) retry tasks will fast-fail when
@@ -343,7 +346,15 @@ void SCTAuditingHandler::ClearPendingReports() {
   // task.
   pending_reporters_.Clear();
   if (writer_) {
-    writer_->ScheduleWrite(this);
+    writer_->RegisterOnNextWriteCallbacks(
+        base::OnceClosure(),
+        base::BindOnce(&SCTAuditingHandler::OnWriteFinished,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    auto data = std::make_unique<std::string>();
+    SerializeData(data.get());
+    writer_->WriteNow(std::move(data));
+  } else {
+    std::move(callback).Run();
   }
 }
 
@@ -359,7 +370,7 @@ void SCTAuditingHandler::SetMode(mojom::SCTAuditingMode mode) {
                            &SCTAuditingHandler::ReportHWMMetrics);
   } else {
     histogram_timer_.Stop();
-    ClearPendingReports();
+    ClearPendingReports(base::DoNothing());
   }
 }
 
