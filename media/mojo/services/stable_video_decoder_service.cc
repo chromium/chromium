@@ -144,7 +144,8 @@ void StableVideoDecoderService::OnVideoFrameDecoded(
 
 void StableVideoDecoderService::OnWaiting(WaitingReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  DCHECK(stable_video_decoder_client_remote_.is_bound());
+  stable_video_decoder_client_remote_->OnWaiting(reason);
 }
 
 void StableVideoDecoderService::RequestOverlayInfo(

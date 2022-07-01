@@ -690,6 +690,31 @@ TEST_F(StableVideoDecoderServiceTest,
   EXPECT_TRUE(video_frame_received->metadata().end_of_stream);
 }
 
+// Tests that a mojom::VideoDecoderClient::OnWaiting() call originating from the
+// underlying mojom::VideoDecoder gets forwarded to the
+// stable::mojom::VideoDecoderClient correctly.
+TEST_F(StableVideoDecoderServiceTest,
+       StableVideoDecoderClientReceivesOnWaitingEvent) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto auxiliary_endpoints = ConstructStableVideoDecoder(
+      stable_video_decoder_remote, *mock_video_decoder_raw,
+      /*expect_construct_call=*/true);
+  ASSERT_TRUE(auxiliary_endpoints);
+  ASSERT_TRUE(auxiliary_endpoints->video_decoder_client_remote);
+  ASSERT_TRUE(auxiliary_endpoints->mock_stable_video_decoder_client);
+
+  constexpr WaitingReason kWaitingReason = WaitingReason::kNoDecryptionKey;
+  EXPECT_CALL(*auxiliary_endpoints->mock_stable_video_decoder_client,
+              OnWaiting(kWaitingReason));
+  auxiliary_endpoints->video_decoder_client_remote->OnWaiting(kWaitingReason);
+  auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
+}
+
 }  // namespace
 
 }  // namespace media
