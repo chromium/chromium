@@ -19,6 +19,7 @@
 #include "extensions/browser/api/idle/idle_manager_factory.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
+#include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/api/power/power_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api/serial/serial_connection.h"
@@ -91,6 +92,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
     BUILDFLAG(IS_MAC)
   NetworkingPrivateEventRouterFactory::GetInstance();
 #endif
+  OffscreenDocumentManager::GetFactory();
   PowerAPI::GetFactoryInstance();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();
