@@ -120,12 +120,10 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   dawn_state->dawn_desc.frontFace = AsDawnEnum(webgpu_desc->frontFace());
   dawn_state->dawn_desc.cullMode = AsDawnEnum(webgpu_desc->cullMode());
 
-  if (webgpu_desc->hasUnclippedDepth()) {
+  if (webgpu_desc->unclippedDepth()) {
     auto* depth_clip_control = &dawn_state->depth_clip_control;
     depth_clip_control->chain.sType = WGPUSType_PrimitiveDepthClipControl;
-    depth_clip_control->unclippedDepth =
-        webgpu_desc->unclippedDepth().has_value() &&
-        webgpu_desc->unclippedDepth().value();
+    depth_clip_control->unclippedDepth = webgpu_desc->unclippedDepth();
     dawn_state->dawn_desc.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(depth_clip_control);
   }
