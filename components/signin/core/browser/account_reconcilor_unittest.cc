@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
@@ -1317,6 +1318,16 @@ const std::vector<AccountReconcilorTestTableParam> kMirrorParams = {
 {  "*A",    "AB",   IsFirstReconcile::kBoth, "U",         "*A",          "A"},
 // Check that the previous case is idempotent.
 {  "*A",    "A",    IsFirstReconcile::kBoth, "",          "*A",          ""},
+
+// On Lacros, the reconcilor is enabled even if there is no account, or if the
+// primary account is in error.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+{  "",      "",     IsFirstReconcile::kBoth, "",          "",            ""},
+{  "*xA",   "",     IsFirstReconcile::kBoth, "",          "*xA",         ""},
+{  "",      "A",    IsFirstReconcile::kBoth, "X",         "",            ""},
+{  "*xA",   "A",    IsFirstReconcile::kBoth, "X",         "*xA",         ""},
+{  "*xAB",  "AB",   IsFirstReconcile::kBoth, "X",         "*xAB",        ""},
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 // clang-format on
 
@@ -1389,8 +1400,15 @@ TEST_P(AccountReconcilorTestMirrorMultilogin, TableRowTest) {
       GetParam().is_first_reconcile == IsFirstReconcile::kFirst ? true : false;
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
-  SimulateSetAccountsInCookieCompleted(
-      reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+  if (GetParam().gaia_api_calls[0] != '\0') {
+    if (logout_action) {
+      SimulateLogOutFromCookieCompleted(
+          reconcilor, GoogleServiceAuthError::AuthErrorNone());
+    } else {
+      SimulateSetAccountsInCookieCompleted(
+          reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+    }
+  }
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
