@@ -75,8 +75,8 @@ scoped_refptr<base::SequencedTaskRunner> ChromeBrowserState::GetIOTaskRunner() {
   return io_task_runner_;
 }
 
-sync_preferences::PrefServiceSyncable* ChromeBrowserState::GetSyncablePrefs() {
-  return static_cast<sync_preferences::PrefServiceSyncable*>(GetPrefs());
+PrefService* ChromeBrowserState::GetPrefs() {
+  return GetSyncablePrefs();
 }
 
 net::URLRequestContextGetter* ChromeBrowserState::GetRequestContext() {

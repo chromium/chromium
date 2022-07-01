@@ -92,7 +92,8 @@ OffTheRecordChromeBrowserStateImpl::GetUserCloudPolicyManager() {
   return GetOriginalChromeBrowserState()->GetUserCloudPolicyManager();
 }
 
-PrefService* OffTheRecordChromeBrowserStateImpl::GetPrefs() {
+sync_preferences::PrefServiceSyncable*
+OffTheRecordChromeBrowserStateImpl::GetSyncablePrefs() {
   return prefs_.get();
 }
 

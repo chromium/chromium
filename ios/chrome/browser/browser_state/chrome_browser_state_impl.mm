@@ -208,7 +208,8 @@ ChromeBrowserStateImpl::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
 }
 
-PrefService* ChromeBrowserStateImpl::GetPrefs() {
+sync_preferences::PrefServiceSyncable*
+ChromeBrowserStateImpl::GetSyncablePrefs() {
   DCHECK(prefs_);  // Should explicitly be initialized.
   return prefs_.get();
 }

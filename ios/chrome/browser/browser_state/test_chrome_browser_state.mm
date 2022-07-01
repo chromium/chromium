@@ -231,7 +231,8 @@ BrowserStatePolicyConnector* TestChromeBrowserState::GetPolicyConnector() {
   return policy_connector_.get();
 }
 
-PrefService* TestChromeBrowserState::GetPrefs() {
+sync_preferences::PrefServiceSyncable*
+TestChromeBrowserState::GetSyncablePrefs() {
   return prefs_.get();
 }
 

@@ -91,16 +91,16 @@ class ChromeBrowserState : public web::BrowserState {
   virtual policy::UserCloudPolicyManager* GetUserCloudPolicyManager() = 0;
 
   // Retrieves a pointer to the PrefService that manages the preferences.
-  virtual PrefService* GetPrefs() = 0;
+  virtual PrefService* GetPrefs();
+
+  // Retrieves a pointer to the PrefService that manages the preferences as
+  // a sync_preferences::PrefServiceSyncable.
+  virtual sync_preferences::PrefServiceSyncable* GetSyncablePrefs() = 0;
 
   // Allows access to ChromeBrowserStateIOData without going through
   // ResourceContext that is not compiled on iOS. This method must be called on
   // UI thread, but the returned object must only be accessed on the IO thread.
   virtual ChromeBrowserStateIOData* GetIOData() = 0;
-
-  // Retrieves a pointer to the PrefService that manages the preferences as
-  // a sync_preferences::PrefServiceSyncable.
-  virtual sync_preferences::PrefServiceSyncable* GetSyncablePrefs();
 
   // Deletes all network related data since `time`. It deletes transport
   // security state since `time` and it also deletes HttpServerProperties data.

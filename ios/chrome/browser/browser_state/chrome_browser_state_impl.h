@@ -42,7 +42,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
-  PrefService* GetPrefs() override;
+  sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
