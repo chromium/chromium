@@ -20,10 +20,10 @@ namespace {
 const float kContentHorizontalInset = 16.0f;
 
 // The vertical spacing between the title and the content of the module.
-const float kContentTitleVerticalSpacing = 10.0f;
+const float kContentTitleVerticalSpacing = 12.0f;
 
 // The top inset of the title label to this container.
-const float kTitleTopInset = 11.0f;
+const float kTitleTopInset = 14.0f;
 
 // The minimum width of the title label.
 const float kTitleMinimumWidth = 99.0f;
@@ -35,7 +35,7 @@ const float kTitleMinimumHeight = 11.0f;
 const float kPlaceholderTitleCornerRadius = 2.0f;
 
 // The corner radius of this container.
-const float kCornerRadius = 10;
+const float kCornerRadius = 16;
 
 // The shadow radius of this container.
 const float kShadowRadius = 60;
@@ -69,7 +69,8 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
     _type = type;
 
     self.layer.cornerRadius = kCornerRadius;
-    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowOffset = kShadowOffset;
     self.layer.shadowRadius = kShadowRadius;

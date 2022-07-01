@@ -80,6 +80,19 @@
                                                    fromView:self];
 }
 
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+    previewForHighlightingMenuWithConfiguration:
+        (UIContextMenuConfiguration*)configuration {
+  // This ensures that the background of the context menu matches the background
+  // behind the tile.
+  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
+  previewParameters.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  return [[UITargetedPreview alloc] initWithView:self
+                                      parameters:previewParameters];
+}
+
 #pragma mark - AccessibilityCustomAction
 
 // Custom action for a cell configured with this item.
