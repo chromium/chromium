@@ -1065,7 +1065,6 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
     vaapi_wrapper_->DestroyContext();
 
   available_encode_surfaces_.clear();
-  available_va_buffer_ids_.clear();
 
   if (vpp_vaapi_wrapper_)
     vpp_vaapi_wrapper_->DestroyContext();
