@@ -1175,7 +1175,7 @@ void LocalFrameMojoHandler::GetStringForRange(
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
   NSAttributedString* string = SubstringUtil::AttributedSubstringInRange(
       frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
-      base::checked_cast<WTF::wtf_size_t>(range.length()), &baseline_point);
+      base::checked_cast<WTF::wtf_size_t>(range.length()), baseline_point);
   if (string)
     attributed_string = ui::mojom::blink::AttributedString::From(string);
 

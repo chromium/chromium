@@ -52,7 +52,7 @@ TEST_F(SubStringUtilTest, SubstringUtil) {
 
   gfx::Point baseline_point;
   NSAttributedString* result = SubstringUtil::AttributedSubstringInRange(
-      frame->GetFrame(), 10, 3, &baseline_point);
+      frame->GetFrame(), 10, 3, baseline_point);
   ASSERT_TRUE(!!result);
 
   gfx::Point point(baseline_point);
@@ -63,7 +63,7 @@ TEST_F(SubStringUtilTest, SubstringUtil) {
   web_view->SetZoomLevel(3);
 
   result = SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 5, 5,
-                                                     &baseline_point);
+                                                     baseline_point);
   ASSERT_TRUE(!!result);
 
   point = baseline_point;
@@ -82,12 +82,11 @@ TEST_F(SubStringUtilTest, SubstringUtilBaselinePoint) {
       static_cast<WebLocalFrameImpl*>(web_view->MainFrame());
 
   gfx::Point old_point;
-  SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 3, 1,
-                                            &old_point);
+  SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 3, 1, old_point);
 
   gfx::Point new_point;
   SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 3, 20,
-                                            &new_point);
+                                            new_point);
 
   EXPECT_EQ(old_point.x(), new_point.x());
   EXPECT_EQ(old_point.y(), new_point.y());
@@ -105,14 +104,14 @@ TEST_F(SubStringUtilTest, SubstringUtilPinchZoom) {
 
   gfx::Point baseline_point;
   result = SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 10, 3,
-                                                     &baseline_point);
+                                                     baseline_point);
   ASSERT_TRUE(!!result);
 
   web_view->SetPageScaleFactor(3);
 
   gfx::Point point_after_zoom;
   result = SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 10, 3,
-                                                     &point_after_zoom);
+                                                     point_after_zoom);
   ASSERT_TRUE(!!result);
 
   // We won't have moved by a full factor of 3 because of the translations, but
@@ -136,7 +135,7 @@ TEST_F(SubStringUtilTest, SubstringUtilIframe) {
 
   gfx::Point baseline_point;
   NSAttributedString* result = SubstringUtil::AttributedSubstringInRange(
-      child_frame->GetFrame(), 11, 7, &baseline_point);
+      child_frame->GetFrame(), 11, 7, baseline_point);
   ASSERT_NE(result, nullptr);
 
   gfx::Point point(baseline_point);
