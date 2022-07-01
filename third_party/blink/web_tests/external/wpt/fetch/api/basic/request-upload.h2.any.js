@@ -9,6 +9,7 @@ function testUpload(desc, url, method, createBody, expectedBody) {
     const body = createBody();
     if (body) {
       requestInit["body"] = body;
+      requestInit.duplex = "half";
     }
     const resp = await fetch(url, requestInit);
     const text = await resp.text();

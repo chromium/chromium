@@ -754,7 +754,6 @@ crbug.com/1050754 external/wpt/fetch/api/request/request-cache-only-if-cached.an
 crbug.com/1050754 external/wpt/fetch/api/request/request-cache-reload.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/api/request/request-consume.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/api/request/request-init-002.any.sharedworker.html [ Failure ]
-crbug.com/1050754 external/wpt/fetch/api/request/request-init-stream.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/api/request/request-keepalive.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/api/response/response-cancel-stream.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/api/response/response-consume-stream.any.sharedworker.html [ Failure ]
