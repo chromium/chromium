@@ -253300,7 +253300,7 @@
       []
      ],
      "prefetch-helper.js": [
-      "4beae888593395c4cfdc4d1d1fcbc920f1233edd",
+      "cb6fd4823f008f940bb1c292a3ef504194856df6",
       []
      ],
      "prefetch-subresource.css": [
@@ -326006,7 +326006,7 @@
       []
      ],
      "entry-invariants.js": [
-      "0bb18c5983341b25c72f3418e5e167fcf4053be6",
+      "4bef9496103ca61475f8041a7d2c57b2b5d9fc4e",
       []
      ],
      "eventsource.py": [
@@ -386487,6 +386487,13 @@
       ],
       "changing-scroll-snap-align.html": [
        "3be68fe841a0d6183b83d5b7287b70883c3cfce7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "changing-scroll-snap-type-on-root-element.html": [
+       "c86f39b9d6cc3c2ebf896aca2a59fec707bd979e",
        [
         null,
         {}
@@ -516897,7 +516904,7 @@
      ]
     ],
     "entries-for-network-errors.sub.https.html": [
-     "a3c4791f68d9a187cc807c250da387945eee06ad",
+     "95849d282621ffc121ae36a3f3543307a4e135db",
      [
       null,
       {}
