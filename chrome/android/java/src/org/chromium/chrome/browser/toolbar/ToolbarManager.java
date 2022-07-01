@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -141,6 +142,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -149,9 +151,12 @@ import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -1913,11 +1918,36 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         checkIfNtpLoaded();
     }
 
+    private void maybeShowPriceDropIPH() {
+        // TODO(crbug.com/1335197): Check if price drop occurred before showing IPH
+        if (!PriceTrackingFeatures.isPriceDropIphEnabled()) {
+            return;
+        }
+
+        ToggleTabStackButton toggleTabStackButton =
+                mControlContainer.findViewById(R.id.tab_switcher_button);
+        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
+        userEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mControlContainer.getResources(),
+                        FeatureConstants.PRICE_DROP_NTP_FEATURE, R.string.price_drop_spotted_iph,
+                        R.string.price_drop_spotted_iph)
+                        .setInsetRect(new Rect(0, 0, 0,
+                                -(mControlContainer.getResources().getDimensionPixelOffset(
+                                        R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset))))
+                        .setAnchorView(toggleTabStackButton)
+                        .setHighlightParams(params)
+                        .setDismissOnTouch(true)
+                        .build());
+    }
+
     private void checkIfNtpLoaded() {
         NewTabPage ntp = getNewTabPageForCurrentTab();
         if (ntp != null) {
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
+            maybeShowPriceDropIPH();
         }
     }
 

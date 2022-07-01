@@ -435,4 +435,7 @@
     <!-- Section tab dimensions -->
     <dimen name="section_tab_background_corner_radius">60dp</dimen>
     <dimen name="section_tab_bezel_width">2dp</dimen>
+
+    <!-- Price Drop dimensions -->
+    <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>
 </resources>

@@ -128,6 +128,7 @@ extern const base::Feature kIPHNewTabPageHomeButtonFeature;
 extern const base::Feature kIPHPageInfoFeature;
 extern const base::Feature kIPHPageInfoStoreInfoFeature;
 extern const base::Feature kIPHPreviewsOmniboxUIFeature;
+extern const base::Feature kIPHPriceDropNTPFeature;
 extern const base::Feature kIPHQuietNotificationPromptsFeature;
 extern const base::Feature kIPHReadLaterContextMenuFeature;
 extern const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature;
