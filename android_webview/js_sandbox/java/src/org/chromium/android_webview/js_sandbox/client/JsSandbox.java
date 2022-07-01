@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -44,6 +45,7 @@ public class JsSandbox implements AutoCloseable {
     private static final String TAG = "JsSandbox";
     private static final String JS_SANDBOX_SERVICE_NAME =
             "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
+    private static AtomicBoolean sIsReadyToConnect = new AtomicBoolean(true);
     private final Object mLock = new Object();
     private CloseGuardHelper mGuard = CloseGuardHelper.create();
 
@@ -142,6 +144,7 @@ public class JsSandbox implements AutoCloseable {
                 mJsSandbox.doClose(new SandboxDeadException());
             } else {
                 mContext.unbindService(this);
+                sIsReadyToConnect.set(true);
             }
             if (mCompleter != null) {
                 mCompleter.setException(e);
@@ -188,21 +191,26 @@ public class JsSandbox implements AutoCloseable {
         intent.setComponent(compName);
         return CallbackToFutureAdapter.getFuture(completer -> {
             ConnectionSetup connectionSetup = new ConnectionSetup(context, completer);
-            try {
-                boolean isBinding = context.bindService(intent, connectionSetup, flag);
-                if (isBinding) {
-                    Executor mainExecutor;
-                    mainExecutor = ContextCompat.getMainExecutor(context);
-                    completer.addCancellationListener(
-                            () -> context.unbindService(connectionSetup), mainExecutor);
-                } else {
+            if (sIsReadyToConnect.compareAndSet(true, false)) {
+                try {
+                    boolean isBinding = context.bindService(intent, connectionSetup, flag);
+                    if (isBinding) {
+                        Executor mainExecutor;
+                        mainExecutor = ContextCompat.getMainExecutor(context);
+                        completer.addCancellationListener(
+                                () -> { context.unbindService(connectionSetup); }, mainExecutor);
+                    } else {
+                        context.unbindService(connectionSetup);
+                        completer.setException(
+                                new RuntimeException("bindService() returned false " + intent));
+                    }
+                } catch (SecurityException e) {
                     context.unbindService(connectionSetup);
-                    completer.setException(
-                            new RuntimeException("bindService() returned false " + intent));
+                    completer.setException(e);
                 }
-            } catch (SecurityException e) {
-                context.unbindService(connectionSetup);
-                completer.setException(e);
+            } else {
+                completer.setException(
+                        new IllegalStateException("Binding to already bound service"));
             }
 
             // Debug string.
@@ -239,7 +247,6 @@ public class JsSandbox implements AutoCloseable {
         }
     }
 
-    // Called from only the constructor and as a result mJsSandboxService will not be null.
     @GuardedBy("mLock")
     private void populateClientFeatureSet() {
         mClientSideFeatureSet = new HashSet<String>();
@@ -296,6 +303,10 @@ public class JsSandbox implements AutoCloseable {
             }
             cancelPendingEvaluationsLocked(cancelPendingWith);
             mConnection.mContext.unbindService(mConnection);
+            // Currently we consider that we are ready for a new connection once we unbind. This
+            // might not be true if the process is not immediately killed by ActivityManager once it
+            // is unbound.
+            sIsReadyToConnect.set(true);
             mJsSandboxService = null;
         }
     }

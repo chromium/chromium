@@ -430,4 +430,45 @@ public class WebViewJsSandboxTest {
             }
         }
     }
+
+    @Test
+    @MediumTest
+    public void testMultipleSandboxesCannotCoexist() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        final String contains = "already bound";
+        ListenableFuture<JsSandbox> JsSandboxFuture1 = JsSandbox.newConnectedInstanceAsync(context);
+        try (JsSandbox jsSandbox1 = JsSandboxFuture1.get(5, TimeUnit.SECONDS)) {
+            ListenableFuture<JsSandbox> JsSandboxFuture2 =
+                    JsSandbox.newConnectedInstanceAsync(context);
+            try {
+                JsSandbox jsSandbox2 = JsSandboxFuture2.get(5, TimeUnit.SECONDS);
+                Assert.fail("Should have thrown.");
+            } catch (ExecutionException e) {
+                if (!(e.getCause() instanceof RuntimeException)) {
+                    throw e;
+                }
+                Assert.assertTrue(e.getCause().getMessage().contains(contains));
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testSandboxCanBeCreatedAfterClosed() throws Throwable {
+        final String code = "\"PASS\"";
+        final String expected = "PASS";
+        Context context = ContextUtils.getApplicationContext();
+
+        ListenableFuture<JsSandbox> JsSandboxFuture1 = JsSandbox.newConnectedInstanceAsync(context);
+        JsSandbox jsSandbox1 = JsSandboxFuture1.get(5, TimeUnit.SECONDS);
+        jsSandbox1.close();
+        ListenableFuture<JsSandbox> JsSandboxFuture2 = JsSandbox.newConnectedInstanceAsync(context);
+        try (JsSandbox jsSandbox2 = JsSandboxFuture2.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox2.createIsolate()) {
+            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascriptAsync(code);
+            String result = resultFuture1.get(5, TimeUnit.SECONDS);
+
+            Assert.assertEquals(expected, result);
+        }
+    }
 }
