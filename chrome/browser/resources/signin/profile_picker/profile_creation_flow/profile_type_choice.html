@@ -8,7 +8,7 @@
   #infoContainer {
     bottom: 0;
     box-sizing: border-box;
-    margin-bottom: 58px;
+    margin-bottom: min(58px, calc(5px + 0.5 * (100vh - var(--view-min-size))));
     position: absolute;
     text-align: center;
     width: 100%;
