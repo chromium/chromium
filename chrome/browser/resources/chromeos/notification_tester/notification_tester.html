@@ -22,17 +22,16 @@
   }
 
   .page-container {
-    align-items: flex-start;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    line-height: 1.5;
+    height: 100%;
+    justify-content: center;
   }
 
   .config-form {
-    flex: 1;
     margin: 0 auto;
-    max-width: 24rem;
+    min-width: 28rem;
+    padding: 0 1rem;
     width: 100%;
   }
 
@@ -40,13 +39,13 @@
     align-items: center;
     border-bottom: none;
     display: flex;
-    font-size: 1rem;
+    font-size: 0.8rem;
     padding: 0 0 8px 0;
   }
 
   .form-item>label {
     flex: 1;
-    font-size: 1;
+    font-size: 1rem;
   }
 
   .form-item>select {
@@ -57,12 +56,25 @@
     padding: .1rem;
   }
 
-  #generateNotifBtn {
+  .form-item>cr-radio-group,
+  .form-item>cr-checkbox {
+    display: flex;
+    flex: 2;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  cr-radio-button {
+    padding: 0 auto;
+  }
+
+  .config-form > button {
     background: rgb(0, 134, 179);
     border-radius: 0.25rem;
     color: #f8f8f8;
     font-size: 1rem;
     font-weight: bold;
+    margin-inline-end: 0.25em;
     margin-top: 1em;
     padding: 0.25em 0.5em;
     width: max-content;
@@ -72,25 +84,99 @@
   <app-toolbar>Notification Tester</app-toolbar>
 </app-header>
 <div class="page-container">
-  <div class="config-form">
-    <h2> Visual Settings </h2>
+  <div class="column">
+    <div class="config-form">
+      <h2> General Settings </h2>
 
-    <select-custom select-value="{{notifMetadata.title}}" display-label="Title"
-      select-elements="[[titleSelectList]]" selectid="title"></select-custom>
+      <div class="form-item">
+        <label for="notifier-type"> Notifier Type </label>
+        <cr-radio-group id="notifier-type" selected="System">
+          <cr-radio-button name="System" label="System"></cr-radio-button>
+          <cr-radio-button name="Web" label="Web"></cr-radio-button>
+        </cr-radio-group>
+      </div>
 
-    <select-custom select-value="{{notifMetadata.message}}"
-      display-label="Message" select-elements="[[messageSelectList]]"
-      selectid="message"></select-custom>
+      <select-custom select-value="" display-label="Notification Type"
+      select-elements="[[iconSelectList]]" selectid="notification-type"></select-custom>
 
-    <select-custom select-value="{{notifMetadata.icon}}" display-label="Icon"
-      select-elements="[[iconSelectList]]" selectid="icon"
-      no-custom-input=" true"></select-custom>
+      <select-custom select-value="{{notifMetadata.title}}" display-label="Title"
+        select-elements="[[titleSelectList]]" selectid="title"></select-custom>
 
-    <select-custom select-value="{{notifMetadata.richDataImage}}"
+      <select-custom select-value="{{notifMetadata.message}}"
+        display-label="Message" select-elements="[[messageSelectList]]"
+        selectid="message"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.icon}}" display-label="Icon"
+        select-elements="[[iconSelectList]]" selectid="icon"
+        no-custom-input="true"></select-custom>
+      
+      <select-custom select-value="" display-label="Source"
+        select-elements="[[iconSelectList]]" selectid="source"></select-custom>
+    </div>
+    <div class="config-form">
+      <h2> Rich Notification Data (optional fields) </h2>
+
+      <select-custom select-value="{{notifMetadata.richDataImage}}"
       display-label="Image" select-elements="[[imageSelectList]]"
       selectid="image" no-custom-input="true"></select-custom>
 
-    <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
-      Generate </button>
+      <select-custom select-value="" display-label="Small Image" select-elements="[[imageSelectList]]"
+      selectid="small-image" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="" display-label="Priority"
+      select-elements="[[iconSelectList]]" selectid="priority" no-custom-input="true"></select-custom>
+      
+      <div class="form-item">
+        <label for="never-timeout">Never Timeout</label>
+        <cr-checkbox id="never-timeout"></cr-checkbox>
+      </div>
+
+      <div class="form-item">
+        <label for="pinned">Pinned</label>
+        <cr-checkbox id="pinned"></cr-checkbox>
+      </div>
+
+      <div class="form-item">
+        <label for="renotify">Renotify</label>
+        <cr-checkbox id="renotify"></cr-checkbox>
+      </div>
+
+      <h3> Type Specific Fields </h3>
+
+      <select-custom select-value="" display-label="# Notif. Items"
+      select-elements="[[iconSelectList]]" selectid="num-notif-items"
+      no-custom-input="true"></select-custom>
+
+      <select-custom select-value="" display-label="Progress %"
+      select-elements="[[iconSelectList]]" selectid="progress-percent"
+      no-custom-input="true"></select-custom>
+        
+    </div>
+  </div>
+  <div class="column">
+    <div class="config-form">
+      <h2> Buttons </h2>
+      
+      <div class="form-item">
+        <label for="show-settings">Show Settings</label>
+        <cr-checkbox id="show-settings"></cr-checkbox>
+      </div>
+
+      <div class="form-item">
+        <label for="show-snooze">Show Snooze</label>
+        <cr-checkbox id="show-snooze"></cr-checkbox>
+      </div>
+
+      <select-custom select-value="" display-label="# Buttons"
+      select-elements="[[iconSelectList]]" selectid="num-buttons"
+      no-custom-input="true"></select-custom>
+
+    </div>
+    <div class="config-form">
+      <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
+        Generate </button>
+      <button type="button" id="" on-click="">
+          Reset </button>
+    </div>
   </div>
 </div>

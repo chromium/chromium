@@ -69,6 +69,6 @@ export const FormSelectOptions = {
   ],
   IMAGE_OPTIONS: [
     {displayText: 'No Image', value: 'none'},
-    {displayText: 'ChromeOS Logo (1218x317, PNG)', value: 'chromeos_logo_main'},
+    {displayText: 'CrOS Logo (1218x317, PNG)', value: 'chromeos_logo_main'},
   ],
 };
