@@ -175,6 +175,17 @@ const CLIENT_DELEGATE = {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'openFeedbackDialog', []);
   },
+
+  /**
+   * Gets information about the specified screencast from DriveFS.
+   * @param {string} screencastId The Drive item id of container folder.
+   * @return {!Promise<projectorApp.Screencast>}
+   */
+  // TODO(b/236857019) Wires up this with trusted context and message handle.
+  getScreencast(screencastId) {
+    return Promise.reject('Unsupported');
+  },
+
 };
 
 /**
