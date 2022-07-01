@@ -15562,7 +15562,7 @@
                         "file_system_type": "*"
                       }],
                       "destinations": [{
-                        "file_system_type": "MyFiles"
+                        "file_system_type": "MY_FILES"
                       }]
                     }
                   ],
@@ -15573,10 +15573,10 @@
                     {
                       "sources": [
                         {
-                          "file_system_type": "MyFiles"
+                          "file_system_type": "MY_FILES"
                         },
                         {
-                          "file_system_type": "SmbFs"
+                          "file_system_type": "SAMBA"
                         }
                       ],
                       "destinations": [{
@@ -15596,13 +15596,13 @@
                       }],
                       "destinations": [
                         {
-                          "file_system_type": "ArcDocumentsProvider"
+                          "file_system_type": "ARC"
                         },
                         {
-                          "file_system_type": "SmbFs"
+                          "file_system_type": "SAMBA"
                         },
                         {
-                          "file_system_type": "MyFiles"
+                          "file_system_type": "MY_FILES"
                         }
                       ]
                     }

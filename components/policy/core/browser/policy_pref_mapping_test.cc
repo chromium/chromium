@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/hash/hash.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -571,7 +572,8 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
                                 PrefService* local_state,
                                 PrefService* user_prefs,
                                 PrefService* signin_profile_prefs,
-                                MockConfigurationPolicyProvider* provider) {
+                                MockConfigurationPolicyProvider* provider,
+                                PrefMappingChunkInfo* chunk_info) {
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(chrome_schema.valid());
 
@@ -583,6 +585,15 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   for (const auto& policy : test_cases) {
     SCOPED_TRACE(::testing::Message() << "Policy name: " << policy.first);
     for (const auto& test_case : policy.second) {
+      if (chunk_info != nullptr) {
+        const size_t policy_name_hash = base::FastHash(policy.first);
+        const size_t chunk_index = policy_name_hash % chunk_info->num_chunks;
+        if (chunk_index != chunk_info->current_chunk)
+          // Skip policy if test cases are chunked and the policy is not part of
+          // the current chunk.
+          continue;
+      }
+
       if (test_filter.has_value() &&
           !base::Contains(test_filter.value(), test_case->name())) {
         // Skip policy based on the filter.
