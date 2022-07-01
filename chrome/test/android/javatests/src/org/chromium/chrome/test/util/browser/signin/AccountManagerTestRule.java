@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
-import android.accounts.Account;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -104,7 +103,7 @@ public class AccountManagerTestRule implements TestRule {
      * Adds an account of the given accountName to the fake AccountManagerFacade.
      * @return The CoreAccountInfo for the account added.
      */
-    public CoreAccountInfo addAccount(String accountName) {
+    public AccountInfo addAccount(String accountName) {
         return addAccount(accountName, new AccountCapabilities(new HashMap<>()));
     }
 
@@ -112,8 +111,7 @@ public class AccountManagerTestRule implements TestRule {
      * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
      * @return The CoreAccountInfo for the account added.
      */
-    public CoreAccountInfo addAccount(
-            String accountName, @NonNull AccountCapabilities capabilities) {
+    public AccountInfo addAccount(String accountName, @NonNull AccountCapabilities capabilities) {
         assert mFakeAccountInfoService != null;
         final String baseName = accountName.split("@", 2)[0];
         return addAccount(
@@ -124,7 +122,7 @@ public class AccountManagerTestRule implements TestRule {
      * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to
      * {@link FakeAccountInfoService}.
      */
-    public CoreAccountInfo addAccount(
+    public AccountInfo addAccount(
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
         return addAccount(
                 email, fullName, givenName, avatar, new AccountCapabilities(new HashMap<>()));
@@ -134,13 +132,12 @@ public class AccountManagerTestRule implements TestRule {
      * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to
      * {@link FakeAccountInfoService}.
      */
-    public CoreAccountInfo addAccount(String email, String fullName, String givenName,
+    public AccountInfo addAccount(String email, String fullName, String givenName,
             @Nullable Bitmap avatar, @NonNull AccountCapabilities capabilities) {
         assert mFakeAccountInfoService != null;
-        mFakeAccountInfoService.addAccountInfo(email, fullName, givenName, avatar, capabilities);
-        final Account account = AccountUtils.createAccountFromName(email);
-        mFakeAccountManagerFacade.addAccount(account);
-        return toCoreAccountInfo(email);
+        mFakeAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(email));
+        return mFakeAccountInfoService.addAccountInfo(
+                email, fullName, givenName, avatar, capabilities);
     }
 
     /**
