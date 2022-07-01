@@ -220,6 +220,34 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
+    @Feature("Tab Strip Improvements")
+    public void testUndoSingleTabClose_AfterClosingSelectedTabs_ReselectsMostRecentlyClosedTab() {
+        // Arrange: Start with fourth tab as selected index
+        initializeTabModel(3);
+        TabModelSelectorTabModelObserver tabModelSelectorTabModelObserver =
+                mUndoRefocusHelper.getTabModelSelectorTabModelObserverForTests();
+
+        // Act 1: Close the fourth tab.
+        Tab fourthTab = getMockedTab(3);
+        tabModelSelectorTabModelObserver.willCloseTab(fourthTab, false);
+        // After fourth tab is closed, the third one should be selected.
+        mModel.setIndex(2);
+
+        // Act 2: Close the third tab after it is selected.
+        Tab thirdTab = getMockedTab(2);
+        tabModelSelectorTabModelObserver.willCloseTab(thirdTab, false);
+        // After third tab is closed, the second one should be selected.
+        mModel.setIndex(1);
+
+        // Undo tab closures.
+        tabModelSelectorTabModelObserver.tabClosureUndone(thirdTab);
+        tabModelSelectorTabModelObserver.tabClosureUndone(fourthTab);
+
+        // Assert: Third tab is still selected after undo instead of the fourth tab.
+        assertEquals(2, mModel.index());
+    }
+
+    @Test
     public void testUndoTabClose_TabStrip_RecordsUserAction() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
