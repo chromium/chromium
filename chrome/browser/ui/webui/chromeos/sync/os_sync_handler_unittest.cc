@@ -170,7 +170,7 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(OsSyncHandlerTest, OsSyncPrefsSentOnNavigateToPage) {
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
+  handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
 
   ASSERT_EQ(1U, web_ui_.call_data().size());
   const TestWebUI::CallData& call_data = *web_ui_.call_data().back();
@@ -184,7 +184,7 @@ TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
   sync_service_->SetTransportState(SyncService::TransportState::START_DEFERRED);
 
   // Navigate to the page.
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
+  handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
 
   // No data is sent yet, because the engine is not initialized.
   EXPECT_EQ(0U, web_ui_.call_data().size());
@@ -211,11 +211,11 @@ TEST_F(OsSyncHandlerTest, OnlyStartEngineWhenConfiguringSync) {
 }
 
 TEST_F(OsSyncHandlerTest, TestSyncEverything) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(CreateOsSyncPrefs(SYNC_ALL_OS_TYPES,
                                      UserSelectableOsTypeSet::All(),
                                      /*wallpaper_enabled=*/true));
-  handler_->HandleSetOsSyncDatatypes(&list_args);
+  handler_->HandleSetOsSyncDatatypes(list_args);
   EXPECT_TRUE(user_settings_->IsSyncAllOsTypesEnabled());
 }
 
@@ -224,30 +224,30 @@ TEST_F(OsSyncHandlerTest, TestSyncEverything) {
 TEST_F(OsSyncHandlerTest, TestSyncIndividualTypes) {
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     UserSelectableOsTypeSet types = {type};
-    base::ListValue list_args;
+    base::Value::List list_args;
     list_args.Append(CreateOsSyncPrefs(CHOOSE_WHAT_TO_SYNC, types,
                                        /*wallpaper_enabled=*/false));
 
-    handler_->HandleSetOsSyncDatatypes(&list_args);
+    handler_->HandleSetOsSyncDatatypes(list_args);
     EXPECT_FALSE(user_settings_->IsSyncAllOsTypesEnabled());
     EXPECT_EQ(types, user_settings_->GetSelectedOsTypes());
   }
 
   // Special case for wallpaper.
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(CreateOsSyncPrefs(CHOOSE_WHAT_TO_SYNC, /*types=*/{},
                                      /*wallpaper_enabled=*/true));
-  handler_->HandleSetOsSyncDatatypes(&list_args);
+  handler_->HandleSetOsSyncDatatypes(list_args);
   EXPECT_FALSE(user_settings_->IsSyncAllOsTypesEnabled());
   EXPECT_TRUE(GetWallperEnabledPref());
 }
 
 TEST_F(OsSyncHandlerTest, TestSyncAllManually) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(CreateOsSyncPrefs(CHOOSE_WHAT_TO_SYNC,
                                      UserSelectableOsTypeSet::All(),
                                      /*wallpaper_enabled=*/true));
-  handler_->HandleSetOsSyncDatatypes(&list_args);
+  handler_->HandleSetOsSyncDatatypes(list_args);
   EXPECT_FALSE(user_settings_->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(UserSelectableOsTypeSet::All(),
             user_settings_->GetSelectedOsTypes());
@@ -258,7 +258,7 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncEverything) {
   user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/true,
                                      UserSelectableOsTypeSet::All());
   SetWallperEnabledPref(true);
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
+  handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
 
   const DictionaryValue* dictionary;
   ExpectOsSyncPrefsSent(&dictionary);
@@ -275,7 +275,7 @@ TEST_F(OsSyncHandlerTest, ShowSetupManuallySyncAll) {
   user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                      UserSelectableOsTypeSet::All());
   SetWallperEnabledPref(true);
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
+  handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
 
   const DictionaryValue* dictionary;
   ExpectOsSyncPrefsSent(&dictionary);
@@ -288,7 +288,7 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     UserSelectableOsTypeSet types(type);
     user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
-    handler_->HandleDidNavigateToOsSyncPage(nullptr);
+    handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
 
     const DictionaryValue* dictionary;
     ExpectOsSyncPrefsSent(&dictionary);
@@ -299,7 +299,7 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
   // Special case for wallpaper.
   user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false, /*types=*/{});
   SetWallperEnabledPref(true);
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
+  handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
   const DictionaryValue* dictionary;
   ExpectOsSyncPrefsSent(&dictionary);
   CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, /*types=*/{},

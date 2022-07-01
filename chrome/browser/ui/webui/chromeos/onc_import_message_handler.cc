@@ -46,7 +46,7 @@ OncImportMessageHandler::OncImportMessageHandler() = default;
 OncImportMessageHandler::~OncImportMessageHandler() = default;
 
 void OncImportMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "importONC", base::BindRepeating(&OncImportMessageHandler::OnImportONC,
                                        base::Unretained(this)));
 }
@@ -60,10 +60,10 @@ void OncImportMessageHandler::Respond(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void OncImportMessageHandler::OnImportONC(const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetListDeprecated().size());
-  std::string callback_id = list->GetListDeprecated()[0].GetString();
-  std::string onc_blob = list->GetListDeprecated()[1].GetString();
+void OncImportMessageHandler::OnImportONC(const base::Value::List& list) {
+  CHECK_EQ(2u, list.size());
+  std::string callback_id = list[0].GetString();
+  std::string onc_blob = list[1].GetString();
   AllowJavascript();
 
   // TODO(https://crbug.com/1186373): Pass the `NssCertDatabaseGetter` to

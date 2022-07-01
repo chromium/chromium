@@ -30,7 +30,7 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
   void Respond(const std::string& callback_id,
                const std::string& result,
                bool is_error);
-  void OnStoreLogs(const base::ListValue* list);
+  void OnStoreLogs(const base::Value::List& list);
   void OnWriteSystemLogs(const std::string& callback_id,
                          base::Value&& options,
                          absl::optional<base::FilePath> syslogs_path);
@@ -43,7 +43,7 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
                           base::Value&& options);
   void OnWritePolicies(const std::string& callback_id, bool result);
   void OnWriteSystemLogsCompleted(const std::string& callback_id);
-  void OnSetShillDebugging(const base::ListValue* list);
+  void OnSetShillDebugging(const base::Value::List& list);
   void OnSetShillDebuggingCompleted(const std::string& callback_id,
                                     bool succeeded);
 

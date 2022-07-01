@@ -5,14 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
 
+#include "base/values.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace syncer {
 class SyncService;
@@ -39,10 +36,10 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   void OnStateChanged(syncer::SyncService* service) override;
 
   // Callbacks from the page. Visible for testing.
-  void HandleDidNavigateToOsSyncPage(const base::ListValue* args);
-  void HandleDidNavigateAwayFromOsSyncPage(const base::ListValue* args);
-  void HandleOsSyncPrefsDispatch(const base::ListValue* args);
-  void HandleSetOsSyncDatatypes(const base::ListValue* args);
+  void HandleDidNavigateToOsSyncPage(const base::Value::List& args);
+  void HandleDidNavigateAwayFromOsSyncPage(const base::Value::List& args);
+  void HandleOsSyncPrefsDispatch(const base::Value::List& args);
+  void HandleSetOsSyncDatatypes(const base::Value::List& args);
 
   void SetWebUIForTest(content::WebUI* web_ui);
 

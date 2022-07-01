@@ -28,7 +28,7 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
  private:
   // Handle the Javascript message |getSysInfo|. The message is sent to get
   // system information.
-  void HandleGetSysInfo(const base::ListValue* args);
+  void HandleGetSysInfo(const base::Value::List& args);
 
   // The callback function to handle the returning data.
   //

@@ -204,18 +204,17 @@ SysInternalsMessageHandler::SysInternalsMessageHandler() {}
 SysInternalsMessageHandler::~SysInternalsMessageHandler() {}
 
 void SysInternalsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSysInfo",
       base::BindRepeating(&SysInternalsMessageHandler::HandleGetSysInfo,
                           base::Unretained(this)));
 }
 
-void SysInternalsMessageHandler::HandleGetSysInfo(const base::ListValue* args) {
+void SysInternalsMessageHandler::HandleGetSysInfo(
+    const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(args);
 
   AllowJavascript();
-  base::Value::ConstListView list = args->GetListDeprecated();
   if (list.size() != 1 || !list[0].is_string()) {
     NOTREACHED();
     return;

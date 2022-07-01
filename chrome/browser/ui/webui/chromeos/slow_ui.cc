@@ -74,9 +74,9 @@ class SlowHandler : public WebUIMessageHandler {
   void UpdatePage();
 
   // Handlers for JS WebUI messages.
-  void HandleDisable(const base::ListValue* args);
-  void HandleEnable(const base::ListValue* args);
-  void LoadComplete(const base::ListValue* args);
+  void HandleDisable(const base::Value::List& args);
+  void HandleEnable(const base::Value::List& args);
+  void LoadComplete(const base::Value::List& args);
 
   Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
@@ -93,13 +93,13 @@ SlowHandler::~SlowHandler() {
 }
 
 void SlowHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kJsApiDisableTracing,
       base::BindRepeating(&SlowHandler::HandleDisable, base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kJsApiEnableTracing,
       base::BindRepeating(&SlowHandler::HandleEnable, base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kJsApiLoadComplete,
       base::BindRepeating(&SlowHandler::LoadComplete, base::Unretained(this)));
 }
@@ -114,17 +114,17 @@ void SlowHandler::OnJavascriptDisallowed() {
   user_pref_registrar_->RemoveAll();
 }
 
-void SlowHandler::HandleDisable(const base::ListValue* args) {
+void SlowHandler::HandleDisable(const base::Value::List& args) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kPerformanceTracingEnabled, false);
 }
 
-void SlowHandler::HandleEnable(const base::ListValue* args) {
+void SlowHandler::HandleEnable(const base::Value::List& args) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kPerformanceTracingEnabled, true);
 }
 
-void SlowHandler::LoadComplete(const base::ListValue* args) {
+void SlowHandler::LoadComplete(const base::Value::List& args) {
   AllowJavascript();
   UpdatePage();
 }

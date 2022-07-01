@@ -36,19 +36,19 @@ OSSyncHandler::~OSSyncHandler() {
 }
 
 void OSSyncHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "DidNavigateToOsSyncPage",
       base::BindRepeating(&OSSyncHandler::HandleDidNavigateToOsSyncPage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "DidNavigateAwayFromOsSyncPage",
       base::BindRepeating(&OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "OsSyncPrefsDispatch",
       base::BindRepeating(&OSSyncHandler::HandleOsSyncPrefsDispatch,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "SetOsSyncDatatypes",
       base::BindRepeating(&OSSyncHandler::HandleSetOsSyncDatatypes,
                           base::Unretained(this)));
@@ -67,24 +67,25 @@ void OSSyncHandler::OnStateChanged(syncer::SyncService* service) {
     PushSyncPrefs();
 }
 
-void OSSyncHandler::HandleDidNavigateToOsSyncPage(const base::ListValue* args) {
+void OSSyncHandler::HandleDidNavigateToOsSyncPage(
+    const base::Value::List& args) {
   HandleOsSyncPrefsDispatch(args);
 }
 
-void OSSyncHandler::HandleOsSyncPrefsDispatch(const base::ListValue* args) {
+void OSSyncHandler::HandleOsSyncPrefsDispatch(const base::Value::List& args) {
   AllowJavascript();
 
   PushSyncPrefs();
 }
 
 void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // TODO(https://crbug.com/1278325): Remove this.
 }
 
-void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetListDeprecated().size());
-  const base::Value& result_value = args->GetListDeprecated()[0];
+void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  const base::Value& result_value = args[0];
   CHECK(result_value.is_dict());
   const base::DictionaryValue& result =
       base::Value::AsDictionaryValue(result_value);

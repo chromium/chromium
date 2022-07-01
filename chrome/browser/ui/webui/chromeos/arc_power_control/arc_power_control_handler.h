@@ -53,11 +53,11 @@ class ArcPowerControlHandler : public content::WebUIMessageHandler,
 
  private:
   // Handlers for calls from JS.
-  void HandleReady(const base::ListValue* args);
-  void HandleSetWakefulnessMode(const base::ListValue* args);
-  void HandleSetThrottling(const base::ListValue* args);
-  void HandleStartTracing(const base::ListValue* args);
-  void HandleStopTracing(const base::ListValue* args);
+  void HandleReady(const base::Value::List& args);
+  void HandleSetWakefulnessMode(const base::Value::List& args);
+  void HandleSetThrottling(const base::Value::List& args);
+  void HandleStartTracing(const base::Value::List& args);
+  void HandleStopTracing(const base::Value::List& args);
 
   void StartTracing();
   void StopTracing();
