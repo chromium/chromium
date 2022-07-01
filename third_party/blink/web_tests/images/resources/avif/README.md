@@ -123,4 +123,12 @@ The cavif command line is:
 cavif ../../../fast/box-shadow/resources/green-alpha.png -o green-no-alpha-ispe.avif
 ```
 
+### red-unsupported-transfer.avif
+The 'colr' property in this file has an unsupported transfer function (11) in
+'nclx'. This is generated from red.png with the appropriate avifenc command
+line:
+```
+avifenc -r f -d 8 -y 420 -s 0 --nclx 1/11/1 red.png red-unsupported-transfer.avif
+```
+
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.

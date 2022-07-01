@@ -1006,6 +1006,14 @@ TEST(StaticAVIFTests, AlphaHasNoIspeProperty) {
   EXPECT_TRUE(decoder->Failed());
 }
 
+TEST(StaticAVIFTests, UnsupportedTransferFunctionInColrProperty) {
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(
+      ReadFile("/images/resources/avif/red-unsupported-transfer.avif"), true);
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->Failed());
+}
+
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
 
 INSTANTIATE_TEST_SUITE_P(Parameterized,
