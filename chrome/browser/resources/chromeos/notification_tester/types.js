@@ -7,10 +7,26 @@
  * ui/message_center/public/cpp/notification.h.
  * Items prefixed with "richData" are from RichNotificationData.
  * @typedef {{
+ *   id: string,
  *   title: string,
  *   message: string,
  *   icon: string,
+ *   displaySource: string,
+ *   originURL: string,
+ *   notificationType: number,
+ *   notifierType: number,
  *   richDataImage: string,
+ *   richDataSmallImage: string,
+ *   richDataNeverTimeout: boolean,
+ *   richDataPriority: number,
+ *   richDataPinned: boolean,
+ *   richDataRenotify: boolean,
+ *   richDataShowSnooze: boolean,
+ *   richDataShowSettings: boolean,
+ *   richDataProgress: number,
+ *   richDataProgressStatus: string,
+ *   richDataNumButtons: number,
+ *   richDataNumNotifItems: number,
  * }}
  */
 export let Notification;

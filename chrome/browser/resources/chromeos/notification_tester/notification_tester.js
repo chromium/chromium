@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FormSelectOptions} from './form_constants.js';
+import {FormSelectOptions, NotificationType, NotifierType} from './form_constants.js';
 import {Notification} from './types.js';
 
 // Web component housing the form for chrome://notification-tester.
@@ -34,6 +34,26 @@ export class NotificationTester extends PolymerElement {
           return {};
         },
       },
+      /*
+      @type {!boolean}
+      */
+      showTypeSpecificDesc: {type: Boolean},
+      /*
+      @type {!boolean}
+      */
+      showProgressOptions: {type: Boolean},
+      /*
+      @type {!boolean}
+      */
+      showMultiOptions: {type: Boolean},
+      /*
+      @type {!boolean}
+      */
+      showDisplaySource: {type: Boolean},
+      /*
+      @type {!boolean}
+      */
+      showOriginURL: {type: Boolean},
       /*
        * @private
        */
@@ -79,6 +99,13 @@ export class NotificationTester extends PolymerElement {
       /*
        * @private
        */
+      originURLSelectList: {
+        type: Array,
+        value: FormSelectOptions.URL_OPTIONS,
+      },
+      /*
+       * @private
+       */
       notificationTypeSelectList: {
         type: Array,
         value: FormSelectOptions.NOTIFICATION_TYPE_OPTIONS,
@@ -107,9 +134,40 @@ export class NotificationTester extends PolymerElement {
     };
   }
 
+  static get observers() {
+    return [
+      'notificationTypeChanged_(notifMetadata.notificationType)',
+      'notifierTypeChanged_(notifMetadata.notifierType)'
+    ];
+  }
+
   onClickGenerate() {
     // Send notification data to C++
     chrome.send('generateNotificationForm', [this.notifMetadata]);
+  }
+
+  // Show / hide dom elements when this.notifMetadata.notificationType changes
+  notificationTypeChanged_(notificationType) {
+    this.showMultiOptions =
+        (notificationType == NotificationType.NOTIFICATION_TYPE_MULTIPLE);
+    this.showProgressOptions =
+        (notificationType == NotificationType.NOTIFICATION_TYPE_PROGRESS);
+    this.showTypeSpecificDesc =
+        !(this.showMultiOptions || this.showProgressOptions);
+  }
+
+  // Set this.notifMetadata.notifierType to the appropriate number given the
+  // notifier as a string.
+  notifierTypeChanged_(notifierType) {
+    // notifierType is guaranteed to be 'System' or 'Web'.
+    this.showDisplaySource = notifierType == 'System';
+    this.showOriginURL = notifierType == 'Web';
+    if (notifierType == 'System') {
+      this.notifMetadata.notifierType = NotifierType.SYSTEM_COMPONENT;
+      return;
+    }
+
+    this.notifMetadata.notifierType = NotifierType.WEB_PAGE;
   }
 }
 

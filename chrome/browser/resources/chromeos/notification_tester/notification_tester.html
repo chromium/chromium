@@ -69,12 +69,12 @@
     --cr-radio-button-label-spacing: 10px;
   }
 
-  cr-radio-group#progress-percent > cr-radio-button,
-  cr-radio-group#num-buttons > cr-radio-button {
+  cr-radio-group#progress-percent>cr-radio-button,
+  cr-radio-group#num-buttons>cr-radio-button {
     --cr-radio-group-item-padding: 6px;
   }
 
-  .config-form > button {
+  .config-form>button {
     background: rgb(0, 134, 179);
     border-radius: 0.25rem;
     color: #f8f8f8;
@@ -85,7 +85,6 @@
     padding: 0.25em 0.5em;
     width: max-content;
   }
-
 </style>
 <app-header>
   <app-toolbar>Notification Tester</app-toolbar>
@@ -97,117 +96,150 @@
 
       <div class="form-item">
         <label for="notifier-type"> Notifier Type </label>
-        <cr-radio-group id="notifier-type" selected="System">
+        <cr-radio-group id="notifier-type"
+          selected="{{notifMetadata.notifierType}}">
           <cr-radio-button name="System" label="System"></cr-radio-button>
           <cr-radio-button name="Web" label="Web"></cr-radio-button>
         </cr-radio-group>
       </div>
 
-      <select-custom select-value="" display-label="Notification Type"
-      select-elements="[[notificationTypeSelectList]]"
-      selectid="notification-type" no-custom-input="true"></select-custom>
+      <select-custom select-value="{{notifMetadata.notificationType}}"
+        display-label="Notification Type"
+        select-elements="[[notificationTypeSelectList]]"
+        selectid="notification-type" no-custom-input="true"></select-custom>
 
-      <select-custom select-value="" display-label="Notification ID"
-      select-elements="[[notificationIDSelectList]]"
-      selectid="notification-id"></select-custom>
+      <select-custom select-value="{{notifMetadata.id}}"
+        display-label="Notification ID"
+        select-elements="[[notificationIDSelectList]]"
+        selectid="notification-id"></select-custom>
 
-      <select-custom select-value="{{notifMetadata.title}}" display-label="Title"
-      select-elements="[[titleSelectList]]" selectid="title"></select-custom>
+      <select-custom select-value="{{notifMetadata.title}}"
+        display-label="Title" select-elements="[[titleSelectList]]"
+        selectid="title"></select-custom>
 
       <select-custom select-value="{{notifMetadata.message}}"
-      display-label="Message" select-elements="[[messageSelectList]]"
-      selectid="message"></select-custom>
+        display-label="Message" select-elements="[[messageSelectList]]"
+        selectid="message"></select-custom>
 
       <select-custom select-value="{{notifMetadata.icon}}" display-label="Icon"
-      select-elements="[[iconSelectList]]" selectid="icon"
-      no-custom-input="true"></select-custom>
-    
-      <select-custom select-value="" display-label="Source"
-      select-elements="[[sourceSelectList]]" selectid="source"></select-custom>
+        select-elements="[[iconSelectList]]" selectid="icon"
+        no-custom-input="true"></select-custom>
+
+      <template is="dom-if" if="[[showDisplaySource]]">
+        <select-custom select-value="{{notifMetadata.displaySource}}"
+          display-label="Source" select-elements="[[sourceSelectList]]"
+          selectid="source"></select-custom>
+      </template>
+
+      <template is="dom-if" if="[[showOriginURL]]">
+        <select-custom select-value="{{notifMetadata.originURL}}"
+          display-label="Origin URL" select-elements="[[originURLSelectList]]"
+          selectid="origin-url"></select-custom>
+      </template>
     </div>
     <div class="config-form">
       <h2> Rich Notification Data (optional fields) </h2>
 
       <select-custom select-value="{{notifMetadata.richDataImage}}"
-      display-label="Image" select-elements="[[imageSelectList]]"
-      selectid="image" no-custom-input="true"></select-custom>
+        display-label="Image" select-elements="[[imageSelectList]]"
+        selectid="image" no-custom-input="true"></select-custom>
 
-      <select-custom select-value="" display-label="Small Image" select-elements="[[smallImageSelectList]]"
-      selectid="small-image" no-custom-input="true"></select-custom>
+      <select-custom select-value="{{notifMetadata.richDataSmallImage}}"
+        display-label="Small Image" select-elements="[[smallImageSelectList]]"
+        selectid="small-image" no-custom-input="true"></select-custom>
 
-      <select-custom select-value="" display-label="Priority"
-      select-elements="[[prioritySelectList]]" selectid="priority" no-custom-input="true"></select-custom>
-      
+      <select-custom select-value="{{notifMetadata.richDataPriority}}"
+        display-label="Priority" select-elements="[[prioritySelectList]]"
+        selectid="priority" no-custom-input="true"></select-custom>
+
       <div class="form-item">
         <label for="never-timeout">Never Timeout</label>
-        <cr-checkbox id="never-timeout"></cr-checkbox>
+        <cr-checkbox id="never-timeout"
+          checked="{{notifMetadata.richDataNeverTimeout}}"></cr-checkbox>
       </div>
 
       <div class="form-item">
         <label for="pinned">Pinned</label>
-        <cr-checkbox id="pinned"></cr-checkbox>
+        <cr-checkbox id="pinned" checked="{{notifMetadata.richDataPinned}}">
+        </cr-checkbox>
       </div>
 
       <div class="form-item">
         <label for="renotify">Renotify</label>
-        <cr-checkbox id="renotify"></cr-checkbox>
+        <cr-checkbox id="renotify" checked="{{notifMetadata.richDataRenotify}}">
+        </cr-checkbox>
       </div>
 
       <h3> Type Specific Fields </h3>
-      
-      <div class="form-item">
-        <label for="num-notif-items"> # Notif Items </label>
-        <cr-radio-group id="num-notif-items" selected="2">
-          <cr-radio-button name="0" label="0"></cr-radio-button>
-          <cr-radio-button name="1" label="1"></cr-radio-button>
-          <cr-radio-button name="2" label="2"></cr-radio-button>
-          <cr-radio-button name="3" label="3"></cr-radio-button>
-          <cr-radio-button name="4" label="4"></cr-radio-button>
-        </cr-radio-group>
-      </div>
+      <template is="dom-if" if="[[showTypeSpecificDesc]]">
+        <p> Change the notification type to 'Progress' or 'Multiple' to see more
+          options! </p>
+      </template>
 
-      <div class="form-item">
-        <label for="progress-percent"> Progress % </label>
-        <cr-radio-group id="progress-percent" selected="none">
-          <cr-radio-button name="none" label="N/A"></cr-radio-button>
-          <cr-radio-button name="0" label="0%"></cr-radio-button>
-          <cr-radio-button name="50" label="50%"></cr-radio-button>
-          <cr-radio-button name="100" label="100%"></cr-radio-button>
-        </cr-radio-group>
-      </div>
+      <template is="dom-if" if="[[showMultiOptions]]">
+        <div class="form-item">
+          <label for="num-notif-items"> # Notif Items </label>
+          <cr-radio-group id="num-notif-items"
+            selected="{{notifMetadata.richDataNumNotifItems}}">
+            <cr-radio-button name="0" label="0"></cr-radio-button>
+            <cr-radio-button name="1" label="1"></cr-radio-button>
+            <cr-radio-button name="2" label="2"></cr-radio-button>
+            <cr-radio-button name="3" label="3"></cr-radio-button>
+            <cr-radio-button name="4" label="4"></cr-radio-button>
+          </cr-radio-group>
+        </div>
+      </template>
 
-      <select-custom select-value="" display-label="Progress Status"
-      select-elements="[[progressStatusSelectList]]" selectid="prog-status"></select-custom>
+      <template is="dom-if" if="[[showProgressOptions]]">
+        <div class="form-item">
+          <label for="progress-percent"> Progress % </label>
+          <cr-radio-group id="progress-percent"
+            selected="{{notifMetadata.richDataProgress}}">
+            <cr-radio-button name="none" label="N/A"></cr-radio-button>
+            <cr-radio-button name="0" label="0%"></cr-radio-button>
+            <cr-radio-button name="50" label="50%"></cr-radio-button>
+            <cr-radio-button name="100" label="100%"></cr-radio-button>
+          </cr-radio-group>
+        </div>
+        <select-custom select-value="{{notifMetadata.richDataProgressStatus}}"
+          display-label="Progress Status"
+          select-elements="[[progressStatusSelectList]]" selectid="prog-status">
+        </select-custom>
+      </template>
     </div>
   </div>
   <div class="column">
     <div class="config-form">
       <h2> Buttons </h2>
+
       <div class="form-item">
         <label for="show-settings">Show Settings</label>
-        <cr-checkbox id="show-settings"></cr-checkbox>
+        <cr-checkbox id="show-settings"
+          checked="{{notifMetadata.richDataShowSettings}}"></cr-checkbox>
       </div>
 
       <div class="form-item">
         <label for="show-snooze">Show Snooze</label>
-        <cr-checkbox id="show-snooze"></cr-checkbox>
+        <cr-checkbox id="show-snooze"
+          checked="{{notifMetadata.richDataShowSnooze}}"></cr-checkbox>
       </div>
 
       <div class="form-item">
         <label for="num-buttons"> # Buttons </label>
-        <cr-radio-group id="num-buttons" selected="None">
+        <cr-radio-group id="num-buttons"
+          selected="{{notifMetadata.richDataNumButtons}}">
           <cr-radio-button name="none" label="None"></cr-radio-button>
           <cr-radio-button name="1" label="1"></cr-radio-button>
           <cr-radio-button name="2" label="2"></cr-radio-button>
           <cr-radio-button name="3" label="3"></cr-radio-button>
         </cr-radio-group>
       </div>
+
     </div>
     <div class="config-form">
       <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
         Generate </button>
-      <button type="button" id="" on-click="">
-          Reset </button>
+      <button type="button" id="resetFormBtn" on-click="">
+        Reset </button>
     </div>
   </div>
-</div>
