@@ -46,9 +46,7 @@ AutofillObserverImpl::AutofillObserverImpl(
   autofill_manager->AddObserver(this);
 }
 
-AutofillObserverImpl::~AutofillObserverImpl() {
-  Invalidate();
-}
+AutofillObserverImpl::~AutofillObserverImpl() = default;
 
 void AutofillObserverImpl::OnFormSubmitted() {
   OnFormInteraction();
@@ -66,16 +64,10 @@ void AutofillObserverImpl::OnTextFieldDidScroll() {
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::Invalidate() {
-  if (IsInObserverList()) {
-    DCHECK(autofill_manager_);
-    autofill_manager_->RemoveObserver(this);
-    autofill_manager_ = nullptr;
-  }
-}
-
 void AutofillObserverImpl::OnFormInteraction() {
-  Invalidate();
+  DCHECK(autofill_manager_);
+  autofill_manager_->RemoveObserver(this);
+  autofill_manager_ = nullptr;
   std::move(form_interaction_callback_).Run();
 }
 
@@ -128,10 +120,6 @@ void TabInteractionRecorderAndroid::SetHasFormInteractions() {
 
 void TabInteractionRecorderAndroid::StartObservingFrame(
     RenderFrameHost* render_frame_host) {
-  // Do not observe the same frame more than once.
-  if (rfh_observer_map_[render_frame_host->GetGlobalId()])
-    return;
-
   AutofillManager* autofill_manager =
       test_autofill_manager_ ? test_autofill_manager_.get()
                              : GetAutofillManager(render_frame_host);
