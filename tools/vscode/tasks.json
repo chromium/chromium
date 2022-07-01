@@ -9,6 +9,7 @@
   "runner": "terminal",
   // The default problem matcher matches build output, which is useful for most tasks.
   "problemMatcher": [
+    // Matches output from clang.
     {
       "owner": "cpp",
       "fileLocation": ["relative", "${config:chrome.outputDir}"],
@@ -23,6 +24,37 @@
       "pattern": {
         "regexp": "^../../(.*):(\\d+):(\\d+):\\s+(warning|\\w*\\s?error):\\s+(.*)$",
         "file": 1, "line": 2, "column": 3, "severity": 4, "message": 5
+      }
+    },
+    // Matches output from clang-cl / msvc.
+    {
+      "owner": "cpp",
+      "fileLocation": [
+        "relative",
+        "${config:chrome.outputDir}"
+      ],
+      "pattern": {
+        "regexp": "^(gen/.*)\\((\\d+),(\\d+)\\):\\s+(warning|\\w*\\s?error):\\s+(.*)$",
+        "file": 1,
+        "line": 2,
+        "column": 3,
+        "severity": 4,
+        "message": 5
+      }
+    },
+    {
+      "owner": "cpp",
+      "fileLocation": [
+        "relative",
+        "${workspaceRoot}"
+      ],
+      "pattern": {
+        "regexp": "^../../(.*)\\((\\d+),(\\d+)\\):\\s+(warning|\\w*\\s?error):\\s+(.*)$",
+        "file": 1,
+        "line": 2,
+        "column": 3,
+        "severity": 4,
+        "message": 5
       }
     },
     {
