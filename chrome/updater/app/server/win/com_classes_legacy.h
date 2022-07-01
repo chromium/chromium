@@ -216,8 +216,6 @@ class LegacyProcessLauncherImpl
 //
 // Placeholders may be embedded within words, and appropriate quoting of
 // back-slash, double-quotes, space, and tab is applied if necessary.
-//
-// TODO(crbug/1316682): Implement AutoRunOnOSUpgrade app commands.
 class LegacyAppCommandWebImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -261,19 +259,23 @@ class LegacyAppCommandWebImpl
                          VARIANT substitution9) override;
 
   // Overrides for IDispatch.
-  // TODO(crbug/1316683): Implement the IDispatch methods for the AppCommand
-  // implementation.
-  IFACEMETHODIMP GetTypeInfoCount(UINT*) override;
-  IFACEMETHODIMP GetTypeInfo(UINT, LCID, ITypeInfo**) override;
-  IFACEMETHODIMP GetIDsOfNames(REFIID, LPOLESTR*, UINT, LCID, DISPID*) override;
-  IFACEMETHODIMP Invoke(DISPID,
-                        REFIID,
-                        LCID,
-                        WORD,
-                        DISPPARAMS*,
-                        VARIANT*,
-                        EXCEPINFO*,
-                        UINT*) override;
+  IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override;
+  IFACEMETHODIMP GetTypeInfo(UINT type_info_index,
+                             LCID locale_id,
+                             ITypeInfo** type_info) override;
+  IFACEMETHODIMP GetIDsOfNames(REFIID iid,
+                               LPOLESTR* names_to_be_mapped,
+                               UINT count_of_names_to_be_mapped,
+                               LCID locale_id,
+                               DISPID* dispatch_ids) override;
+  IFACEMETHODIMP Invoke(DISPID dispatch_id,
+                        REFIID iid,
+                        LCID locale_id,
+                        WORD flags,
+                        DISPPARAMS* dispatch_parameters,
+                        VARIANT* result,
+                        EXCEPINFO* exception_info,
+                        UINT* arg_error_index) override;
 
  private:
   ~LegacyAppCommandWebImpl() override;
@@ -284,8 +286,11 @@ class LegacyAppCommandWebImpl
       const std::wstring& command_id,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl);
 
+  HRESULT InitializeTypeInfo();
+
   base::Process process_;
   AppCommandRunner app_command_runner_;
+  Microsoft::WRL::ComPtr<ITypeInfo> type_info_;
 
   friend class LegacyAppCommandWebImplTest;
 };

@@ -35,6 +35,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/app_command_runner.h"
+#include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -598,6 +599,10 @@ HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
     return hr;
   }
 
+  if (HRESULT hr = web->InitializeTypeInfo(); FAILED(hr)) {
+    return hr;
+  }
+
   web_impl.Swap(web);
   return S_OK;
 }
@@ -651,37 +656,84 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
         StringFromVariant(substitution);
     if (!substitution_string)
       break;
+
+    VLOG(2) << __func__
+            << " substitution_string: " << substitution_string.value();
     substitutions.push_back(substitution_string.value());
   }
 
   return app_command_runner_.Run(substitutions, process_);
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT*) {
-  return E_NOTIMPL;
+STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT* type_info_count) {
+  *type_info_count = 1;
+  return S_OK;
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  return E_NOTIMPL;
+STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfo(UINT type_info_index,
+                                                  LCID locale_id,
+                                                  ITypeInfo** type_info) {
+  if (type_info_index != 0)
+    return E_INVALIDARG;
+
+  return type_info_.CopyTo(type_info);
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::GetIDsOfNames(REFIID,
-                                                    LPOLESTR*,
-                                                    UINT,
-                                                    LCID,
-                                                    DISPID*) {
-  return E_NOTIMPL;
+STDMETHODIMP LegacyAppCommandWebImpl::GetIDsOfNames(
+    REFIID iid,
+    LPOLESTR* names_to_be_mapped,
+    UINT count_of_names_to_be_mapped,
+    LCID locale_id,
+    DISPID* dispatch_ids) {
+  return type_info_->GetIDsOfNames(names_to_be_mapped,
+                                   count_of_names_to_be_mapped, dispatch_ids);
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::Invoke(DISPID,
-                                             REFIID,
-                                             LCID,
-                                             WORD,
-                                             DISPPARAMS*,
-                                             VARIANT*,
-                                             EXCEPINFO*,
-                                             UINT*) {
-  return E_NOTIMPL;
+STDMETHODIMP LegacyAppCommandWebImpl::Invoke(DISPID dispatch_id,
+                                             REFIID iid,
+                                             LCID locale_id,
+                                             WORD flags,
+                                             DISPPARAMS* dispatch_parameters,
+                                             VARIANT* result,
+                                             EXCEPINFO* exception_info,
+                                             UINT* arg_error_index) {
+  HRESULT hr = type_info_->Invoke(
+      Microsoft::WRL::ComPtr<IAppCommandWeb>(this).Get(), dispatch_id, flags,
+      dispatch_parameters, result, exception_info, arg_error_index);
+  if (FAILED(hr)) {
+    LOG(ERROR) << __func__ << " type_info_->Invoke failed: " << dispatch_id
+               << ": " << std::hex << hr;
+  }
+
+  return hr;
+}
+
+HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
+  base::FilePath typelib_path;
+  if (!base::PathService::Get(base::DIR_EXE, &typelib_path))
+    return E_UNEXPECTED;
+
+  typelib_path =
+      typelib_path.Append(kUpdaterProcessName)
+          .Append(GetComTypeLibResourceIndex(__uuidof(IAppCommandWeb)));
+
+  Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+  if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
+      FAILED(hr)) {
+    LOG(ERROR) << __func__ << " ::LoadTypeLib failed: " << typelib_path << ": "
+               << std::hex << hr;
+    return hr;
+  }
+
+  if (HRESULT hr =
+          type_lib->GetTypeInfoOfGuid(__uuidof(IAppCommandWeb), &type_info_);
+      FAILED(hr)) {
+    LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
+               << ": " << std::hex << hr;
+    return hr;
+  }
+
+  return S_OK;
 }
 
 }  // namespace updater

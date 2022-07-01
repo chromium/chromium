@@ -7,6 +7,7 @@
 
 #include <regstr.h>
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -409,6 +410,57 @@ class WindowEnumerator {
   base::RepeatingCallback<bool(HWND hwnd)> filter_;
   base::RepeatingCallback<void(HWND hwnd)> action_;
 };
+
+DISPID GetDispId(Microsoft::WRL::ComPtr<IDispatch> dispatch,
+                 const std::wstring& of_name) {
+  DISPID id = 0;
+  std::wstring name = of_name;
+  LPOLESTR name_ptr = &name[0];
+  EXPECT_HRESULT_SUCCEEDED(dispatch->GetIDsOfNames(IID_NULL, &name_ptr, 1,
+                                                   LOCALE_USER_DEFAULT, &id));
+  VLOG(2) << __func__ << ": " << name << ": " << id;
+  return id;
+}
+
+void CallDispatchMethod(
+    Microsoft::WRL::ComPtr<IDispatch> dispatch,
+    const std::wstring& method_name,
+    const std::vector<base::win::ScopedVariant>& variant_params) {
+  std::vector<VARIANT> params;
+  params.reserve(variant_params.size());
+
+  // IDispatch::Invoke() expects the parameters in reverse order.
+  std::transform(variant_params.rbegin(), variant_params.rend(),
+                 std::back_inserter(params),
+                 [](const auto& param) { return param.Copy(); });
+
+  DISPPARAMS dp = {};
+  if (!params.empty()) {
+    dp.rgvarg = &params[0];
+    dp.cArgs = params.size();
+  }
+
+  EXPECT_HRESULT_SUCCEEDED(dispatch->Invoke(
+      GetDispId(dispatch, method_name), IID_NULL, LOCALE_USER_DEFAULT,
+      DISPATCH_METHOD, &dp, nullptr, nullptr, nullptr));
+
+  std::for_each(params.begin(), params.end(),
+                [&](auto& param) { ::VariantClear(&param); });
+  return;
+}
+
+base::win::ScopedVariant GetDispatchProperty(
+    Microsoft::WRL::ComPtr<IDispatch> dispatch,
+    const std::wstring& property_name) {
+  DISPPARAMS dp = {};
+  base::win::ScopedVariant result;
+
+  EXPECT_HRESULT_SUCCEEDED(dispatch->Invoke(
+      GetDispId(dispatch, property_name), IID_NULL, LOCALE_USER_DEFAULT,
+      DISPATCH_PROPERTYGET, &dp, result.Receive(), nullptr, nullptr));
+
+  return result;
+}
 
 }  // namespace
 
@@ -931,6 +983,24 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
   EXPECT_EQ(exit_code, static_cast<DWORD>(expected_exit_code));
+
+  // Now also run the AppCommand using the IDispatch methods.
+  command_dispatch.Reset();
+  ASSERT_HRESULT_SUCCEEDED(app->get_command(
+      base::win::ScopedBstr(commandid).Get(), &command_dispatch));
+
+  CallDispatchMethod(command_dispatch, L"execute", variant_params);
+
+  EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
+    base::win::ScopedVariant status =
+        GetDispatchProperty(command_dispatch, L"status");
+    return V_UINT(status.ptr()) == COMMAND_STATUS_COMPLETE;
+  })));
+
+  base::win::ScopedVariant command_exit_code =
+      GetDispatchProperty(command_dispatch, L"exitCode");
+  EXPECT_EQ(V_UI4(command_exit_code.ptr()),
+            static_cast<DWORD>(expected_exit_code));
 
   DeleteAppClientKey(scope, appid);
 }
