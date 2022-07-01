@@ -1629,24 +1629,6 @@ TEST_P(CredentialManagerImplTest, GetSynthesizedFormForOrigin) {
   EXPECT_EQ(PasswordForm::Scheme::kHtml, synthesized.scheme);
 }
 
-TEST_P(CredentialManagerImplTest, GetBlockedPasswordCredential) {
-  PasswordForm blocked_form;
-  blocked_form.blocked_by_user = true;
-  blocked_form.url = form_.url;
-  blocked_form.signon_realm = blocked_form.url.spec();
-  // Deliberately use a wrong format with a non-empty username to simulate a
-  // leak. See https://crbug.com/817754.
-  blocked_form.username_value = u"Username";
-  store_->AddLogin(blocked_form);
-
-  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr(_, _, _)).Times(0);
-  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr()).Times(0);
-
-  std::vector<GURL> federations;
-  ExpectCredentialType(CredentialMediationRequirement::kOptional, true,
-                       federations, CredentialType::CREDENTIAL_TYPE_EMPTY);
-}
-
 TEST_P(CredentialManagerImplTest, BlockedPasswordCredential) {
   EXPECT_CALL(*client_, PromptUserToSavePasswordPtr(_));
 

@@ -84,6 +84,7 @@ void AddMetricsTestData(TestPasswordStore* store) {
 
   password_form.url = GURL("https://fifth.example.com/");
   password_form.signon_realm = "https://fifth.example.com/";
+  password_form.username_value = u"";
   password_form.password_value = u"";
   password_form.blocked_by_user = true;
   store->AddLogin(password_form);
@@ -107,6 +108,8 @@ void AddMetricsTestData(TestPasswordStore* store) {
 
   password_form.url = GURL("http://rsolomakhin.github.io/autofill/");
   password_form.signon_realm = "http://rsolomakhin.github.io/";
+  password_form.username_value = u"";
+  password_form.password_value = u"";
   password_form.blocked_by_user = true;
   store->AddLogin(password_form);
 
@@ -695,9 +698,8 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
   password_form.username_value = u"username_1";
   profile_store->AddLogin(password_form);
   password_form.blocked_by_user = true;
-  password_form.username_value = u"username_2";
-  profile_store->AddLogin(password_form);
-  password_form.username_value = u"username_3";
+  password_form.username_value = u"";
+  password_form.password_value = u"";
   profile_store->AddLogin(password_form);
 
   base::HistogramTester histogram_tester;

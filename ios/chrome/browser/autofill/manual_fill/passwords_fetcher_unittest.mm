@@ -115,12 +115,6 @@ class PasswordFetcherTest : public PlatformTest {
   void AddBlockedForm() {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.secret.com/login");
-    form->action = GURL("http://www.secret.com/action");
-    form->username_element = u"email";
-    form->username_value = u"test@secret.com";
-    form->password_element = u"password";
-    form->password_value = u"cantsay";
-    form->submit_element = u"signIn";
     form->signon_realm = "http://www.secret.test/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
