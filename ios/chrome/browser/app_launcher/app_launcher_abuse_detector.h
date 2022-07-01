@@ -32,19 +32,19 @@ extern const int kMaxAllowedConsecutiveExternalAppLaunches;
 // original source URL, and the scheme of the external Application URL.
 @interface AppLauncherAbuseDetector : NSObject
 
-// Updates the state for external application |gURL| and |sourcePageURL| with a
+// Updates the state for external application `URL` and `sourcePageURL` with a
 // new app launch request.
-- (void)didRequestLaunchExternalAppURL:(const GURL&)gURL
+- (void)didRequestLaunchExternalAppURL:(const GURL&)URL
                      fromSourcePageURL:(const GURL&)sourcePageURL;
 
 // Returns the launching recommendation based on the current state for given
-// application |gURL| and |sourcePageURL|.
-- (ExternalAppLaunchPolicy)launchPolicyForURL:(const GURL&)gURL
+// application `URL` and `sourcePageURL`.
+- (ExternalAppLaunchPolicy)launchPolicyForURL:(const GURL&)URL
                             fromSourcePageURL:(const GURL&)sourcePageURL;
 
-// Sets the state of the application |gURL| and |sourcePageURL| as blocked for
+// Sets the state of the application `URL` and `sourcePageURL` as blocked for
 // the remaining lifetime of this object.
-- (void)blockLaunchingAppURL:(const GURL&)gURL
+- (void)blockLaunchingAppURL:(const GURL&)URL
            fromSourcePageURL:(const GURL&)sourcePageURL;
 @end
 

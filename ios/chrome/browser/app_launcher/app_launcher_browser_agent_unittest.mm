@@ -55,11 +55,11 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     return AppLauncherBrowserAgent::FromBrowser(browser_.get());
   }
 
-  // Adds a WebState to |browser_| using |opener|.  The WebState's session
-  // history is populated with |nav_item_count| items.  Returns the added
+  // Adds a WebState to `browser_` using `opener`.  The WebState's session
+  // history is populated with `nav_item_count` items.  Returns the added
   // WebState.
   web::WebState* AddWebState(web::WebState* opener, size_t nav_item_count) {
-    // Create the NavigationManager and populate it with |nav_item_count| items.
+    // Create the NavigationManager and populate it with `nav_item_count` items.
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     for (size_t i = 0; i < nav_item_count; ++i) {
       navigation_manager->AddItem(GURL("http://www.chromium.test"),
@@ -83,9 +83,9 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     return web_state;
   }
 
-  // Returns whether the front OverlayRequest for |web_state|'s queue is
+  // Returns whether the front OverlayRequest for `web_state`'s queue is
   // configured with an AppLaunchConfirmationRequest with
-  // |is_repeated_request|.
+  // `is_repeated_request`.
   bool IsShowingDialog(web::WebState* web_state, bool is_repeated_request) {
     OverlayRequest* request = OverlayRequestQueue::FromWebState(
                                   web_state, OverlayModality::kWebContentArea)
@@ -116,7 +116,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppStoreUrlShowsAlert) {
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppStoreUrl, kSourcePageUrl, /*link_transition=*/false);
 
-  // Verify that an app launch overlay request was added to |web_state|'s queue.
+  // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(web_state, /*is_repeated_request=*/false));
 
   // Add a response allowing the navigation.
@@ -191,7 +191,7 @@ TEST_F(AppLauncherBrowserAgentTest, RepeatedRequestShowsAlert) {
       kAppUrl, kSourcePageUrl, /*link_transition=*/false);
 
   // Verify that an app launch overlay request for a repeated request was added
-  // to |web_state|'s queue.
+  // to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(web_state, /*is_repeated_request=*/true));
 
   // Add a response allowing the navigation.
@@ -223,7 +223,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppUrlWithoutLinkShowsAlert) {
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/false);
 
-  // Verify that an app launch overlay request was added to |web_state|'s queue.
+  // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(web_state, /*is_repeated_request=*/false));
 
   // Add a response allowing the navigation.
@@ -256,6 +256,6 @@ TEST_F(AppLauncherBrowserAgentTest, ShowDialogInOpener) {
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppStoreUrl, kSourcePageUrl, /*link_transition=*/false);
 
-  // Verify that an app launch overlay request was added to |web_state|'s queue.
+  // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(opener, /*is_repeated_request=*/false));
 }

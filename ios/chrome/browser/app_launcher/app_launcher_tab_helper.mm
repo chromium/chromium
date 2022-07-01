@@ -51,7 +51,7 @@ bool IsValidAppUrl(const GURL& app_url) {
   return true;
 }
 
-// Returns True if |app_url| has a Chrome bundle URL scheme.
+// Returns True if `app_url` has a Chrome bundle URL scheme.
 bool HasChromeAppScheme(const GURL& app_url) {
   NSArray* chrome_schemes =
       [[ChromeAppConstants sharedInstance] allBundleURLSchemes];
@@ -148,7 +148,7 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
               return;
             if (user_allowed && weak_this->delegate()) {
               // By confirming that user wants to launch the application, there
-              // is no need to check for |link_tapped|.
+              // is no need to check for `link_tapped`.
               weak_this->delegate()->LaunchAppForTabHelper(
                   this, copied_url,
                   /*link_transition=*/true);
@@ -216,7 +216,7 @@ void AppLauncherTabHelper::ShouldAllowRequest(
   }
 
   // If this is a Universal 2nd Factor (U2F) call, the origin needs to be
-  // checked to make sure it's secure and then update the |request_url| with
+  // checked to make sure it's secure and then update the `request_url` with
   // the generated x-callback GURL based on x-callback-url specs.
   if (request_url.SchemeIs("u2f")) {
     GURL origin = web_state_->GetNavigationManager()
@@ -225,7 +225,7 @@ void AppLauncherTabHelper::ShouldAllowRequest(
                       .DeprecatedGetOriginAsURL();
     U2FTabHelper* u2f_helper = U2FTabHelper::FromWebState(web_state_);
     request_url = u2f_helper->GetXCallbackUrl(request_url, origin);
-    // If the URL was rejected by the U2F handler, |request_url| will be empty.
+    // If the URL was rejected by the U2F handler, `request_url` will be empty.
     if (!request_url.is_valid()) {
       return std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Cancel());
@@ -245,7 +245,7 @@ void AppLauncherTabHelper::ShouldAllowRequest(
 
   if (!is_link_transition && original_pending_url.is_valid()) {
     // At this stage the navigation will be canceled in all cases. If this
-    // was a redirection, the |source_url| may not have been reported to
+    // was a redirection, the `source_url` may not have been reported to
     // ReadingListWebStateObserver. Report it to mark as read if needed.
     ReadingListModel* model =
         ReadingListModelFactory::GetForBrowserState(browser_state);

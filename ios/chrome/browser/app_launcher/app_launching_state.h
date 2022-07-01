@@ -15,7 +15,7 @@ extern const double kDefaultMaxSecondsBetweenConsecutiveExternalAppLaunches;
 // represented by timestamp of the last time the app was launched, and the
 // number of consecutive launches. Launches are considered consecutive when the
 // time difference between them are less than
-// |kDefaultMaxSecondsBetweenConsecutiveExternalAppLaunches|.
+// `kDefaultMaxSecondsBetweenConsecutiveExternalAppLaunches`.
 // The AppLaunchingState doesn't know the source URL nor the destination
 // URL, the AppLauncherAbuseDetector object will have an
 // AppLaunchingState object for  each sourceURL/Application Scheme pair.

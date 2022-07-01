@@ -35,7 +35,7 @@ using app_launcher_overlays::AllowAppLaunchResponse;
 
 namespace {
 // Records histogram metric on the user's response when prompted to open another
-// application. |user_accepted| should be YES if the user accepted the prompt to
+// application. `user_accepted` should be YES if the user accepted the prompt to
 // launch another application. This call is extracted to a separate function to
 // reduce macro code expansion.
 void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
@@ -58,7 +58,7 @@ void AppLauncherOverlayCallback(base::OnceCallback<void(bool)> completion,
   std::move(completion).Run(user_accepted);
 }
 
-// Launches the app for |url| if |user_accepted| is true.
+// Launches the app for `url` if `user_accepted` is true.
 void LaunchExternalApp(const GURL url, bool user_accepted = true) {
   if (!user_accepted)
     return;

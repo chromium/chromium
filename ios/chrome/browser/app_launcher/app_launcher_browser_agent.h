@@ -39,7 +39,7 @@ class AppLauncherBrowserAgent
         base::OnceCallback<void(bool)> completion) override;
 
     // Returns the OverlayRequestQueue to use for app launch dialogs from
-    // |web_state|.  Returns the queue for |web_state|'s opener if |web_state|
+    // `web_state`.  Returns the queue for `web_state`'s opener if `web_state`
     // is expected to be closed before the app launcher dialog can be shown.
     OverlayRequestQueue* GetQueueForAppLaunchDialog(web::WebState* web_state);
 

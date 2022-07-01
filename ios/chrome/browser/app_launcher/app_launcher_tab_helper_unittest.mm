@@ -69,7 +69,7 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
   // Number of times the repeated launches alert has been shown.
   size_t alert_shown_count_ = 0;
   // Simulates the user tapping the accept button when prompted via
-  // |-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler|.
+  // `-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler`.
   bool should_accept_prompt_ = false;
 };
 // A fake NavigationManager to be used by the WebState object for the
@@ -152,7 +152,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     is_reading_list_initialized_ = true;
   }
 
-  // Returns true if the |expected_read_status| matches the read status for any
+  // Returns true if the `expected_read_status` matches the read status for any
   // non empty source URL based on the transition type and the app policy.
   bool TestReadingListUpdate(bool is_app_blocked,
                              bool is_link_transition,
