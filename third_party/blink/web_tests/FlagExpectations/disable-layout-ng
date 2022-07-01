@@ -61,8 +61,6 @@ crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-a
 crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
-crbug.com/626703 external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
-crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-flexbox/percentage-heights-019.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/grid-items/aspect-ratio-005.html [ Failure ]
 crbug.com/626703 external/wpt/mediacapture-fromelement/capture.html [ Crash ]

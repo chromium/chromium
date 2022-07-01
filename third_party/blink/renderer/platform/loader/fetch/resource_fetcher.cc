@@ -1064,8 +1064,15 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   absl::optional<ResourceRequestBlockedReason> blocked_reason =
       PrepareRequest(params, factory, pauser);
   if (blocked_reason) {
-    return ResourceForBlockedRequest(params, factory, blocked_reason.value(),
-                                     client);
+    auto* resource = ResourceForBlockedRequest(params, factory,
+                                               blocked_reason.value(), client);
+    StorePerformanceTimingInitiatorInformation(resource);
+    if (auto info = resource_timing_info_map_.Take(resource)) {
+      PopulateAndAddResourceTimingInfo(resource, info,
+                                       /*response_end=*/base::TimeTicks::Now());
+      Context().AddResourceTiming(*info);
+    }
+    return resource;
   }
 
   Resource* resource = nullptr;

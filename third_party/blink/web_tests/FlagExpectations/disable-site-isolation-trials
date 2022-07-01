@@ -83,7 +83,6 @@ crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-a
 crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
-crbug.com/626703 external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
 crbug.com/1339051 external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
