@@ -192,6 +192,10 @@ interface DriveFsDelegate {
 
   // Invoked when the machine ID is calculated to store in Chrome device prefs.
   PersistMachineRootID(string doc_id);
+
+  // Invoked when the syncing status changes for items that are being tracked by
+  // the mirror stack.
+  OnMirrorSyncingStatusUpdate(SyncingStatus status);
 };
 
 // Next MinVersion: 7

@@ -122,6 +122,12 @@ class DriveFsHost::MountState : public DriveFsSession,
     }
   }
 
+  void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
+    for (auto& observer : host_->observers_) {
+      observer.OnMirrorSyncingStatusUpdate(*status);
+    }
+  }
+
   void OnFilesChanged(std::vector<mojom::FileChangePtr> changes) override {
     std::vector<mojom::FileChange> changes_values;
     changes_values.reserve(changes.size());
