@@ -32,14 +32,13 @@ class SitePermissionsHelper {
   enum class SiteInteraction {
     // The extension cannot run on the site.
     kNone,
-    // The extension would like access to the site, but is pending user
-    // approval.
-    kPending,
+    // The extension has withheld site access by the user.
+    kWithheld,
     // The extension has activeTab permission to run on the site, but is pending
     // user action to run.
     kActiveTab,
     // The extension has permission to run on the site.
-    kActive,
+    kGranted,
   };
 
   explicit SitePermissionsHelper(Profile* profile);

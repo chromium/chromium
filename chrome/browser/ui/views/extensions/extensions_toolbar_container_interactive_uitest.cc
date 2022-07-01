@@ -967,11 +967,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
               testing::ElementsAre(kExtensionAName, kExtensionBName));
 
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionA, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionB, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionC, url),
@@ -988,11 +988,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Site interaction should stay the same because dialog wasn't accepted.
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
 
   // Click the request access button again, and this time accept the dialog and
   // wait for the page refresh.
@@ -1009,11 +1009,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // The request access button should be hidden.
   EXPECT_FALSE(request_access_button()->GetVisible());
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionA, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionB, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionC, url),
@@ -1031,11 +1031,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
               testing::ElementsAre(kExtensionAName, kExtensionBName));
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
 }
 
 // Tests that clicking the request access button grants one time access to the
@@ -1070,11 +1070,11 @@ IN_PROC_BROWSER_TEST_F(
               testing::ElementsAre(kExtensionAName, kExtensionBName));
   extensions::SitePermissionsHelper permissions(browser()->profile());
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionA, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionB, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionC, url),
@@ -1091,11 +1091,11 @@ IN_PROC_BROWSER_TEST_F(
   // The request access button should be hidden.
   EXPECT_FALSE(request_access_button()->GetVisible());
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionA, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionB, url), SiteAccess::kOnClick);
   EXPECT_EQ(permissions.GetSiteAccess(*extensionC, url),
@@ -1113,9 +1113,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
               testing::ElementsAre(kExtensionAName, kExtensionBName));
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
-            SiteInteraction::kPending);
+            SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionC, web_contents()),
-            SiteInteraction::kActive);
+            SiteInteraction::kGranted);
 }

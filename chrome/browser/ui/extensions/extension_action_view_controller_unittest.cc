@@ -673,7 +673,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   // and verify the expected appearance.
   NavigateAndCommitActiveTab(kGrantedHost);
   {
-    EXPECT_EQ(SiteInteraction::kActive,
+    EXPECT_EQ(SiteInteraction::kGranted,
               controller->GetSiteInteraction(web_contents));
     // This is a little unintuitive, but if an extension is using a page action
     // and has not specified any declarative rules or manually changed it's
@@ -720,10 +720,10 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
             controller->GetSiteInteraction(web_contents));
 
   // Click on the action, which grants activeTab and allows the extension to
-  // access the page. This changes the page interaction status to "active".
+  // access the page. This changes the page interaction status to "granted".
   controller->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(SiteInteraction::kActive,
+  EXPECT_EQ(SiteInteraction::kGranted,
             controller->GetSiteInteraction(web_contents));
 
   // Now navigate to a restricted URL. Clicking the extension won't give access
@@ -789,7 +789,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
             controller->GetSiteInteraction(web_contents));
   controller->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(SiteInteraction::kActive,
+  EXPECT_EQ(SiteInteraction::kGranted,
             controller->GetSiteInteraction(web_contents));
 }
 

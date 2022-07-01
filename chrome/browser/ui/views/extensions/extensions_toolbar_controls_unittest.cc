@@ -298,17 +298,30 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 // TODO(crbug.com/3671898): Add a test that checks the correct dialog is open
 // when clicking on request access button.
 
-// Tests that extensions with active tab are not taken into account for the
-// request access button visibility.
+// Tests that extensions with activeTab and requested url with withheld access
+// are taken into account for the request access button visibility, but not the
+// ones with just activeTab.
+// TODO(crbug.com/1339370): Withholding host permissions is flaky when the test
+// is run multiple times.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       RequestAccessButtonVisibility_ActiveTabExtensions) {
+       DISABLED_RequestAccessButtonVisibility_ActiveTabExtensions) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
-  const GURL url("http://www.url.com");
+  const GURL requested_url("http://www.requested-url.com");
 
-  web_contents_tester->NavigateAndCommit(url);
+  InstallExtensionWithPermissions("Extension A", {"activeTab"});
+  constexpr char kExtensionName[] = "Extension B";
+  auto extension = InstallExtensionWithHostPermissions(
+      kExtensionName, {requested_url.spec(), "activeTab"});
+  WithholdHostPermissions(extension.get());
 
-  InstallExtensionWithPermissions("Extension", {"activeTab"});
+  web_contents_tester->NavigateAndCommit(requested_url);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
+              testing::ElementsAre(kExtensionName));
+
+  web_contents_tester->NavigateAndCommit(
+      GURL("http://www.non-requested-url.com"));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
