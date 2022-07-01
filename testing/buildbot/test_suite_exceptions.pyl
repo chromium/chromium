@@ -1778,6 +1778,11 @@
           'quickrun_shards': 8,
         },
       },
+      'android-nougat-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
+        ],
+      },
       'android-pie-x86-rel': {
         'args': [
           '--gtest_filter=-ContentViewScrollingTest.testFling',
