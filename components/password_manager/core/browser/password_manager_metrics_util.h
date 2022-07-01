@@ -458,8 +458,9 @@ enum class PasswordCheckInteraction {
   kShowPassword = 6,
   kMutePassword = 7,
   kUnmutePassword = 8,
+  kChangePasswordAutomatically = 9,
   // Must be last.
-  kMaxValue = kUnmutePassword,
+  kMaxValue = kChangePasswordAutomatically,
 };
 
 // Represents different user interactions related to adding credential from the

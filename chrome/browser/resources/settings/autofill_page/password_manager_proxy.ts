@@ -341,8 +341,9 @@ export enum PasswordCheckInteraction {
   SHOW_PASSWORD = 6,
   MUTE_PASSWORD = 7,
   UNMUTE_PASSWORD = 8,
+  CHANGE_PASSWORD_AUTOMATICALLY = 9,
   // Must be last.
-  COUNT = 9,
+  COUNT = 10,
 }
 
 /**
