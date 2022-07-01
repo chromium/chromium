@@ -120,6 +120,14 @@ void EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded(
       // later so we will not proceed with computed EID.
       RunCallbacks(/*status=*/false);
       break;
+    case EnrollmentCertificateUploader::Status::kInvalidClient:
+      // Enrollment certificate was not uploaded due to invalid
+      // `CloudPolicyClient`. The certificate can be uploaded later when the
+      // client is working again. The manager is also not able to upload EID
+      // with invalid `CloudPolicyClient` so there is no reason to fall back to
+      // EID computation.
+      RunCallbacks(/*status=*/false);
+      break;
   }
 }
 

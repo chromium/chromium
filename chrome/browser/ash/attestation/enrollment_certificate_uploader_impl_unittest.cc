@@ -107,7 +107,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UnregisteredPolicyClient) {
       .Times(0);
 
   policy_client_.SetDMToken("");
-  Run(/*expected_status=*/CertStatus::kFailedToFetch);
+  Run(/*expected_status=*/CertStatus::kInvalidClient);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
@@ -153,7 +153,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
 
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _)).Times(0);
 
-  Run(/*expected_status=*/CertStatus::kFailedToFetch);
+  Run(/*expected_status=*/CertStatus::kInvalidClient);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest, UploadCertificateFailure) {
@@ -209,7 +209,51 @@ TEST_F(EnrollmentCertificateUploaderTest,
                              /*force_new_key=*/false, _, _))
       .Times(0);
 
-  Run(/*expected_status=*/CertStatus::kFailedToFetch);
+  Run(/*expected_status=*/CertStatus::kInvalidClient);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest,
+       UnregisteredClientAfterValidCertificateRequested) {
+  std::string valid_certificate;
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &valid_certificate));
+  InSequence s;
+
+  // Shall fail on |CloudPolicyClient::is_registered()| check and not retry.
+  EXPECT_CALL(attestation_flow_,
+              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
+                             /*force_new_key=*/false, _, _))
+      .WillOnce(
+          WithArgs<5>(Invoke([this, valid_certificate](CertCallback callback) {
+            policy_client_.SetDMToken("");
+            CertCallbackSuccess(std::move(callback), valid_certificate);
+          })));
+
+  EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentCertificate(_, _))
+      .Times(0);
+
+  Run(/*expected_status=*/CertStatus::kInvalidClient);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest,
+       UnregisteredClientAfterExpiredCertificateRequested) {
+  std::string expired_certificate;
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(-1), &expired_certificate));
+  InSequence s;
+
+  // Shall fail on |CloudPolicyClient::is_registered()| check and not retry.
+  EXPECT_CALL(attestation_flow_,
+              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
+                             /*force_new_key=*/false, _, _))
+      .WillOnce(WithArgs<5>(
+          Invoke([this, expired_certificate](CertCallback callback) {
+            policy_client_.SetDMToken("");
+            CertCallbackSuccess(std::move(callback), expired_certificate);
+          })));
+
+  EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentCertificate(_, _))
+      .Times(0);
+
+  Run(/*expected_status=*/CertStatus::kInvalidClient);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificate) {

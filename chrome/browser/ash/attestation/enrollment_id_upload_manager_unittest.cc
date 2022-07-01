@@ -211,7 +211,7 @@ TEST_F(EnrollmentIdUploadManagerTest, UnregisteredPolicyClient) {
   policy_client_.SetDMToken("");
   SetUpDevicePolicy(/*enrollment_id_needed=*/true);
   SetUpEnrollmentIdUploadManager();
-  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kInvalidClient,
                                     /*times=*/1);
   PropagateDevicePolicy();
   RunUntilIdle();
@@ -273,7 +273,7 @@ TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadSendsEnrollmentId) {
 TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadUnregisteredPolicyClient) {
   policy_client_.SetDMToken("");
   SetUpEnrollmentIdUploadManager();
-  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kInvalidClient,
                                     /*times=*/1);
   TestObtainAndUploadEnrollmentId(/*expect_success=*/false);
 }
