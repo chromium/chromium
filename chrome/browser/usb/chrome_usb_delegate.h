@@ -12,6 +12,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/usb_chooser.h"
+#include "content/public/browser/usb_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
@@ -21,50 +22,44 @@
 #include "url/origin.h"
 
 class ChromeUsbDelegate
-    : public permissions::ObjectPermissionContextBase::PermissionObserver,
+    : public content::UsbDelegate,
+      public permissions::ObjectPermissionContextBase::PermissionObserver,
       public UsbChooserContext::DeviceObserver {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device) = 0;
-    virtual void OnDeviceRemoved(
-        const device::mojom::UsbDeviceInfo& device) = 0;
-    virtual void OnDeviceManagerConnectionError() = 0;
-    virtual void OnPermissionRevoked(const url::Origin& origin) = 0;
-  };
-
   ChromeUsbDelegate();
   ChromeUsbDelegate(ChromeUsbDelegate&&) = delete;
   ChromeUsbDelegate& operator=(ChromeUsbDelegate&) = delete;
   ~ChromeUsbDelegate() override;
 
+  // content::UsbDelegate:
   void AdjustProtectedInterfaceClasses(content::RenderFrameHost& frame,
-                                       std::vector<uint8_t>& classes);
-  virtual std::unique_ptr<content::UsbChooser> RunChooser(
+                                       std::vector<uint8_t>& classes) override;
+  std::unique_ptr<content::UsbChooser> RunChooser(
       content::RenderFrameHost& frame,
       std::vector<device::mojom::UsbDeviceFilterPtr> filters,
-      blink::mojom::WebUsbService::GetPermissionCallback callback);
-  bool CanRequestDevicePermission(content::RenderFrameHost& frame);
+      blink::mojom::WebUsbService::GetPermissionCallback callback) override;
+  bool CanRequestDevicePermission(content::RenderFrameHost& frame) override;
   void RevokeDevicePermissionWebInitiated(
       content::RenderFrameHost& frame,
-      const device::mojom::UsbDeviceInfo& device);
+      const device::mojom::UsbDeviceInfo& device) override;
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(
       content::RenderFrameHost& frame,
-      const std::string& guid);
+      const std::string& guid) override;
   bool HasDevicePermission(content::RenderFrameHost& frame,
-                           const device::mojom::UsbDeviceInfo& device);
+                           const device::mojom::UsbDeviceInfo& device) override;
   void GetDevices(
       content::RenderFrameHost& frame,
-      base::OnceCallback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>
-          callback);
+      blink::mojom::WebUsbService::GetDevicesCallback callback) override;
   void GetDevice(
       content::RenderFrameHost& frame,
       const std::string& guid,
       base::span<const uint8_t> blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
-      mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client);
-  void AddObserver(content::RenderFrameHost& frame, Observer* observer);
-  void RemoveObserver(Observer* observer);
+      mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
+      override;
+  void AddObserver(content::RenderFrameHost& frame,
+                   Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
   // permissions::ObjectPermissionContextBase::PermissionObserver:
   void OnPermissionRevoked(const url::Origin& origin) override;

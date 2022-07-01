@@ -237,8 +237,7 @@ bool ChromeUsbDelegate::HasDevicePermission(
 
 void ChromeUsbDelegate::GetDevices(
     RenderFrameHost& frame,
-    base::OnceCallback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>
-        callback) {
+    blink::mojom::WebUsbService::GetDevicesCallback callback) {
   GetChooserContext(frame)->GetDevices(std::move(callback));
 }
 
