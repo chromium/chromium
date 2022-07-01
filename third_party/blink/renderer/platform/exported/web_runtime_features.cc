@@ -673,4 +673,8 @@ void WebRuntimeFeatures::EnableEventPath(bool enable) {
   RuntimeEnabledFeatures::SetEventPathEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(bool enable) {
+  RuntimeEnabledFeatures::SetWebHIDOnServiceWorkersEnabled(enable);
+}
+
 }  // namespace blink

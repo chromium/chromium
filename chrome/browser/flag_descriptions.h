@@ -2199,6 +2199,9 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kEnableUserCloudSigninRestrictionPolicyName[];
 extern const char kEnableUserCloudSigninRestrictionPolicyDescription[];
 
+extern const char kEnableWebHidOnExtensionServiceWorkerName[];
+extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
+
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 

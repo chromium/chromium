@@ -55822,6 +55822,8 @@ from previous Chrome versions.
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
   <int value="-1641384018" label="SideSearchClearCacheWhenClosed:enabled"/>
   <int value="-1640944841" label="HardwareSecureDecryption:disabled"/>
+  <int value="-1639631778"
+      label="EnableWebHidOnExtensionServiceWorker:enabled"/>
   <int value="-1639534120" label="VaapiVp9kSVCHWEncoding:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
@@ -56193,6 +56195,8 @@ from previous Chrome versions.
   <int value="-1420848224" label="WebViewForceDarkModeMatchTheme:enabled"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
   <int value="-1420478723" label="EapGtcWifiAuthentication:enabled"/>
+  <int value="-1419908365"
+      label="EnableWebHidOnExtensionServiceWorker:disabled"/>
   <int value="-1419788257" label="enable-experimental-hotwording"/>
   <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
   <int value="-1418200801" label="LauncherLacrosIntegration:enabled"/>

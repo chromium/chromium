@@ -3866,6 +3866,11 @@ const char kEnableUserCloudSigninRestrictionPolicyDescription[] =
     "Enable the ManagedAccountsSigninRestrictions policy to be set at a cloud "
     "user level";
 
+const char kEnableWebHidOnExtensionServiceWorkerName[] =
+    "Enable WebHID on extension service workers";
+const char kEnableWebHidOnExtensionServiceWorkerDescription[] =
+    "When enabled, WebHID API is available on extension service workers.";
+
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "

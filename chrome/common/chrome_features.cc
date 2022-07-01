@@ -379,6 +379,12 @@ const base::Feature kEnableWebAppUninstallFromOsSettings{
     "EnableWebAppUninstallFromOsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if !BUILDFLAG(IS_ANDROID)
+// Enable WebHID on extension service workers.
+const base::Feature kEnableWebHidOnExtensionServiceWorker{
+    "EnableWebHidOnExtensionServiceWorker", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy
 // that are not installed.
 const base::Feature kExtensionDeferredIndividualSettings{

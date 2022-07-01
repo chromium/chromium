@@ -8694,6 +8694,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kRequestDesktopSiteAdditions)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-web-hid-on-extension-service-worker",
+     flag_descriptions::kEnableWebHidOnExtensionServiceWorkerName,
+     flag_descriptions::kEnableWebHidOnExtensionServiceWorkerDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kEnableWebHidOnExtensionServiceWorker)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -242,6 +242,7 @@ class WebRuntimeFeatures {
       bool);
   BLINK_PLATFORM_EXPORT static void EnableWebAuthenticationRemoteDesktopSupport(
       bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebHIDOnServiceWorkers(bool enable);
 
  private:
   WebRuntimeFeatures();

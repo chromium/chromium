@@ -3006,6 +3006,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-web-hid-on-extension-service-worker",
+    "owners": [ "deviceapi-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-web-payments-experimental-features",
     "owners": [ "rouslan", "web-payments-team@google.com" ],
     // This flag is used by early adoption partners to test new Web Payments
