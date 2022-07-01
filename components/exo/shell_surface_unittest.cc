@@ -2371,4 +2371,34 @@ TEST_F(ShellSurfaceTest, PipInitialPosition) {
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }
 
+TEST_F(ShellSurfaceTest, PostWindowChangeCallback) {
+  chromeos::WindowStateType state_type = chromeos::WindowStateType::kDefault;
+  auto test_callback = base::BindRepeating(
+      [](chromeos::WindowStateType* state_type, const gfx::Rect&,
+         chromeos::WindowStateType new_type, bool, bool,
+         const gfx::Vector2d&) -> uint32_t {
+        *state_type = new_type;
+        return 0;
+      },
+      &state_type);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  shell_surface->set_configure_callback(test_callback);
+
+  auto* state = ash::WindowState::Get(
+      shell_surface->GetWidget()->GetNativeWindow()->GetToplevelWindow());
+
+  // Make sure we are in a non-snapped state before testing state change.
+  ASSERT_FALSE(state->IsSnapped());
+
+  auto snap_event = std::make_unique<ash::WMEvent>(ash::WM_EVENT_SNAP_PRIMARY);
+
+  // Trigger a snap event, this should cause a configure event.
+  state->OnWMEvent(snap_event.get());
+
+  EXPECT_EQ(state_type, chromeos::WindowStateType::kPrimarySnapped);
+}
+
 }  // namespace exo

@@ -469,14 +469,12 @@ void ShellSurface::OnPreWindowStateTypeChange(
 void ShellSurface::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
-  chromeos::WindowStateType new_type = window_state->GetStateType();
-  // For exo-client using client-side decoration, window-state information is
-  // needed to toggle the maximize and restore buttons. When the window is
-  // restored, we show a maximized button; otherwise we show a restore button.
-  if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(old_type) ||
-      chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
-    Configure();
-  }
+  // Send the new state to the exo-client when the state changes. This is
+  // important for client presentation. For example exo-client using client-side
+  // decoration, window-state information is needed to toggle the maximize and
+  // restore buttons. When the window is restored, we show a maximized button;
+  // otherwise we show a restore button.
+  Configure();
 
   if (widget_) {
     UpdateWidgetBounds();
