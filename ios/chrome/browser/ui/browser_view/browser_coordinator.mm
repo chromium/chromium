@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
@@ -133,6 +134,7 @@
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -1551,6 +1553,13 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     FollowTabHelper::FromWebState(webState)->set_follow_iph_presenter(
         self.followIPHCoordinator);
   }
+
+  if (CaptivePortalTabHelper::FromWebState(webState)) {
+    TabInsertionBrowserAgent* insertionAgent =
+        TabInsertionBrowserAgent::FromBrowser(self.browser);
+    CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
+        insertionAgent);
+  }
 }
 
 // Uninstalls delegates for `webState`.
@@ -1573,6 +1582,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   if (FollowTabHelper::FromWebState(webState)) {
     FollowTabHelper::FromWebState(webState)->set_follow_iph_presenter(nil);
+  }
+
+  if (CaptivePortalTabHelper::FromWebState(webState)) {
+    CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
+        nil);
   }
 }
 

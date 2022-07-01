@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -254,4 +255,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   if (IsWebChannelsEnabled()) {
     FollowTabHelper::CreateForWebState(web_state);
   }
+
+  CaptivePortalTabHelper::CreateForWebState(web_state);
 }

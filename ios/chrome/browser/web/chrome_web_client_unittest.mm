@@ -25,7 +25,6 @@
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
@@ -286,11 +285,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_loader_factory));
 
-  id captive_portal_tab_helper_delegate =
-      [OCMockObject mockForProtocol:@protocol(CaptivePortalTabHelperDelegate)];
-  CaptivePortalTabHelper::CreateForWebState(&web_state,
-                                            captive_portal_tab_helper_delegate);
-
+  CaptivePortalTabHelper::CreateForWebState(&web_state);
   web_state.SetBrowserState(browser_state());
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,

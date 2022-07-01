@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
+#import "ios/chrome/browser/web/web_navigation_util.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 
@@ -15,25 +15,21 @@
 #error "This file requires ARC support."
 #endif
 
-// static
-void CaptivePortalTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<CaptivePortalTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(), base::WrapUnique(new CaptivePortalTabHelper(delegate)));
-  }
-}
+CaptivePortalTabHelper::CaptivePortalTabHelper(web::WebState* web_state) {}
 
-CaptivePortalTabHelper::CaptivePortalTabHelper(
-    id<CaptivePortalTabHelperDelegate> delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate);
+void CaptivePortalTabHelper::SetTabInsertionBrowserAgent(
+    TabInsertionBrowserAgent* insertionAgent) {
+  insertionAgent_ = insertionAgent;
 }
 
 void CaptivePortalTabHelper::DisplayCaptivePortalLoginPage(GURL landing_url) {
-  [delegate_ captivePortalTabHelper:this connectWithLandingURL:landing_url];
+  DCHECK(insertionAgent_);
+  insertionAgent_->InsertWebState(
+      web_navigation_util::CreateWebLoadParams(
+          landing_url, ui::PAGE_TRANSITION_TYPED, nullptr),
+      nil, false, TabInsertion::kPositionAutomatically,
+      /*in_background=*/false, /*inherit_opener=*/false,
+      /*should_show_start_surface=*/false, /*filtered_param_count=*/0);
 }
 
 CaptivePortalTabHelper::~CaptivePortalTabHelper() = default;

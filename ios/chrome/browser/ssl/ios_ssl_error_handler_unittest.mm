@@ -9,7 +9,6 @@
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -106,14 +105,10 @@ class IOSSSLErrorHandlerTest : public IOSSSLErrorHandlerWithoutTabHelpersTest {
   void SetUp() override {
     IOSSSLErrorHandlerWithoutTabHelpersTest::SetUp();
 
-    id captive_portal_tab_helper_delegate = [OCMockObject
-        mockForProtocol:@protocol(CaptivePortalTabHelperDelegate)];
-
     security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
         web_state());
 
-    CaptivePortalTabHelper::CreateForWebState(
-        web_state(), captive_portal_tab_helper_delegate);
+    CaptivePortalTabHelper::CreateForWebState(web_state());
     ASSERT_TRUE(cert());
 
     std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =

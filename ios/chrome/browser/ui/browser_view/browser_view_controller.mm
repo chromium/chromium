@@ -47,8 +47,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
@@ -247,8 +245,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - BVC
 
 // Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <CaptivePortalTabHelperDelegate,
-                                     CRWWebStateObserver,
+@interface BrowserViewController () <CRWWebStateObserver,
                                      FindBarPresentationDelegate,
                                      FullscreenUIElement,
                                      InfobarPositioner,
@@ -2388,9 +2385,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(!_prerenderService ||
          !_prerenderService->IsWebStatePrerendered(webState));
 
-  // TODO(crbug.com/1272473): Remove CaptivePortalTabHelper from the BVC.
-  CaptivePortalTabHelper::CreateForWebState(webState, self);
-
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
 }
 
@@ -4162,22 +4156,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
   }
   return nil;
-}
-
-#pragma mark - CaptivePortalTabHelperDelegate
-// TODO(crbug.com/1272473) : Factor CaptivePortaTabHelperDelegate of
-// the BVC. This logic can be handled inside the tab helper.
-
-- (void)captivePortalTabHelper:(CaptivePortalTabHelper*)tabHelper
-         connectWithLandingURL:(const GURL&)landingURL {
-  TabInsertionBrowserAgent* insertionAgent =
-      TabInsertionBrowserAgent::FromBrowser(self.browser);
-  insertionAgent->InsertWebState(
-      web_navigation_util::CreateWebLoadParams(
-          landingURL, ui::PAGE_TRANSITION_TYPED, nullptr),
-      nil, false, self.browser->GetWebStateList()->count(),
-      /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false, /*filtered_param_count=*/0);
 }
 
 #pragma mark - PageInfoPresentation

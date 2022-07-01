@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SSL_CAPTIVE_PORTAL_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SSL_CAPTIVE_PORTAL_TAB_HELPER_H_
 
+#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/web/public/web_state_user_data.h"
-
-@protocol CaptivePortalTabHelperDelegate;
 
 namespace web {
 class WebState;
@@ -22,22 +21,17 @@ class CaptivePortalTabHelper
 
   ~CaptivePortalTabHelper() override;
 
-  // Creates a Tab Helper and attaches it to |web_state|. The |delegate| is not
-  // retained by the CaptivePortalTabHelper and must not be nil.
-  static void CreateForWebState(web::WebState* web_state,
-                                id<CaptivePortalTabHelperDelegate> delegate);
-
   // Displays the Captive Portal Login page at |landing_url|.
   void DisplayCaptivePortalLoginPage(GURL landing_url);
+
+  void SetTabInsertionBrowserAgent(TabInsertionBrowserAgent* insertionAgent);
 
  private:
   friend class web::WebStateUserData<CaptivePortalTabHelper>;
 
-  CaptivePortalTabHelper(id<CaptivePortalTabHelperDelegate> delegate);
+  CaptivePortalTabHelper(web::WebState* web_state);
 
-  // The delegate to notify when the user performs an action in response to the
-  // captive portal detector state.
-  __weak id<CaptivePortalTabHelperDelegate> delegate_;
+  TabInsertionBrowserAgent* insertionAgent_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
