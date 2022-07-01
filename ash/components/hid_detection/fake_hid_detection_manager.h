@@ -16,11 +16,9 @@ class FakeHidDetectionManager : public HidDetectionManager {
   FakeHidDetectionManager();
   ~FakeHidDetectionManager() override;
 
-  bool HasPendingIsHidDetectionRequiredCallback() const;
-  void InvokePendingIsHidDetectionRequiredCallback(bool required);
-
   // Mocks the HID detection status being updated.
-  void SetHidDetectionStatus(HidDetectionManager::HidDetectionStatus status);
+  void SetHidStatusPointerMetadata(InputMetadata metadata);
+  void SetHidStatusKeyboardMetadata(InputMetadata metadata);
 
   bool is_hid_detection_active() const { return is_hid_detection_active_; }
 
@@ -33,7 +31,6 @@ class FakeHidDetectionManager : public HidDetectionManager {
   HidDetectionManager::HidDetectionStatus ComputeHidDetectionStatus()
       const override;
 
-  base::OnceCallback<void(bool)> is_hid_detection_required_callback_;
   bool is_hid_detection_active_ = false;
   HidDetectionManager::HidDetectionStatus hid_detection_status_;
 };

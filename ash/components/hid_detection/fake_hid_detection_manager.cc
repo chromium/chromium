@@ -5,29 +5,43 @@
 #include "ash/components/hid_detection/fake_hid_detection_manager.h"
 
 namespace ash::hid_detection {
+namespace {
+
+bool IsInputMissing(HidDetectionManager::InputMetadata metadata) {
+  return metadata.state == HidDetectionManager::InputState::kSearching ||
+         metadata.state ==
+             HidDetectionManager::InputState::kPairingViaBluetooth;
+}
+
+}  // namespace
 
 FakeHidDetectionManager::FakeHidDetectionManager() = default;
 
 FakeHidDetectionManager::~FakeHidDetectionManager() = default;
 
-bool FakeHidDetectionManager::HasPendingIsHidDetectionRequiredCallback() const {
-  return !is_hid_detection_required_callback_.is_null();
+void FakeHidDetectionManager::SetHidStatusPointerMetadata(
+    InputMetadata metadata) {
+  hid_detection_status_.pointer_metadata = metadata;
+  if (!is_hid_detection_active_)
+    return;
+
+  NotifyHidDetectionStatusChanged();
 }
 
-void FakeHidDetectionManager::InvokePendingIsHidDetectionRequiredCallback(
-    bool required) {
-  std::move(is_hid_detection_required_callback_).Run(required);
-}
+void FakeHidDetectionManager::SetHidStatusKeyboardMetadata(
+    InputMetadata metadata) {
+  hid_detection_status_.keyboard_metadata = metadata;
+  if (!is_hid_detection_active_)
+    return;
 
-void FakeHidDetectionManager::SetHidDetectionStatus(
-    HidDetectionManager::HidDetectionStatus status) {
-  hid_detection_status_ = status;
   NotifyHidDetectionStatusChanged();
 }
 
 void FakeHidDetectionManager::GetIsHidDetectionRequired(
     base::OnceCallback<void(bool)> callback) {
-  is_hid_detection_required_callback_ = std::move(callback);
+  std::move(callback).Run(
+      IsInputMissing(hid_detection_status_.pointer_metadata) ||
+      IsInputMissing(hid_detection_status_.keyboard_metadata));
 }
 
 void FakeHidDetectionManager::PerformStartHidDetection() {
