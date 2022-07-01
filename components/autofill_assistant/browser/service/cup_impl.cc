@@ -18,7 +18,7 @@
 namespace {
 
 // This is an ECDSA prime256v1 named-curve key.
-constexpr int kKeyVersion = 11;
+constexpr int kKeyVersion = 1;
 constexpr char kKeyPubBytesBase64[] =
     "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK2TXDqsaUceOfIJldE1T+RENfPZk848Se+"
     "8ODrfNFfIW4CK5qwgoCdE2xbJPkgivLHNnm1nk6LQM7mP6FgsOGg==";
