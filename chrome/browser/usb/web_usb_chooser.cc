@@ -10,7 +10,7 @@
 #include "chrome/browser/usb/usb_chooser_controller.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/usb/web_usb_chooser_android.h"
+#include "chrome/browser/usb/android/web_usb_chooser_android.h"
 #else
 #include "chrome/browser/usb/web_usb_chooser_desktop.h"
 #endif  // BUILDFLAG(IS_ANDROID)
