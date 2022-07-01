@@ -135,7 +135,7 @@ void OmniboxPopupViewIOS::OnMatchSelected(
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
 
   // OpenMatch() may close the popup, which will clear the result set and, by
-  // extension, |match| and its contents.  So copy the relevant match out to
+  // extension, `match` and its contents.  So copy the relevant match out to
   // make sure it stays alive until the call completes.
   AutocompleteMatch match = selectedMatch;
 
@@ -159,8 +159,8 @@ void OmniboxPopupViewIOS::OnMatchSelected(
 
 void OmniboxPopupViewIOS::OnMatchSelectedForAppending(
     const AutocompleteMatch& match) {
-  // Make a defensive copy of |match.fill_into_edit|, as CopyToOmnibox() will
-  // trigger a new round of autocomplete and modify |match|.
+  // Make a defensive copy of `match.fill_into_edit`, as CopyToOmnibox() will
+  // trigger a new round of autocomplete and modify `match`.
   std::u16string fill_into_edit(match.fill_into_edit);
 
   // If the match is not a URL, append a whitespace to the end of it.

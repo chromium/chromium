@@ -19,7 +19,7 @@ extern NSString* const kOmniboxPopupTableViewAccessibilityIdentifier;
 // Helper to generate omnibox popup accessibility identifiers.
 @interface OmniboxPopupAccessibilityIdentifierHelper : NSObject
 
-// Generate omnibox popup row accessibility identifier at |indexPath|.
+// Generate omnibox popup row accessibility identifier at `indexPath`.
 + (NSString*)accessibilityIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 
 @end

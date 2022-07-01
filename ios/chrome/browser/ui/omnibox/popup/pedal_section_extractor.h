@@ -14,7 +14,7 @@
 // consumer. It acts as a consumer and a consumer delegate, and is intended to
 // intercept any calls in these protocols.
 // It extracts any pedals being pushed to it, wraps them to look like
-// suggestions, and passes it down to |dataSink|.
+// suggestions, and passes it down to `dataSink`.
 // It also intercepts the return key (by proxying OmniboxReturnDelegate) to
 // allow "return" key to execute the pedal whenever it selected; if a non-pedal
 // is highlighted, it forwards the call to its accept delegate.

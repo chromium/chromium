@@ -11,7 +11,7 @@
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
 
-// This class is used to display |OmniboxIcon|s. It handles the multiple image
+// This class is used to display `OmniboxIcon`s. It handles the multiple image
 // views neceesary to get the correct compositing behavior.
 @interface OmniboxIconView : UIView
 

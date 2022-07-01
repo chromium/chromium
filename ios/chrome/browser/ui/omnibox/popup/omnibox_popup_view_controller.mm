@@ -326,7 +326,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
             self.currentResult[indexPath.section].suggestions.count);
   NSUInteger row = indexPath.row;
 
-  // Crash reports tell us that |row| is sometimes indexed past the end of
+  // Crash reports tell us that `row` is sometimes indexed past the end of
   // the results array. In those cases, just ignore the request and return
   // early. See b/5813291.
   if (row >= self.currentResult[indexPath.section].suggestions.count)
@@ -354,8 +354,8 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   DCHECK_EQ(0U, (NSUInteger)indexPath.section);
 
   // iOS doesn't check -numberOfRowsInSection before checking
-  // -canEditRowAtIndexPath in a reload call. If |indexPath.row| is too large,
-  // simple return |NO|.
+  // -canEditRowAtIndexPath in a reload call. If `indexPath.row` is too large,
+  // simple return `NO`.
   if ((NSUInteger)indexPath.row >=
       self.currentResult[indexPath.section].suggestions.count)
     return NO;
@@ -524,7 +524,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 #pragma mark - ContentProviding
 
 - (BOOL)hasContent {
-  // The table view is a |SelfSizingTableView|, so its intrinsic content size
+  // The table view is a `SelfSizingTableView`, so its intrinsic content size
   // can tell whether it has content.
   return self.view.intrinsicContentSize.height > 0;
 }

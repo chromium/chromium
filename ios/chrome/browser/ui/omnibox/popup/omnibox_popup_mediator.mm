@@ -158,7 +158,7 @@ const CGFloat kOmniboxIconSize = 16;
                       didSelectRow:(NSUInteger)row
                          inSection:(NSUInteger)section {
   // OpenMatch() may close the popup, which will clear the result set and, by
-  // extension, |match| and its contents.  So copy the relevant match out to
+  // extension, `match` and its contents.  So copy the relevant match out to
   // make sure it stays alive until the call completes.
   const AutocompleteMatch& match =
       ((const AutocompleteResult&)_currentResult).match_at(row);

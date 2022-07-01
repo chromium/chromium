@@ -16,7 +16,7 @@
 - (instancetype)initWithPedal:(id<OmniboxPedal, OmniboxIcon>)pedal;
 
 // Underlying pedal.
-// Note that this is different from |pedal| inherited from
+// Note that this is different from `pedal` inherited from
 // <AutocompleteSuggestion>.
 @property(nonatomic, strong) id<OmniboxPedal, OmniboxIcon> innerPedal;
 

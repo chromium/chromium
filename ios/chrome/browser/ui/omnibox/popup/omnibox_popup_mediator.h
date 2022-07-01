@@ -76,7 +76,7 @@ class OmniboxPopupMediatorDelegate {
 // The annotator to create pedals for ths mediator.
 @property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
 
-// Designated initializer. Takes ownership of |imageFetcher|.
+// Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)initWithFetcher:
                     (std::unique_ptr<image_fetcher::ImageDataFetcher>)
                         imageFetcher
@@ -88,7 +88,7 @@ class OmniboxPopupMediatorDelegate {
 // Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;
 
-// Updates the popup with the |results|.
+// Updates the popup with the `results`.
 - (void)updateWithResults:(const AutocompleteResult&)results;
 
 @end

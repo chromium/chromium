@@ -27,7 +27,7 @@
 
 namespace {
 
-// Returns the popup row containing the |url| as suggestion.
+// Returns the popup row containing the `url` as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
   NSString* urlString = base::SysUTF8ToNSString(url.GetContent());
   id<GREYMatcher> URLMatcher =
@@ -40,7 +40,7 @@ id<GREYMatcher> PopupRowWithUrl(GURL url) {
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
 }
 
-// Returns the switch to open tab element for the |url|.
+// Returns the switch to open tab element for the `url`.
 id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
   return grey_allOf(
       grey_ancestor(PopupRowWithUrl(url)),
@@ -630,7 +630,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }
@@ -651,7 +651,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }
