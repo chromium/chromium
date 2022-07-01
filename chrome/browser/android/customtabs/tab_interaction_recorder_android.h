@@ -38,6 +38,7 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
 
  private:
   void OnFormInteraction();
+  void Invalidate();
 
   raw_ptr<autofill::AutofillManager> autofill_manager_;
   OnFormInteractionCallback form_interaction_callback_;
@@ -64,10 +65,17 @@ class TabInteractionRecorderAndroid
   bool has_form_interactions() const { return has_form_interactions_; }
 
   // content::WebContentsObserver:
+
+  // Dispatch an AutofillManagerObserver when a frame becomes active, or remove
+  // the old AutofillManagerObserver when a frame becomes inactive.
   void RenderFrameHostStateChanged(
       content::RenderFrameHost* render_frame_host,
       content::RenderFrameHost::LifecycleState old_state,
       content::RenderFrameHost::LifecycleState new_state) override;
+  // When a new frame is created, |RenderFrameHostStateChanged| happen earlier
+  // than a AutofillManager initialized in such frame, which happened at
+  // |DidFinishNavigation|. Observing |DidFinishNavigation| ensure this class
+  // to dispatch the AutofillManagerObserver for newly created AutofillManager.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
