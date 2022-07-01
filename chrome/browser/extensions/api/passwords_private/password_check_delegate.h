@@ -62,42 +62,44 @@ class PasswordCheckDelegate
   // Obtains information about weak credentials.
   std::vector<api::passwords_private::InsecureCredential> GetWeakCredentials();
 
-  // Requests the plaintext password for |credential|. If successful, this
-  // returns |credential| with its |password| member set. This can fail if no
+  // Requests the plaintext password for `credential`. If successful, this
+  // returns `credential` with its `password` member set. This can fail if no
   // matching insecure credential can be found in the password store.
   absl::optional<api::passwords_private::InsecureCredential>
   GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential) const;
 
-  // Attempts to change the stored password of |credential| to |new_password|.
+  // Attempts to change the stored password of `credential` to `new_password`.
   // Returns whether the change succeeded.
   bool ChangeInsecureCredential(
       const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password);
 
-  // Attempts to remove |credential| from the password store. Returns whether
+  // Attempts to remove `credential` from the password store. Returns whether
   // the remove succeeded.
   bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
 
-  // Attempts to mute |credential| from the password store. Returns whether
+  // Attempts to mute `credential` from the password store. Returns whether
   // the mute succeeded.
   bool MuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
 
-  // Attempts to unmute |credential| from the password store. Returns whether
+  // Attempts to unmute `credential` from the password store. Returns whether
   // the unmute succeeded.
   bool UnmuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
 
-  // Records that a change password flow was started for |credential| and
-  // whether |is_manual_flow| applies to the flow.
+  // Records that a change password flow was started for `credential` and
+  // whether `is_manual_flow` applies to the flow.
   void RecordChangePasswordFlowStarted(
       const api::passwords_private::InsecureCredential& credential,
       bool is_manual_flow);
 
-  // Requests to start a check for insecure passwords. Invokes |callback| once a
-  // check is running or the request was stopped via StopPasswordCheck().
+  // Checks that all preconditions for running a password check are fulfilled
+  // and, once that is the case, launches the password check. Invokes `callback`
+  // once a check is running or the request was stopped via
+  // `StopPasswordCheck()`.
   void StartPasswordCheck(
       StartPasswordCheckCallback callback = base::DoNothing());
   // Stops checking for insecure passwords.
@@ -144,6 +146,15 @@ class PasswordCheckDelegate
   const password_manager::CredentialUIEntry* FindMatchingEntry(
       const api::passwords_private::InsecureCredential& credential) const;
 
+  // Reacts to a refreshed password scripts cache. Checks whether any of the
+  // compromised credentials have a password script and only then calls the
+  // event router to update the frontend.
+  void OnPasswordScriptsFetched(StartPasswordCheckCallback callback);
+
+  // Starts the analyses of whether credentials are compromised and/or weak.
+  // Assumes that `StartPasswordCheck()` was called prior.
+  void StartPasswordAnalyses(StartPasswordCheckCallback callback);
+
   // Invoked when a compromised password check completes. Records the current
   // timestamp in `kLastTimePasswordCheckCompleted` pref.
   void RecordAndNotifyAboutCompletedCompromisedPasswordCheck();
@@ -152,12 +163,12 @@ class PasswordCheckDelegate
   // in `last_completed_weak_check_`.
   void RecordAndNotifyAboutCompletedWeakPasswordCheck();
 
-  // Tries to notify the PasswordsPrivateEventRouter that the password check
-  // status has changed. Invoked after OnSavedPasswordsChanged and
-  // OnStateChanged.
+  // Tries to notify the `PasswordsPrivateEventRouter` that the password check
+  // status has changed. Invoked after `OnSavedPasswordsChanged` and
+  // `OnStateChanged`.
   void NotifyPasswordCheckStatusChanged();
 
-  // Constructs |InsecureCredential| from |CredentialUIEntry|.
+  // Constructs `InsecureCredential` from `CredentialUIEntry`.
   api::passwords_private::InsecureCredential ConstructInsecureCredential(
       const password_manager::CredentialUIEntry& entry);
 
@@ -176,7 +187,7 @@ class PasswordCheckDelegate
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;
 
-  // Used by |insecure_credentials_manager_| to obtain the list of saved
+  // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.
   raw_ptr<password_manager::SavedPasswordsPresenter>
       saved_passwords_presenter_ = nullptr;
@@ -192,9 +203,9 @@ class PasswordCheckDelegate
   // when the delegate obtains the list of saved passwords for the first time.
   bool is_initialized_ = false;
 
-  // List of callbacks that were passed to StartPasswordCheck() prior to the
+  // List of callbacks that were passed to `StartPasswordCheck()` prior to the
   // delegate being initialized. These will be run when either initialization
-  // finishes, or StopPasswordCheck() gets invoked before hand.
+  // finishes, or `StopPasswordCheck()` gets invoked before hand.
   std::vector<StartPasswordCheckCallback> start_check_callbacks_;
 
   // Remembers the progress of the ongoing check. Null if no check is currently
@@ -207,26 +218,26 @@ class PasswordCheckDelegate
   // Store when the last weak check was completed.
   base::Time last_completed_weak_check_;
 
-  // A scoped observer for |saved_passwords_presenter_|.
+  // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
                           password_manager::SavedPasswordsPresenter::Observer>
       observed_saved_passwords_presenter_{this};
 
-  // A scoped observer for |insecure_credentials_manager_|.
+  // A scoped observer for `insecure_credentials_manager_`.
   base::ScopedObservation<
       password_manager::InsecureCredentialsManager,
       password_manager::InsecureCredentialsManager::Observer>
       observed_insecure_credentials_manager_{this};
 
-  // A scoped observer for the BulkLeakCheckService.
+  // A scoped observer for the `BulkLeakCheckService`.
   base::ScopedObservation<
       password_manager::BulkLeakCheckServiceInterface,
       password_manager::BulkLeakCheckServiceInterface::Observer>
       observed_bulk_leak_check_service_{this};
 
   // An id generator for insecure credentials. Required to match
-  // api::passwords_private::InsecureCredential instances passed to the UI
-  // with the underlying CredentialUIEntry they are based on.
+  // `api::passwords_private::InsecureCredential` instances passed to the UI
+  // with the underlying `CredentialUIEntry` they are based on.
   IdGenerator<password_manager::CredentialUIEntry,
               int,
               password_manager::CredentialUIEntry::Less>

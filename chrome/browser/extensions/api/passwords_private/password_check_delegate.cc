@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -400,11 +401,49 @@ void PasswordCheckDelegate::StartPasswordCheck(
   }
 
   // Also return early if the check is already running.
-  if (bulk_leak_check_service_adapter_.GetBulkLeakCheckState() ==
-      State::kRunning) {
+  if (is_check_running_ ||
+      bulk_leak_check_service_adapter_.GetBulkLeakCheckState() ==
+          State::kRunning) {
     std::move(callback).Run(State::kRunning);
     return;
   }
+
+  // If automated password change from password check in settings is enabled,
+  // we make sure that the cache is warm prior to analyzing passwords.
+  is_check_running_ = true;
+  // TODO(crbug.com/1340073): Expose method in PasswordScriptsFetcher that
+  // allows checking cache state. Only run this branch if the cache is stale.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChange)) {
+    GetPasswordScriptsFetcher()->RefreshScriptsIfNecessary(
+        base::BindOnce(&PasswordCheckDelegate::OnPasswordScriptsFetched,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    // Otherwise, call directly.
+    StartPasswordAnalyses(std::move(callback));
+  }
+}
+
+void PasswordCheckDelegate::OnPasswordScriptsFetched(
+    StartPasswordCheckCallback callback) {
+  if (PasswordsPrivateEventRouter* event_router =
+          PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
+    // Only update if at least one credential now has a startable script.
+    std::vector<api::passwords_private::InsecureCredential> credentials =
+        GetCompromisedCredentials();
+    if (base::ranges::any_of(credentials,
+                             &api::passwords_private::InsecureCredential::
+                                 has_startable_script)) {
+      event_router->OnCompromisedCredentialsChanged(std::move(credentials));
+    }
+  }
+  StartPasswordAnalyses(std::move(callback));
+}
+
+void PasswordCheckDelegate::StartPasswordAnalyses(
+    StartPasswordCheckCallback callback) {
+  // This is set as soon as the script availability fetching is started.
+  DCHECK(is_check_running_);
 
   // Start the weakness check, and notify observers once done.
   insecure_credentials_manager_.StartWeakCheck(base::BindOnce(

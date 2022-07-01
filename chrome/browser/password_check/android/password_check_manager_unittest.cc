@@ -23,6 +23,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/mock_password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -45,6 +46,7 @@ using password_manager::BulkLeakCheckService;
 using password_manager::InsecureCredential;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::InsecureType;
+using password_manager::MockPasswordScriptsFetcher;
 using password_manager::PasswordCheckUIStatus;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
@@ -112,28 +114,6 @@ class MockPasswordCheckManagerObserver : public PasswordCheckManager::Observer {
               (override));
 
   MOCK_METHOD(void, OnPasswordCheckProgressChanged, (int, int), (override));
-};
-
-class MockPasswordScriptsFetcher
-    : public password_manager::PasswordScriptsFetcher {
- public:
-  MOCK_METHOD(void, PrewarmCache, (), (override));
-
-  MOCK_METHOD(void, RefreshScriptsIfNecessary, (base::OnceClosure), (override));
-
-  MOCK_METHOD(void,
-              FetchScriptAvailability,
-              (const url::Origin&, base::OnceCallback<void(bool)>),
-              (override));
-
-  MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
-
-  MOCK_METHOD(base::Value::Dict,
-              GetDebugInformationForInternals,
-              (),
-              (const override));
-
-  MOCK_METHOD(base::Value::List, GetCacheEntries, (), (const override));
 };
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
