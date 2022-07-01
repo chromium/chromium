@@ -94,6 +94,15 @@ void ServiceWorkerHost::BindCacheStorage(
   version_->embedded_worker()->BindCacheStorage(std::move(receiver));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ServiceWorkerHost::BindHidService(
+    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  version_->embedded_worker()->BindHidService(version_->key().origin(),
+                                              std::move(receiver));
+}
+#endif
+
 net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
   // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
   // top-level browsing context, which shouldn't be use for ServiceWorkers used

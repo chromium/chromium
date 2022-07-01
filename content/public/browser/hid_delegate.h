@@ -93,6 +93,9 @@ class CONTENT_EXPORT HidDelegate {
   virtual bool IsFidoAllowedForOrigin(BrowserContext* browser_context,
                                       const url::Origin& origin) = 0;
 
+  // Returns true if |origin| is allowed to access HID from service workers.
+  virtual bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) = 0;
+
   // Gets the device info for a particular device, identified by its guid.
   virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(
       BrowserContext* browser_context,

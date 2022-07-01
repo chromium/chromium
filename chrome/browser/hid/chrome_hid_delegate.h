@@ -48,6 +48,7 @@ class ChromeHidDelegate
       const std::string& guid) override;
   bool IsFidoAllowedForOrigin(content::BrowserContext* browser_context,
                               const url::Origin& origin) override;
+  bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) override;
 
   // permissions::ObjectPermissionContextBase::PermissionObserver:
   void OnPermissionRevoked(const url::Origin& origin) override;

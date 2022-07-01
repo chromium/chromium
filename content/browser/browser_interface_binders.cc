@@ -1442,6 +1442,10 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
                           base::Unretained(host)));
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForServiceWorker, base::Unretained(host)));
+#if !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::HidService>(base::BindRepeating(
+      &ServiceWorkerHost::BindHidService, base::Unretained(host)));
+#endif
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(

@@ -81,6 +81,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
+#else
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -688,6 +690,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void SetIpcSendWatcherForTesting(IpcSendWatcher watcher) {
     ipc_send_watcher_for_testing_ = std::move(watcher);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void BindHidService(const url::Origin& origin,
+                      mojo::PendingReceiver<blink::mojom::HidService> receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   PepperRendererConnection* pepper_renderer_connection() {

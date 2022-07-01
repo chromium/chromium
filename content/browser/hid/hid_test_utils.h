@@ -70,6 +70,8 @@ class MockHidDelegate : public HidDelegate {
   MOCK_METHOD2(IsFidoAllowedForOrigin,
                bool(BrowserContext* browser_context,
                     const url::Origin& origin));
+  MOCK_METHOD1(IsServiceWorkerAllowedForOrigin,
+               bool(const url::Origin& origin));
 
  private:
   base::ObserverList<Observer> observer_list_;

@@ -14,7 +14,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -103,6 +108,19 @@ bool ChromeHidDelegate::IsFidoAllowedForOrigin(
     const url::Origin& origin) {
   auto* chooser_context = GetChooserContext(browser_context);
   return chooser_context->IsFidoAllowedForOrigin(origin);
+}
+
+bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // WebHID is only available on extension service workers with feature flag
+  // enabled for now.
+  if (base::FeatureList::IsEnabled(
+          features::kEnableWebHidOnExtensionServiceWorker) &&
+      origin.scheme() == extensions::kExtensionScheme)
+    return true;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return false;
 }
 
 void ChromeHidDelegate::OnPermissionRevoked(const url::Origin& origin) {
