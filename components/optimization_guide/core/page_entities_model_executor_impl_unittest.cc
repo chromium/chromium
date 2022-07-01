@@ -259,7 +259,14 @@ TEST_F(PageEntitiesModelExecutorImplTest, ModelInfoUpdated) {
   EXPECT_TRUE(immediate_callback_run);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
+// TODO(https://crbug.com/1341224): Fix flakes on linux-chromeos-chrome and
+// re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CreateMissingFiles DISABLED_CreateMissingFiles
+#else
+#define MAYBE_CreateMissingFiles CreateMissingFiles
+#endif
+TEST_F(PageEntitiesModelExecutorImplTest, MAYBE_CreateMissingFiles) {
   proto::Any any;
   proto::PageEntitiesModelMetadata metadata;
   metadata.add_slice("global");
