@@ -137,33 +137,33 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
     AsyncWebUIMessageHandler& operator=(const AsyncWebUIMessageHandler&) =
         delete;
 
-    MOCK_METHOD1(HandleTestContinues, void(const base::ListValue*));
-    MOCK_METHOD1(HandleTestFails, void(const base::ListValue*));
-    MOCK_METHOD1(HandleTestPasses, void(const base::ListValue*));
+    MOCK_METHOD1(HandleTestContinues, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTestFails, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTestPasses, void(const base::Value::List&));
 
    private:
     void RegisterMessages() override {
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "startAsyncTest",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleStartAsyncTest,
                               base::Unretained(this)));
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "testContinues",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestContinues,
                               base::Unretained(this)));
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "testFails",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestFails,
                               base::Unretained(this)));
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "testPasses",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestPasses,
                               base::Unretained(this)));
     }
 
     // Starts the test in |list_value|[0] with the runAsync wrapper.
-    void HandleStartAsyncTest(const base::ListValue* list_value) {
-      const base::Value& test_name = list_value->GetListDeprecated()[0];
+    void HandleStartAsyncTest(const base::Value::List& list_value) {
+      const base::Value& test_name = list_value[0];
       web_ui()->CallJavascriptFunctionUnsafe("runAsync", test_name);
     }
   };
