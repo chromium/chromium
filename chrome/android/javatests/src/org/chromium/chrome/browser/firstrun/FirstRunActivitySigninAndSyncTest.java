@@ -47,12 +47,15 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -203,6 +206,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
     public void acceptingSyncEndsFreAndEnablesSyncIfEnableSyncImmediatelyFeatureEnabled() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
@@ -219,6 +223,24 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    public void acceptingSyncEndsFreAndEnablesSyncIfEnableSyncImmediatelyFeatureDisabled() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.positive_button);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+        SyncTestUtil.waitForSyncFeatureEnabled();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
     public void refusingSyncEndsFreAndDoesNotEnableSyncIfEnableSyncImmediatelyFeatureEnabled() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
@@ -235,9 +257,48 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    public void refusingSyncEndsFreAndDoesNotEnableSyncIfEnableSyncImmediatelyFeatureDisabled() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.negative_button);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        Assert.assertFalse(SyncTestUtil.canSyncFeatureStart());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
     @DisabledTest(message = "https://crbug.com/1335094")
     public void
     clickingSettingsEndsFreAndStartsEnablingSyncIfEnableSyncImmediatelyFeatureEnabled() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        onView(withId(R.id.signin_details_description)).perform(new LinkClick());
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        // Sync-the-feature can start but won't become enabled until the user clicks the "Confirm"
+        // button in settings.
+        SyncTestUtil.waitForCanSyncFeatureStart();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    public void
+    clickingSettingsEndsFreAndStartsEnablingSyncIfEnableSyncImmediatelyFeatureDisabled() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
