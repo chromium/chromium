@@ -555,9 +555,9 @@ TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
   }
 }
 
-// The following tests depend on the translate infobar. They should be ported to
-// use the translate bubble. On Aura there is no infobar so the tests are not
-// compiled.
+// The following tests depend on the Translate infobar. They should be ported to
+// use the Full Page Translate bubble. On Aura there is no infobar so the tests
+// are not compiled.
 #if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 TEST_F(TranslateManagerRenderViewHostTest, NormalTranslate) {
   // See BubbleNormalTranslate for corresponding bubble UX testing.

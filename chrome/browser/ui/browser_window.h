@@ -103,10 +103,11 @@ class WebContentsModalDialogHost;
 }
 
 enum class ShowTranslateBubbleResult {
-  // The translate bubble was successfully shown.
+  // The Full Page Translate bubble was successfully shown.
   SUCCESS,
 
-  // The various reasons for which the translate bubble could fail to be shown.
+  // The various reasons for which the Full Page Translate bubble could fail to
+  // be shown.
   BROWSER_WINDOW_NOT_VALID,
   BROWSER_WINDOW_MINIMIZED,
   BROWSER_WINDOW_NOT_ACTIVE,
@@ -452,7 +453,7 @@ class BrowserWindow : public ui::BaseWindow {
       share::ShareAttempt attempt) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Shows the translate bubble.
+  // Shows the Full Page Translate bubble.
   //
   // |is_user_gesture| is true when the bubble is shown on the user's deliberate
   // action.

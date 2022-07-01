@@ -7,7 +7,7 @@
 
 namespace translate {
 
-// Histogram for recording the UI events related to the Translate
+// Histogram for recording the UI events related to the Full Page Translate
 // bubble.
 constexpr char kTranslateBubbleUiEventHistogramName[] =
     "Translate.BubbleUiEvent";
@@ -72,10 +72,10 @@ enum class TranslateBubbleUiEvent {
   // The user deactivated the translate page action icon.
   // [DEPRECATED] PAGE_ACTION_ICON_DEACTIVATED = 19,
 
-  // The translate bubble was shown to the user.
+  // The bubble was shown to the user.
   BUBBLE_SHOWN = 20,
 
-  // The translate bugbble could not be shown to the user, for various reasons.
+  // The bubble could not be shown to the user, for various reasons.
   // [DEPRECATED] BUBBLE_NOT_SHOWN_WINDOW_NOT_VALID = 21,
   BUBBLE_NOT_SHOWN_WINDOW_MINIMIZED = 22,
   // [DEPRECATED] BUBBLE_NOT_SHOWN_WINDOW_NOT_ACTIVE = 23,

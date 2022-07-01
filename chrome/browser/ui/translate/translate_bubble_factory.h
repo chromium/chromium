@@ -18,13 +18,13 @@ namespace content {
 class WebContents;
 }
 
-// Factory to show the Translate bubble.
+// Factory to show the Full Page Translate bubble.
 class TranslateBubbleFactory {
  public:
   virtual ~TranslateBubbleFactory();
 
-  // Shows the translate bubble. The behavior depends on the current factory's
-  // implementation.
+  // Shows the Full Page Translate bubble. The behavior depends on the current
+  // factory's implementation.
   static ShowTranslateBubbleResult Show(
       BrowserWindow* window,
       content::WebContents* web_contents,
@@ -39,7 +39,7 @@ class TranslateBubbleFactory {
   static void SetFactory(TranslateBubbleFactory* factory);
 
  protected:
-  // Shows the translate bubble.
+  // Shows the Full Page Translate bubble.
   virtual ShowTranslateBubbleResult ShowImplementation(
       BrowserWindow* window,
       content::WebContents* web_contents,

@@ -203,20 +203,20 @@ class TranslateBubbleViewUITest
 IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  // P1.Opened/Navigate to non english page > Hit on translate bubble icon.
+  // P1.Opened/Navigate to non english page > Hit on Translate bubble icon.
   GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
   NavigateAndWaitForLanguageDetection(french_url, "fr");
 
   ui::InteractionSequence::Builder()
       .SetAbortedCallback(aborted.Get())
-      // The dialog view of translate bubble is different across platforms.
+      // The dialog view of Translate bubble is different across platforms.
       // On Linux/Mac it's a AlertDialog under BrowserRootView tree.
       // On Windows it's a separate LocationBarBubbleDelegateView.
       // That it's getting the root view of translate dialog via
       // GetCurrentBubble method.
       .AddStep(views::InteractionSequenceViews::WithInitialView(
           GetCurrentTranslateBubble()))
-      // V1.Verify that by default the translate bubble’s source language
+      // V1.Verify that by default the Translate bubble’s source language
       // tab is selected and highlighted.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageTab)
@@ -266,13 +266,13 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
                          EXPECT_TRUE(source_tab->selected());
                        }))
                    .Build())
-      // P4.Tap on cancel button option in the translate bubble popup box.
+      // P4.Tap on cancel button option in the Translate bubble popup box.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kCloseButton)
                    .SetStartCallback(base::BindOnce(ButtonClickCallBack))
                    .SetMustRemainVisible(false)
                    .Build())
-      // V4.Tapping the close button dismisses the translate bubble.
+      // V4.Tapping the close button dismisses the Translate bubble.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kIdentifier)
                    .SetType(ui::InteractionSequence::StepType::kHidden)
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       .SetAbortedCallback(aborted.Get())
       .AddStep(views::InteractionSequenceViews::WithInitialView(
           GetCurrentTranslateBubble()))
-      // P2. Click on translate bubble > Click on 3 dot menu.
+      // P2. Click on Translate bubble > Click on 3 dot menu.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kOptionsMenuButton)
                    .SetStartCallback(base::BindOnce(ElementClickCallback))
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       .SetAbortedCallback(aborted.Get())
       .AddStep(views::InteractionSequenceViews::WithInitialView(
           GetCurrentTranslateBubble()))
-      // P2. Click on translate bubble > Click on 3 dot menu.
+      // P2. Click on Translate bubble > Click on 3 dot menu.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kOptionsMenuButton)
                    .SetStartCallback(base::BindOnce(ElementClickCallback))
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
           ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 
-  // P1. Opened/Navigate to non english page > Hit on translate bubble icon.
+  // P1. Opened/Navigate to non english page > Hit on Translate bubble icon.
   GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
   NavigateAndWaitForLanguageDetection(french_url, "fr");
 

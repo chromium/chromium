@@ -47,8 +47,8 @@ class TranslateBubbleController
       const std::u16string& text_selection,
       translate::TranslateErrors::Type error_type);
 
-  // Closes the current Partial or Full Page Translate bubble, if it exists. At
-  // most one of these bubble should be non-null at any given time.
+  // Closes the current Partial or Full Page Translate bubble, if either exists.
+  // At most one of these bubbles should be non-null at any given time.
   void CloseBubble();
 
   // Returns the currently shown Full Page Translate bubble view. Returns
@@ -79,7 +79,7 @@ class TranslateBubbleController
   raw_ptr<TranslateBubbleView> translate_bubble_view_ = nullptr;
   raw_ptr<PartialTranslateBubbleView> partial_translate_bubble_view_ = nullptr;
 
-  // Factories used to construct models for the two different translate bubbles.
+  // Factories used to construct models for the two different Translate bubbles.
   // If the factory is null, the standard implementations -
   // TranslateBubbleModelImpl and PartialTranslateBubbleModelImpl - will be
   // used.

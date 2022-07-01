@@ -33,7 +33,7 @@ class TranslateService
   // test can initialize and use the service.
   static void ShutdownForTesting();
 
-  // Returns true if the new translate bubble is enabled.
+  // Returns true if the Full Page Translate bubble is enabled.
   static bool IsTranslateBubbleEnabled();
 
   // Returns the language to translate to. For more details, see

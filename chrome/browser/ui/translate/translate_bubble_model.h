@@ -11,8 +11,8 @@
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/common/translate_errors.h"
 
-// The model for the Translate bubble UX. This manages the user's manipulation
-// of the bubble and offers the data to show on the bubble.
+// The model for the Full Page Translate bubble UX. This manages the user's
+// manipulation of the bubble and offers the data to show on the bubble.
 class TranslateBubbleModel : public TranslateLanguageListModel {
  public:
   enum ViewState {
@@ -65,8 +65,8 @@ class TranslateBubbleModel : public TranslateLanguageListModel {
 
   // Invoked when the user actively declines to translate the page - e.g.
   // selects 'nope', 'never translate this language', etc.
-  // Should not be invoked on a passive decline - i.e. if the translate bubble
-  // is closed due to focus loss.
+  // Should not be invoked on a passive decline - i.e. if the bubble is closed
+  // due to focus loss.
   virtual void DeclineTranslation() = 0;
 
   // Returns if the user doesn't want to have the page translated in the
@@ -107,8 +107,8 @@ class TranslateBubbleModel : public TranslateLanguageListModel {
   // Reverts translation.
   virtual void RevertTranslation() = 0;
 
-  // Called when the translate bubble is closed. Allows final cleanup and
-  // notification of delegates.
+  // Called when the bubble is closed. Allows final cleanup
+  // and notification of delegates.
   virtual void OnBubbleClosing() = 0;
 
   // Returns true if the page is translated in the currently selected source
