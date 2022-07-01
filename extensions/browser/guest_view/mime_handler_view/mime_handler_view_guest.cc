@@ -144,7 +144,8 @@ void MimeHandlerViewGuest::SetEmbedderFrame(
       owner_type == blink::FrameOwnerElementType::kObject;
   DCHECK_NE(MSG_ROUTING_NONE, embedder_widget_routing_id_);
   delegate_->RecordLoadMetric(
-      /* in_main_frame */ !GetEmbedderFrame()->GetParent(), mime_type_);
+      /*is_full_page=*/!GetEmbedderFrame()->GetParentOrOuterDocument(),
+      mime_type_);
 }
 
 void MimeHandlerViewGuest::SetBeforeUnloadController(

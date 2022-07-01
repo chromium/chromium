@@ -33,7 +33,7 @@ class MimeHandlerViewGuestDelegate {
   virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params);
   // Called when MimeHandlerViewGuest has an associated embedder frame.
-  virtual void RecordLoadMetric(bool in_main_frame,
+  virtual void RecordLoadMetric(bool is_full_page,
                                 const std::string& mime_type);
 };
 
