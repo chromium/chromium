@@ -9,7 +9,7 @@ import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 
 let instance: TrafficLogTag|null = null;
 
-type ProtocolEvent = {
+export type ProtocolEvent = {
   time: string,
 };
 

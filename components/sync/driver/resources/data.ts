@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener, removeWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 
 import {aboutInfo} from './about.js';
-import {getAllNodes, requestIncludeSpecificsInitialState, requestListOfTypes} from './chrome_sync.js';
+import {getAllNodes, requestIncludeSpecificsInitialState, requestListOfTypes, SyncNode, SyncNodeMap} from './chrome_sync.js';
 import {log} from './sync_log.js';
 
-const dumpToTextButton = $('dump-to-text');
-const dataDump = $('data-dump');
-dumpToTextButton.addEventListener('click', function(event) {
+const dumpToTextButton = document.querySelector<HTMLElement>('#dump-to-text');
+assert(dumpToTextButton);
+const dataDump = document.querySelector<HTMLElement>('#data-dump');
+assert(dataDump);
+dumpToTextButton.addEventListener('click', function() {
   // TODO(akalin): Add info like Chrome version, OS, date dumped, etc.
 
   let data = '';
@@ -48,7 +50,7 @@ const allFields = [
   'SPECIFICS',
 ];
 
-function versionToDateString(version) {
+function versionToDateString(version: string) {
   // TODO(mmontgomery): ugly? Hacky? Is there a better way?
   const epochLength = Date.now().toString().length;
   const epochTime = parseInt(version.slice(0, epochLength), 10);
@@ -57,10 +59,13 @@ function versionToDateString(version) {
 }
 
 /**
- * @param {!Object} node A JavaScript represenation of a sync entity.
- * @return {!Array<string>} A string representation of the sync entity.
+ * @param node A JavaScript represenation of a sync entity.
+ * @return A string representation of the sync entity.
  */
-function serializeNode(node) {
+function serializeNode(node: SyncNode): string[] {
+  const includeSpecifics =
+      document.querySelector<HTMLInputElement>('#include-specifics');
+  assert(includeSpecifics);
   return allFields.map(function(field) {
     let fieldVal;
     if (field === 'SERVER_VERSION_TIME') {
@@ -76,25 +81,25 @@ function serializeNode(node) {
       }
     } else if (
         (field === 'SERVER_SPECIFICS' || field === 'SPECIFICS') &&
-        (!$('include-specifics').checked)) {
+        (!includeSpecifics.checked)) {
       fieldVal = 'REDACTED';
     } else if (
         (field === 'SERVER_SPECIFICS' || field === 'SPECIFICS') &&
-        $('include-specifics').checked) {
+        includeSpecifics.checked) {
       fieldVal = JSON.stringify(node[field]);
     } else {
-      fieldVal = node[field];
+      fieldVal = (node as unknown as {[key: string]: string})[field];
     }
-    return fieldVal;
+    return fieldVal || '';
   });
 }
 
 /**
- * @param {string} type The name of a sync model type.
- * @return {boolean} True if the type's checkbox is selected.
+ * @param type The name of a sync model type.
+ * @return True if the type's checkbox is selected.
  */
-function isSelectedDatatype(type) {
-  const typeCheckbox = $(type);
+function isSelectedDatatype(type: string): boolean {
+  const typeCheckbox = document.querySelector<HTMLInputElement>(`#${type}`);
   // Some types, such as 'Top level folder', appear in the list of nodes
   // but not in the list of selectable items.
   if (typeCheckbox == null) {
@@ -103,7 +108,7 @@ function isSelectedDatatype(type) {
   return typeCheckbox.checked;
 }
 
-function makeBlobUrl(data) {
+function makeBlobUrl(data: string): string {
   const textBlob = new Blob([data], {type: 'octet/stream'});
   const blobUrl = window.URL.createObjectURL(textBlob);
   return blobUrl;
@@ -130,12 +135,11 @@ function makeDateUserAgentHeader() {
 /**
  * Builds a summary of current state and exports it as a downloaded file.
  *
- * @param {!Array<{type: string, nodes: !Array<!Object>}>} nodesMap
- *     Summary of local state by model type.
+ * @param nodesMap Summary of local state by model type.
  */
-function triggerDataDownload(nodesMap) {
+function triggerDataDownload(nodesMap: SyncNodeMap) {
   // Prepend a header with ISO date and useragent.
-  let output = [makeDateUserAgentHeader()];
+  const output = [makeDateUserAgentHeader()];
   output.push('=====');
 
   const aboutInfoString = JSON.stringify(aboutInfo, null, 2);
@@ -152,24 +156,28 @@ function triggerDataDownload(nodesMap) {
     output.push(typeNodes.nodes.map(serializeNode).join('\n'));
   });
 
-  output = output.join('\n');
+  const outputString = output.join('\n');
 
-  const anchor = $('dump-to-file-anchor');
-  anchor.href = makeBlobUrl(output);
+  const anchor =
+      document.querySelector<HTMLAnchorElement>('#dump-to-file-anchor');
+  assert(anchor);
+  anchor.href = makeBlobUrl(outputString);
   anchor.download = makeDownloadName();
   anchor.click();
 }
 
-function createTypesCheckboxes(types) {
-  const containerElt = $('node-type-checkboxes');
+function createTypesCheckboxes(types: string[]) {
+  const containerElt =
+      document.querySelector<HTMLElement>('#node-type-checkboxes');
+  assert(containerElt);
 
-  types.map(function(type) {
+  types.map(function(type: string) {
     const div = document.createElement('div');
 
     const checkbox = document.createElement('input');
     checkbox.id = type;
     checkbox.type = 'checkbox';
-    checkbox.checked = 'yes';
+    checkbox.checked = true;
     div.appendChild(checkbox);
 
     const label = document.createElement('label');
@@ -182,17 +190,22 @@ function createTypesCheckboxes(types) {
   });
 }
 
-let listOfTypesListener = null;
+let listOfTypesListener: WebUIListener|null = null;
 
-function onReceivedListOfTypes(response) {
+function onReceivedListOfTypes(response: {types: string[]}) {
   const types = response.types;
   types.sort();
   createTypesCheckboxes(types);
+  assert(listOfTypesListener);
   removeWebUIListener(listOfTypesListener);
 }
 
-function onReceivedIncludeSpecificsInitialState(response) {
-  $('capture-specifics').checked = response.includeSpecifics;
+function onReceivedIncludeSpecificsInitialState(
+    response: {includeSpecifics: boolean}) {
+  const captureSpecifics =
+      document.querySelector<HTMLInputElement>('#capture-specifics');
+  assert(captureSpecifics);
+  captureSpecifics.checked = response.includeSpecifics;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -206,7 +219,8 @@ document.addEventListener('DOMContentLoaded', function() {
   requestIncludeSpecificsInitialState();
 });
 
-const dumpToFileLink = $('dump-to-file');
-dumpToFileLink.addEventListener('click', function(event) {
+const dumpToFileLink = document.querySelector<HTMLElement>('#dump-to-file');
+assert(dumpToFileLink);
+dumpToFileLink.addEventListener('click', function() {
   getAllNodes(triggerDataDownload);
 });

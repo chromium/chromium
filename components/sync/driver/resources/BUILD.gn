@@ -19,12 +19,11 @@ preprocess_if_expr("preprocess_css") {
   ]
 }
 
-#TODO(crbug.com/986001): Migrate the files below to TypeScript.
 preprocessed_files = [ "sync_index.ts" ]
 non_preprocessed_files = [
-  "about.js",
+  "about.ts",
   "chrome_sync.ts",
-  "data.js",
+  "data.ts",
   "invalidations.ts",
   "search.ts",
   "sync_log.ts",
