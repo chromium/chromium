@@ -80,5 +80,36 @@ class CheckTODOFormatTest(unittest.TestCase):
     self.assertEqual(len(error_lines), len(bad_lines) + 2)
 
 
+class CheckHasNoIncludeDirectivesTest(unittest.TestCase):
+  """Test the _CheckHasNoIncludeDirectives presubmit check."""
+
+  def testFindsIncludeDirectives(self):
+    good_lines = ['#import <system>',
+                  '#import "my/path/my/header.h"',
+                  '#import "my/path/my/source.mm"',
+                  '#import "my/path/my/source.m"']
+    bad_lines = ['#include <system>',
+                 '#import <system>',
+                 '#include "my/path/my/header.h"',
+                 '#include "my/path/my/source.mm"',
+                 '#import "my/path/my/header.h"'
+                 '#include "my/path/my/source.m"']
+    mock_input = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input.files = [
+      PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.mm', bad_lines),
+      PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller_2.mm', good_lines),
+      PRESUBMIT_test_mocks.MockFile('ios/path/bar_controller.h', bad_lines),
+      PRESUBMIT_test_mocks.MockFile('ios/path/bar_controller.m', bad_lines),
+      PRESUBMIT_test_mocks.MockFile('ios/path/bar_controller.cc', bad_lines),
+      PRESUBMIT_test_mocks.MockFile('chrome/path/foo_controller.mm', bad_lines),
+    ]
+    mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+    errors = PRESUBMIT._CheckHasNoIncludeDirectives(mock_input, mock_output)
+    self.assertEqual(len(errors), 1)
+    self.assertEqual('error', errors[0].type)
+    self.assertTrue('ios/path/foo_controller.mm:1' in errors[0].message)
+    self.assertTrue('ios/path/foo_controller.mm:3' in errors[0].message)
+    self.assertTrue('ios/path/foo_controller.mm:4' in errors[0].message)
+
 if __name__ == '__main__':
   unittest.main()
