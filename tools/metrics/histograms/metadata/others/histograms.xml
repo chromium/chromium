@@ -1610,6 +1610,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.Chrome" units="ms" expires_after="never">
+<!-- expires-never: This is primary metric for the ChromeOS total boot time. -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>briannorris@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time from chrome binary exec to login UI ready on Chrome OS. This is
+    recorded from the platform side after receiving &quot;login-ui-visible&quot;
+    event on the platform side in the send-boot-metrics.conf script.
+
+    Warning: this histogram was expired from M83 to M105; data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="BootTime.Login2" units="ms" expires_after="never">
 <!-- expires-never: This is primary metric for the ChromeOS login. -->
 
@@ -1623,10 +1639,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BootTime.Total2" units="ms" expires_after="2022-04-03">
-  <owner>bccheng@chromium.org</owner>
-  <owner>semenzato@chromium.org</owner>
-  <summary>Time from power on to login panel ready (Chrome OS).</summary>
+<histogram name="BootTime.Total2" units="ms" expires_after="never">
+<!-- expires-never: This is primary metric for the ChromeOS total boot time. -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>briannorris@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time from power on to login UI ready on Chrome OS. This is recorded from the
+    platform side after receiving &quot;login-ui-visible&quot; event on the
+    platform side in the send-boot-metrics.conf script.
+
+    Warning: this histogram was expired from 2022-04-03 to M105; data may be
+    missing.
+  </summary>
 </histogram>
 
 <histogram name="BrotliFilter.CompressionPercent" units="%"
