@@ -112,9 +112,10 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_EQ(ali->window_id.value(), 0);
   EXPECT_TRUE(ali->display_id.has_value());
   EXPECT_EQ(ali->display_id.value(), 100L);
-  // Can't test active_tab_index since GetAppLaunchInfo returns an entry without
-  // it
-  // https://osscs.corp.google.com/chromium/chromium/src/+/main:components/app_restore/app_restore_data.cc
+  EXPECT_TRUE(ali->active_tab_index.has_value());
+  EXPECT_EQ(ali->active_tab_index.value(), 1);
+  EXPECT_TRUE(ali->first_non_pinned_tab_index.has_value());
+  EXPECT_EQ(ali->first_non_pinned_tab_index.value(), 1);
   EXPECT_TRUE(ali->urls.has_value());
   EXPECT_EQ(ali->urls.value()[0].spec(), kBrowserUrl1);
   EXPECT_EQ(ali->urls.value()[1].spec(), kBrowserUrl2);

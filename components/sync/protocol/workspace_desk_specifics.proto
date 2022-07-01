@@ -136,6 +136,9 @@ message WorkspaceDeskSpecifics {
 
     // Tab groups associated with this window.
     repeated TabGroup tab_groups = 4;
+
+    // The index of the first non-pinned tab.
+    optional int32 first_non_pinned_tab_index = 5;
   }
 
   // A Chrome App window.

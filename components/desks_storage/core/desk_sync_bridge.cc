@@ -295,9 +295,15 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
                                    &app_launch_info->tab_group_infos.value());
       }
 
-      if (app.app().browser_app_window().has_show_as_app())
+      if (app.app().browser_app_window().has_show_as_app()) {
         app_launch_info->app_type_browser =
             app.app().browser_app_window().show_as_app();
+      }
+
+      if (app.app().browser_app_window().has_first_non_pinned_tab_index()) {
+        app_launch_info->first_non_pinned_tab_index =
+            app.app().browser_app_window().first_non_pinned_tab_index();
+      }
 
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
@@ -484,6 +490,11 @@ void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
   if (app_restore_data->tab_group_infos.has_value()) {
     FillBrowserAppTabGroupInfos(app_restore_data->tab_group_infos.value(),
                                 out_browser_app_window);
+  }
+
+  if (app_restore_data->first_non_pinned_tab_index.has_value()) {
+    out_browser_app_window->set_first_non_pinned_tab_index(
+        app_restore_data->first_non_pinned_tab_index.value());
   }
 }
 

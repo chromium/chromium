@@ -55,6 +55,7 @@ constexpr char kDeskTypeSaveAndRecall[] = "SAVE_AND_RECALL";
 constexpr char kDeskTypeUnknown[] = "UNKNOWN";
 constexpr char kDisplayId[] = "display_id";
 constexpr char kEventFlag[] = "event_flag";
+constexpr char kFirstNonPinnedTabIndex[] = "first_non_pinned_tab_index";
 constexpr char kIsAppTypeBrowser[] = "is_app";
 constexpr char kLaunchContainer[] = "launch_container";
 constexpr char kLaunchContainerWindow[] = "LAUNCH_CONTAINER_WINDOW";
@@ -455,6 +456,10 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     int active_tab_index;
     if (GetInt(app, kActiveTabIndex, &active_tab_index))
       app_launch_info->active_tab_index = active_tab_index;
+
+    int first_non_pinned_tab_index;
+    if (GetInt(app, kFirstNonPinnedTabIndex, &first_non_pinned_tab_index))
+      app_launch_info->first_non_pinned_tab_index = first_non_pinned_tab_index;
 
     // Fill in the URL list
     app_launch_info->urls.emplace();
@@ -887,6 +892,11 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   if (app->active_tab_index.has_value()) {
     app_data.SetKey(kActiveTabIndex,
                     base::Value(app->active_tab_index.value()));
+  }
+
+  if (app->first_non_pinned_tab_index.has_value()) {
+    app_data.SetKey(kFirstNonPinnedTabIndex,
+                    base::Value(app->first_non_pinned_tab_index.value()));
   }
 
   if (app->app_type_browser.has_value()) {

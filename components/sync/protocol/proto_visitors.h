@@ -1305,6 +1305,7 @@ VISIT_PROTO_FIELDS(
   VISIT(active_tab_index);
   VISIT(show_as_app);
   VISIT_REP(tab_groups);
+  VISIT(first_non_pinned_tab_index);
 }
 
 VISIT_PROTO_FIELDS(

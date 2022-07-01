@@ -44,7 +44,7 @@ const std::string kValidPolicyTemplateBrowser =
     "2\"}],\"tab_groups\":[{\"first_"
     "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
     "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
-    "1,\"window_id\":0,"
+    "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
     "\"NORMAL\"}]}}";
 
@@ -80,7 +80,7 @@ const std::string kPolicyTemplateWithoutType =
     "\"}],\"tab_groups\":[{\"first_"
     "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
     "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
-    "1,\"window_id\":0,"
+    "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
     "\"NORMAL\"}]}}";
 

@@ -126,7 +126,7 @@ const std::string kPolicyWithTwoTemplates =
     "2\",\"title\":\"Example2\"}],\"tab_groups\":[{\"range_"
     "start\":1,\"range_end\":2,\"title\":\"sample_tab_"
     "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
-    "1,\"window_id\":0,"
+    "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}},"
     "{\"version\":1,\"uuid\":\"" +
     base::StringPrintf(kUuidFormat, 9) +
@@ -139,7 +139,8 @@ const std::string kPolicyWithTwoTemplates =
     "\"url\":\"https://google.com\",\"title\":\"Example "
     "2\"},{\"url\":\"https://"
     "gmail.com.com/"
-    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"first_non_pinned_"
+    "tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
 void FillDefaultBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
@@ -151,6 +152,7 @@ void FillDefaultBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
   }
 
   app_window->set_active_tab_index(number_of_tabs - 1);
+  app_window->set_first_non_pinned_tab_index(number_of_tabs - 1);
 
   WindowBound* window_bound = app->mutable_window_bound();
   window_bound->set_left(110);
