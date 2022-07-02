@@ -1611,7 +1611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BootTime.Chrome" units="ms" expires_after="never">
-<!-- expires-never: This is primary metric for the ChromeOS total boot time. -->
+<!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
   <owner>alemate@chromium.org</owner>
   <owner>briannorris@chromium.org</owner>
@@ -1626,8 +1626,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.Firmware" units="ms" expires_after="never">
+<!-- expires-never: This is a primary metric for ChromeOS boot time. -->
+
+  <owner>briannorris@chromium.org</owner>
+  <owner>ctshao@google.com</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>baseos-perf@google.com</owner>
+  <summary>
+    Time from power on to kernel start (Chrome OS).
+
+    Warning: this histogram was expired from M83 to M105; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="BootTime.Kernel" units="ms" expires_after="never">
+<!-- expires-never: This is a primary metric for ChromeOS boot time. -->
+
+  <owner>briannorris@chromium.org</owner>
+  <owner>ctshao@google.com</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>baseos-perf@google.com</owner>
+  <summary>
+    Time from kernel start to system code being called (Chrome OS).
+
+    Warning: this histogram was expired from M83 to M105; data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="BootTime.Login2" units="ms" expires_after="never">
-<!-- expires-never: This is primary metric for the ChromeOS login. -->
+<!-- expires-never: This is a primary metric for the ChromeOS login. -->
 
   <owner>rsorokin@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
@@ -1639,8 +1667,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.System" units="ms" expires_after="never">
+<!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
+
+  <owner>briannorris@chromium.org</owner>
+  <owner>ctshao@google.com</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>baseos-perf@google.com</owner>
+  <summary>
+    Time from system code being called to starting Chrome (Chrome OS).
+
+    Warning: this histogram was expired from M83 to M105; data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="BootTime.Total2" units="ms" expires_after="never">
-<!-- expires-never: This is primary metric for the ChromeOS total boot time. -->
+<!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
   <owner>alemate@chromium.org</owner>
   <owner>briannorris@chromium.org</owner>
