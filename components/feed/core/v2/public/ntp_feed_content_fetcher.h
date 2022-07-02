@@ -25,7 +25,7 @@ class NtpFeedContentFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key,
       PrefService* pref_service);
-  ~NtpFeedContentFetcher();
+  virtual ~NtpFeedContentFetcher();
 
   /** Semantic article info based on PrefetchMetadata. */
   struct Article {
@@ -45,7 +45,7 @@ class NtpFeedContentFetcher {
    * on their PrefetchMetadata, and pass them along to the callback.
    * @param callback Callback that is called with the fetch result.
    */
-  void FetchFollowingFeedArticles(
+  virtual void FetchFollowingFeedArticles(
       base::OnceCallback<void(std::vector<Article>)>);
 
   void SetFeedNetworkForTesting(std::unique_ptr<FeedNetwork> feed_network);
