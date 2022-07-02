@@ -5,6 +5,8 @@
 if (!is_android) {
   static_library("trusted_vault") {
     sources = [
+      "degraded_recoverability_scheduler.cc",
+      "degraded_recoverability_scheduler.h",
       "download_keys_response_handler.cc",
       "download_keys_response_handler.h",
       "proto_string_bytes_conversion.cc",
