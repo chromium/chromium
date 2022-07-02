@@ -7144,7 +7144,6 @@ crbug.com/1340716 [ Linux ] accessibility/notification-listeners.html [ Skip ]
 
 # Sheriff 2022-06-30
 crbug.com/1340781 virtual/android/fullscreen/full-screen-table-section.html [ Skip ]
-crbug.com/1340812 fast/forms/color-scheme/calendar-picker/date-picker-appearance-highlight.html [ Skip ]
 crbug.com/1104580 virtual/unsafe_webgpu/regress/regress-1104580.html [ Skip ]
 
 crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ Failure Pass ]
