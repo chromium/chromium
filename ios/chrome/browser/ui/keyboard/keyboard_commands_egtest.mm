@@ -104,7 +104,8 @@ using chrome_test_util::SettingsDoneButton;
 
 // Tests that keyboard commands are not registered when the bookmark UI is
 // shown.
-- (void)testKeyboardCommandsNotRegistered_AddBookmarkPresented {
+// TODO(crbug.com/1341363): Disabled due to flakiness. Re-enabled when fixed.
+- (void)DISABLED_testKeyboardCommandsNotRegistered_AddBookmarkPresented {
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
 
