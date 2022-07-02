@@ -5,7 +5,7 @@
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-г <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж өөр төхөөрөмжтэй хослох зөвшөөрөл хүсэж байна. Энэ ПИН кодыг нөгөө төхөөрөмж дээр оруулна уу. ПИН код: <ph name="PINCODE" /></translation>
 <translation id="1024364763893396229">Өөрийн <ph name="NAME" />-г хадгалах уу?</translation>
-<translation id="1032891413405719768">Мэдрэгч үзэгний батерей бага байна</translation>
+<translation id="1032891413405719768">Мэдрэгч үзэгний батарей бага байна</translation>
 <translation id="1036073649888683237">Мэдэгдлүүдийг удирдахын тулд Тохиргоо руу очно уу</translation>
 <translation id="1036672894875463507">Би танд өдрийн турш туслахад бэлэн Google Туслах тань байна!
 Эхлүүлэхийн тулд та эдгээр зүйлээс хийж үзэх боломжтой.</translation>
@@ -676,7 +676,7 @@
 <translation id="4890408602550914571">Таны утас ойролцоо бөгөөд Bluetooth-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="4895488851634969361">Цэнэг дүүрсэн байна.</translation>
 <translation id="490375751687810070">Босоо</translation>
-<translation id="490788395437447240">Батерей <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="490788395437447240">Батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
 <translation id="4925542575807923399">Энэ хаягийг хариуцсан ажилтан нь олон хаягаар зэрэг нэвтрэх тохиолдолд зөвхөн энэ хаягаар түрүүлж нэвтэрсний дараагаар бусад хаягт нэвтрэх боломжтой байхаар тохируулсан байна.</translation>
