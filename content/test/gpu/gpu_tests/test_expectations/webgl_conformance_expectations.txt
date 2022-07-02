@@ -730,6 +730,10 @@ crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_frag_dept
 crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_sRGB [ Failure ]
 crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Failure ]
 
+# Flaky tests on Android Nexus 5
+crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/draw-webgl-to-canvas-2d-repeatedly.html [ RetryOnFailure ]
+crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
