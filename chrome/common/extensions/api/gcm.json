@@ -5,7 +5,7 @@
 [
   {
     "namespace": "gcm",
-    "description": "Use <code>chrome.gcm</code> to enable apps and extensions to send and receive messages through the <a href='http://developer.android.com/google/gcm/'>Google Cloud Messaging Service</a>.",
+    "description": "Use <code>chrome.gcm</code> to enable apps and extensions to send and receive messages through <a href='https://firebase.google.com/docs/cloud-messaging/'>Firebase Cloud Messaging</a> (FCM).",
     "properties": {
       "MAX_MESSAGE_SIZE": {
         "value": 4096,
@@ -16,7 +16,7 @@
       {
         "name": "register",
         "type": "function",
-        "description": "Registers the application with GCM. The registration ID will be returned by the <code>callback</code>. If <code>register</code> is called again with the same list of <code>senderIds</code>, the same registration ID will be returned.",
+        "description": "Registers the application with FCM. The registration ID will be returned by the <code>callback</code>. If <code>register</code> is called again with the same list of <code>senderIds</code>, the same registration ID will be returned.",
         "parameters": [
           {
             "name": "senderIds",
@@ -37,7 +37,7 @@
               {
                 "name": "registrationId",
                 "type": "string",
-                "description": "A registration ID assigned to the application by the GCM."
+                "description": "A registration ID assigned to the application by the FCM."
               }
             ]
           }
@@ -46,7 +46,7 @@
       {
         "name": "unregister",
         "type": "function",
-        "description": "Unregisters the application from GCM.",
+        "description": "Unregisters the application from FCM.",
         "parameters": [
           {
             "name": "callback",
@@ -64,12 +64,12 @@
           {
             "name": "message",
             "type": "object",
-            "description": "A message to send to the other party via GCM.",
+            "description": "A message to send to the other party via FCM.",
             "properties": {
               "destinationId": {
                 "type": "string",
                 "minLength": 1,
-                "description": "The ID of the server to send the message to as assigned by <a href='https://code.google.com/apis/console'>Google API Console</a>."
+                "description": "The ID of the server to send the message to as assigned by <a href='https://console.cloud.google.com/apis/dashboard'>Google API Console</a>."
               },
               "messageId": {
                 "type": "string",
@@ -81,7 +81,7 @@
                 "minimum": 0,
                 "maximum": 86400,
                 "optional": true,
-                "description": "Time-to-live of the message in seconds. If it is not possible to send the message within that time, an onSendError event will be raised. A time-to-live of 0 indicates that the message should be sent immediately or fail if it's not possible. The maximum and a default value of time-to-live is 86400 seconds (1 day)."
+                "description": "Time-to-live of the message in seconds. If it is not possible to send the message within that time, an onSendError event will be raised. A time-to-live of 0 indicates that the message should be sent immediately or fail if it's not possible. The default value of time-to-live is 86,400 seconds (1 day) and the maximum value is 2,419,200 seconds (28 days)."
               },
               "data": {
                 "type": "object",
@@ -113,12 +113,12 @@
       {
         "name": "onMessage",
         "type": "function",
-        "description": "Fired when a message is received through GCM.",
+        "description": "Fired when a message is received through FCM.",
         "parameters": [
           {
             "name": "message",
             "type": "object",
-            "description": "A message received from another party via GCM.",
+            "description": "A message received from another party via FCM.",
             "properties": {
               "data": {
                 "type": "object",
@@ -136,7 +136,7 @@
               "collapseKey": {
                 "type": "string",
                 "optional": true,
-                "description": "The collapse key of a message. See <a href='cloudMessaging#collapsible_messages'>Collapsible Messages</a> section of Cloud Messaging documentation for details."
+                "description": "The collapse key of a message. See the <a href='https://firebase.google.com/docs/cloud-messaging/concept-options#collapsible_and_non-collapsible_messages'>Non-collapsible and collapsible messages</a> for details."
               }
             }
           }
@@ -145,17 +145,16 @@
       {
         "name": "onMessagesDeleted",
         "type": "function",
-        "description": "Fired when a GCM server had to delete messages sent by an app server to the application. See <a href='cloudMessaging#messages_deleted_event'>Messages deleted event</a> section of Cloud Messaging documentation for details on handling this event."
+        "description": "Fired when a FCM server had to delete messages sent by an app server to the application. See <a href='https://firebase.google.com/docs/cloud-messaging/concept-options#lifetime'>Lifetime of a message</a> for details on handling this event."
       },
       {
         "name": "onSendError",
         "type": "function",
-        "description": "Fired when it was not possible to send a message to the GCM server.",
+        "description": "Fired when it was not possible to send a message to the FCM server.",
         "parameters": [
           {
             "name": "error",
             "type": "object",
-            "description": "An error related to sending a message raised by GCM.",
             "properties": {
               "errorMessage": {
                 "type": "string",
@@ -175,7 +174,7 @@
                 "description": "Additional details related to the error, when available."
               }
             },
-            "description": "An error that occured while trying to send the message either in Chrome or on the GCM server. Application can retry sending the message with a reasonable backoff and possibly longer time-to-live."
+            "description": "An error that occured while trying to send the message either in Chrome or on the FCM server. Application can retry sending the message with a reasonable backoff and possibly longer time-to-live."
           }
         ]
       }
