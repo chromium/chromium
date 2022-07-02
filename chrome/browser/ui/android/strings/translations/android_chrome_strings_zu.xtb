@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Amathiphu we-Chrome</translation>
 <translation id="1240288207750131269">Ilayisha i-<ph name="LANG" /></translation>
 <translation id="1240903469550363138">Ukuze uqhubeke, i-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> izokwabelana ngegama lakho, ikheli le-imeyili, nesithombe sephrofayela nale sayithi. Bona <ph name="BEGIN_LINK1" />inqubomgomo yobumfihlo<ph name="END_LINK1" /> yale sayithi kanye <ph name="BEGIN_LINK2" />nemigomo yesevisi<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Izilimi eziningi</translation>
 <translation id="1242883863226959074">idivayisi</translation>
 <translation id="124678866338384709">Vala ithebhu yamanje</translation>
 <translation id="1246905108078336582">Susa isiphakamiso kusukela kubhodi lokunamathisela?</translation>
@@ -439,7 +440,6 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="3288003805934695103">Ilayisha kabusha ikhasi</translation>
 <translation id="3297344142967351106">Umsizi wezwi</translation>
 <translation id="3303414029551471755">Qhubeka ngokulanda okuqukethwe?</translation>
-<translation id="3321367458490630980">Intshisekelo ingeziwe</translation>
 <translation id="3334729583274622784">Shintsha isandiso sefayela?</translation>
 <translation id="3341262203274374114">Ayikwazi ukuyeka ukulandela. Kunento engahambanga kahle.</translation>
 <translation id="3359667936385849800">Sebenzisa umhlinzeki wesevisi wakho wamanje</translation>
@@ -1496,7 +1496,6 @@ Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenzis
 <translation id="8993760627012879038">Vula kuthebhu entsha kumodi ye-Incognito</translation>
 <translation id="8996847606757455498">Khetha omunye umhlinzeki</translation>
 <translation id="8998729206196772491">Ungena ngemvume nge-akhawunti ephethwe yi-<ph name="MANAGED_DOMAIN" /> futhi unikeza umlawuli ulawulo olungaphezulu kwedatha yakho ye-Chrome. Idatha yakho izohlanganiswa ngunaphakade kule akhawunti. Ukuphuma ngemvume ku-Chrome kuzosusa idatha yakho kusukela kule divayisi, kodwa kuzohlala kugcinwe ku-akhawunti yakho ye-Google.</translation>
-<translation id="9021388532480169802">Isayithi lingeziwe</translation>
 <translation id="9022774213089566801">Okuvakashelwa njalo</translation>
 <translation id="9028914725102941583">Vula ukuvumelanisa ukuze wabelane kuwo wonke amadivayisi</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Ividiyo}one{# Amavidiyo}other{# Amavidiyo}}</translation>

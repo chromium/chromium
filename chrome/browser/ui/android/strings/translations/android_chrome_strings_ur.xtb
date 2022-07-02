@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">‏Chrome کی تجاویز</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> لوڈ ہو رہی ہے</translation>
 <translation id="1240903469550363138">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />رازداری کی پالیسی<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />سروس کی شرائط<ph name="END_LINK2" /> دیکھیں۔</translation>
+<translation id="124116460088058876">مزید زبانیں</translation>
 <translation id="1242883863226959074">آلہ</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1246905108078336582">کلپ بورڈ سے تجویز ہٹائیں؟</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">صفحہ دوبارہ لوڈ ہو رہا ہے</translation>
 <translation id="3297344142967351106">صوتی معاونت</translation>
 <translation id="3303414029551471755">مواد ڈاؤن لوڈ کرنے کیلئے آگے بڑھیں؟</translation>
-<translation id="3321367458490630980">دلچسپی کو شامل کیا گیا</translation>
 <translation id="3334729583274622784">فائل ایکسٹینشن تبدیل کریں؟</translation>
 <translation id="3341262203274374114">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="3359667936385849800">اپنے موجودہ سروس فراہم کنندہ کو استعمال کریں</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">پوشیدگی وضع میں ایک نیا ٹیب کھولیں</translation>
 <translation id="8996847606757455498">کسی دوسرے فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="8998729206196772491">‏آپ <ph name="MANAGED_DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chrome ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chrome سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
-<translation id="9021388532480169802">سائٹ شامل کی گئی</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9028914725102941583">سبھی آلات پر اشتراک کرنے کے لیے مطابقت پذیری کو آن کریں</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ویڈیو}other{# ویڈیوز}}</translation>

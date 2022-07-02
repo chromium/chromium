@@ -1142,7 +1142,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг суулгахын тулд товшино уу}other{Эдгээр өргөтгөлийг суулгахын тулд товшино уу}}</translation>
 <translation id="2073496667646280609">Таны төхөөрөмж эсвэл сонгосон нөөцлөлтийн байршилд хангалттай сул хадгалах сан байхгүй байж магадгүй. Сул зай гаргах эсвэл өөр байршил сонгож үзнэ үү.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> эсвэл үүнээс цөөн тэмдэгт ашиглана уу</translation>
-<translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батерей</translation>
+<translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батарей</translation>
 <translation id="2075959085554270910">Танд tap-to-click болон чирэлтийг товшихыг идэвхжүүлэх/идэвхгүй болгохыг зөвшөөрдөг</translation>
 <translation id="2076269580855484719">Энэ нэмэлт өргөтгөлийг нуух</translation>
 <translation id="2076672359661571384">Дунд (санал болгосон)</translation>
@@ -3308,7 +3308,6 @@
         Та картын цэсээс тохиргоог удирдах эсвэл Customize Chrome-с бусад сонголтыг харах боломжтой.</translation>
 <translation id="4115002065223188701">Сүлжээний хүрээнээс гарсан</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
-<translation id="4116663294526079822">Үргэлж энэ сайтад зөвшөөр</translation>
 <translation id="4116704186509653070">Дахин нээх</translation>
 <translation id="4117714603282104018">Мэдрэгч самбарын мэдрэгдэх хариу</translation>
 <translation id="4118579674665737931">Төхөөрөмжийг дахин асаагаад дахин оролдоно уу.</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Ábendingar fyrir Chrome</translation>
 <translation id="1240288207750131269">Hleður <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />persónuverndarstefnu<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />þjónustuskilmála<ph name="END_LINK2" /> vefsvæðisins.</translation>
+<translation id="124116460088058876">Fleiri tungumál</translation>
 <translation id="1242883863226959074">tæki</translation>
 <translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1246905108078336582">Fjarlægja tillögu af klippiborði?</translation>
@@ -439,7 +440,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="3288003805934695103">Endurhlaða síðuna</translation>
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
-<translation id="3321367458490630980">Áhugasviði bætt við</translation>
 <translation id="3334729583274622784">Breyta skráarendingu?</translation>
 <translation id="3341262203274374114">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="3359667936385849800">Nota núverandi þjónustuaðila</translation>
@@ -1496,7 +1496,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="8993760627012879038">Opna nýjan flipa í huliðsstillingu</translation>
 <translation id="8996847606757455498">Velja aðra veitu</translation>
 <translation id="8998729206196772491">Þú ert að skrá þig út af reikningi sem <ph name="MANAGED_DOMAIN" /> stýrir og veitir í leiðinni stjórnanda lénsins umsjón með Chrome gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chrome verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
-<translation id="9021388532480169802">Vefsvæði bætt við</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>
 <translation id="9028914725102941583">Kveiktu á samstillingu til að deila á milli tækja</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# myndskeið}one{# myndskeið}other{# myndskeið}}</translation>

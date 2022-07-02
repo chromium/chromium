@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> লোড হচ্ছে</translation>
 <translation id="1240903469550363138">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
+<translation id="124116460088058876">আরও ভাষা</translation>
 <translation id="1242883863226959074">ডিভাইস</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">পৃষ্ঠাটি আবার লোড করে দেখুন</translation>
 <translation id="3297344142967351106">ভয়েস সহায়তা</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
-<translation id="3321367458490630980">আগ্রহ যোগ করা হয়েছে</translation>
 <translation id="3334729583274622784">ফাইলের এক্সটেনশন পরিবর্তন করতে চান?</translation>
 <translation id="3341262203274374114">ফলো করা থামানো যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="3359667936385849800">আপনার বর্তমান পরিষেবা প্রদানকারী ব্যবহার করুন</translation>
@@ -1498,7 +1498,6 @@
 <translation id="8993760627012879038">ছদ্মবেশী মোডে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="8996847606757455498">অন্য একটি পরিষেবা প্রদানকারী বেছে নিন</translation>
 <translation id="8998729206196772491">আপনি <ph name="MANAGED_DOMAIN" /> দ্বারা পরিচালিত একটি অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Chrome ডেটা নিয়ন্ত্রণ করতে দিচ্ছেন৷ আপনার ডেটা এই অ্যাকাউন্টের সাথে স্থায়ীভাবে আবদ্ধ হবে৷ Chrome থেকে সাইন-আউট করলে এই ডিভাইস থেকে আপনার ডেটা মুছে ফেলা হবে, কিন্তু এটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
-<translation id="9021388532480169802">সাইট যোগ করা হয়েছে</translation>
 <translation id="9022774213089566801">আপনি প্রায়ই দেখেন</translation>
 <translation id="9028914725102941583">বিভিন্ন ডিভাইসের জুড়ে শেয়ার করার জন্য সিঙ্ক ফিচার চালু করুন</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>

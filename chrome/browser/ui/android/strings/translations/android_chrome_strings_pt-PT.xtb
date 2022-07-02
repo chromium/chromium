@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Sugestões do Chrome</translation>
 <translation id="1240288207750131269">A carregar <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />termos de utilização<ph name="END_LINK2" /> deste site.</translation>
+<translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246905108078336582">Remover a sugestão da área de transferência?</translation>
@@ -439,7 +440,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="3288003805934695103">Atualizar a página</translation>
 <translation id="3297344142967351106">Assistente de voz</translation>
 <translation id="3303414029551471755">Pretende transferir o conteúdo?</translation>
-<translation id="3321367458490630980">Interesse adicionado</translation>
 <translation id="3334729583274622784">Pretende alterar a extensão de ficheiro?</translation>
 <translation id="3341262203274374114">Não é possível deixar de seguir. Algo correu mal.</translation>
 <translation id="3359667936385849800">Utilizar o seu fornecedor de serviços atual</translation>
@@ -1496,7 +1496,6 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8993760627012879038">Abrir novo separador no modo de navegação anónima</translation>
 <translation id="8996847606757455498">Escolher outro fornecedor</translation>
 <translation id="8998729206196772491">Está a iniciar sessão com uma conta gerida por <ph name="MANAGED_DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
-<translation id="9021388532480169802">Site adicionado</translation>
 <translation id="9022774213089566801">Visitados frequentemente</translation>
 <translation id="9028914725102941583">Ative a sincronização para partilhar entre dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Dicas do Chrome</translation>
 <translation id="1240288207750131269">Carregando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
+<translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
@@ -439,7 +440,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="3288003805934695103">Atualizar a página</translation>
 <translation id="3297344142967351106">Assistente por voz</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
-<translation id="3321367458490630980">Interesse adicionado</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
 <translation id="3341262203274374114">Não foi possível parar de seguir. Algo deu errado.</translation>
 <translation id="3359667936385849800">Usar o provedor de serviços atual</translation>
@@ -1497,7 +1497,6 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998729206196772491">Você está fazendo login com uma conta gerenciada por <ph name="MANAGED_DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
-<translation id="9021388532480169802">Site adicionado</translation>
 <translation id="9022774213089566801">Visitados com frequência</translation>
 <translation id="9028914725102941583">Ative a sincronização para compartilhar entre dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}one{# vídeo}other{# vídeos}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Парады адносна Chrome</translation>
 <translation id="1240288207750131269">Ідзе загрузка пакета для наступнай мовы: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />ўмовамі выкарыстання<ph name="END_LINK2" /> сайта.</translation>
+<translation id="124116460088058876">Іншыя мовы</translation>
 <translation id="1242883863226959074">прыладзе</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1246905108078336582">Выдаліць прапанову з буфера абмену?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">Перазагрузка старонкі</translation>
 <translation id="3297344142967351106">Галасавая дапамога</translation>
 <translation id="3303414029551471755">Перайсці да спампоўкі змесціва?</translation>
-<translation id="3321367458490630980">Інтарэс дададзены</translation>
 <translation id="3334729583274622784">Змяніць пашырэнне файла?</translation>
 <translation id="3341262203274374114">Адпісацца не ўдалося. Нешта пайшло не так.</translation>
 <translation id="3359667936385849800">Выкарыстоўваць бягучага пастаўшчыка паслуг</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">Адкрыць новую ўкладку ў рэжыме інкогніта</translation>
 <translation id="8996847606757455498">Выбраць іншага пастаўшчыка</translation>
 <translation id="8998729206196772491">Вы ўваходзіце праз уліковы запіс, які кіруецца даменам <ph name="MANAGED_DOMAIN" />, што дае адміністратару кантроль над вашымі данымі з браўзера Chrome. Вашы даныя будуць назаўсёды прывязаны да гэтага ўліковага запісу. Калі выйсці з браўзера Chrome, вашы даныя будуць выдалены з гэтай прылады, але застануцца ва Уліковым запісе Google.</translation>
-<translation id="9021388532480169802">Сайт дададзены</translation>
 <translation id="9022774213089566801">Часта наведваюцца</translation>
 <translation id="9028914725102941583">Каб абагульваць файлы паміж прыладамі, уключыце сінхранізацыю</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{1 відэа}one{# відэа}few{# відэа}many{# відэа}other{# відэа}}</translation>

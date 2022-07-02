@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Tips untuk Chrome</translation>
 <translation id="1240288207750131269">Memuat <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />persyaratan layanan<ph name="END_LINK2" /> situs ini.</translation>
+<translation id="124116460088058876">Bahasa lainnya</translation>
 <translation id="1242883863226959074">perangkat</translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1246905108078336582">Hapus saran dari papan klip?</translation>
@@ -439,7 +440,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="3288003805934695103">Memuat ulang halaman</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
-<translation id="3321367458490630980">Minat ditambahkan</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
 <translation id="3359667936385849800">Gunakan penyedia layanan saat ini</translation>
@@ -1496,7 +1496,6 @@ Trust token meningkatkan privasi di web dan tidak dapat digunakan untuk menemuka
 <translation id="8993760627012879038">Membuka tab baru dalam mode Samaran</translation>
 <translation id="8996847606757455498">Pilih penyedia lain</translation>
 <translation id="8998729206196772491">Anda akan login dengan akun yang dikelola oleh <ph name="MANAGED_DOMAIN" /> dan memberikan kontrol data Chrome kepada administratornya. Data akan terikat dengan akun ini secara permanen. Bila Anda logout dari Chrome, data akan dihapus dari perangkat ini, tetapi data tetap tersimpan di Akun Google.</translation>
-<translation id="9021388532480169802">Situs ditambahkan</translation>
 <translation id="9022774213089566801">Sering dikunjungi</translation>
 <translation id="9028914725102941583">Aktifkan sinkronisasi untuk berbagi ke seluruh perangkat</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Video}}</translation>

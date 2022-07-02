@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Mga tip sa Chrome</translation>
 <translation id="1240288207750131269">Nilo-load ang <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga tuntunin ng serbisyo<ph name="END_LINK2" /> ng site na ito.</translation>
+<translation id="124116460088058876">Higit pang wika</translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
 <translation id="1246905108078336582">Alisin ang suhestyon mula sa clipboard?</translation>
@@ -439,7 +440,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="3288003805934695103">I-reload ang page</translation>
 <translation id="3297344142967351106">Tulong sa pamamagitan ng boses</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
-<translation id="3321367458490630980">Naidagdag ang interes</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
@@ -1496,7 +1496,6 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="8993760627012879038">Magbukas ng bagong tab sa Incognito mode</translation>
 <translation id="8996847606757455498">Pumili ng ibang provider</translation>
 <translation id="8998729206196772491">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="MANAGED_DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
-<translation id="9021388532480169802">Idinagdag ang site</translation>
 <translation id="9022774213089566801">Madalas na binibisita</translation>
 <translation id="9028914725102941583">I-on ang pag-sync para makapagbahagi sa mga device</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}one{# Video}other{# na Video}}</translation>

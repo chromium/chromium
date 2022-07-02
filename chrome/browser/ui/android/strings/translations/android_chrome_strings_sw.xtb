@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Vidokezo vya Chrome</translation>
 <translation id="1240288207750131269">Inapakia <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK1" />sera ya faragha<ph name="END_LINK1" /> pamoja na <ph name="BEGIN_LINK2" />sheria na masharti<ph name="END_LINK2" /> ya tovuti hii.</translation>
+<translation id="124116460088058876">Lugha zaidi</translation>
 <translation id="1242883863226959074">kifaa</translation>
 <translation id="124678866338384709">Funga kichupo kilichofunguka</translation>
 <translation id="1246905108078336582">Je, ungependa kuondoa pendekezo kwenye ubao wa kunakili?</translation>
@@ -439,7 +440,6 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="3288003805934695103">Kupakia upya ukurasa</translation>
 <translation id="3297344142967351106">Usaidizi wa kutumia sauti</translation>
 <translation id="3303414029551471755">Ungependa kuendelea kupakua maudhui?</translation>
-<translation id="3321367458490630980">Jambo linalokuvutia limewekwa</translation>
 <translation id="3334729583274622784">Ungependa kubadilisha kiendelezi cha faili?</translation>
 <translation id="3341262203274374114">Imeshinda kuacha kufuatilia. Hitilafu fulani imetokea.</translation>
 <translation id="3359667936385849800">Tumia mtoa huduma wako wa sasa</translation>
@@ -1496,7 +1496,6 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="8993760627012879038">Fungua kichupo kipya katika Hali fiche</translation>
 <translation id="8996847606757455498">Chagua mtoa huduma mwingine</translation>
 <translation id="8998729206196772491">Unaingia kwa kutumia akaunti inayodhibitiwa na <ph name="MANAGED_DOMAIN" /> na kumpa msimamizi wa kikoa hicho udhibiti wa data yako ya Chrome. Data yako ya Chrome itahusishwa na akaunti hii daima. Kuondoka kwenye Chrome kutafuta data yako kwenye kifaa hiki, lakini itaendelea kuhifadhiwa katika Akaunti yako ya Google.</translation>
-<translation id="9021388532480169802">Tovuti imewekwa</translation>
 <translation id="9022774213089566801">Unazotembelea mara kwa mara</translation>
 <translation id="9028914725102941583">Washa usawazishaji ili ushiriki kwenye vifaa vyote</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{Video #}other{Video #}}</translation>

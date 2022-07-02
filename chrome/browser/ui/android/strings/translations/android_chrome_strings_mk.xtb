@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Совети за Chrome</translation>
 <translation id="1240288207750131269">Се вчитува <ph name="LANG" /></translation>
 <translation id="1240903469550363138">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ја <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Условите за користење<ph name="END_LINK2" /> на сајтов.</translation>
+<translation id="124116460088058876">Повеќе јазици</translation>
 <translation id="1242883863226959074">уред</translation>
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1246905108078336582">Дали да се отстрани предлогот од привремената меморија?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">Повторно да ја вчитате страницата</translation>
 <translation id="3297344142967351106">Гласовна помош</translation>
 <translation id="3303414029551471755">Продолжете со преземање на содржината?</translation>
-<translation id="3321367458490630980">Интересот е додаден</translation>
 <translation id="3334729583274622784">Дали да се промени наставката на датотеката?</translation>
 <translation id="3341262203274374114">Не може да се отследи. Нешто тргна наопаку.</translation>
 <translation id="3359667936385849800">Користете го тековниот давател на услуги</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998729206196772491">Се најавувате со сметка управувана од <ph name="MANAGED_DOMAIN" /> и му давате контрола над податоците на Chrome на нејзиниот администратор. Вашите податоци ќе бидат трајно врзани за оваа сметка. Одјавувањето од Chrome ќе ги избрише податоците од уредов, но тие ќе останат зачувани на сметката на Google.</translation>
-<translation id="9021388532480169802">Сајтот е додаден</translation>
 <translation id="9022774213089566801">Често посетувани</translation>
 <translation id="9028914725102941583">Вклучете ја синхронизацијата за да споделувате на сите уреди</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видео}one{# видео}other{# видеа}}</translation>

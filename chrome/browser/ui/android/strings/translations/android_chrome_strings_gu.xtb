@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome વિશે ટિપ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> લોડ કરી રહ્યાં છીએ</translation>
 <translation id="1240903469550363138">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>
+<translation id="124116460088058876">વધુ ભાષાઓ</translation>
 <translation id="1242883863226959074">ડિવાઇસ</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
 <translation id="1246905108078336582">શું ક્લિપબોર્ડમાંથી સૂચન કાઢી નાખીએ?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">પેજ ફરીથી લોડ કરીને</translation>
 <translation id="3297344142967351106">વૉઇસ સહાયતા</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
-<translation id="3321367458490630980">રુચિઓ ઉમેરી</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
 <translation id="3341262203274374114">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="3359667936385849800">તમારા વર્તમાન સેવા પ્રદાતાનો ઉપયોગ કરો</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">છુપા મોડમાં એક નવું ટૅબ ખોલો</translation>
 <translation id="8996847606757455498">કોઈ અન્ય પ્રદાતા પસંદ કરો</translation>
 <translation id="8998729206196772491">તમે <ph name="MANAGED_DOMAIN" /> દ્વારા મેનેજ એકાઉન્ટમાં સાઇન ઇન કરી રહ્યાં છો અને તમારા Chrome ડેટા પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો ડેટા આ એકાઉન્ટ સાથે કાયમીરૂપે જોડાયેલું રહેશે. Chromeમાંથી સાઇન આઉટ કરવું આ ડિવાઇસ પરથી તમારો ડેટા ડિલીટ કરશે, પરંતુ એ તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
-<translation id="9021388532480169802">સાઇટ ઉમેરી</translation>
 <translation id="9022774213089566801">વારંવાર મુલાકાત લેવાયેલ</translation>
 <translation id="9028914725102941583">બધા ડિવાઇસ પર શેર કરવા માટે 'સિંક કરો'ની સુવિધા ચાલુ કરો</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>

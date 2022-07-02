@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Поради щодо Chrome</translation>
 <translation id="1240288207750131269">Завантажується мовний пакет (<ph name="LANG" />)</translation>
 <translation id="1240903469550363138">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />умови використання<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Інші мови</translation>
 <translation id="1242883863226959074">пристрої</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246905108078336582">Видалити пропозицію з буфера обміну?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">перезавантажити сторінку</translation>
 <translation id="3297344142967351106">Голосова допомога</translation>
 <translation id="3303414029551471755">Завантажити вміст?</translation>
-<translation id="3321367458490630980">Інтерес додано</translation>
 <translation id="3334729583274622784">Змінити розширення файлу?</translation>
 <translation id="3341262203274374114">Не вдалося скасувати підписку. Сталася помилка.</translation>
 <translation id="3359667936385849800">Використовувати поточного постачальника послуг</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">Відкрити нове вікно в режимі анонімного перегляду</translation>
 <translation id="8996847606757455498">Вибрати іншого постачальника</translation>
 <translation id="8998729206196772491">Ви входите в обліковий запис, зареєстрований у домені <ph name="MANAGED_DOMAIN" />, і надаєте його адміністратору доступ до своїх даних Chrome. Ваші дані буде назавжди зв’язано з цим обліковим записом. Якщо ви вийдете з облікового запису в Chrome, дані буде видалено з цього пристрою, але вони залишаться у вашому обліковому записі Google.</translation>
-<translation id="9021388532480169802">Сайт додано</translation>
 <translation id="9022774213089566801">Часто відвідувані</translation>
 <translation id="9028914725102941583">Увімкніть синхронізацію, щоб файли були доступними на всіх ваших пристроях</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# відео}one{# відео}few{# відео}many{# відео}other{# відео}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">ເຄັດລັບ Chrome</translation>
 <translation id="1240288207750131269">ກຳລັງໂຫຼດ <ph name="LANG" /></translation>
 <translation id="1240903469550363138">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ທີ່ຢູ່ອີເມວ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK2" /> ຂອງເວັບໄຊນີ້.</translation>
+<translation id="124116460088058876">ພາສາເພີ່ມເຕີມ</translation>
 <translation id="1242883863226959074">ອຸປະກອນ</translation>
 <translation id="124678866338384709">ປິດແຖບປັດຈຸບັນ</translation>
 <translation id="1246905108078336582">ລຶບການແນະນຳອອກຈາກຄລິບບອດບໍ?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">ກຳລັງໂຫຼດໜ້າຄືນໃໝ່</translation>
 <translation id="3297344142967351106">ການຊ່ວຍເຫຼືອທາງສຽງ</translation>
 <translation id="3303414029551471755">ສືບ​ຕໍ່​ໄປດາວ​ໂຫຼດ​ເນື້ອ​ໃນ​ບໍ?</translation>
-<translation id="3321367458490630980">ເພີ່ມຄວາມສົນໃຈແລ້ວ</translation>
 <translation id="3334729583274622784">ປ່ຽນນາມສະກຸນໄຟລ໌ບໍ?</translation>
 <translation id="3341262203274374114">ບໍ່ສາມາດເຊົາຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="3359667936385849800">ໃຊ້ຜູ້ໃຫ້ບໍລິການປັດຈຸບັນຂອງທ່ານ</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">ເປີດແຖບໃໝ່ໃນໂໝດ Incognito</translation>
 <translation id="8996847606757455498">ເລືອກຜູ້ໃຫ້ບໍລິການອື່ນ</translation>
 <translation id="8998729206196772491">ທ່ານກຳລັງເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຈັດການໂດຍ <ph name="MANAGED_DOMAIN" /> ແລະ ໃຫ້ການຄວບຄຸມຂໍ້ມູນ Chrome ຂອງທ່ານແກ່ຜູ້ເບິ່ງແຍງລະບົບຂອງມັນ. ຂໍ້ມູນຂອງທ່ານຈະຖືກເຊື່ອມໂຍງຢ່າງຖາວອນກັບບັນຊີນີ້. ການອອກຈາກລະບົບ Chrome ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຈະຍັງຄົງຖືກຮັກສາໄວ້ຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
-<translation id="9021388532480169802">ເພີ່ມເວັບໄຊແລ້ວ</translation>
 <translation id="9022774213089566801">ເຂົ້າເບິ່ງເລື້ອຍໆ</translation>
 <translation id="9028914725102941583">ເປີດການຊິ້ງຂໍ້ມູນເພື່ອແບ່ງປັນໃນທົ່ວອຸປະກອນ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ວິດີໂອ}other{# ວິດີໂອ}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1240288207750131269"><ph name="LANG" />-г ачаалж байна</translation>
 <translation id="1240903469550363138">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлого<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />үйлчилгээний нөхцөлийг<ph name="END_LINK2" /> харна уу.</translation>
+<translation id="124116460088058876">Бусад хэл</translation>
 <translation id="1242883863226959074">төхөөрөмж</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246905108078336582">Түр санах ойгоос зөвлөмжийг устгах уу?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">Хуудсыг дахин ачаалж байна</translation>
 <translation id="3297344142967351106">Дуут тусламж</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
-<translation id="3321367458490630980">Сонирхол нэмсэн</translation>
 <translation id="3334729583274622784">Файлын өргөтгөлийг өөрчлөх үү?</translation>
 <translation id="3341262203274374114">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
 <translation id="3359667936385849800">Одоогийн үйлчилгээ үзүүлэгчээ ашиглах</translation>
@@ -1495,7 +1495,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8993760627012879038">Шинэ чихтэй хуудсыг нууцлалын горимд нээх</translation>
 <translation id="8996847606757455498">Өөр үйлчилгээ үзүүлэгч сонгох</translation>
 <translation id="8998729206196772491">Та <ph name="MANAGED_DOMAIN" />-н удирддаг бүртгэлээр нэвтэрч байгаа бөгөөд үүний админд таны Chrome-н өгөгдлийг хянах зөвшөөрлийг олгож байна. Таны өгөгдөл энэ бүртгэлд бүрмөсөн холбоотой байх болно. Chrome-с гарснаар таны өгөгдлийг энэ төхөөрөмжөөс устгах хэдий ч, тэдгээр нь таны Google бүртгэлд хэвээр үлдэх болно.</translation>
-<translation id="9021388532480169802">Сайт нэмсэн</translation>
 <translation id="9022774213089566801">Байнга зочилдог</translation>
 <translation id="9028914725102941583">Төхөөрөмжүүдийн хооронд хуваалцахын тулд синк хийхийг асаана уу</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Видео}other{# Видео}}</translation>

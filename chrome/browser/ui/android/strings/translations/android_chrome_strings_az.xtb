@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome ipucuları</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yüklənir</translation>
 <translation id="1240903469550363138">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />məxfilik siyasəti<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />xidmət şərtlərinə<ph name="END_LINK2" /> baxın.</translation>
+<translation id="124116460088058876">Digər dillər</translation>
 <translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Cari paneli bağlayın</translation>
 <translation id="1246905108078336582">Təklif mübadilə buferindən silinsin?</translation>
@@ -439,7 +440,6 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="3288003805934695103">Səhifə təkrar yüklənir</translation>
 <translation id="3297344142967351106">Səsli yardım</translation>
 <translation id="3303414029551471755">Kontentin endirilməsinə davam etmək istəyirsiniz?</translation>
-<translation id="3321367458490630980">Maraq əlavə edilib</translation>
 <translation id="3334729583274622784">Fayl artırması dəyişdirilsin?</translation>
 <translation id="3341262203274374114">İzləmədən çıxarmaq olmur. Xəta baş verdi.</translation>
 <translation id="3359667936385849800">Cari xidmət təminatçınızı istifadə edin</translation>
@@ -1494,7 +1494,6 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="8993760627012879038">Incognito rejimində yeni panel açın</translation>
 <translation id="8996847606757455498">Başqa provayder seçin</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chrome datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chrome'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
-<translation id="9021388532480169802">Saytı əlavə edildi</translation>
 <translation id="9022774213089566801">Tez-tez ziyarət edilənlər</translation>
 <translation id="9028914725102941583">Cihazlar arasında paylaşım etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Video}}</translation>

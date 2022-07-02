@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">เคล็ดลับการใช้ Chrome</translation>
 <translation id="1240288207750131269">กำลังโหลดภาษา<ph name="LANG" /></translation>
 <translation id="1240903469550363138">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ อ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" />ของเว็บไซต์</translation>
+<translation id="124116460088058876">ภาษาเพิ่มเติม</translation>
 <translation id="1242883863226959074">อุปกรณ์</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246905108078336582">นำคำแนะนำออกจากคลิปบอร์ดไหม</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">โหลดหน้าใหม่</translation>
 <translation id="3297344142967351106">เสียงผู้ช่วย</translation>
 <translation id="3303414029551471755">ต้องการดำเนินการดาวน์โหลดเนื้อหานี้ไหม</translation>
-<translation id="3321367458490630980">เพิ่มความสนใจแล้ว</translation>
 <translation id="3334729583274622784">เปลี่ยนนามสกุลไฟล์ใช่ไหม</translation>
 <translation id="3341262203274374114">เลิกติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
 <translation id="3359667936385849800">ใช้ผู้ให้บริการปัจจุบัน</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">เปิดแท็บใหม่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="8996847606757455498">เลือกผู้ให้บริการอื่น</translation>
 <translation id="8998729206196772491">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="MANAGED_DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chrome ของคุณได้ ข้อมูลดังกล่าวจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chrome จะลบข้อมูลของคุณออกจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
-<translation id="9021388532480169802">เพิ่มเว็บไซต์แล้ว</translation>
 <translation id="9022774213089566801">เข้าชมบ่อย</translation>
 <translation id="9028914725102941583">เปิดการซิงค์เพื่อแชร์ข้ามอุปกรณ์</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{วิดีโอ # รายการ}other{วิดีโอ # รายการ}}</translation>

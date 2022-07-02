@@ -382,6 +382,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1374844444528092021">The certificate required by network "<ph name="NETWORK_NAME" />" is either not installed or is no longer valid.  Please get a new certificate and try connecting again.</translation>
 <translation id="1375321115329958930">Saved Passwords</translation>
 <translation id="1375557162880614858">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex?</translation>
+<translation id="1375938286942050085">Setup is complete! Get your device ready for gaming next</translation>
 <translation id="137651782282853227">Saved addresses will appear here</translation>
 <translation id="1376771218494401509">Name &amp;Window…</translation>
 <translation id="1377600615067678409">Skip for now</translation>
@@ -396,6 +397,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="138784436342154190">Restore default start-up page?</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
+<translation id="1389601498324964367">Quota-managed storage</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
 <translation id="1390548061267426325">Open as a Standard Tab</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is not authorised to print to <ph name="PRINTER_NAME" />. Please contact your administrator.</translation>
@@ -1075,6 +1077,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1992924914582925289">Remove from device</translation>
 <translation id="1994173015038366702">Site URL</translation>
 <translation id="1995916364271252349">Controls what information sites can use and show (location, camera, pop-ups and more)</translation>
+<translation id="1997433994358798851">Chrome needs permission to use Bluetooth to connect to your device</translation>
 <translation id="1997616988432401742">Your certificates</translation>
 <translation id="1999115740519098545">On start-up</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
@@ -1739,6 +1742,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="25899519884572181">Exit reader mode</translation>
 <translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Search Google or type URL</translation>
+<translation id="2599048253926156421">Username copied to clipboard</translation>
 <translation id="2602501489742255173">Swipe up to get started</translation>
 <translation id="2603115962224169880">Clean up computer</translation>
 <translation id="2603355571917519942">Voice Match is ready</translation>
@@ -1962,6 +1966,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2804043232879091219">The alternative browser could not be opened</translation>
 <translation id="2804667941345577550">You’ll be signed out of this site, including in open tabs</translation>
 <translation id="2804680522274557040">Camera turned off</translation>
+<translation id="280518252911523675">If you continue without entering your old password, your local data will be deleted. You’ll sign in with your Google Account to set up this user again.</translation>
 <translation id="2805539617243680210">You're ready!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -3076,6 +3081,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3895090224522145010">Kerberos username</translation>
 <translation id="389521680295183045">Sites can ask to know when you're actively using your device</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{an image}other{# images}}</translation>
+<translation id="3897746662269329507">Your <ph name="DEVICE_TYPE" /> is built for gaming. The Explore app will open next where you can access hundreds of the latest games, see gaming offers and discover gaming features that come with your device.</translation>
 <translation id="3898233949376129212">Device language</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> wants to: <ph name="FIRST_PERMISSION" /> and <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Select keyboard</translation>
@@ -3226,6 +3232,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4033471457476425443">Add new folder</translation>
 <translation id="4033711848170683365">This will permanently delete browsing data from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE" />. You can remove these accounts in <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Secure sites might embed content like images or web frames that aren't secure</translation>
+<translation id="4034741552964543387">Continue without local data</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Task manager</translation>
 <translation id="4035877632587724847">Don't allow</translation>
@@ -3313,7 +3320,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="4115002065223188701">Network out of range</translation>
 <translation id="4115378294792113321">Magenta</translation>
-<translation id="4116663294526079822">Always allow on this site</translation>
 <translation id="4116704186509653070">Open again</translation>
 <translation id="4117714603282104018">Touchpad haptic feedback</translation>
 <translation id="4118579674665737931">Please reboot the device and try again.</translation>
@@ -3418,6 +3424,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4242577469625748426">Failed to install policy settings on the device: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">Printer is paused</translation>
+<translation id="424423026762293842">Restore your local data</translation>
 <translation id="4244238649050961491">Find more stylus apps</translation>
 <translation id="4246980464509998944">Additional comments:</translation>
 <translation id="424726838611654458">Always open in Adobe Reader</translation>
@@ -4976,6 +4983,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5792728279623964091">Please tap your power button</translation>
 <translation id="5793339252089865437">If you download the update over your mobile network, it could result in overage charges.</translation>
 <translation id="5793420564274426163">Pair confirmation</translation>
+<translation id="5793430094159150686">Your password has changed. To restore your local data, you need to enter your old password.</translation>
 <translation id="5794034487966529952">Desk <ph name="DESK_TITLE" /> has <ph name="NUM_BROWSERS" /> browser windows open</translation>
 <translation id="5794414402486823030">Always open with system viewer</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
@@ -5900,6 +5908,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6700093763382332031">Mobile SIM lock</translation>
 <translation id="6700480081846086223">Cast <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Could not get profile.</translation>
+<translation id="6701824422332982935">Reload the page to use these extensions</translation>
 <translation id="6702639462873609204">&amp;Edit...</translation>
 <translation id="6703212423117969852">You can try again later in Chrome.</translation>
 <translation id="6703254819490889819">Restore backup</translation>
@@ -7127,6 +7136,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7903742244674067440">You have certificates on file that identify these certificate authorities</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Make Linux ports available to other devices on your network.</translation>
+<translation id="7906440585529721295">Local data will be deleted</translation>
 <translation id="7907837847548254634">Show a quick highlight on the focused object</translation>
 <translation id="7908378463497120834">Sorry, at least one partition on your external storage device could not be mounted.</translation>
 <translation id="7909324225945368569">Rename your profile</translation>
@@ -7465,6 +7475,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="822050276545350872">From here on out, no waiting required</translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="822347941086490485">Finding HID devices…</translation>
+<translation id="8223573963214454788">Continue and delete data</translation>
 <translation id="8225046344534779393">Check Internet connection</translation>
 <translation id="8225265270453771718">Share an application window</translation>
 <translation id="8226222018808695353">Forbidden</translation>
@@ -7565,6 +7576,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8314381333424235892">Missing or uninstalled extension</translation>
 <translation id="831440797644402910">Can't open this folder</translation>
 <translation id="8314835274931377415">Start Switch Access setup?</translation>
+<translation id="8317582043908962055">Recognise PDF text</translation>
 <translation id="8317671367883557781">Add network connection</translation>
 <translation id="8319414634934645341">Extended Key Usage</translation>
 <translation id="8321837372750396788">This <ph name="DEVICE_TYPE" /> will be managed by <ph name="MANAGER" />.</translation>
@@ -8450,6 +8462,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9203398526606335860">&amp;Profiling enabled</translation>
 <translation id="9203904171912129171">Select a device</translation>
 <translation id="9206889157914079472">Stylus note-taking from lock screen</translation>
+<translation id="9208192193641542858">Local data is protected by your old password. If you recently changed your password, try your old password again.</translation>
 <translation id="9209563766569767417">Checking the Linux container setup</translation>
 <translation id="9209689095351280025">Sites can't use cookies that track you across the web</translation>
 <translation id="9211177926627870898">Update required</translation>

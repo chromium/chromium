@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome 사용 팁</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> 로드 중</translation>
 <translation id="1240903469550363138">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
+<translation id="124116460088058876">다른 언어</translation>
 <translation id="1242883863226959074">기기</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">페이지 새로고침</translation>
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
-<translation id="3321367458490630980">관심분야 추가됨</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="3359667936385849800">현재 서비스 제공업체 사용</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 이 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
-<translation id="9021388532480169802">사이트가 추가됨</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>
 <translation id="9028914725102941583">동기화를 사용 설정하여 기기간 공유하기</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{동영상 #개}other{동영상 #개}}</translation>

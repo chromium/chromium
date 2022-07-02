@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Vinkkejä Chromen käyttöön</translation>
 <translation id="1240288207750131269">Ladataan: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK1" />tietosuojakäytäntöön<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />käyttöehtoihin<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Lisää kieliä</translation>
 <translation id="1242883863226959074">laitteella</translation>
 <translation id="124678866338384709">Sulje nykyinen välilehti</translation>
 <translation id="1246905108078336582">Poistetaanko ehdotus leikepöydältä?</translation>
@@ -439,7 +440,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="3288003805934695103">Lataa sivu uudelleen.</translation>
 <translation id="3297344142967351106">Ääniapu</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
-<translation id="3321367458490630980">Kiinnostuksen kohde lisätty</translation>
 <translation id="3334729583274622784">Vaihdetaanko tiedostotunniste?</translation>
 <translation id="3341262203274374114">Ei voi seurata. Jotain meni pieleen.</translation>
 <translation id="3359667936385849800">Käytä nykyistä palveluasi</translation>
@@ -1496,7 +1496,6 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
 <translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
-<translation id="9021388532480169802">Sivusto lisätty</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9028914725102941583">Ota synkronointi käyttöön, niin voit jakaa sisältöä laitteiden välillä</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videota}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1240903469550363138">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK1" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನೋಡಿ.</translation>
+<translation id="124116460088058876">ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು</translation>
 <translation id="1242883863226959074">ಸಾಧನ</translation>
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1246905108078336582">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ಸಲಹೆಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">ಪುಟ ಮರುಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3297344142967351106">ಧ್ವನಿ ಸಹಾಯಕ</translation>
 <translation id="3303414029551471755">ವಿಷಯವನ್ನು ಡೌನ್‌ಲೊಡ್‌ ಮಾಡಲು ಮುಂದುವರಿಯುವುದೇ?</translation>
-<translation id="3321367458490630980">ಆಸಕ್ತಿಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="3334729583274622784">ಫೈಲ್ ವಿಸ್ತರಣೆಯನ್ನು ಬದಲಿಸುವುದೇ?</translation>
 <translation id="3341262203274374114">ಅನುಸರಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="3359667936385849800">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸೇವೆ ಒದಗಿಸುವವರನ್ನು ಬಳಸಿ</translation>
@@ -1495,7 +1495,6 @@
 <translation id="8993760627012879038">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
 <translation id="8996847606757455498">ಬೇರೆ ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> ನಿರ್ವಹಿಸಿದ ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್‍‍ ಇನ್ ಮಾಡುತ್ತಿರುವಿರಿ ಮತ್ತು ಅದರ ನಿರ್ವಾಹಕ ನಿಯಂತ್ರಣವನ್ನು ನಿಮ್ಮ Chrome ಡೇಟಾದ ಮೂಲಕ ನೀಡುತ್ತಿರುವಿರಿ. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಈ ಖಾತೆಯೊಂದಿಗೆ ಜೋಡಿಸಲಾಗುತ್ತದೆ. Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡುವುದರಿಂದ ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ.</translation>
-<translation id="9021388532480169802">ಸೈಟ್ ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="9022774213089566801">ಆಗಾಗ್ಗೆ ಭೇಟಿ ನೀಡಿರುವುದು</translation>
 <translation id="9028914725102941583">ಸಾಧನಗಳಾದ್ಯಂತ ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ವೀಡಿಯೊ}one{# ವೀಡಿಯೊಗಳು}other{# ವೀಡಿಯೊಗಳು}}</translation>

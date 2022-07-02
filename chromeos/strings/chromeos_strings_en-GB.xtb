@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Turn dark mode off</translation>
 <translation id="1881188606372070653">Go to the <ph name="BEGIN_LINK1" />legal help page<ph name="END_LINK1" /> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information that you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2" />privacy policy<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Terms of Service<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
+<translation id="1904932688895783618">Here are some other helpful resources:</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
 <translation id="1932611479324127242">Battery cut-off</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="2016848882344942759">--no white-label--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Please connect to a network and reload the page to view screen saver.</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2085089206770112532">Display brightness down</translation>
 <translation id="2105810540595158374">Device is a game controller.</translation>
@@ -202,7 +204,6 @@
 <translation id="253029298928638905">Restarting...</translation>
 <translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
-<translation id="256360469103926202">Your feedback helps improve Chrome OS and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
@@ -774,6 +775,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">No DNS servers are set up</translation>
+<translation id="779591286616261875">Send new report</translation>
 <translation id="7799817062559422778">Light mode</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -926,6 +928,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9082718469794970195">Use this video</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
+<translation id="9092255287806472980">Your feedback helps improve Chrome OS and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="90977145661420967">You'll need to take the device apart</translation>
 <translation id="9098156406873149060">Keep user data</translation>

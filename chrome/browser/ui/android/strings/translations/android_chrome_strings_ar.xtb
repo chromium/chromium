@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">‏معلومات بشأن استخدام متصفّح Chrome</translation>
 <translation id="1240288207750131269">جارٍ تحميل <ph name="LANG" /></translation>
 <translation id="1240903469550363138">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. ويمكنك الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" /> لهذا الموقع الإلكتروني.</translation>
+<translation id="124116460088058876">مزيد من اللغات</translation>
 <translation id="1242883863226959074">جهاز</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1246905108078336582">هل تريد إزالة اقتراح من الحافظة؟</translation>
@@ -440,7 +441,6 @@
 <translation id="3288003805934695103">إعادة تحميل الصفحة</translation>
 <translation id="3297344142967351106">المساعَدة الصوتية</translation>
 <translation id="3303414029551471755">هل ترغب في الاستمرار في تنزيل المحتوى؟</translation>
-<translation id="3321367458490630980">تمت إضافة الاهتمام.</translation>
 <translation id="3334729583274622784">هل تريد تغيير امتداد الملف؟</translation>
 <translation id="3341262203274374114">يتعذّر إلغاء متابعة الخلاصة. حدث خطأ.</translation>
 <translation id="3359667936385849800">استخدام مقدِّم الخدمة الحالي</translation>
@@ -1497,7 +1497,6 @@
 <translation id="8993760627012879038">فتح علامة تبويب جديدة في وضع التصفّح المتخفّي</translation>
 <translation id="8996847606757455498">اختيار مقدِّم خدمة آخر</translation>
 <translation id="8998729206196772491">‏يتم تسجيل دخولك باستخدام حساب تتم إدارته من خلال <ph name="MANAGED_DOMAIN" /> ومنح مشرفه الحق في التحكم في بياناتك على Chrome. سيؤدي ذلك إلى جعل بياناتك مرتبطة دائمًا بهذا الحساب. كما سيؤدي الخروج من Chrome إلى حذف بياناتك من هذا الجهاز، ولكن ستظل هذه البيانات مخزَّنة على حسابك في Google.</translation>
-<translation id="9021388532480169802">تمت إضافة الموقع الإلكتروني.</translation>
 <translation id="9022774213089566801">المواقع الإلكترونية التي تزورها بشكلٍ متكرر</translation>
 <translation id="9028914725102941583">تفعيل المزامنة لمشاركة المحتوى مع جهاز آخر</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{فيديو واحد (#)}zero{# فيديو}two{فيديوهان (#)}few{# فيديوهات}many{# فيديو}other{# فيديو}}</translation>

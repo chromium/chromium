@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Consellos de Chrome</translation>
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />condicións de servizo<ph name="END_LINK2" /> deste sitio.</translation>
+<translation id="124116460088058876">Máis idiomas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
@@ -439,7 +440,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3288003805934695103">Volver cargar a páxina</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">Queres continuar coa descarga do contido?</translation>
-<translation id="3321367458490630980">Engadiuse o interese</translation>
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
 <translation id="3341262203274374114">Non se puido deixar de seguir o feed. Produciuse un erro.</translation>
 <translation id="3359667936385849800">Utilizar o teu fornecedor de servizo actual</translation>
@@ -1496,7 +1496,6 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="8993760627012879038">Abrir unha nova pestana no modo de incógnito</translation>
 <translation id="8996847606757455498">Escoller outro provedor</translation>
 <translation id="8998729206196772491">Estás iniciando sesión cunha conta xestionada por <ph name="MANAGED_DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chrome, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chrome, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
-<translation id="9021388532480169802">Engadiuse un sitio</translation>
 <translation id="9022774213089566801">Visitas frecuentes</translation>
 <translation id="9028914725102941583">Activa a sincronización para compartir contido entre varios dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>

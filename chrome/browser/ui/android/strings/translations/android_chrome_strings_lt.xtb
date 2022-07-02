@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">„Chrome“ patarimai</translation>
 <translation id="1240288207750131269">Įkeliama <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą, adresą ir profilio nuotrauką su šia svetaine. Žr. šios svetainės <ph name="BEGIN_LINK1" />privatumo politiką<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />paslaugų teikimo sąlygas<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Daugiau kalbų</translation>
 <translation id="1242883863226959074">įrenginyje</translation>
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1246905108078336582">Pašalinti pasiūlymą iš iškarpinės?</translation>
@@ -439,7 +440,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="3288003805934695103">Iš naujo įkelti puslapį</translation>
 <translation id="3297344142967351106">Pagalba balsu</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
-<translation id="3321367458490630980">Pomėgis pridėtas</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
 <translation id="3341262203274374114">Negalima nebestebėti. Kažkas ne taip.</translation>
 <translation id="3359667936385849800">Naudokitės dabartinio paslaugos teikėjo paslaugomis</translation>
@@ -1496,7 +1496,6 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="8993760627012879038">Atidaryti naują skirtuką inkognito režimu</translation>
 <translation id="8996847606757455498">Pasirinkti kitą teikėją</translation>
 <translation id="8998729206196772491">Prisijungiate naudodami „<ph name="MANAGED_DOMAIN" />“ tvarkomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chrome“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chrome“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
-<translation id="9021388532480169802">Svetainė pridėta</translation>
 <translation id="9022774213089566801">Dažnai lankytasi</translation>
 <translation id="9028914725102941583">Įjunkite sinchronizavimą, kad galėtumėte bendrinti turinį įrenginiuose</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vaizdo įrašas}one{# vaizdo įrašas}few{# vaizdo įrašai}many{# vaizdo įrašo}other{# vaizdo įrašų}}</translation>

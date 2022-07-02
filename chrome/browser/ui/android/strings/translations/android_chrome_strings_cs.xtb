@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Tipy k Chromu</translation>
 <translation id="1240288207750131269">Načítání jazyka <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e-mailovou adresu a profilový obrázek. Zobrazit <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />smluvní podmínky<ph name="END_LINK2" /> tohoto webu.</translation>
+<translation id="124116460088058876">Další jazyky</translation>
 <translation id="1242883863226959074">zařízení</translation>
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1246905108078336582">Odstranit návrh ze schránky?</translation>
@@ -439,7 +440,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="3288003805934695103">Načíst stránku znovu</translation>
 <translation id="3297344142967351106">Hlasová asistence</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
-<translation id="3321367458490630980">Zájem přidán</translation>
 <translation id="3334729583274622784">Změnit příponu souboru?</translation>
 <translation id="3341262203274374114">Sledování nelze zrušit. Něco se pokazilo.</translation>
 <translation id="3359667936385849800">Použít aktuálního poskytovatele služeb</translation>
@@ -1496,7 +1496,6 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="8993760627012879038">Otevřít novou kartu v anonymním režimu</translation>
 <translation id="8996847606757455498">Vybrat jiného poskytovatele</translation>
 <translation id="8998729206196772491">Přihlašujete se pomocí účtu spravovaného doménou <ph name="MANAGED_DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chrome. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z Chromu svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
-<translation id="9021388532480169802">Byl přidán web</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>
 <translation id="9028914725102941583">Chcete-li umožnit sdílení mezi zařízeními, zapněte synchronizaci</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}few{# videa}many{# videa}other{# videí}}</translation>

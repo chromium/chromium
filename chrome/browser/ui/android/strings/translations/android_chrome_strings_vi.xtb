@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Mẹo dùng Chrome</translation>
 <translation id="1240288207750131269">Đang tải <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />điều khoản dịch vụ<ph name="END_LINK2" /> của trang web này</translation>
+<translation id="124116460088058876">Ngôn ngữ khác</translation>
 <translation id="1242883863226959074">thiết bị</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1246905108078336582">Xóa nội dung đề xuất khỏi bảng nhớ tạm?</translation>
@@ -439,7 +440,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="3288003805934695103">Đang tải lại trang</translation>
 <translation id="3297344142967351106">Trợ lý thoại</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
-<translation id="3321367458490630980">Đã thêm mối quan tâm</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="3341262203274374114">Không thể ngừng theo dõi. Đã xảy ra lỗi.</translation>
 <translation id="3359667936385849800">Sử dụng nhà cung cấp dịch vụ hiện tại của bạn</translation>
@@ -1496,7 +1496,6 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
 <translation id="8998729206196772491">Bạn đang đăng nhập bằng tài khoản do <ph name="MANAGED_DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
-<translation id="9021388532480169802">Đã thêm trang web</translation>
 <translation id="9022774213089566801">Truy cập thường xuyên</translation>
 <translation id="9028914725102941583">Bật tính năng đồng bộ hóa để chia sẻ giữa các thiết bị</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>

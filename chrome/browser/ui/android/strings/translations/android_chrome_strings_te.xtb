@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome చిట్కాలు</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> లోడ్ అవుతోంది</translation>
 <translation id="1240903469550363138">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />సర్వీస్ నియమాలను<ph name="END_LINK2" /> చూడండి.</translation>
+<translation id="124116460088058876">మరిన్ని భాషలు</translation>
 <translation id="1242883863226959074">పరికరం</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1246905108078336582">క్లిప్‌బోర్డ్ నుండి సూచనను తొలగించాలా?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">పేజీని మళ్లీ లోడ్ చేయడం</translation>
 <translation id="3297344142967351106">వాయిస్ సహాయం</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
-<translation id="3321367458490630980">ఆసక్తి ఉన్న అంశం జోడించబడింది</translation>
 <translation id="3334729583274622784">ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చాలా?</translation>
 <translation id="3341262203274374114">అనుసరణను రద్దు చేయడం సాధ్యపడదు. ఏదో తప్పు జరిగింది.</translation>
 <translation id="3359667936385849800">మీ ప్రస్తుత సర్వీస్ ప్రొవైడర్‌ను ఉపయోగించండి</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">కొత్త ట్యాబ్‌ను అజ్ఞాత మోడ్‌లో తెరవండి</translation>
 <translation id="8996847606757455498">మరొక ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="8998729206196772491">మీరు <ph name="MANAGED_DOMAIN" /> నిర్వహణలో ఉన్న ఖాతా నుండి సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకులకు మీ Chrome డేటాపై నియంత్రణను అందిస్తున్నారు. మీ డేటా శాశ్వతంగా ఈ ఖాతాకు అనుబంధించబడుతుంది. Chrome నుండి సైన్ అవుట్ చేయడం వ‌ల్ల ఈ పరికరం నుండి మీ డేటా తొలగించబడుతుంది. కానీ ఇది మీ Google ఖాతాలో అలాగే నిల్వ చేయబడి ఉంటుంది.</translation>
-<translation id="9021388532480169802">సైట్ జోడించబడింది</translation>
 <translation id="9022774213089566801">తరచుగా సందర్శించినవి</translation>
 <translation id="9028914725102941583">పరికరాలలో షేర్ చేయడానికి, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# వీడియో}other{# వీడియోలు}}</translation>

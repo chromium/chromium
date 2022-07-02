@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Consells de Chrome</translation>
 <translation id="1240288207750131269">S'està carregant <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei<ph name="END_LINK2" /> d'aquest lloc web.</translation>
+<translation id="124116460088058876">Més idiomes</translation>
 <translation id="1242883863226959074">dispositiu</translation>
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
 <translation id="1246905108078336582">Vols suprimir el suggeriment del porta-retalls?</translation>
@@ -439,7 +440,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="3288003805934695103">Torneu a carregar la pàgina</translation>
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
-<translation id="3321367458490630980">S'ha afegit l'interès</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="3359667936385849800">Utilitza el teu proveïdor de serveis actual</translation>
@@ -1496,7 +1496,6 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>
 <translation id="8998729206196772491">Estàs iniciant la sessió amb un compte gestionat per <ph name="MANAGED_DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chrome. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chrome, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
-<translation id="9021388532480169802">El lloc web s'ha afegit</translation>
 <translation id="9022774213089566801">Visitats amb freqüència</translation>
 <translation id="9028914725102941583">Activa la sincronització per compartir elements entre dispositius</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>

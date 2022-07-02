@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Astuces Chrome</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> : chargement…</translation>
 <translation id="1240903469550363138">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation<ph name="END_LINK2" /> de ce site.</translation>
+<translation id="124116460088058876">Plus de langues</translation>
 <translation id="1242883863226959074">appareil</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers ?</translation>
@@ -439,7 +440,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3288003805934695103">Recharger la page</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
-<translation id="3321367458490630980">Centre d'intérêt ajouté</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
 <translation id="3341262203274374114">Impossible de vous désabonner en raison d'une erreur.</translation>
 <translation id="3359667936385849800">Utiliser votre fournisseur de services actuel</translation>
@@ -1496,7 +1496,6 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode navigation privée</translation>
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>
 <translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
-<translation id="9021388532480169802">Site ajouté</translation>
 <translation id="9022774213089566801">Consultés régulièrement</translation>
 <translation id="9028914725102941583">Activer la synchronisation pour partager des contenus entre des appareils</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vidéo}one{# vidéo}other{# vidéos}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Nasveti za Chrome</translation>
 <translation id="1240288207750131269">Nalaganje: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />pogoje storitve<ph name="END_LINK2" /> tega spletnega mesta.</translation>
+<translation id="124116460088058876">Več jezikov</translation>
 <translation id="1242883863226959074">napravi</translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1246905108078336582">Ali želite odstraniti predlog iz odložišča?</translation>
@@ -439,7 +440,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="3288003805934695103">znova naložiti stran</translation>
 <translation id="3297344142967351106">Glasovna pomoč</translation>
 <translation id="3303414029551471755">Ali želite prenesti vsebino?</translation>
-<translation id="3321367458490630980">Zanimanje je dodano.</translation>
 <translation id="3334729583274622784">Želite spremeniti pripono datoteke?</translation>
 <translation id="3341262203274374114">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>
 <translation id="3359667936385849800">Uporaba trenutnega ponudnika storitev</translation>
@@ -1496,7 +1496,6 @@ Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahk
 <translation id="8993760627012879038">Odpiranje novega anonimnega zavihka</translation>
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
 <translation id="8998729206196772491">Prijavljate se z računom, ki ga upravlja <ph name="MANAGED_DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
-<translation id="9021388532480169802">Spletno mesto je dodano</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
 <translation id="9028914725102941583">Vklopite sinhronizacijo, če želite deliti z drugimi napravami</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videoposnetek}one{# videoposnetek}two{# videoposnetka}few{# videoposnetki}other{# videoposnetkov}}</translation>

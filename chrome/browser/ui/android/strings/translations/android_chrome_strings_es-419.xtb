@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Sugerencias de Chrome</translation>
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />condiciones del servicio<ph name="END_LINK2" /> de este sitio.</translation>
+<translation id="124116460088058876">Más idiomas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quieres quitar la sugerencia del portapapeles?</translation>
@@ -439,7 +440,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3288003805934695103">Volver a cargar la página.</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
-<translation id="3321367458490630980">Se agregó el interés.</translation>
 <translation id="3334729583274622784">¿Quieres cambiar la extensión del archivo?</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
 <translation id="3359667936385849800">Usa tu proveedor de servicios actual</translation>
@@ -1496,7 +1496,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no pueden usarse para 
 <translation id="8993760627012879038">Abrir ventana nueva en modo de navegación incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998729206196772491">Estás accediendo con una cuenta administrada por <ph name="MANAGED_DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
-<translation id="9021388532480169802">Se agregó el sitio</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9028914725102941583">Activa la sincronización para compartir contenido entre dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videos}}</translation>

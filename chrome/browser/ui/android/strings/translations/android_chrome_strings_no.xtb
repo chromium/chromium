@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1240288207750131269">Laster inn <ph name="LANG" /></translation>
 <translation id="1240903469550363138">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK1" />personvernregler<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />vilkår for bruk<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Flere språk</translation>
 <translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra utklippstavlen?</translation>
@@ -439,7 +440,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="3288003805934695103">Last inn siden på nytt</translation>
 <translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
-<translation id="3321367458490630980">Interessen er lagt til</translation>
 <translation id="3334729583274622784">Vil du endre filetternavnet?</translation>
 <translation id="3341262203274374114">Kan ikke slutte å følge. Noe gikk galt.</translation>
 <translation id="3359667936385849800">Bruk den nåværende tjenesteleverandøren din</translation>
@@ -1496,7 +1496,6 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>
 <translation id="8998729206196772491">Du logger på med en konto som administreres av <ph name="MANAGED_DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de fortsetter å være lagret i Google-kontoen din.</translation>
-<translation id="9021388532480169802">Nettstedet er lagt til</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9028914725102941583">Slå på synkronisering for å dele på tvers av enheter</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videoer}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Wskazówki dotyczące Chrome</translation>
 <translation id="1240288207750131269">Ładuję: <ph name="LANG" /></translation>
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK2" />warunkami korzystania z tej witryny<ph name="END_LINK2" /> oraz jej <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" />.</translation>
+<translation id="124116460088058876">Więcej języków</translation>
 <translation id="1242883863226959074">urządzeniu</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246905108078336582">Usunąć podpowiedź ze schowka?</translation>
@@ -439,7 +440,6 @@ Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą okre�
 <translation id="3288003805934695103">Odśwież stronę</translation>
 <translation id="3297344142967351106">Pomoc głosowa</translation>
 <translation id="3303414029551471755">Przejść do pobrania treści?</translation>
-<translation id="3321367458490630980">Zainteresowanie zostało dodane</translation>
 <translation id="3334729583274622784">Zmienić rozszerzenie pliku?</translation>
 <translation id="3341262203274374114">Nie udało się przestać obserwować. Coś poszło nie tak.</translation>
 <translation id="3359667936385849800">Użyj obecnego dostawcy usług</translation>
@@ -1496,7 +1496,6 @@ Tokeny zaufania zwiększają prywatność w sieci i nie można za ich pomocą 
 <translation id="8993760627012879038">Otwórz nową kartę w trybie incognito</translation>
 <translation id="8996847606757455498">Wybierz innego dostawcę</translation>
 <translation id="8998729206196772491">Logujesz się na konto, którym zarządza <ph name="MANAGED_DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chrome. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>
-<translation id="9021388532480169802">Dodano witrynę</translation>
 <translation id="9022774213089566801">Często odwiedzane</translation>
 <translation id="9028914725102941583">Aby udostępniać treści między urządzeniami, włącz synchronizację</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# film}few{# filmy}many{# filmów}other{# filmu}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">‏טיפים של Chrome</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> בטעינה</translation>
 <translation id="1240903469550363138">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישורים הבאים ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> וב<ph name="BEGIN_LINK2" />תנאים וההגבלות<ph name="END_LINK2" /> של האתר הזה.</translation>
+<translation id="124116460088058876">שפות נוספות</translation>
 <translation id="1242883863226959074">מכשיר</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246905108078336582">להסיר את ההצעה מהלוח?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">הדף נטען מחדש</translation>
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
-<translation id="3321367458490630980">תחום העניין נוסף</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="3359667936385849800">שימוש בספק השירות הנוכחי</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998729206196772491">‏בחרת להיכנס עם חשבון המנוהל על-ידי <ph name="MANAGED_DOMAIN" /> ולהעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google.</translation>
-<translation id="9021388532480169802">האתר נוסף</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
 <translation id="9028914725102941583">יש להפעיל את הסנכרון כדי להפעיל שיתוף בין מכשירים</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{סרטון אחד (#)}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>

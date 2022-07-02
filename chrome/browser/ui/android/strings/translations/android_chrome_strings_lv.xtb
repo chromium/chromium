@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome padomi</translation>
 <translation id="1240288207750131269">Notiek valodas ielāde (<ph name="LANG" />)</translation>
 <translation id="1240903469550363138">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi, adresi un profila attēlu ar šo vietni. Skatiet šīs vietnes <ph name="BEGIN_LINK1" />konfidencialitātes politiku<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />pakalpojumu sniegšanas noteikumus<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Citas valodas…</translation>
 <translation id="1242883863226959074">ierīcē</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
 <translation id="1246905108078336582">Vai noņemt ieteikumu no starpliktuves?</translation>
@@ -439,7 +440,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="3288003805934695103">Atkārtoti ielādējiet lapu.</translation>
 <translation id="3297344142967351106">Balss palīgs</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
-<translation id="3321367458490630980">Interese ir pievienota</translation>
 <translation id="3334729583274622784">Vai mainīt faila paplašinājumu?</translation>
 <translation id="3341262203274374114">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
 <translation id="3359667936385849800">Izmantot pašreizējo pakalpojumu sniedzēju</translation>
@@ -1496,7 +1496,6 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="8993760627012879038">Atvērt jaunu cilni inkognito režīmā</translation>
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>
 <translation id="8998729206196772491">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="MANAGED_DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chrome datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chrome, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
-<translation id="9021388532480169802">Vietne ir pievienota.</translation>
 <translation id="9022774213089566801">Bieži apmeklētas vietnes</translation>
 <translation id="9028914725102941583">Sinhronizācijas ieslēgšana, lai kopīgotu saturu vairākās ierīcēs</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videoklips}zero{# videoklipi}one{# videoklips}other{# videoklipi}}</translation>

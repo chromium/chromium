@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">គន្លឹះប្រើប្រាស់ Chrome</translation>
 <translation id="1240288207750131269">កំពុង​ផ្ទុក <ph name="LANG" /></translation>
 <translation id="1240903469550363138">ដើម្បីបន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹងចែករំលែកឈ្មោះ អាសយដ្ឋានអ៊ីមែល និងរូបភាពកម្រងព័ត៌មានរបស់អ្នកជាមួយគេហទំព័រនេះ។ សូមមើល<ph name="BEGIN_LINK1" />គោលការណ៍ឯកជនភាព<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌប្រើប្រាស់<ph name="END_LINK2" />របស់គេហទំព័រនេះ។</translation>
+<translation id="124116460088058876">ភាសា​ច្រើន​ទៀត</translation>
 <translation id="1242883863226959074">ឧបករណ៍</translation>
 <translation id="124678866338384709">បិទផ្ទាំងបច្ចុប្បន្ន</translation>
 <translation id="1246905108078336582">លុប​ការណែនាំ​ចេញពី​ឃ្លីបបត?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">ដំណើរការទំព័រឡើងវិញ</translation>
 <translation id="3297344142967351106">ជំនួយជាសំឡេង</translation>
 <translation id="3303414029551471755">បន្តដើម្បីទាញយកមាតិកានេះ?</translation>
-<translation id="3321367458490630980">ចំណាប់អារម្មណ៍ត្រូវបានបញ្ចូល</translation>
 <translation id="3334729583274622784">ប្ដូរកន្ទុយ​ឯកសារឬ?</translation>
 <translation id="3341262203274374114">មិនអាចឈប់​តាមដានបានទេ។ មានអ្វីមួយខុសប្រក្រតី។</translation>
 <translation id="3359667936385849800">ប្រើ​ក្រុមហ៊ុនផ្ដល់សេវាបច្ចុប្បន្ន​របស់អ្នក</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">បើកផ្ទាំងថ្មីនៅក្នុងមុខងារអនាមិក</translation>
 <translation id="8996847606757455498">ជ្រើសរើស​ក្រុមហ៊ុនផ្ដល់សេវា​ផ្សេងទៀត</translation>
 <translation id="8998729206196772491">អ្នកកំពុងចូលដោយប្រើគណនីដែលគ្រប់គ្រងដោយ <ph name="MANAGED_DOMAIN" /> និងកំពុងផ្តល់ឲ្យអ្នកគ្រប់គ្រងរបស់វានូវលទ្ធភាពគ្រប់គ្រងទិន្នន័យ Chrome របស់អ្នក។ ទិន្នន័យរបស់អ្នកនឹងភ្ជាប់ជាមួយគណនីនេះជាអចិន្ត្រៃយ៍។ ការចេញពី Chrome នឹងលុបទិន្នន័យរបស់អ្នកចេញពីឧបករណ៍នេះ ប៉ុន្តែវានឹងនៅតែត្រូវបានរក្សាទុកក្នុងគណនី Google របស់អ្នកដដែល។</translation>
-<translation id="9021388532480169802">បាន​បញ្ចូល​គេហទំព័រ</translation>
 <translation id="9022774213089566801">បានចូលមើល​ជាញឹកញាប់</translation>
 <translation id="9028914725102941583">បើក​សមកាលកម្ម ដើម្បី​ចែករំលែកនៅលើ​ឧបករណ៍​នានា</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{វីដេអូ #}other{វីដេអូ #}}</translation>

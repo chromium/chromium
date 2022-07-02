@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-wenke</translation>
 <translation id="1240288207750131269">Laai tans <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />diensbepalings<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Meer tale</translation>
 <translation id="1242883863226959074">toestel</translation>
 <translation id="124678866338384709">Maak huidige oortjie toe</translation>
 <translation id="1246905108078336582">Verwyder voorstel van knipbord af?</translation>
@@ -439,7 +440,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="3288003805934695103">Die bladsy herlaai</translation>
 <translation id="3297344142967351106">Stembystand</translation>
 <translation id="3303414029551471755">Gaan voort om die inhoud af te laai?</translation>
-<translation id="3321367458490630980">Belangstelling is bygevoeg</translation>
 <translation id="3334729583274622784">Verander lêeruitbreiding?</translation>
 <translation id="3341262203274374114">Kan nie ontvolg nie. Iets was fout.</translation>
 <translation id="3359667936385849800">Gebruik jou huidige diensverskaffer</translation>
@@ -1496,7 +1496,6 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8993760627012879038">Maak 'n nuwe oortjie in incognitomodus oop</translation>
 <translation id="8996847606757455498">Kies 'n ander verskaffer</translation>
 <translation id="8998729206196772491">Jy meld tans aan met 'n rekening wat deur <ph name="MANAGED_DOMAIN" /> bestuur word en gee sy administrateur beheer oor jou Chrome-data. Jou data sal permanent met hierdie rekening verbind word. As jy by Chrome afmeld, sal jou data van hierdie toestel af uitgevee word, maar dit sal steeds in jou Google-rekening geberg word.</translation>
-<translation id="9021388532480169802">Werf bygevoeg</translation>
 <translation id="9022774213089566801">Gereeld besoek</translation>
 <translation id="9028914725102941583">Skakel sinkronisering aan om tussen toestelle te deel</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video's}}</translation>

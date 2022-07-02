@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1240903469550363138">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ ਨਾਮ, ਈਮੇਲ ਪਤੇ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੀ <ph name="BEGIN_LINK1" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="END_LINK2" /> ਦੇਖੋ।</translation>
+<translation id="124116460088058876">ਹੋਰ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="1242883863226959074">ਡੀਵਾਈਸ</translation>
 <translation id="124678866338384709">ਮੌਜੂਦਾ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="1246905108078336582">ਕੀ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਸੁਝਾਅ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">ਪੰਨਾ ਦੁਬਾਰਾ ਲੋਡ ਕਰੋ</translation>
 <translation id="3297344142967351106">ਅਵਾਜ਼ੀ ਸਹਾਇਕ</translation>
 <translation id="3303414029551471755">ਕੀ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
-<translation id="3321367458490630980">ਦਿਲਚਸਪੀ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="3334729583274622784">ਕੀ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="3341262203274374114">ਅਨੁਸਰਣ ਕਰਨਾ ਬੰਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="3359667936385849800">ਆਪਣਾ ਮੌਜੂਦਾ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਵਰਤੋ</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="8996847606757455498">ਕੋਈ ਹੋਰ ਪ੍ਰਦਾਨਕ ਚੁਣੋ</translation>
 <translation id="8998729206196772491">ਤੁਸੀਂ <ph name="MANAGED_DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਉਸਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਆਪਣੇ Chrome ਡਾਟੇ ਦਾ ਕੰਟਰੋਲ ਦੇ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ ਡਾਟਾ ਸਥਾਈ ਤੌਰ 'ਤੇ ਇਸ ਖਾਤੇ ਨਾਲ ਜੋੜ ਦਿੱਤਾ ਜਾਵੇਗਾ। Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣ ਨਾਲ ਤੁਹਾਡਾ ਡਾਟਾ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ, ਪਰ ਇਹ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਰਹੇਗਾ।</translation>
-<translation id="9021388532480169802">ਸਾਈਟ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="9022774213089566801">ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ</translation>
 <translation id="9028914725102941583">ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਸਾਂਝਾ ਕਰਨ ਲਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ਵੀਡੀਓ}one{# ਵੀਡੀਓ}other{# ਵੀਡੀਓ}}</translation>

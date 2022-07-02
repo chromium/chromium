@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Këshilla për Chrome</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> po ngarkohet</translation>
 <translation id="1240903469550363138">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK1" />politikën e privatësisë<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />kushtet e shërbimit<ph name="END_LINK2" /> të këtij sajti.</translation>
+<translation id="124116460088058876">Gjuhë të tjera</translation>
 <translation id="1242883863226959074">pajisja</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1246905108078336582">Të hiqet sugjerimi nga kujtesa e fragmenteve?</translation>
@@ -439,7 +440,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="3288003805934695103">Të ringarkosh faqen</translation>
 <translation id="3297344142967351106">Ndihma zanore</translation>
 <translation id="3303414029551471755">Të vazhdohet me shkarkimin e përmbajtjes?</translation>
-<translation id="3321367458490630980">Interesi u shtua</translation>
 <translation id="3334729583274622784">Do ta ndryshosh prapashtesën e skedarit?</translation>
 <translation id="3341262203274374114">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
 <translation id="3359667936385849800">Përdor ofruesin aktual të shërbimit</translation>
@@ -1496,7 +1496,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="8993760627012879038">Hap një skedë të re në "Modalitetin e fshehtë"</translation>
 <translation id="8996847606757455498">Zgjidh një ofrues tjetër</translation>
 <translation id="8998729206196772491">Po identifikohesh me një llogari të menaxhuar nga <ph name="MANAGED_DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
-<translation id="9021388532480169802">Sajti u shtua</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>
 <translation id="9028914725102941583">Aktivizo sinkronizimin për të ndarë mes pajisjeve</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-tippek</translation>
 <translation id="1240288207750131269">Betöltés: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse át a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />általános szerződési feltételeit<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">További nyelvek…</translation>
 <translation id="1242883863226959074">eszközén</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1246905108078336582">Eltávolítja a javaslatot a vágólapról?</translation>
@@ -439,7 +440,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3288003805934695103">Az oldal frissítése</translation>
 <translation id="3297344142967351106">Hangalapú segítség</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
-<translation id="3321367458490630980">Érdeklődési kör hozzáadva</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
 <translation id="3341262203274374114">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>
 <translation id="3359667936385849800">A jelenlegi szolgáltató használata</translation>
@@ -1496,7 +1496,6 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="8993760627012879038">Új lap megnyitása inkognitó módban</translation>
 <translation id="8996847606757455498">Másik szolgáltató választása</translation>
 <translation id="8998729206196772491">Egy <ph name="MANAGED_DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de Google-fiókjában továbbra is megmaradnak.</translation>
-<translation id="9021388532480169802">Webhely hozzáadva</translation>
 <translation id="9022774213089566801">Gyakran látogatott webhelyek</translation>
 <translation id="9028914725102941583">Szinkronizálás bekapcsolása az eszközök közötti megosztáshoz</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videó}other{# videó}}</translation>

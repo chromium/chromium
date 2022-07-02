@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> laden</translation>
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />servicevoorwaarden<ph name="END_LINK2" /> van deze site.</translation>
+<translation id="124116460088058876">Meer talen</translation>
 <translation id="1242883863226959074">apparaat</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
@@ -439,7 +440,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="3288003805934695103">Laad de pagina opnieuw</translation>
 <translation id="3297344142967351106">Spraakassistent</translation>
 <translation id="3303414029551471755">Doorgaan met het downloaden van de content?</translation>
-<translation id="3321367458490630980">Interesse toegevoegd</translation>
 <translation id="3334729583274622784">Bestandsextensie wijzigen?</translation>
 <translation id="3341262203274374114">Niet meer volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="3359667936385849800">Je huidige serviceprovider gebruiken</translation>
@@ -1496,7 +1496,6 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="8993760627012879038">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="8996847606757455498">Een andere provider kiezen</translation>
 <translation id="8998729206196772491">Je logt in met een account dat wordt beheerd door <ph name="MANAGED_DOMAIN" /> waarmee je de eigenaar beheer geeft over je Chrome-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chrome, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
-<translation id="9021388532480169802">Site toegevoegd</translation>
 <translation id="9022774213089566801">Veelbezocht</translation>
 <translation id="9028914725102941583">Zet de synchronisatie aan om content op apparaten te delen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video's}}</translation>

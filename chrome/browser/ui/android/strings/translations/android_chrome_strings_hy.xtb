@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
 <translation id="1240903469550363138">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
+<translation id="124116460088058876">Այլ լեզուներ</translation>
 <translation id="1242883863226959074">սարք</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">Վերաբեռնել էջը</translation>
 <translation id="3297344142967351106">Ձայնային հուշումներ</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
-<translation id="3321367458490630980">Հետաքրքրությունն ավելացվեց</translation>
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
 <translation id="3359667936385849800">Օգտագործել իմ ընթացիկ մատակարարը</translation>
@@ -1496,7 +1496,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8993760627012879038">Բացել նոր ներդիր ինկոգնիտո ռեժիմում</translation>
 <translation id="8996847606757455498">Ընտրել մեկ այլ մատակարար</translation>
 <translation id="8998729206196772491">Դուք մուտք եք գործում <ph name="MANAGED_DOMAIN" /> տիրույթի կողմից կառավարվող հաշիվ` դրա ադմինիստրատորին թույլ տալով վերահսկել ձեր Chrome-ի տվյալները: Ձեր տվյալները մշտապես կկապվեն այս հաշվի հետ: Եթե դուրս գաք Chrome-ից, այս սարքում պահված տվյալները կջնջվեն, սակայն կպահպանվեն ձեր Google հաշվում:</translation>
-<translation id="9021388532480169802">Կայքն ավելացվեց</translation>
 <translation id="9022774213089566801">Հաճախ այցելած</translation>
 <translation id="9028914725102941583">Միացրեք համաժամացումը՝ մի սարքի տվյալներով մյուսի հետ կիսվելու համար</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# տեսանյութ}one{# տեսանյութ}other{# տեսանյութ}}</translation>

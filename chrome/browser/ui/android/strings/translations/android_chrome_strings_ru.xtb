@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Советы по работе с Chrome</translation>
 <translation id="1240288207750131269">Выполняется загрузка пакета "<ph name="LANG" />"…</translation>
 <translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Другие языки</translation>
 <translation id="1242883863226959074">устройстве</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246905108078336582">Удалить подсказку из буфера обмена?</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">Обновите страницу.</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3303414029551471755">Скачать?</translation>
-<translation id="3321367458490630980">Интерес добавлен.</translation>
 <translation id="3334729583274622784">Изменить расширение имени файла?</translation>
 <translation id="3341262203274374114">Не удалось отменить подписку. Что-то пошло не так.</translation>
 <translation id="3359667936385849800">Использовать текущего поставщика</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">Открыть новое окно в режиме инкогнито</translation>
 <translation id="8996847606757455498">Выбрать другого поставщика</translation>
 <translation id="8998729206196772491">Вы входите в аккаунт, которым управляет администратор домена <ph name="MANAGED_DOMAIN" />. Он может контролировать ваши данные Chrome, которые теперь будут связаны с управляемым аккаунтом. При выходе из системы все данные Chrome, хранящиеся на этом устройстве, будут удалены, но останутся в вашем аккаунте Google.</translation>
-<translation id="9021388532480169802">Сайт добавлен.</translation>
 <translation id="9022774213089566801">Часто посещаемые</translation>
 <translation id="9028914725102941583">Включите синхронизацию</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видеофайл}one{# видеофайл}few{# видеофайла}many{# видеофайлов}other{# видеофайла}}</translation>

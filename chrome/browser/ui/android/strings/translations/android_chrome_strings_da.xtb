@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Tips til Chrome</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> indlæses</translation>
 <translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Flere sprog</translation>
 <translation id="1242883863226959074">enhed</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
@@ -439,7 +440,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="3288003805934695103">Genindlæse siden</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
-<translation id="3321367458490630980">Interessen er tilføjet</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
 <translation id="3341262203274374114">"Følg ikke" kan ikke udføres. Der opstod en fejl.</translation>
 <translation id="3359667936385849800">Brug din nuværende tjenesteudbyder</translation>
@@ -1496,7 +1496,6 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
-<translation id="9021388532480169802">Websitet er tilføjet</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
 <translation id="9028914725102941583">Aktivér synkronisering for at dele mellem enheder</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video}other{# videoer}}</translation>

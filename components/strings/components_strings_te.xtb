@@ -899,7 +899,7 @@
 <translation id="3395827396354264108">పికప్ పద్ధతి</translation>
 <translation id="3399952811970034796">బట్వాడా అడ్రస్‌</translation>
 <translation id="3402261774528610252">ఈ సైట్‌ను లోడ్ చేయడానికి ఉపయోగించిన కనెక్షన్ TLS 1.0 లేదా TLS 1.1ను ఉపయోగించింది, ఇవి విస్మరించబడ్డాయి, భవిష్యత్తులో నిలిపివేయబడతాయి. ఒక సారి నిలిపివేయబడితే, యూజర్‌లు ఈ సైట్‌ను లోడ్ చేయకుండా నివారించబడతారు. సర్వర్ TLS 1.2 లేదా ఆపై వెర్షన్‌లను ఎనేబుల్ చేయాలి.</translation>
-<translation id="3405664148539009465">ఫాంట్‌లను అనుకూలంగా మార్చు</translation>
+<translation id="3405664148539009465">ఫాంట్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="3407789382767355356">థర్డ్-పార్టీ సైన్ ఇన్</translation>
 <translation id="3409896703495473338">భద్రతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="3414952576877147120">పరిమాణం:</translation>
@@ -908,7 +908,7 @@
 <translation id="3422472998109090673"><ph name="HOST_NAME" />ని ప్రస్తుతం చేరుకోవడం సాధ్యపడదు.</translation>
 <translation id="3423742043356668186">సిస్టమ్ పేర్కొన్నవి</translation>
 <translation id="3427092606871434483">అనుమతించు (డిఫాల్ట్)</translation>
-<translation id="3427342743765426898">&amp;సవరించడాన్ని పునరావృతం చేయి</translation>
+<translation id="3427342743765426898">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="342781501876943858">మీరు మీ పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates సర్వర్ టెంప్లేట్‌ URIలు చెల్లవు, ఉపయోగించబడవు.</translation>
 <translation id="3431636764301398940">ఈ కార్డ్‌ను ఈ పరికరానికి సేవ్ చేయి</translation>
@@ -959,7 +959,7 @@
 <translation id="3577902790357386792">జిమ్నాస్టిక్స్</translation>
 <translation id="3581089476000296252">ఈ పేజీ సిద్ధమైనప్పుడు Chrome మీకు తెలియజేస్తుంది. &lt;a&gt;రద్దు చేయి&lt;/a&gt;</translation>
 <translation id="3582930987043644930">పేరు జోడించండి</translation>
-<translation id="3583757800736429874">&amp;తరలించడాన్ని పునరావృతం చేయి</translation>
+<translation id="3583757800736429874">&amp;తరలించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="3584299510153766161">దిగువ భాగంలో రెండు రంధ్రాలు</translation>
 <translation id="3586931643579894722">వివరాలను దాచిపెట్టు</translation>
 <translation id="3587738293690942763">మధ్యలో</translation>
@@ -1168,7 +1168,7 @@
 <translation id="4176535426287761656">టైమ్‌షేర్‌లు &amp; వెకేషన్ ప్రాపర్టీలు</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">మీ కార్డ్‌ను ప్రస్తుతం సేవ్ చేయలేము</translation>
-<translation id="4196861286325780578">&amp;తరలించడాన్ని పునరావృతం చేయి</translation>
+<translation id="4196861286325780578">&amp;తరలించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="4202554117186904723">ఫిఫ్త్ రోల్</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ఫైర్‌వాల్ మరియు యాంటీవైరస్ కాన్ఫిగరేషన్‌లను తనిఖీ చేయడం<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">పెద్దది</translation>
@@ -1651,7 +1651,7 @@
 <translation id="5463625433003343978">పరికరాలను కనుగొంటోంది...</translation>
 <translation id="5469868506864199649">ఇటాలియన్</translation>
 <translation id="5470230812924696184">సివిల్ ఇంజినీరింగ్</translation>
-<translation id="5470861586879999274">&amp;సవరించడాన్ని పునరావృతం చేయి</translation>
+<translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="5471337644440862957">కామెడీ సినిమాలు</translation>
 <translation id="5478437291406423475">B6/C4 (ఎన్వలప్)</translation>
 <translation id="5481076368049295676">ఈ కంటెంట్ మీ సమాచారాన్ని దొంగిలించగల లేదా తొలగించగల హానికరమైన సాఫ్ట్‌వేర్‌ను మీ పరికరంలో ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
@@ -1770,7 +1770,7 @@
 <translation id="5808542072418270309">సిమ్యులేషన్ గేమ్‌లు</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />కు గల మీ కనెక్షన్ వాడుకలో లేని సైఫర్ సూట్ ఉపయోగించి ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది.</translation>
 <translation id="5812947184178430888">భద్రతా ఈవెంట్‌లను Chrome ద్వారా ఫ్లాగ్ చేసినప్పుడు, ఈవెంట్‌లకు సంబంధించిన డేటా మీ అడ్మినిస్ట్రేటర్‌కు పంపబడుతుంది. ఇందులో మీరు Chromeలో వెళ్లిన పేజీల URLలు, ఫైల్ పేర్లు లేదా మెటాడేటా, ఇంకా వెబ్ ఆధారితమైన యాప్‌లు, మీ పరికరం, అలాగే Chromeకు సైన్ ఇన్ చేయడానికి మీరు ఉపయోగించే యూజర్‌నేమ్ ఉండవచ్చు.</translation>
-<translation id="5813119285467412249">&amp;జోడించడాన్ని పునరావృతం చేయి</translation>
+<translation id="5813119285467412249">&amp;జోడించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="5813309815819933152">టీవీ రియాలిటీ షోలు</translation>
 <translation id="5813753398265398978">భౌతిక శాస్త్రం</translation>
 <translation id="5817918615728894473">జత చేయి</translation>
@@ -1912,7 +1912,7 @@
 <translation id="624499991300733384">ప్రింట్ కంపోజిటర్ సేవ</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="6254436959401408446">ఈ పేజీని తెరవడానికి తగినంత మెమరీ లేదు</translation>
-<translation id="6259156558325130047">&amp;మళ్లీ క్రమం చేయడాన్ని పునరావృతం చేయి</translation>
+<translation id="6259156558325130047">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> పాలసీ విలువను కాపీ చేయి</translation>
@@ -2006,7 +2006,7 @@
 <translation id="6518133107902771759">ధృవీకరించు</translation>
 <translation id="6521745193039995384">యాక్టివ్‌గా లేదు</translation>
 <translation id="6529173248185917884">సెవెంత్ రోల్</translation>
-<translation id="6529602333819889595">&amp;తొలగించడాన్ని పునరావృతం చేయి</translation>
+<translation id="6529602333819889595">&amp;తొలగించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="6535751101619004418">కరెన్సీలు &amp; విదేశీ మారకం</translation>
 <translation id="6540534463546766581">మ్యూచువల్ ఫండ్‌లు</translation>
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
@@ -2112,7 +2112,7 @@
 <translation id="6865412394715372076">ప్రస్తుతం ఈ కార్డ్‌ని ధృవీకరించడం సాధ్యపడదు</translation>
 <translation id="6869334554832814367">వ్యక్తిగత రుణాలు</translation>
 <translation id="6873456682041376666">టాప్ ట్రే</translation>
-<translation id="6874604403660855544">&amp;జోడించడాన్ని పునరావృతం చేయి</translation>
+<translation id="6874604403660855544">&amp;జోడించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="6881240511396774766">కొత్త Google డాక్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="6883221904761970440">సురక్షిత పేమెంట్ ఆధారాల ప్రామాణీకరణ షీట్ మూయబడింది</translation>
 <translation id="6884662655240309489">పరిమాణం 1</translation>
@@ -2274,7 +2274,7 @@
 <translation id="7320336641823683070">కనెక్షన్ సహాయం</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" విభాగాన్ని దాచు</translation>
 <translation id="733354035281974745">పరికర స్థానిక ఖాతా భర్తీ</translation>
-<translation id="7334320624316649418">&amp;మళ్లీ క్రమం చేయడాన్ని పునరావృతం చేయి</translation>
+<translation id="7334320624316649418">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="7335157162773372339">మీ కెమెరాను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="7337248890521463931">మరిన్ని వరుసలను చూపించు</translation>
 <translation id="7337418456231055214">వర్చువల్ కార్డ్ నంబర్‌ను పూరించలేదా? కాపీ చేయడం కోసం కార్డ్ వివరాలను క్లిక్ చేయండి. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
@@ -2375,7 +2375,7 @@
 <translation id="7542403920425041731">మీరు నిర్ధారించిన తర్వాత, మీ కార్డ్ వివరాలు ఈ సైట్‌తో షేర్ చేయబడతాయి.</translation>
 <translation id="7542995811387359312">ఈ ఫారమ్ సురక్షిత కనెక్షన్‌ను ఉపయోగించనందున క్రెడిట్ కార్డ్ వివరాలను ఆటోమేటిక్‌గా పూర్తి చేయడం ఆపివేయబడింది.</translation>
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>
-<translation id="7549584377607005141">ఈ వెబ్‌పేజీ సరిగ్గా ప్రదర్శించబడటానికి మీరు మునుపు నమోదు చేసిన డేటా అవసరం. మీరు ఈ డేటాను మళ్లీ పంపవచ్చు. కానీ అలా చేయడం వ‌ల్ల‌ ఈ పేజీ మునుపు ప్రదర్శించిన ఏదైనా చర్య పునరావృతం కావచ్చు.</translation>
+<translation id="7549584377607005141">ఈ వెబ్‌పేజీ సరిగ్గా ప్రదర్శించబడటానికి మీరు మునుపు నమోదు చేసిన డేటా అవసరం. మీరు ఈ డేటాను మళ్లీ పంపవచ్చు. కానీ అలా చేయడం వ‌ల్ల‌ ఈ పేజీ మునుపు ప్రదర్శించిన ఏదైనా చర్య రిపీట్‌ కావచ్చు.</translation>
 <translation id="7550637293666041147">మీ పరికరం వినియోగదారు పేరు మరియు Chrome వినియోగదారు పేరు</translation>
 <translation id="7551484245293639699">ట్రావెల్ బీమా</translation>
 <translation id="755279583747225797">ట్రయల్ యాక్టివ్‌గా ఉంది</translation>
@@ -2625,7 +2625,7 @@
 <translation id="8235754723616617175">కంట్రీ మ్యూజిక్</translation>
 <translation id="8237519162179154808">అభిరుచులు &amp; కాలక్షేపం</translation>
 <translation id="8238581221633243064">కొత్త అజ్ఞాత ట్యాబ్‌లో పేజీని తెరవండి</translation>
-<translation id="8241707690549784388">మీరు వెతికే పేజీ మీరు ఎంటర్ చేసిన సమాచారాన్ని ఉపయోగించుకుంది. ఆ పేజీకి తిరిగి వెళ్ల‌డం ద్వారా మీరు చేసిన ఏ చర్య అయినా పునరావృతం చేయ‌వలసి వస్తుంది. మీరు కొనసాగాలని అనుకుంటున్నారా?</translation>
+<translation id="8241707690549784388">మీరు వెతికే పేజీ మీరు ఎంటర్ చేసిన సమాచారాన్ని ఉపయోగించుకుంది. ఆ పేజీకి తిరిగి వెళ్ల‌డం ద్వారా మీరు చేసిన ఏ చర్య అయినా రిపీట్‌ చేయ‌వలసి వస్తుంది. మీరు కొనసాగాలని అనుకుంటున్నారా?</translation>
 <translation id="8241712895048303527">ఈ సైట్‌లో బ్లాక్ చేయి</translation>
 <translation id="8242426110754782860">కొనసాగు</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
@@ -2802,7 +2802,7 @@
 <translation id="8767765348545497220">సహాయ బబుల్‌ను మూసివేయి</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">మోటారుసైకిళ్లు</translation>
-<translation id="8790007591277257123">&amp;తొలగించడాన్ని పునరావృతం చేయి</translation>
+<translation id="8790007591277257123">&amp;తొలగించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="8792621596287649091">మీరు మీ <ph name="ORG_NAME" /> ఖాతాకు యాక్సెస్‌ను కోల్పోవచ్చు. లేదా గుర్తింపు స‌మాచారం చోరీకి గురి కావచ్చు. మీ పాస్‌వర్డ్‌ను ఇప్పుడే రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="8792626944327216835">మైక్రోఫోన్</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, మీ బ్రౌజర్‌లో Chrome Enterprise కనెక్టర్‌లను ఆన్ చేసింది. ఈ కనెక్టర్‌లకు మీ డేటాలో కొంత డేటాకు యాక్సెస్ ఉంది.</translation>
@@ -2963,7 +2963,7 @@
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>
 <translation id="9215416866750762878">ఒక అప్లికేషన్ కారణంగా Chrome ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ కాలేకపోతోంది</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
-<translation id="922152298093051471">Chromeను అనుకూలంగా మార్చు</translation>
+<translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="933712198907837967">డైనర్స్ క్లబ్</translation>
 <translation id="935608979562296692">ఫారమ్‌ను తీసివేయండి</translation>
 <translation id="936474030629450166">సూపర్-B</translation>

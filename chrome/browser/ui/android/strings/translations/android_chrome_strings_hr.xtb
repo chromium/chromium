@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Savjeti za Chrome</translation>
 <translation id="1240288207750131269">Učitava se <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK1" />pravila o privatnosti<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />uvjete pružanja usluge<ph name="END_LINK2" /> ove web-lokacije.</translation>
+<translation id="124116460088058876">Više jezika</translation>
 <translation id="1242883863226959074">uređaju</translation>
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
 <translation id="1246905108078336582">Želite li ukloniti prijedlog iz međuspremnika?</translation>
@@ -439,7 +440,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="3288003805934695103">ponovo učitajte stranicu</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
-<translation id="3321367458490630980">Interes je dodan</translation>
 <translation id="3334729583274622784">Promijeniti datotečni nastavak?</translation>
 <translation id="3341262203274374114">Prestanak praćenja nije uspio. Došlo je do pogreške.</translation>
 <translation id="3359667936385849800">Koristi trenutačnog davatelja usluga</translation>
@@ -1496,7 +1496,6 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="8993760627012879038">Otvaranje nove kartice u anonimnom načinu</translation>
 <translation id="8996847606757455498">Odaberi drugog davatelja usluga</translation>
 <translation id="8998729206196772491">Prijavljujete se računom kojim upravlja <ph name="MANAGED_DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromeu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite iz Chromea, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
-<translation id="9021388532480169802">Web-lokacija dodana</translation>
 <translation id="9022774213089566801">Često posjećeno</translation>
 <translation id="9028914725102941583">Uključite sinkronizaciju da biste dijelili na uređajima</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videozapis}one{# videozapis}few{# videozapisa}other{# videozapisa}}</translation>

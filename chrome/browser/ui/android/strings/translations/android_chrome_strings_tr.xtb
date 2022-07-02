@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome ipuçları</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yükleniyor</translation>
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Bu sitenin <ph name="BEGIN_LINK1" />gizlilik politikasını<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />hizmet şartlarını<ph name="END_LINK2" /> inceleyin.</translation>
+<translation id="124116460088058876">Diğer diller</translation>
 <translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1246905108078336582">Öneri panodan kaldırılsın mı?</translation>
@@ -439,7 +440,6 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="3288003805934695103">Sayfayı yeniden yükleme</translation>
 <translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
-<translation id="3321367458490630980">İlgi alanı eklendi</translation>
 <translation id="3334729583274622784">Dosya uzantısı değiştirilsin mi?</translation>
 <translation id="3341262203274374114">Takip bırakılamıyor. Bir sorun oldu.</translation>
 <translation id="3359667936385849800">Mevcut servis sağlayıcınızı kullanın</translation>
@@ -1496,7 +1496,6 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="8993760627012879038">Gizli modda yeni bir sekme açar</translation>
 <translation id="8996847606757455498">Başka bir sağlayıcı seçin:</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyorsunuz ve yöneticiye tüm Chrome verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chrome'da oturumu kapattığınızda verileriniz bu cihazdan silinir, ancak Google Hesabınızda kalmaya devam eder.</translation>
-<translation id="9021388532480169802">Site eklendi</translation>
 <translation id="9022774213089566801">Sık ziyaret edilenler</translation>
 <translation id="9028914725102941583">Cihazlar arasında senkronizasyonu açın</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Video}}</translation>

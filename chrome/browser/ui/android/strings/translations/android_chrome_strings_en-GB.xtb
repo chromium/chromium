@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1240288207750131269">Loading <ph name="LANG" /></translation>
 <translation id="1240903469550363138">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Terms of Service<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">More languages</translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
@@ -439,10 +440,10 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3288003805934695103">Reloading the page</translation>
 <translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
-<translation id="3321367458490630980">Interest added</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
 <translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
 <translation id="3359667936385849800">Use your current service provider</translation>
+<translation id="3365271666488085187">Chrome can consider this interest</translation>
 <translation id="3367813778245106622">Sign in again to start sync</translation>
 <translation id="3373979091428520308">To share this page to another device, turn on sync in Chrome settings on the other device</translation>
 <translation id="3374023511497244703">Your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google account</translation>
@@ -476,6 +477,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB available</translation>
 <translation id="3549657413697417275">Search your history</translation>
 <translation id="3557336313807607643">Add to contacts</translation>
+<translation id="3560491354538957576">Site can define Interests</translation>
 <translation id="3563767357928833671">Clipboard contents shown</translation>
 <translation id="3566923219790363270">Chrome is still preparing for VR. Restart Chrome later.</translation>
 <translation id="3568688522516854065">To get your tabs from your other devices, sign in and turn on sync</translation>
@@ -1496,7 +1498,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
-<translation id="9021388532480169802">Site added</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9028914725102941583">Turn on sync to share across devices</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>

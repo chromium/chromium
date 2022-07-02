@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">English (US) with Programmer Dvorak keyboard</translation>
 <translation id="1134697384939541955">English (US) with Extended keyboard</translation>
+<translation id="1138691154716715755">Earlier this month</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> found.
     <ph name="LINE_BREAK1" />
     Not enough space available in local storage. Additional <ph name="FILE_SIZE" /> needed.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
 <translation id="4387004326333427325">Authentication certificate rejected remotely</translation>
 <translation id="4394214039309501350">External link</translation>
+<translation id="4394980935660306080">Earlier this week</translation>
 <translation id="4401287888955153199">Extract all</translation>
 <translation id="4410695710508688828">Extract operation failed. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Create a shortcut for your files</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Opening '<ph name="PATH" />'</translation>
 <translation id="4720185134442950733">Mobile data network</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos backed up</translation>
+<translation id="4725096204469550614">Earlier this year</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Landing</translation>
 <translation id="4747271164117300400">Macedonian</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Suggerimenti per Chrome</translation>
 <translation id="1240288207750131269">Caricamento della lingua <ph name="LANG" /> in corso…</translation>
 <translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
+<translation id="124116460088058876">Altre lingue</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246905108078336582">Rimuovere il suggerimento dagli appunti?</translation>
@@ -439,7 +440,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3288003805934695103">Ricaricare la pagina</translation>
 <translation id="3297344142967351106">Assistenza vocale</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
-<translation id="3321367458490630980">Interesse aggiunto</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
 <translation id="3359667936385849800">Usa il tuo attuale fornitore di servizi</translation>
@@ -1496,7 +1496,6 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8993760627012879038">Apri nuova scheda in mod. di navigaz. in incognito</translation>
 <translation id="8996847606757455498">Scegli un altro fornitore</translation>
 <translation id="8998729206196772491">Stai per eseguire l'accesso con un account gestito da <ph name="MANAGED_DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
-<translation id="9021388532480169802">Sito aggiunto</translation>
 <translation id="9022774213089566801">Più visitati</translation>
 <translation id="9028914725102941583">Attiva la sincronizzazione per la condivisione tra dispositivi</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>

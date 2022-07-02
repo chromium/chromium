@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome’i nõuanded</translation>
 <translation id="1240288207750131269">Keele laadimine: <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />teenusetingimusi<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Rohkem keeli</translation>
 <translation id="1242883863226959074">seadmes</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1246905108078336582">Kas eemaldada soovitus lõikelaualt?</translation>
@@ -439,7 +440,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="3288003805934695103">Laadige leht uuesti</translation>
 <translation id="3297344142967351106">Häälabi</translation>
 <translation id="3303414029551471755">Kas soovite jätkata sisu allalaadimist?</translation>
-<translation id="3321367458490630980">Huvi lisati</translation>
 <translation id="3334729583274622784">Kas muuta faililaiendit?</translation>
 <translation id="3341262203274374114">Ei saanud jälgimist lõpetada. Midagi läks valesti.</translation>
 <translation id="3359667936385849800">Kasutage oma praegust teenusepakkujat</translation>
@@ -1496,7 +1496,6 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="8993760627012879038">Uue vahelehe avamine inkognito režiimis</translation>
 <translation id="8996847606757455498">Valige teine teenusepakkuja</translation>
 <translation id="8998729206196772491">Logite sisse kontoga, mida haldab <ph name="MANAGED_DOMAIN" />, ja annate selle administraatorile üle Chrome'i andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chrome'ist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
-<translation id="9021388532480169802">Sait lisati</translation>
 <translation id="9022774213089566801">Sageli külastatud</translation>
 <translation id="9028914725102941583">Seadmete vahel jagamiseks lülitage sünkroonimine sisse</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videot}}</translation>

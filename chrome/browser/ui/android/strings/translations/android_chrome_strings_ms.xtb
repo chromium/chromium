@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Petua Chrome</translation>
 <translation id="1240288207750131269">Memuatkan <ph name="LANG" /></translation>
 <translation id="1240903469550363138">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />syarat perkhidmatan<ph name="END_LINK2" /> laman ini.</translation>
+<translation id="124116460088058876">Lagi bahasa</translation>
 <translation id="1242883863226959074">peranti</translation>
 <translation id="124678866338384709">Tutup tab semasa</translation>
 <translation id="1246905108078336582">Alih keluar cadangan daripada papan keratan?</translation>
@@ -439,7 +440,6 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="3288003805934695103">Memuatkan semula halaman</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Teruskan memuat turun kandungan?</translation>
-<translation id="3321367458490630980">Minat ditambah</translation>
 <translation id="3334729583274622784">Tukar sambungan fail?</translation>
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Kesilapan telah berlaku.</translation>
 <translation id="3359667936385849800">Gunakan penyedia perkhidmatan semasa anda</translation>
@@ -1496,7 +1496,6 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="8993760627012879038">Buka tetingkap baharu dalam mod Inkognito</translation>
 <translation id="8996847606757455498">Pilih penyedia lain</translation>
 <translation id="8998729206196772491">Anda log masuk dengan akaun yang diurus oleh <ph name="MANAGED_DOMAIN" /> dan memberikan kawalan terhadap data Chrome anda kepada pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan log keluar daripada Chrome akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Akaun Google anda.</translation>
-<translation id="9021388532480169802">Laman telah ditambahkan</translation>
 <translation id="9022774213089566801">Kerap dilawat</translation>
 <translation id="9028914725102941583">Hidupkan penyegerakan untuk berkongsi merentas peranti</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Video}}</translation>

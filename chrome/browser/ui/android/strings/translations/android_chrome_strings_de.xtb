@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-Tipps</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> wird geladen</translation>
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Lies die <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und die <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" /> dieser Website.</translation>
+<translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1242883863226959074">Gerät</translation>
 <translation id="124678866338384709">Aktuellen Tab schließen</translation>
 <translation id="1246905108078336582">Vorschlag aus Zwischenablage entfernen?</translation>
@@ -439,7 +440,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="3288003805934695103">Seite aktualisieren</translation>
 <translation id="3297344142967351106">Sprachassistent</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
-<translation id="3321367458490630980">Interesse hinzugefügt</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="3341262203274374114">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="3359667936385849800">Aktuellen Anbieter verwenden</translation>
@@ -1496,7 +1496,6 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="8993760627012879038">Neuen Tab im Inkognitomodus öffnen</translation>
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>
 <translation id="8998729206196772491">Du meldest dich mit einem von <ph name="MANAGED_DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
-<translation id="9021388532480169802">Website wurde hinzugefügt</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
 <translation id="9028914725102941583">Synchronisierung aktivieren, um geräteübergreifend zu teilen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>

@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome-ri buruzko aholkuak</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> kargatzen</translation>
 <translation id="1240903469550363138">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />zerbitzu-baldintzak<ph name="END_LINK2" />.</translation>
+<translation id="124116460088058876">Hizkuntza gehiago</translation>
 <translation id="1242883863226959074">gailuan</translation>
 <translation id="124678866338384709">Itxi oraingo fitxa</translation>
 <translation id="1246905108078336582">Iradokizuna arbeletik kendu nahi duzu?</translation>
@@ -439,7 +440,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="3288003805934695103">Orria berriro kargatu.</translation>
 <translation id="3297344142967351106">Ahozko laguntza</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
-<translation id="3321367458490630980">Gehitu da interesa</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazo bat izan da.</translation>
 <translation id="3359667936385849800">Erabili oraingo zerbitzu-hornitzailea</translation>
@@ -1496,7 +1496,6 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="8993760627012879038">Ireki beste fitxa bat ezkutuko moduan</translation>
 <translation id="8996847606757455498">Aukeratu beste hornitzaile bat</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domeinuak kudeatutako kontu batekin hastera zoaz saioa, eta, ondorioz, domeinu horretako administratzaileari emango diozu Chrome datuen kontrola. Datuak betiko lotuko zaizkio kontu honi. Chrome-ko saioa amaitzen baduzu, gailuko datuak ezabatu egingo dira, baina Google-ko kontuan izango dituzu gordeta.</translation>
-<translation id="9021388532480169802">Gehitu da webgunea</translation>
 <translation id="9022774213089566801">Gehien bisitatutakoak</translation>
 <translation id="9028914725102941583">Beste gailuekin partekatzeko, aktibatu sinkronizazioa</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# bideo}other{# bideo}}</translation>

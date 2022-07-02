@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome maslahatlari</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yuklanmoqda</translation>
 <translation id="1240903469550363138">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />xizmat shartlari<ph name="END_LINK2" /> bilan tanishing.</translation>
+<translation id="124116460088058876">Boshqa tillar</translation>
 <translation id="1242883863226959074">qurilma</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1246905108078336582">Klipbord taklifi olib tashlansinmi?</translation>
@@ -439,7 +440,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="3288003805934695103">Sahifani yangilash</translation>
 <translation id="3297344142967351106">Ovozli yordam</translation>
 <translation id="3303414029551471755">Yuklab olinsinmi?</translation>
-<translation id="3321367458490630980">Qiziqish kiritildi</translation>
 <translation id="3334729583274622784">Fayl kengaytmasi oʻzgartirilsinmi?</translation>
 <translation id="3341262203274374114">Obuna bekor qilinmadi. Xatolik yuz berdi.</translation>
 <translation id="3359667936385849800">Joriy xizmat provayderingiz orqali</translation>
@@ -1496,7 +1496,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="8993760627012879038">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="8996847606757455498">Boshqa provayderni tanlang</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chrome ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
-<translation id="9021388532480169802">Sayt kiritildi</translation>
 <translation id="9022774213089566801">Eng koʻp ochilgan</translation>
 <translation id="9028914725102941583">Qurilmalararo ulashish uchun sinxronizatsiyani yoqing</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ta video}other{# ta video}}</translation>

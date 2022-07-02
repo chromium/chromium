@@ -52,6 +52,7 @@
 <translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
 <translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
+<translation id="124116460088058876">更多語言</translation>
 <translation id="1242883863226959074">裝置</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
@@ -439,7 +440,6 @@
 <translation id="3288003805934695103">重新載入網頁</translation>
 <translation id="3297344142967351106">語音助手</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
-<translation id="3321367458490630980">已新增興趣</translation>
 <translation id="3334729583274622784">要變更副檔名嗎？</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
@@ -1496,7 +1496,6 @@
 <translation id="8993760627012879038">在無痕模式中開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
-<translation id="9021388532480169802">已新增網站</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9028914725102941583">開啟同步功能，即可在所有裝置上分享內容</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 部影片}other{# 部影片}}</translation>
