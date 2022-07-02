@@ -87,14 +87,11 @@ about:version template page
             <span>$i18n{cl}</span>
           </td>
         </tr>
-<if expr="not chromeos_ash">
+<if expr="not chromeos_ash and not chromeos_lacros">
         <tr>
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
             <span>$i18n{os_type}</span>
-<if expr="chromeos_lacros">
-            (Ash <span>$i18n{ash_chrome_version}</span>)
-</if>
 <if expr="is_android">
             <span>$i18n{os_version}</span>
 </if>
@@ -135,6 +132,18 @@ about:version template page
         <tr id="arc_holder"><td class="label">$i18n{arc_label}</td>
           <td class="version">
             <span id="arc_version"></span>
+          </td>
+        </tr>
+</if>
+<if expr="chromeos_lacros">
+        <tr>
+          <td class="label">$i18n{os_name}</td>
+          <td class="version" id="os_type">
+            <span id="copy-os-content">
+              <span>$i18n{os_type}</span>
+              (Ash <span>$i18n{ash_chrome_version}</span>)
+            </span>
+            <button id="copy-os-content-to-clipboard" aria-label="$i18n{copy_label}"></button>
           </td>
         </tr>
 </if>
