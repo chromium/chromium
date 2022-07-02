@@ -7,14 +7,6 @@ import("//buildtools/deps_revisions.gni")
 
 assert(use_custom_libcxx, "should only be used if use_custom_libcxx is set")
 
-libcxx_abi_unstable = true
-
-# TODO(xiaohuic): https://crbug/917533 Crashes on internal ChromeOS build.
-# Do unconditionally once the underlying problem is fixed.
-if (is_chromeos_ash && is_chrome_branded) {
-  libcxx_abi_unstable = false
-}
-
 # This is included by reference in the //build/config/compiler:runtime_library
 # config that is applied to all targets. It is here to separate out the logic
 # that is specific to libc++. Please see that target for advice on what should
@@ -37,11 +29,10 @@ config("runtime_library") {
   #    on Windows, the increase is great enough that we go above the 4GB size
   #    limit for PDBs (https://crbug.com/1327710#c5). To fix this, we set
   #    _LIBCPP_ABI_NAMESPACE to a shorter value.
-  defines += [ "_LIBCPP_ABI_NAMESPACE=Cr" ]
-
-  if (libcxx_abi_unstable) {
-    defines += [ "_LIBCPP_ABI_VERSION=2" ]
-  }
+  defines += [
+    "_LIBCPP_ABI_NAMESPACE=Cr",
+    "_LIBCPP_ABI_VERSION=2",
+  ]
 
   if (!libcxx_is_shared) {
     # Don't leak any symbols on a static build.
