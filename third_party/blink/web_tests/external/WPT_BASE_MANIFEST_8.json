@@ -298906,6 +298906,10 @@
      "2340a89c93ce4515026a5462cb9382dc2501bfdb",
      []
     ],
+    "encodeInto.any.js.headers": [
+     "4fff9d9fba4c81f953826ffea010a75be626b95d",
+     []
+    ],
     "eof-shift_jis-ref.html": [
      "b90f8032a31db260902c2c04b671b30ee9c62c8e",
      []
@@ -299623,6 +299627,10 @@
      []
     ],
     "streams": {
+     "decode-utf8.any.js.headers": [
+      "4fff9d9fba4c81f953826ffea010a75be626b95d",
+      []
+     ],
      "resources": {
       "readable-stream-from-array.js": [
        "5c12ba8c8bba60ef52a689abae17d1f1e0bfc458",
@@ -299633,7 +299641,15 @@
        []
       ]
      }
-    }
+    },
+    "textdecoder-copy.any.js.headers": [
+     "4fff9d9fba4c81f953826ffea010a75be626b95d",
+     []
+    ],
+    "textdecoder-streaming.any.js.headers": [
+     "4fff9d9fba4c81f953826ffea010a75be626b95d",
+     []
+    ]
    },
    "encoding-detection": {
     "__dir__.headers": [
@@ -321391,6 +321407,14 @@
      ],
      "mediasource-worker-get-objecturl.js": [
       "e9a5af6c81295ae4577cd2d8a4c01cfebe1a15ba",
+      []
+     ],
+     "mediasource-worker-handle-transfer-to-main.js": [
+      "e83ab75c6a9f670aea8655ff61b563158d08c673",
+      []
+     ],
+     "mediasource-worker-handle-transfer.js": [
+      "4c62aeec7cd63bf8015861ec69fb2d98fc16fb2a",
       []
      ],
      "mediasource-worker-handle.js": [
@@ -490577,6 +490601,13 @@
        {}
       ]
      ],
+     "mediasource-worker-handle-transfer.html": [
+      "cab5073299745764bc74aeadab31b288dbd73065",
+      [
+       null,
+       {}
+      ]
+     ],
      "mediasource-worker-handle.html": [
       "b084fb6d5bb9cb5b66ddc1536c2bf0719348e1ff",
       [
@@ -547570,7 +547601,7 @@
      ]
     ],
     "audio-encoder.https.any.js": [
-     "0f0c01f9dd1b4ef90471a0490a224c976e3ba6d0",
+     "d1ae55435a68f7fa744954eaf9a5776f04c6e4dd",
      [
       "webcodecs/audio-encoder.https.any.html",
       {
@@ -549578,7 +549609,7 @@
      ]
     ],
     "video-encoder.https.any.js": [
-     "4999276f3af40996d520195b677c8d0d520fd990",
+     "791b910ee40f4213ce868fbe277af3b46ca06b3c",
      [
       "webcodecs/video-encoder.https.any.html",
       {
