@@ -1933,15 +1933,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // BrowserContext.
   DCHECK_EQ(new_instance->GetBrowserContext(), browser_context);
 
-  // If |new_instance| is a new SiteInstance for a subframe that requires a
-  // dedicated process, set its process reuse policy so that such subframes are
-  // consolidated into existing processes for that site.
-  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
-  // so IsMainFrame should not be used to identify subframes. Follow up to
-  // confirm correctness. Using IsOutermostMainFrame here will cause same-site
-  // fenced frames to share a process, even across tabs, aligning with Shadow
-  // DOM behavior. Determining correctness here will also involve resolving on
-  // the FF process model plan (see https://github.com/WICG/fenced-
+  // If |new_instance| is a new SiteInstance for a subframe or a fenced frame
+  // that require a dedicated process, set its process reuse policy so that such
+  // subframes and fenced frames are consolidated into existing processes for
+  // that site.
+  // TODO(crbug.com/1340662): The model described in fenced frames process
+  // isolation explainer is still in the design stage. Determining correctness
+  // here will also involve resolving on the FF process model plan (see
+  // https://github.com/WICG/fenced-
   // frame/blob/master/explainer/process_isolation.md).
   if (!frame_tree_node_->IsOutermostMainFrame() &&
       !new_instance_impl->HasProcess() &&
@@ -1954,8 +1953,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
         GetContentClient()
             ->browser()
             ->ShouldEmbeddedFramesTryToReuseExistingProcess(
-                frame_tree_node_->frame_tree()
-                    ->GetMainFrame()
+                frame_tree_node_->GetParentOrOuterDocument()
                     ->GetOutermostMainFrame())) {
       new_instance_impl->set_process_reuse_policy(
           SiteInstanceImpl::ProcessReusePolicy::
