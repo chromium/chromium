@@ -152,6 +152,78 @@ promise_test(async t => {
   assert_equals(video.srcObject, null);
 }, 'MediaSourceHandle cannot be transferred, if it was srcObject when asynchronous load starts (loadstart), even if srcObject is then immediately reset to null');
 
+promise_test(async t => {
+  assert_mseiw_supported();
+  let {worker, handle} = await get_handle_from_new_worker(t);
+  assert_true(
+      handle instanceof MediaSourceHandle, 'must be a MediaSourceHandle');
+
+  let video = document.createElement('video');
+  document.body.appendChild(video);
+
+  // Transfer the handle away so that our instance of it is detached.
+  worker.postMessage(null, [handle]);
+
+  // Now assign handle to srcObject to attempt load. 'loadstart' event should
+  // occur, but then media element error should occur due to failure to attach
+  // to the underlying MediaSource of a detached MediaSourceHandle.
+
+  video.srcObject = handle;
+  assert_equals(
+      video.networkState, HTMLMediaElement.NETWORK_NO_SOURCE,
+      'before async load start, networkState should be NETWORK_NO_SOURCE');
+
+  // Before 'loadstart' dispatch, we don't expect the media element error.
+  video.onerror = t.unreached_func(
+      'Error is unexpected before \'loadstart\' event dispatch');
+
+  // Wait until 'loadstart' media element event is dispatched.
+  await new Promise((r) => {
+    video.addEventListener(
+        'loadstart', t.step_func(e => {
+          r();
+        }),
+        {once: true});
+  });
+
+  // Now wait until 'error' media element event is dispatched.
+  video.onerror = null;
+  await new Promise((r) => {
+    video.addEventListener(
+        'error', t.step_func(e => {
+          r();
+        }),
+        {once: true});
+  });
+
+  // Confirm expected error and states resulting from the "dedicated media
+  // source failure steps":
+  // https://html.spec.whatwg.org/multipage/media.html#dedicated-media-source-failure-steps
+  let e = video.error;
+  assert_true(e instanceof MediaError);
+  assert_equals(e.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);
+  assert_equals(
+      video.readyState, HTMLMediaElement.HAVE_NOTHING,
+      'load failure should occur long before parsing any appended metadata.');
+  assert_equals(video.networkState, HTMLMediaElement.NETWORK_NO_SOURCE);
+
+  // Even if the handle is detached and attempt to load it failed, the handle is
+  // still detached, and as well, has also been used as srcObject now. Re-verify
+  // that such a handle instance must fail transfer attempt.
+  assert_throws_dom('DataCloneError', function() {
+    worker.postMessage(handle, [handle]);
+  }, 'transferring detached handle that is currently srcObject, after loadstart and load failure, fails');
+  assert_equals(video.srcObject, handle);
+
+  // Clear |handle| from being the srcObject value.
+  video.srcObject = null;
+
+  assert_throws_dom('DataCloneError', function() {
+    worker.postMessage(handle, [handle]);
+  }, 'transferring detached handle that was srcObject until \'loadstart\' and load failure when srcObject was reset to null should also fail');
+  assert_equals(video.srcObject, null);
+}, 'A detached (already transferred away) MediaSourceHandle cannot successfully load when assigned to srcObject');
+
 fetch_tests_from_worker(new Worker('mediasource-worker-handle-transfer.js'));
 
 </script>
