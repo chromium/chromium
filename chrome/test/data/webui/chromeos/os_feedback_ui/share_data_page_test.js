@@ -10,6 +10,7 @@ import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -354,6 +355,39 @@ export function shareDataPageTestSuite() {
     const screenshotImage = getElement('#screenshotImage');
     assertTrue(!!screenshotImage.src);
     assertEquals(imgUrl, screenshotImage.src);
+  });
+
+
+  // Test that clicking the screenshot will open preview dialog and set the
+  // focus on the close dialog icon button.
+  test('screenshotPreview', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+    page.screenshotUrl = fakeImageUrl;
+    assertEquals(fakeImageUrl, getElement('#screenshotImage').src);
+
+    const closeDialogButton = getElement('#closeDialogButton');
+    // The preview dialog's close icon button is not visible.
+    assertFalse(isVisible(closeDialogButton));
+
+    // The screenshot is displayed as an image button.
+    const imageButton = /** @type {!Element} */ (getElement('#imageButton'));
+    const imageClickPromise = eventToPromise('click', imageButton);
+    imageButton.click();
+    await imageClickPromise;
+
+    // The preview dialog's close icon button is visible now.
+    assertTrue(isVisible(closeDialogButton));
+    // The preview dialog's close icon button is focused.
+    assertEquals(closeDialogButton, getDeepActiveElement());
+
+    // Press enter should close the preview dialog.
+    closeDialogButton.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    // The preview dialog's close icon button is not visible now.
+    assertFalse(isVisible(closeDialogButton));
   });
 
   /**
