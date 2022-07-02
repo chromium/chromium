@@ -232,6 +232,7 @@ js_library("dictation_input_controller") {
   externs_list = [
     "$externs_path/input_method_private.js",
     "$externs_path/language_settings_private.js",
+    "$externs_path/automation.js",
   ]
 }
 

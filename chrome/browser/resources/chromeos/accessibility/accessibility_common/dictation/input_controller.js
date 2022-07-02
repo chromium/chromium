@@ -4,11 +4,9 @@
 
 import {EditingUtil} from '/accessibility_common/dictation/editing_util.js';
 
-const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+const EventType = chrome.automation.EventType;
 
-/**
- * InputController handles interaction with input fields for Dictation.
- */
+/** InputController handles interaction with input fields for Dictation. */
 export class InputController {
   constructor(stopDictationCallback, focusHandler) {
     /** @private {number} */
@@ -208,9 +206,12 @@ export class InputController {
 
     const value = editableNode.value;
     const caretIndex = editableNode.textSelStart;
-    const newValue = EditingUtil.replacePhrase(
+    const data = EditingUtil.replacePhrase(
         value, caretIndex, deletePhrase, insertPhrase);
-    editableNode.setValue(newValue);
+    const newValue = data.value;
+    const newIndex = data.index;
+
+    this.setEditableValueAndUpdateCaretPosition_(newValue, newIndex);
   }
 
   /**
@@ -230,9 +231,12 @@ export class InputController {
 
     const value = editableNode.value;
     const caretIndex = editableNode.textSelStart;
-    const newValue =
+    const data =
         EditingUtil.insertBefore(value, caretIndex, insertPhrase, beforePhrase);
-    editableNode.setValue(newValue);
+    const newValue = data.value;
+    const newIndex = data.index;
+
+    this.setEditableValueAndUpdateCaretPosition_(newValue, newIndex);
   }
 
   /**
@@ -292,6 +296,32 @@ export class InputController {
   /** @param {string} locale */
   setLocale(locale) {
     this.locale_ = locale;
+  }
+
+  /**
+   * @param {string} value
+   * @param {number} index
+   * @private
+   */
+  setEditableValueAndUpdateCaretPosition_(value, index) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode) {
+      return;
+    }
+
+    // Set the value first, then update the caret position.
+    let handled = false;
+    const setSelection = () => {
+      if (!handled) {
+        // Ensure this listener only runs once.
+        editableNode.removeEventListener(setSelection);
+        editableNode.setSelection(index, index);
+        handled = true;
+      }
+    };
+
+    editableNode.addEventListener(EventType.VALUE_CHANGED, setSelection);
+    editableNode.setValue(value);
   }
 }
 

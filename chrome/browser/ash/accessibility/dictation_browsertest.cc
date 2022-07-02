@@ -1085,6 +1085,42 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveBySentence) {
       "Hello world! Good evening. Goodnight world? Time for a midnight snack");
 }
 
+// CursorPosition... tests verify the new cursor position after a command is
+// performed. The new cursor position is verified by inserting text after the
+// command under test is performed.
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionDeleteSentence) {
+  SendFinalResultAndWaitForTextAreaValue("First. Second.", "First. Second.");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+                                         "First.");
+  SendFinalResultAndWaitForTextAreaValue("Third.", "First. Third.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartDeletePhrase) {
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+                                         "This is a difficult test");
+  SendFinalResultAndWaitForCaretBoundsChanged("delete difficult");
+  SendFinalResultAndWaitForTextAreaValue("simple", "This is a simple test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
+                       CursorPositionSmartReplacePhrase) {
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+                                         "This is a difficult test");
+  SendFinalResultAndWaitForCaretBoundsChanged("replace difficult with simple");
+  SendFinalResultAndWaitForTextAreaValue("biology",
+                                         "This is a simple biology test");
+  SendFinalResultAndWaitForTextAreaValue(
+      "and chemistry", "This is a simple biology and chemistry test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartInsertBefore) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test", "This is a test");
+  SendFinalResultAndWaitForCaretBoundsChanged("insert simple before test");
+  SendFinalResultAndWaitForTextAreaValue("biology",
+                                         "This is a simple biology test");
+}
+
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationTest {
  protected:

@@ -8,14 +8,19 @@
  */
 export class EditingUtil {
   /**
+   * TODO(https://crbug.com/1331351): Add RTL support.
    * Replaces a phrase to the left of the text caret with another phrase. If
    * multiple instances of `deletePhrase` are present, this function will
-   * replace the one closest to the text caret.
+   * replace the one closest to the text caret. Returns an object that contains
+   * the new value and the new text caret position.
    * @param {string} value The current value of the text field.
    * @param {number} caretIndex
    * @param {string} deletePhrase The phrase to be deleted.
    * @param {string} insertPhrase The phrase to be inserted.
-   * @return {string}
+   * @return {!{
+   *  value: string,
+   *  index: number
+   * }}
    */
   static replacePhrase(value, caretIndex, deletePhrase, insertPhrase) {
     const leftOfCaret = value.substring(0, caretIndex);
@@ -34,27 +39,42 @@ export class EditingUtil {
         EditingUtil.getPhraseRegexTrailingSpace_(deletePhrase);
 
     let newLeft;
+    let newIndex = insertPhrase.length;
     if (performingDelete && reWithLeadingSpace.test(leftOfCaret)) {
       newLeft = leftOfCaret.replace(reWithLeadingSpace, insertPhrase);
+      newIndex += reWithLeadingSpace.exec(leftOfCaret).index;
     } else if (performingDelete && reWithTrailingSpace.test(leftOfCaret)) {
       newLeft = leftOfCaret.replace(reWithTrailingSpace, insertPhrase);
-    } else {
+      newIndex += reWithTrailingSpace.exec(leftOfCaret).index;
+    } else if (re.test(leftOfCaret)) {
       newLeft = leftOfCaret.replace(re, insertPhrase);
+      newIndex += re.exec(leftOfCaret).index;
+    } else {
+      newLeft = leftOfCaret;
+      newIndex = caretIndex;
     }
 
-    return newLeft + rightOfCaret;
+    return {
+      value: newLeft + rightOfCaret,
+      index: newIndex,
+    };
   }
 
   /**
+   * TODO(https://crbug.com/1331351): Add RTL support.
    * Inserts `insertPhrase` directly before `beforePhrase` (and separates them
    * with a space). This function operates on the text to the left of the caret.
    * If multiple instances of `beforePhrase` are present, this function will
-   * use the one closest to the text caret.
+   * use the one closest to the text caret. Returns an object that contains
+   * the new value and the new text caret position.
    * @param {string} value The current value of the text field.
    * @param {number} caretIndex
    * @param {string} insertPhrase
    * @param {string} beforePhrase
-   * @return {string}
+   * @return {!{
+   *  value: string,
+   *  index: number
+   * }}
    */
   static insertBefore(value, caretIndex, insertPhrase, beforePhrase) {
     const leftOfCaret = value.substring(0, caretIndex);
@@ -66,7 +86,14 @@ export class EditingUtil {
     // Runs when a regex match occurs and returns the replacement string.
     const replacer = () => `${insertPhrase} ${beforePhrase}`;
     const newLeft = leftOfCaret.replace(re, replacer);
-    return newLeft + rightOfCaret;
+    const newIndex = re.test(leftOfCaret) ?
+        re.exec(leftOfCaret).index + insertPhrase.length :
+        caretIndex;
+
+    return {
+      value: newLeft + rightOfCaret,
+      index: newIndex,
+    };
   }
 
   /**
@@ -103,6 +130,7 @@ export class EditingUtil {
   }
 
   /**
+   * TODO(https://crbug.com/1331351): Add RTL support.
    * Returns the start index of the sentence to the right of the caret.
    * Indices are relative to `value`. Assumes that sentences are separated by
    * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no next
@@ -123,6 +151,7 @@ export class EditingUtil {
   }
 
   /**
+   * TODO(https://crbug.com/1331351): Add RTL support.
    * Returns the start index of the sentence to the left of the caret. Indices
    * are relative to `value`. Assumes that sentences are separated by
    * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no
@@ -160,6 +189,7 @@ export class EditingUtil {
 
 
   /**
+   * TODO(https://crbug.com/1331351): Add RTL support.
    * This function analyzes the context and adjusts the spacing of `commitText`
    * to maintain proper spacing between text.
    * @param {string} value The current value of the text field.
@@ -201,6 +231,7 @@ export class EditingUtil {
   }
 
   /**
+   * TODO(https://crbug.com/1331351): Add RTL support.
    * This function analyzes the context and adjusts the capitalization of
    * `commitText` as needed. See below for sample input and output: value:
    * 'Hello world.' caretIndex: value.length commitText: 'goodnight world'
