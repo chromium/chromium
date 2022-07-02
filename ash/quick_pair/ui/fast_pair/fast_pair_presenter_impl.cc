@@ -138,9 +138,10 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
   // Check if the user is opted in to saving devices to their account. If the
   // user is not opted in, we will show the guest notification which does not
   // mention saving devices to the user account. This is flagged depending if
-  // the Fast Pair Saved Devices is enabled.
-  if (features::IsFastPairSavedDevicesEnabled()) {
-    QP_LOG(INFO) << __func__ << ": Saved Devices Flag enabled";
+  // the Fast Pair Saved Devices is enabled and we are using a strict
+  // interpretation of the opt-in status.
+  if (features::IsFastPairSavedDevicesEnabled() &&
+      features::IsFastPairSavedDevicesStrictOptInEnabled()) {
     FastPairRepository::Get()->CheckOptInStatus(
         base::BindOnce(&FastPairPresenterImpl::OnCheckOptInStatus,
                        weak_pointer_factory_.GetWeakPtr(), device,
