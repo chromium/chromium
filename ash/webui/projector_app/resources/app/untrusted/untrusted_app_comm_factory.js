@@ -181,9 +181,9 @@ const CLIENT_DELEGATE = {
    * @param {string} screencastId The Drive item id of container folder.
    * @return {!Promise<projectorApp.Screencast>}
    */
-  // TODO(b/236857019) Wires up this with trusted context and message handle.
   getScreencast(screencastId) {
-    return Promise.reject('Unsupported');
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'getScreencast', [screencastId]);
   },
 
 };

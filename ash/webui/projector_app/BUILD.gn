@@ -18,6 +18,8 @@ static_library("projector_app") {
     "projector_message_handler.h",
     "projector_oauth_token_fetcher.cc",
     "projector_oauth_token_fetcher.h",
+    "projector_screencast.cc",
+    "projector_screencast.h",
     "projector_xhr_sender.cc",
     "projector_xhr_sender.h",
     "trusted_projector_annotator_ui.cc",
