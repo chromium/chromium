@@ -304,10 +304,10 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
   // This function will be called with the child processes that are not
   // renderers. It will fill in the browser and renderer processes on the UI
   // thread (RenderProcessHost is UI-thread only) and return the full list.
-  std::vector<base::Value> process_list;
+  base::Value::List process_list;
 
   // Add browser process.
-  process_list.push_back(MakeProcessInfo(base::GetCurrentProcId(), "Browser"));
+  process_list.Append(MakeProcessInfo(base::GetCurrentProcId(), "Browser"));
 
   // Append renderer processes.
   auto iter = content::RenderProcessHost::AllHostsIterator();
@@ -317,37 +317,37 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
       if (renderer_pid != 0) {
         // TODO(brettw) make a better description of the process, maybe see
         // what TaskManager does to get the page title.
-        process_list.push_back(MakeProcessInfo(renderer_pid, "Renderer"));
+        process_list.Append(MakeProcessInfo(renderer_pid, "Renderer"));
       }
     }
     iter.Advance();
   }
 
   // Append all child processes collected on the IO thread.
-  process_list.insert(process_list.end(),
-                      std::make_move_iterator(std::begin(children)),
-                      std::make_move_iterator(std::end(children)));
+  for (auto& child : children)
+    process_list.Append(std::move(child));
 
   // Sort profiled_pids to allow binary_search in the loop.
   std::sort(profiled_pids.begin(), profiled_pids.end());
 
   // Append whether each process is being profiled.
   for (base::Value& value : process_list) {
-    DCHECK_EQ(value.GetListDeprecated().size(), 2u);
+    DCHECK_EQ(value.GetList().size(), 2u);
 
     base::ProcessId pid =
-        static_cast<base::ProcessId>(value.GetListDeprecated()[0].GetInt());
+        static_cast<base::ProcessId>(value.GetList()[0].GetInt());
     bool is_profiled =
         std::binary_search(profiled_pids.begin(), profiled_pids.end(), pid);
     value.Append(is_profiled);
   }
 
   // Pass the results in a dictionary.
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey("message", base::Value(GetMessageString()));
-  result.SetKey("processes", base::Value(std::move(process_list)));
+  base::Value::Dict result;
+  result.Set("message", GetMessageString());
+  result.Set("processes", std::move(process_list));
 
-  ResolveJavascriptCallback(base::Value(callback_id), result);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(result)));
 }
 
 void MemoryInternalsDOMHandler::FileSelected(const base::FilePath& path,

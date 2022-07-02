@@ -1086,9 +1086,9 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinters) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   AddToDenyList(mojom::PrinterType::kExtension);
 #else
-  base::Value::ListStorage deny_list;
-  deny_list.push_back(base::Value("extension"));
-  prefs()->Set(prefs::kPrinterTypeDenyList, base::Value(std::move(deny_list)));
+  base::Value::List deny_list;
+  deny_list.Append("extension");
+  prefs()->SetList(prefs::kPrinterTypeDenyList, std::move(deny_list));
 #endif
   Initialize();
 
@@ -1174,10 +1174,10 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
   AddToDenyList(mojom::PrinterType::kLocal);
   AddToDenyList(mojom::PrinterType::kPdf);
 #else
-  base::Value::ListStorage deny_list;
-  deny_list.push_back(base::Value("local"));
-  deny_list.push_back(base::Value("pdf"));
-  prefs()->Set(prefs::kPrinterTypeDenyList, base::Value(std::move(deny_list)));
+  base::Value::List deny_list;
+  deny_list.Append("local");
+  deny_list.Append("pdf");
+  prefs()->SetList(prefs::kPrinterTypeDenyList, std::move(deny_list));
 #endif
   Initialize();
 

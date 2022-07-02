@@ -287,9 +287,9 @@ void AddDeviceReportingElement(base::Value::List* report_sources,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-std::vector<base::Value> GetPermissionsForExtension(
+base::Value::List GetPermissionsForExtension(
     scoped_refptr<const extensions::Extension> extension) {
-  std::vector<base::Value> permission_messages;
+  base::Value::List permission_messages;
   // Only consider force installed extensions
   if (!extensions::Manifest::IsPolicyLocation(extension->location()))
     return permission_messages;
@@ -305,7 +305,7 @@ std::vector<base::Value> GetPermissionsForExtension(
           permissions);
 
   for (const auto& message : messages)
-    permission_messages.push_back(base::Value(message.message()));
+    permission_messages.Append(message.message());
 
   return permission_messages;
 }
@@ -314,7 +314,7 @@ base::Value GetPowerfulExtensions(const extensions::ExtensionSet& extensions) {
   base::Value::List powerful_extensions;
 
   for (const auto& extension : extensions) {
-    std::vector<base::Value> permission_messages =
+    base::Value::List permission_messages =
         GetPermissionsForExtension(extension);
 
     // Only show extension on page if there is at least one permission
